@@ -1,34 +1,58 @@
-version: '3.5'
+version: '3'
 services:
-db:
- image: postgres
- restart: always
- environment:
-   - POSTGRES_PASSWORD=secret
- container_name: postgres
- volumes:
-   - ./pgdata:/var/lib/postgresql/data
- ports:
-   - '5432:5432'
-app:
- build:
-  context: .
-  dockerfile: ./backend/Dockerfile
- container_name: backend
- ports:
-   - '3000:3000'
- depends_on:
-   - db
- volumes:
-    - ./src:/app/src
-pgadmin:
- image: dpage/pgadmin4
- restart: always
- container_name: nest-pgadmin4
- Environment:
-   - PGADMIN_DEFAULT_EMAIL=admin@admin.com
-   - PGADMIN_DEFAULT_PASSWORD=pgadmin4
-ports:
-   - '5050:80'
-depends_on:
-    - db
+  api:
+    build:
+      context: .
+      dockerfile: ./backend/Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend:/backend
+      - ./upload/:/upload
+    networks:
+      - webapp
+      - database
+    restart: always
+    container_name: backend
+  webapp:
+    build:
+      context: .
+      dockerfile: ./frontend/Dockerfile
+    ports:
+      - "3030:3030"
+    volumes:
+      - ./frontend:/frontend
+    networks:
+      - webapp
+    restart: always
+    container_name: frontend
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: database
+    ports:
+      - "31415:5432"
+    volumes:
+      - ./database-data:/var/lib/postgresql/data
+    networks:
+      - database
+    restart: always
+    container_name: db_app
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+    ports:
+      - "5050:80"
+    networks:
+      - database
+    restart: always
+    container_name: pgadmin
+networks:
+  webapp:
+    driver: bridge
+  database:
+    driver: bridge
