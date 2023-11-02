@@ -1,0 +1,17 @@
+version: '3'
+services:
+  dev-db:
+    image: postgres
+    ports: 
+      - 5434:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123
+      - POSTGRES_DB=nest
+    networks:
+      - transendance
+    volumes:
+      - ./data:/var/lib/postgresql/data
+networks:
+  transendance:
+    driver: bridge
