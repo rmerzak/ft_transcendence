@@ -15,7 +15,7 @@ export class LeetStrategy extends PassportStrategy(Strategy, '42') {
         })
     }
     async validate(accessToken: string, refreshToken: string, profile: Profile) {
-        let user = await this.prisma.user.findUnique(profile.emails[0].value)
+        let user = await this.prisma.user.findUnique( {where: {email:profile.emails[0].value}})
         if (!user) {
           await this.authService.signup({
             email: profile.emails[0].value,

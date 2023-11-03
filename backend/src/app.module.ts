@@ -6,7 +6,7 @@ import { PrismaModule } from './prisma/prisma.module';
 
 
 @Module({
-  imports: [AuthModule, UserModule, PrismaModule, ConfigModule.forRoot({isGlobal:true,})],
+  imports: [ AuthModule, UserModule, PrismaModule, ConfigModule.forRoot({isGlobal:true,}), ],
   controllers: [],
   providers: [],
 })
