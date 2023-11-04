@@ -11,7 +11,7 @@ export class LeetStrategy extends PassportStrategy(Strategy, '42') {
         super({
             clientID: config.get('UID'),
             clientSecret: config.get('SECRET'),
-            callbackURL: config.get('LEET_URL')
+            callbackURL: config.get('LEET_URL'),
         })
     }
     async validate(accessToken: string, refreshToken: string, profile: Profile) {

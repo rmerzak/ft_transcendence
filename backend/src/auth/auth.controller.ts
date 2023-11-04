@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Get, Req } from "@nestjs/common";
+import { Controller, Post, Body,Request, UseGuards, Get, Req } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { AuthDto } from "./Dto";
 import { LeetStrategy } from "./strategy";
@@ -19,13 +19,13 @@ export class AuthController{
     }
     @UseGuards(LeetGuard)
     @Get('42')
-    leet() {
-        return
+    leet(@Request() req) {
+        return;
     }
     @UseGuards(LeetGuard)
     @Get('42-redirect')
-    ftAuthCallback(@Req() req: Request) {
-        console.log(req)
-      return ;
+    ftAuthCallback(@Request() req) {
+        console.log(req.user)
+      return this.authService.signin({email:req.user.email,password: 'exemple'});
     }
 }
