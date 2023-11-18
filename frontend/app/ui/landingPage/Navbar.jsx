@@ -10,11 +10,13 @@ const Navbar = () => (
     <div
       className={`${styles.innerWidth} mx-auto flex justify-between gap-8`}
     >
-      <img src="/42_logo.svg" alt="search" className="w-[30px] h-[30px] object-contain "/>
+      <img src="/pingsvg.svg" alt="menu" className="w-[50px] h-[50px] object-contain"/>
       <h2 className="font-extrabold text-[24px] leading-[30.24px] text-white"> PingPong
       </h2>
-      <img src="/pingsvg.svg" alt="menu" className="w-[30px] h-[30px] object-contain"
-      />
+      <button type='button' className='flex items-center h-fit py-4 px-6 bg-[#25618b] rounded-[32px] gap-[12px]'>
+          <img src="/42_logo.svg" alt="head" className='w-[24px] h-[24px] object-contain' />
+          <span className='font-normal text-[16px] text-white'>ENTER PINGPONG</span>
+        </button>
     </div>
   </motion.nav>
 );
