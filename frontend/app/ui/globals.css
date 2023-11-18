@@ -23,7 +23,6 @@
 }
 
 .hero-gradient {
-background-color:hsla(0,100%,50%,1);
 background-image:
 radial-gradient(at 21% 40%, hsla(199,63%,31%,1) 0px, transparent 50%),
 radial-gradient(at 40% 20%, hsla(197,95%,28%,1) 0px, transparent 50%),
