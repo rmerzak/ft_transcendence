@@ -1,9 +1,3 @@
-"use client";
-import { useRef } from "react";
-import { Canvas, useFrame, useLoader } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
-import { Mesh } from "three";
 const Login = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2 bg-gray-100">
