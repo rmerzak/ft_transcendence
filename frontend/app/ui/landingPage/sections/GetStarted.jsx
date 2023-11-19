@@ -1,9 +1,10 @@
 'use client';
 import { motion } from "framer-motion";
-import { TypingText, TitleText, StartSteps } from "..";
+import { TypingText, TitleText } from "../CustomTexts";
+import StartSteps from "../StartSteps";
 import styles from "../..";
 import { fadeIn, staggerContainer, Variants } from "../../../utils/motion";
-import { startingFeatures } from "@/app/constants";
+import { startingFeatures } from "@/app/constants/index.tsx";
 const GetStarted = () => (
   <section className={`${styles.paddings} relative z-10`}>
     <motion.div

@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import styles from "../..";
-import { TypingText, TitleText } from "..";
+import { TypingText, TitleText } from "../CustomTexts";
 import { fadeIn, staggerContainer } from "../../../utils/motion";
 const World = () => (
   <section className={`${styles.paddings} relative z-10`}>

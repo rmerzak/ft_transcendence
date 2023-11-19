@@ -1,3 +1,5 @@
+import { Icon } from "@iconify/react";
+import {SideNaveItems} from "./types";
 export const team = [
   {
     id: 'profile-1',
@@ -86,3 +88,31 @@ export const socials = [
     url: '/facebook.svg',
   },
 ];
+
+export const navItems: SideNaveItems[] = [
+  {
+    title: 'Home',
+    path: '/dashboard/home',
+    icon: <Icon icon="lucide:home" width="24" height="24" />,
+  },
+  {
+    title: 'Profile',
+    path: '/dashboard/profile',
+    icon: <Icon icon="lucide:home" width="24" height="24" />,
+  },
+  {
+    title: 'Chat',
+    path: '/dashboard/chat',
+    icon: <Icon icon="lucide:home" width="24" height="24" />,
+  },
+  {
+    title: 'Friends',
+    path: '/dashboard/friends',
+    icon: <Icon icon="lucide:home" width="24" height="24" />,
+  },
+  {
+    title: 'Game',
+    path: '/dashboard/game',
+    icon: <Icon icon="lucide:home" width="24" height="24" />,
+  }
+]
