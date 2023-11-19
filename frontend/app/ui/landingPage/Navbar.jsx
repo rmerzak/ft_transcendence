@@ -10,12 +10,12 @@ const Navbar = () => (
     <div
       className={`${styles.innerWidth} mx-auto flex justify-between gap-8`}
     >
-      <img src="/pingsvg.svg" alt="menu" className="w-[50px] h-[50px] object-contain"/>
-      <h2 className="font-extrabold text-[24px] leading-[30.24px] text-white"> PingPong
+      <img src="/pingsvg.svg" alt="menu" className="w-[30px] h-[30px] object-contain md:w-[50px] md:h-[50px]"/>
+      <h2 className="font-extrabold md:text-[24px] text-[16px] leading-[30.24px] text-white"> PingPong
       </h2>
-      <button type='button' className='flex items-center h-fit py-4 px-6 bg-[#25618b] rounded-[32px] gap-[12px]'>
-          <img src="/42_logo.svg" alt="head" className='w-[24px] h-[24px] object-contain' />
-          <span className='font-normal text-[16px] text-white'>ENTER PINGPONG</span>
+      <button type='button' className='flex items-center h-fit md:py-4 py-2 md:px-6 px-3 bg-[#25618b] rounded-[32px] md:gap-[12px] gap-[8px]'>
+          <img src="/42_logo.svg" alt="head" className='md:w-[24px] md:h-[24px] h-[10px] w-[10px] object-contain' />
+          <span className='font-normal md:text-[16px] text-[8px] text-white'>ENTER PINGPONG</span>
         </button>
     </div>
   </motion.nav>
