@@ -21,8 +21,8 @@
     "db:dev:rm": "docker compose rm dev-db -s -f -v",
     "db:dev:up": "docker compose up dev-db -d",
     "db:dev:restart": "npm run db:dev:rm && npm run db:dev:up && npm run prisma:dev:deploy && npm run prisma studio",
-    "prisma:dev:deploy": "prisma migrate deploy",
-    "prisma:dev:studio": "prisma studio"
+    "prisma:dev:deploy": "npx prisma migrate deploy",
+    "prisma:dev:studio": "npx prisma studio"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",

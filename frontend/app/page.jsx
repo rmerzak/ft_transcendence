@@ -1,11 +1,12 @@
 
-import Navbar from "./ui/landingPage/Navbar";
-import Hero from "./ui/landingPage/sections/Hero";
+
 import About from "./ui/landingPage/sections/About";
 import Team from "./ui/landingPage/sections/Team";
 import GetStarted from "./ui/landingPage/sections/GetStarted";
 import World from "./ui/landingPage/sections/World";
 import Footer from "./ui/landingPage/Footer";
+import Navbar from "./ui/landingPage/Navbar";
+import Hero from "./ui/landingPage/sections/Hero";
 const Homepage = () => {
   return (
     <div className="bg-gray-900 overflow-hidden">

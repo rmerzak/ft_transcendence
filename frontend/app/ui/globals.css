@@ -33,9 +33,13 @@ radial-gradient(at 0% 100%, hsla(5,88%,55%,1) 0px, transparent 50%);
 }
 
 .login-gradient {
-    background: linear-gradient(238deg, rgb(255, 0, 153) 0%, rgb(59, 0, 135) 100%), linear-gradient(300deg, rgb(27, 255, 0) 0%, rgb(66, 0, 255) 100%), linear-gradient(238deg, rgb(255, 255, 255) 50%, rgb(0, 243, 255) 100%), radial-gradient(100% 163% at 0% 100%, rgb(0, 255, 71) 0%, rgb(0, 74, 184) 50%, rgb(255, 0, 0) 100%), radial-gradient(100% 225% at 0% 100%, rgb(255, 0, 0) 0%, rgb(255, 0, 0) 100%), radial-gradient(100% 140% at 100% 0%, rgb(216, 0, 255) 0%, rgb(0, 224, 255) 50%, rgb(0, 19, 186) 100%);
+    background: 
+        url('/background.jpg'); /* Replace 'your-image.jpg' with the path to your image file */
+    
     background-blend-mode: overlay, color-burn, multiply, difference, difference, normal;
+    background-size: cover; /* Adjust the size to cover the entire element */
 }
+
 
 .gradient-02 {
     position: absolute;
