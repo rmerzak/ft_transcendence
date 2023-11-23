@@ -16,3 +16,4 @@ const SideBarItem = ({icon,text,active,alert, number}) => {
   }
   
 export default SideBarItem
+
