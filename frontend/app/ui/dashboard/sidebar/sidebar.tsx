@@ -10,23 +10,22 @@ import { usePathname } from 'next/navigation';
 
 const SidebarContext = createContext();
 const Sidebar = ({children}) => {
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(true);
     return (
-      <aside className='h-screen'>
-        <nav className='h-full flex flex-col  border-r shadow-sm'>
-          <div className='p-4 pb-2 flex justify-between items-center'>
-            <div className='flex items-center'>
-            <img src="/pingsvg.svg" alt="42" className={`overflow-hidden transition-all ${expanded ? "w-10" : "w-0" }`} />
-            <span className={`text-white font-bold ${expanded ? "w-10" : "invisible" }`}>PingPong</span>
+      <aside className={`h-screen shadow-xl bg-fuchsia-900/50 ${expanded ? "w-fill" : "md:w-[90px] w-[60px]"}` }>
+        <nav className={`h-full w-fill flex flex-col  `}>
+            <div className='flex items-center justify-between mt-8 mb-32 scroll-pl-6 '>
+              <img src="/pingsvg.svg" alt="42" className={`overflow-hidden transition-all ${expanded ? "w-10" : "w-0" }`} />
+              <span className={`text-white font-bold ${expanded ? "w-20" : "hidden" }`}>PingPong</span>
+              <div onClick={() => setExpanded(curr => !curr)} className='p-1 rounded-lg  bg-gray-50 hover:bg-slate-100 cursor-pointer'>
+                {expanded ? <ChevronFirst size={20}/> : <ChevronLast size={20}/>}
+              </div>
             </div>
-          <button onClick={() => setExpanded(curr => !curr)} className='p-1.5 rounded-lg bg-gray-50 hover:bg-slate-100'>
-            {expanded ? <ChevronFirst/> : <ChevronLast/>}
-          </button>
-          </div>
+
           <SidebarContext.Provider value={{ expanded }}>
-          <ul className="flex-1 px-3">{children}</ul>
+          <ul className="flex-col px-3">{children}</ul>
         </SidebarContext.Provider>
-          <div className='border-t flex p-3'>
+          {/* <div className='border-t flex p-3'>
             <img src="/profile1.png" alt="foto" className="w-10 h-10 rounded-md"/>
             <div className={` flex justify-between items-center overflow-hidden transition-all ${expanded ? "w-52 ml-3" : "w-0"}`}>
               <div className='leading-4 text-white'>
@@ -36,7 +35,7 @@ const Sidebar = ({children}) => {
               <BellDot color="#ffff" size={20}/>
               <MoreVertical color="#ffff" size={20}/>
             </div>
-          </div>
+          </div> */}
         </nav>
       </aside>
     )

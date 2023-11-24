@@ -116,3 +116,18 @@ export const navItems: SideNaveItems[] = [
     icon: <Icon icon="lucide:home" width="24" height="24" />,
   }
 ]
+
+export const Menu = [
+  {
+    name: 'Profile',
+    url: '/dashboard/profile',
+  },
+  {
+    name: 'Settings',
+    url: '/dashboard/profile',
+  },
+  {
+    name: 'Logout',
+    url: '/dashboard/profile',
+  },
+];
