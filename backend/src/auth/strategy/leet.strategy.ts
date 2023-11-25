@@ -7,21 +7,25 @@ import { AuthService } from "../auth.service";
 
 @Injectable()
 export class LeetStrategy extends PassportStrategy(Strategy, '42') {
-    constructor(config: ConfigService, private prisma:PrismaService, private authService: AuthService) {
-        super({
-            clientID: config.get('UID'),
-            clientSecret: config.get('SECRET'),
-            callbackURL: config.get('LEET_URL'),
-        })
+  constructor(config: ConfigService, private prisma: PrismaService, private authService: AuthService) {
+    super({
+      clientID: config.get('UID'),
+      clientSecret: config.get('SECRET'),
+      callbackURL: config.get('LEET_URL'),
+    })
+  }
+  async validate(accessToken: string, refreshToken: string, profile: Profile) {
+    try {
+      let user = await this.authService.signup({
+        email: profile.emails[0].value,
+        image: profile._json.image.link,
+        firstname: profile._json.first_name,
+        lastname: profile._json.last_name,
+        username: profile._json.login,
+      });
+      return user;
+    } catch (error) {
+      throw error;
     }
-    async validate(accessToken: string, refreshToken: string, profile: Profile) {
-        let user = await this.prisma.user.findUnique( {where: {email:profile.emails[0].value}})
-        if (!user) {
-          await this.authService.signup({
-            email: profile.emails[0].value,
-            password: 'exemple',
-          });
-        }
-        return user || null;
-      }
+  }
 }

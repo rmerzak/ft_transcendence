@@ -1,36 +1,51 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AuthDto } from './Dto';
 import * as argon from 'argon2'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from '@nestjs/config';
+import { Prisma } from '@prisma/client';
 @Injectable()
 export class AuthService {
     constructor(private prisma: PrismaService,  private jwt:JwtService, private config: ConfigService) {
         
     }
-    async signup(dto: AuthDto) {
-        const hash = await argon.hash(dto.password)
+    async signup(dto: AuthDto): Promise<any> {
         try {
-            const user = await this.prisma.user.create({
+            let user = await this.prisma.user.findUnique({ where: { email: dto.email } });
+            if (user)
+                return user;
+            user = await this.prisma.user.create({
                 data:{
                     email: dto.email,
-                    hash,
+                    image: dto.image,
+                    firstname: dto.firstname,
+                    lastname: dto.lastname,
+                    username: dto.username,
                 }
             })
-            return this.signToken((await user).id, (await user).email);
+            return user;
         } catch (error) {
-            if (error instanceof PrismaClientKnownRequestError) {
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
                 if (error.code === 'P2002') {
-                    throw new ForbiddenException('Credential taken')
+                  throw new BadRequestException('User with this email already exists.');
+                } else {
+                  throw new InternalServerErrorException('Error during user signup');
                 }
-            }
-            throw error;
-            
+              }
+              throw new InternalServerErrorException('Error during user signup');
         }
 
     }
+
+
+
+
+
+
+
+    
     async signin(dto: AuthDto) {
         const user = this.prisma.user.findUnique({
             where:{
@@ -40,10 +55,6 @@ export class AuthService {
         if(!user) {
             throw new ForbiddenException('Credentiel incorrect')
         }
-        const match = await argon.verify((await user).hash, dto.password);
-
-        if (!match)
-            throw new ForbiddenException('Password do not Match')
         return this.signToken((await user).id, (await user).email);
     }
 
@@ -54,7 +65,7 @@ export class AuthService {
         }
         const secret = this.config.get('JWT_SERCRET')
         const token =  await this.jwt.signAsync(payload, {
-            expiresIn: '150m',
+            expiresIn: '190m',
             secret: secret,
         })
         return {access_token: token,};

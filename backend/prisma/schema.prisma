@@ -10,15 +10,50 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// model User {
+//   id Int @id @default(autoincrement())
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+
+//   email String @unique
+//   hash String
+
+//   firstname String?
+//   lastname String?
+//   username String?
+// }
 model User {
+  // initial user data
   id Int @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // personal user data
   email String @unique
-  hash String
+  firstname String
+  lastname String
+  username String
+  image String
 
-  firstname String?
-  lastname String?
-  username String?
+  // verification user authentification
+  isVerified Boolean @default(false)
+
+  // Game user data
+  gamewins Int @default(0)
+  gameplays Int @default(0)
+  gamefails Int @default(0)
+  gamepoints Int @default(0)
+  
+  games Game[]
+}
+
+model Game {
+  gameId String @id @map("game-id")
+  userPlayerId Int
+  userOpponnentId Int
+  createdAt DateTime @default(now())
+  score Int
+  status String
+  dateStart DateTime
+  user User @relation(fields: [userPlayerId], references: [id])
 }
