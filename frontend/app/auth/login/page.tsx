@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 const Login = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2 login-gradient">
@@ -13,10 +15,10 @@ const Login = () => {
             {/* <a href="#" className="border-2 border-white rounded-full px-6 py-2 inline-block font-semibold hover:bg-white hover:text-green-500">
               Login
               </a> */}
-            <a href={`${process.env.SERVER_BACKEND}/auth/42`}className='flex justify-center items-center md:h-fit h-[30px] md:w-[150px] w-[100px] md:py-4 py-2 md:px-3 px-3 bg-[#25618b]  rounded-[32px] md:gap-[12px] gap-[8px]'>
+            <Link href={`${process.env.SERVER_BACKEND}/auth/42`}className='flex justify-center items-center md:h-fit h-[30px] md:w-[150px] w-[100px] md:py-4 py-2 md:px-3 px-3 bg-[#25618b]  rounded-[32px] md:gap-[12px] gap-[8px]'>
               <img src="/42_logo.svg" alt="head" className='md:w-[24px] md:h-[24px] h-[20px] w-[20px] object-contain' />
               <span className='font-normal md:text-[16px] text-[10px] text-white'>LOGIN </span>
-            </a>
+            </Link>
           </div>
         </div>
       </div>

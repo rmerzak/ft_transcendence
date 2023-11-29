@@ -11,6 +11,7 @@
   "dependencies": {
     "@iconify/react": "^4.1.1",
     "@next/eslint-plugin-next": "14.0.1",
+    "axios": "^1.6.2",
     "clx": "^1.0.0",
     "framer-motion": "^10.16.5",
     "lucide-react": "^0.292.0",

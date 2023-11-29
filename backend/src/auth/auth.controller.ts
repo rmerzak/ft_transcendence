@@ -1,13 +1,16 @@
-import { Controller, Post, Body,Request, UseGuards, Get, Req, Res } from "@nestjs/common";
+import { Controller, Post, Body,Request, UseGuards, Get, Req, Res, SetMetadata, UnauthorizedException } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { AuthDto } from "./Dto";
 import { LeetStrategy } from "./strategy";
 import { LeetGuard } from "./guard/leet.guard";
 import { AuthGuard } from "@nestjs/passport";
 import { Response } from "express";
+import { JwtService } from "@nestjs/jwt";
+import { ConfigService } from "@nestjs/config";
+import { JwtGuard } from "./guard";
 @Controller('auth')
 export class AuthController{
-    constructor(private authService : AuthService){}
+    constructor(private authService : AuthService, private jwtService:JwtService, private config:ConfigService){}
     @Post('signup')
     signup(@Body() dto: AuthDto) {
         // console.log(dto)
@@ -27,16 +30,23 @@ export class AuthController{
     @Get('42-redirect')
     async ftAuthCallback(@Request() req, @Res() res : Response) {
         if (req.user.isVerified) {
-            const token = await this.authService.signToken(req.user.id, req.user.email);
-            console.log(token)
-            res.cookie('JWT', token);
-            res.redirect('http://localhost:8080/dashboard/profile');
+            const {accessToken} = await this.authService.signToken(req.user.id, req.user.email);
+            console.log(accessToken)
+            res.cookie('JWT', accessToken);
+            res.redirect('http://127.0.0.1:8080/dashboard/profile');
         } else {
-            const token = await this.authService.signToken(req.user.id, req.user.email);
-            console.log(token)
-            res.cookie('JWT', token);
-            res.redirect('http://localhost:8080/auth/verify');
+            const {accessToken} = await this.authService.signToken(req.user.id, req.user.email);
+            console.log(accessToken)
+            res.cookie('JWT', accessToken);
+            res.redirect('http://127.0.0.1:8080/auth/verify');
         }
-        return this.authService.signin({email:"rmerzak@student.1337.ma"});
+    }
+
+    @UseGuards(JwtGuard)
+    @Get('verify')
+    async preAuthData(@Req() req) {
+        console.log(req);
+        
+        return req.user ;
     }
 }
