@@ -1,4 +1,4 @@
-import { Controller, Post, Body,Request, UseGuards, Get, Req, Res, SetMetadata, UnauthorizedException } from "@nestjs/common";
+import { Controller, Post, Body, Request, UseGuards, Get, Req, Res, SetMetadata, UnauthorizedException } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { AuthDto } from "./Dto";
 import { LeetStrategy } from "./strategy";
@@ -9,8 +9,8 @@ import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
 import { JwtGuard } from "./guard";
 @Controller('auth')
-export class AuthController{
-    constructor(private authService : AuthService, private jwtService:JwtService, private config:ConfigService){}
+export class AuthController {
+    constructor(private authService: AuthService, private jwtService: JwtService, private config: ConfigService) { }
     @Post('signup')
     signup(@Body() dto: AuthDto) {
         // console.log(dto)
@@ -28,15 +28,14 @@ export class AuthController{
     }
     @UseGuards(LeetGuard)
     @Get('42-redirect')
-    async ftAuthCallback(@Request() req, @Res() res : Response) {
+    async ftAuthCallback(@Request() req, @Res() res: Response) {
         if (req.user.isVerified) {
-            const {accessToken} = await this.authService.signToken(req.user.id, req.user.email);
-            console.log(accessToken)
+            const { accessToken } = await this.authService.signToken(req.user.id, req.user.email);
             res.cookie('JWT', accessToken);
             res.redirect('http://127.0.0.1:8080/dashboard/profile');
         } else {
-            const {accessToken} = await this.authService.signToken(req.user.id, req.user.email);
-            console.log(accessToken)
+            const { accessToken } = await this.authService.signToken(req.user.id, req.user.email);
+
             res.cookie('JWT', accessToken);
             res.redirect('http://127.0.0.1:8080/auth/verify');
         }
@@ -45,8 +44,9 @@ export class AuthController{
     @UseGuards(JwtGuard)
     @Get('verify')
     async preAuthData(@Req() req) {
-        console.log(req);
-        
-        return req.user ;
+        console.log("preAuthData")
+        //console.log(req);
+
+        return req.user;
     }
 }

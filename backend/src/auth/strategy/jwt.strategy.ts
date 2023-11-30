@@ -14,6 +14,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
               ]),
             ignoreExpiration: false,
             secretOrKey: config.get('JWT_SERCRET'),
+            //passReqToCallback: true,
         })
     }
     async validate(payload: {sub: number; email: string;}) {
@@ -21,6 +22,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         return user;
     }
     private static extractJWT(req: RequestType): string | null {
+      //console.log(req)
         if (
           req.cookies &&
           'JWT' in req.cookies &&
