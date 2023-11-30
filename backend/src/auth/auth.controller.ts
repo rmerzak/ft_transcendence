@@ -31,21 +31,24 @@ export class AuthController {
     async ftAuthCallback(@Request() req, @Res() res: Response) {
         if (req.user.isVerified) {
             const { accessToken } = await this.authService.signToken(req.user.id, req.user.email);
+            // res.cookie('JWT', accessToken, { httpOnly: true, secure: true, sameSite: 'none' });
             res.cookie('JWT', accessToken);
-            res.redirect('http://127.0.0.1:8080/dashboard/profile');
+            res.redirect('http://localhost:8080/dashboard/profile');
         } else {
             const { accessToken } = await this.authService.signToken(req.user.id, req.user.email);
 
+            // res.cookie('JWT', accessToken, { httpOnly: true, secure: true, sameSite: 'none' });
             res.cookie('JWT', accessToken);
-            res.redirect('http://127.0.0.1:8080/auth/verify');
+            res.redirect('http://localhost:8080/auth/verify');
         }
     }
 
     @UseGuards(JwtGuard)
     @Get('verify')
     async preAuthData(@Req() req) {
+        console.log(req)
         console.log("preAuthData")
-        //console.log(req);
+        //console.log(req.user);
 
         return req.user;
     }

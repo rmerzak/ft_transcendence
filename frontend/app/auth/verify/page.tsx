@@ -1,18 +1,19 @@
+'use cli'
 import axios from "axios";
 import { cookies } from "next/headers";
-async function getAuthData() {
-  const cookie = cookies();
-  const response = await axios.get('http://localhost:3000/auth/verify', {
-    withCredentials: true,
-    headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-      Cookie: cookies()
+const api = axios.create({
+  headers: {
+  Cookie: cookies()
         .getAll()
         .map((cookie) => `${cookie.name}=${cookie.value}`)
         .join('; '),
     },
-  });
+});
+async function getAuthData() {
+  const cookie = cookies();
+  const response = await api.get('http://localhost:3000/auth/verify'
+
+  );
   console.log(response);
   // if (response.ok) {
   //   const res = await response.json();

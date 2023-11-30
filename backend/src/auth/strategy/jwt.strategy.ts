@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Req } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
@@ -21,8 +21,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         const user = await this.prisma.user.findUnique({where:{id:payload.sub}})
         return user;
     }
-    private static extractJWT(req: RequestType): string | null {
-      //console.log(req)
+    private static extractJWT(req): string | null {
+      console.log(req)
         if (
           req.cookies &&
           'JWT' in req.cookies &&
