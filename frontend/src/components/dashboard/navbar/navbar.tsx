@@ -2,7 +2,7 @@
 import { BellDot, MoreVertical } from "lucide-react"
 import { useRef, useState } from "react";
 import Link from "next/link"
-import { Menu } from "../../../constants";
+import { Menu } from "@/constants";
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   // const Menu = ["Profile", "Settings", "Logout"]

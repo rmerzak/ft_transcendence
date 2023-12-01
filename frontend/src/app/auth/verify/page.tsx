@@ -17,23 +17,21 @@ import Cookies from "js-cookie";
 import { PlusCircle, User, } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
 import axios from "axios";
-import PreAuthForm from "../../ui/auth/PreAuthForm";
+import PreAuthForm from "@/components/auth/PreAuthForm";
 const Verify = () => {
   const [user, setUser] = useState("");
   
   
   
   const jwtToken : any = Cookies.get("accesstoken");
-  console.log(Cookies.get("accesstoken"));
+  console.log("dd",jwtToken);
   useEffect(() => {
     async function getUserData() {
       try {
         const response = await axios.get(
           `http://localhost:3000/auth/verify`,
           {
-            headers: {
-              Authorization: `Bearer ${jwtToken}`,
-            },
+            withCredentials: true,
           }
         );
         setUser(response.data);

@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import styles from "../..";
-import { staggerContainer } from "../../../utils/motion";
+import { staggerContainer } from "@/utils/motion";
 import { TitleText, TypingText } from '../CustomTexts'
 import TeamCard from "../TeamCard";
 import { team } from "../../../constants";

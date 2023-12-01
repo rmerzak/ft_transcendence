@@ -1,13 +1,12 @@
+import Footer from "@/components/landingPage/Footer";
+import Navbar from "@/components/landingPage/Navbar";
+import About from "@/components/landingPage/sections/About";
+import GetStarted from "@/components/landingPage/sections/GetStarted";
+import Hero from "@/components/landingPage/sections/Hero";
+import Team from "@/components/landingPage/sections/Team";
+import World from "@/components/landingPage/sections/World";
 
-
-import About from "./ui/landingPage/sections/About";
-import Team from "./ui/landingPage/sections/Team";
-import GetStarted from "./ui/landingPage/sections/GetStarted";
-import World from "./ui/landingPage/sections/World";
-import Footer from "./ui/landingPage/Footer";
-import Navbar from "./ui/landingPage/Navbar";
-import Hero from "./ui/landingPage/sections/Hero";
-const Homepage = () => {
+export default function Home() {
   return (
     <div className="bg-gray-900 overflow-hidden">
       <Navbar />
@@ -29,5 +28,3 @@ const Homepage = () => {
     </div>
   )
 }
-
-export default Homepage

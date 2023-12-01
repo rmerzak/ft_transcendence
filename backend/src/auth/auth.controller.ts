@@ -32,13 +32,17 @@ export class AuthController {
         if (req.user['isVerified']) {
             const { accessToken } = await this.authService.signToken(req.user['id'], req.user['email']);
             // res.cookie('JWT', accessToken, { httpOnly: true, secure: true, sameSite: 'none' });
-            res.cookie('accesstoken', accessToken);
+            res.cookie('accesstoken', accessToken, {
+                httpOnly: true,
+            });
             res.redirect('http://localhost:8080/dashboard/profile');
         } else {
             const { accessToken } = await this.authService.signToken(req.user['id'], req.user['email']);
 
             // res.cookie('JWT', accessToken, { httpOnly: true, secure: true, sameSite: 'none' });
-            res.cookie('accesstoken', accessToken);
+            res.cookie('accesstoken', accessToken, {
+                httpOnly: true,
+            });
             //res.cookie('JWT', accessToken);
             res.redirect('http://localhost:8080/auth/verify');
         }

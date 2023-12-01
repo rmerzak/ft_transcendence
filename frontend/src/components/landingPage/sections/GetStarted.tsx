@@ -3,8 +3,8 @@ import { motion } from "framer-motion";
 import { TypingText, TitleText } from "../CustomTexts";
 import StartSteps from "../StartSteps";
 import styles from "../..";
-import { fadeIn, staggerContainer, Variants } from "../../../utils/motion";
-import { startingFeatures } from "../../../constants/index";
+import { fadeIn, staggerContainer, Variants } from "@/utils/motion";
+import { startingFeatures } from "@/constants/index";
 const GetStarted = () => (
   <section className={`${styles.paddings} relative z-10`}>
     <motion.div

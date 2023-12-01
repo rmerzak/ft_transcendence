@@ -3,17 +3,19 @@ import { PlusCircle, User, } from "lucide-react";
 import { useRef, useState } from "react";
 import axios from "axios";
 
-const PreAuthForm = ({user, img}) => {
+const PreAuthForm = ({user, img} : any) => {
     // console.log(img);
-    const inputRef = useRef(null);
+    const inputRef = useRef<HTMLInputElement>(null); // Add type assertion for inputRef
     const [image, setImage] = useState(img);
     const handleImageClick = () => {
-      inputRef.current.click();
-    }
-    const handleImageChange = (event) => {
-      const file = event.target.files[0];
-      setImage(URL.createObjectURL(file))
-    }
+      inputRef.current!.click(); // Use non-null assertion operator
+    };
+    const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => { // Add type annotation for event
+      const file = event.target.files?.[0]; // Add null check for event.target.files
+      if (file) {
+        setImage(URL.createObjectURL(file));
+      }
+    };
       return (
         <form action="" className="bg-[#311251] drop-shadow-2xl w-[380px] md:w-[500px] bg-opacity-50 pb-10 rounded-2xl  flex items-center justify-center flex-col max-w-4xl">
           <div onClick={handleImageClick} className="w-[150px]  h-[150px] rounded-full">
