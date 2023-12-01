@@ -1,10 +1,10 @@
-import { Controller, Post, Body, Request, UseGuards, Get, Req, Res, SetMetadata, UnauthorizedException } from "@nestjs/common";
+import { Controller, Post, Body,  UseGuards, Get, Req, Res, SetMetadata, UnauthorizedException } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { AuthDto } from "./Dto";
 import { LeetStrategy } from "./strategy";
 import { LeetGuard } from "./guard/leet.guard";
 import { AuthGuard } from "@nestjs/passport";
-import { Response } from "express";
+import { Request, Response } from "express";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
 import { JwtGuard } from "./guard";
@@ -23,22 +23,22 @@ export class AuthController {
     }
     @UseGuards(LeetGuard)
     @Get('42')
-    leet(@Request() req) {
+    leet(@Req() req: Request) {
         return;
     }
     @UseGuards(LeetGuard)
     @Get('42-redirect')
-    async ftAuthCallback(@Request() req, @Res() res: Response) {
-        if (req.user.isVerified) {
-            const { accessToken } = await this.authService.signToken(req.user.id, req.user.email);
+    async ftAuthCallback(@Req() req: Request, @Res() res: Response) {
+        if (req.user['isVerified']) {
+            const { accessToken } = await this.authService.signToken(req.user['id'], req.user['email']);
             // res.cookie('JWT', accessToken, { httpOnly: true, secure: true, sameSite: 'none' });
-            res.cookie('JWT', accessToken, { httpOnly: true,maxAge: 1000 * 60 * 60 * 24 * 7,expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7)});
+            res.cookie('JWT', accessToken, { httpOnly: true,});
             res.redirect('http://localhost:8080/dashboard/profile');
         } else {
-            const { accessToken } = await this.authService.signToken(req.user.id, req.user.email);
+            const { accessToken } = await this.authService.signToken(req.user['id'], req.user['email']);
 
             // res.cookie('JWT', accessToken, { httpOnly: true, secure: true, sameSite: 'none' });
-            res.cookie('JWT', accessToken, { httpOnly: true,maxAge: 1000 * 60 * 60 * 24 * 7,expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7)});
+            res.cookie('JWT', accessToken, { httpOnly: true});
             //res.cookie('JWT', accessToken);
             res.redirect('http://localhost:8080/auth/verify');
         }
@@ -46,8 +46,8 @@ export class AuthController {
 
     @UseGuards(JwtGuard)
     @Get('verify')
-    async preAuthData(@Req() req) {
-        console.log(req)
+    async preAuthData(@Req() req: Request) {
+        //console.log(req)
         console.log("preAuthData")
         //console.log(req.user);
 
