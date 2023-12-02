@@ -1,4 +1,4 @@
-import { Controller, Post, Body,  UseGuards, Get, Req, Res, SetMetadata, UnauthorizedException } from "@nestjs/common";
+import { Controller, Post, Body,  UseGuards, Get, Req, Res, SetMetadata, UnauthorizedException, UseInterceptors, BadRequestException } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { AuthDto } from "./Dto";
 import { LeetStrategy } from "./strategy";
@@ -8,9 +8,13 @@ import { Request, Response } from "express";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
 import { JwtGuard } from "./guard";
+import { FileInterceptor } from "@nestjs/platform-express";
+import { UploadedFile } from "@nestjs/common";
 @Controller('auth')
 export class AuthController {
-    constructor(private authService: AuthService, private jwtService: JwtService, private config: ConfigService) { }
+    constructor(private authService: AuthService, private jwtService: JwtService, private config: ConfigService ) {
+
+     }
     @Post('signup')
     signup(@Body() dto: AuthDto) {
         // console.log(dto)
@@ -60,4 +64,33 @@ export class AuthController {
         //console.log(req.body);
         return await this.authService.finishAuth(req.body, req.user['email']);
     }
+    // @Post('upload')
+    // @UseInterceptors(FileInterceptor('image'))
+    // async uploadFile(@UploadedFile() file: Express.Multer.File) {
+    //     try {
+    //         const result = await this.authService.uploadImage(file.path);
+    //         return result;
+    //     } catch (error) {
+    //         console.log("error upload file",error);
+    //         throw new Error(error);
+    //     }
+
+    // }
+    @Post('upload')
+@UseInterceptors(FileInterceptor('image'))
+async uploadFile(@UploadedFile() file: Express.Multer.File) {
+    try {
+        console.log("file :",file)
+        if (!file) {
+            throw new BadRequestException('Missing required parameter - file');
+        }
+        console.log(" i m here 1");
+        const result = await this.authService.uploadImage(file);
+        console.log(" i m here 2");
+        return result;
+    } catch (error) {
+        console.log("zzerror upload file", error);
+        throw new Error(error);
+    }
+}
 }
