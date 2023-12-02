@@ -51,10 +51,13 @@ export class AuthController {
     @UseGuards(JwtGuard)
     @Get('verify')
     async preAuthData(@Req() req: Request) {
-        //console.log(req)
-        console.log("preAuthData")
-        //console.log(req.user);
-
         return req.user;
+    }
+
+    @UseGuards(JwtGuard)
+    @Post('finish-auth')
+    async FinishAuth(@Req() req: Request, @Res() res: Response) {
+        //console.log(req.body);
+        return await this.authService.finishAuth(req.body, req.user['email']);
     }
 }

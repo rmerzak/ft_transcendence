@@ -1,6 +1,6 @@
 "use client";
 import { PlusCircle, User, } from "lucide-react";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, FormEvent } from "react";
 import { UsersAPIService } from "../../api/users/users.api";
 const PreAuthForm = () => {
   const [user, setUser] = useState("");
@@ -13,18 +13,19 @@ const PreAuthForm = () => {
   };
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => { 
     const file = event.target.files?.[0];
+    console.log(file);
     if (file) {
       setImage(URL.createObjectURL(file));
     }
   };
   useEffect(() => {
-    UsersAPIService.getVerify().then((res) => { setUser(res.data); setImage(res.data.image); }).catch((err) => { console.log(err) });
+      UsersAPIService.getVerify().then((res) => { setUser(res.data); setImage(res.data.image); }).catch((err) => { console.log(err) });
   }, []);
 
-  function handleSubmit(event: any) {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log(newUsername,image, twoFa);
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+     event.preventDefault();
+    // const data = new FormData(event.currentTarget);
+    UsersAPIService.postFinishAuth({newUsername, image, twoFa}).then((res) => { console.log(res); }).catch((err) => { console.log(err) });
   }
   return (
     <form onSubmit={handleSubmit} className="bg-[#311251] drop-shadow-2xl w-[380px] md:w-[500px] bg-opacity-50 pb-10 rounded-2xl  flex items-center justify-center flex-col max-w-4xl">
