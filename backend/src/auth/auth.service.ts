@@ -82,7 +82,7 @@ export class AuthService {
                 },
                 data: {
                     isVerified: data.twoFa === 'true' ? true : false,
-                    username: data.username,
+                    username: data.username.lenght > 0 ? data.username : user.username,
                     image: data.image,
                 }
             });

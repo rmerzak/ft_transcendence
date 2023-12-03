@@ -91,4 +91,15 @@ async uploadFile(@UploadedFile() file: Express.Multer.File) {
         throw new Error(error);
     }
 }
+    @UseGuards(JwtGuard)
+    @Get('logout')
+    async logout(@Req() req: Request, @Res() res: Response) {
+        try {
+            res.clearCookie('accesstoken', { httpOnly: true });
+            res.status(200).json({ message: 'Logout successful' });
+        } catch (error) {
+            console.error('Logout error:', error);
+            res.status(500).json({ message: 'Logout failed', error: error.message });
+        }
+    }
 }

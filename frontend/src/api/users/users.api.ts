@@ -28,6 +28,9 @@ class UsersService {
     async postFinishAuth(data: any): Promise<any> {
         return await this.axiosCall<any>({ url: process.env.API_USER_FINISH_AUTH, method: "POST", data });
     }
+    async logout(): Promise<any> {
+        return await this.axiosCall<any>({ url: process.env.API_USER_LOGOUT, method: "GET" });
+    }
 
 }
 

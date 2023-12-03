@@ -30,6 +30,7 @@ const nextConfig = {
       API_USER_VERIFY: process.env.USER_VERIFY,
       API_USER_FINISH_AUTH: process.env.USER_FINISH_AUTH,
       API_Cloudinary_URL: process.env.CLOUDINARY_URL,
+      API_USER_LOGOUT: process.env.USER_API_USER_LOGOUT,
 
     },
     images: {
