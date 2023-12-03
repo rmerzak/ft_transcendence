@@ -61,7 +61,7 @@ export class AuthController {
     @UseGuards(JwtGuard)
     @Post('finish-auth')
     async FinishAuth(@Req() req: Request, @Res() res: Response) {
-        //console.log(req.body);
+        console.log(req.body);
         return await this.authService.finishAuth(req.body, req.user['email']);
     }
     // @Post('upload')
@@ -84,9 +84,7 @@ async uploadFile(@UploadedFile() file: Express.Multer.File) {
         if (!file) {
             throw new BadRequestException('Missing required parameter - file');
         }
-        console.log(" i m here 1");
         const result = await this.authService.uploadImage(file);
-        console.log(" i m here 2");
         return result;
     } catch (error) {
         console.log("zzerror upload file", error);

@@ -29,7 +29,12 @@ const nextConfig = {
       API_BASE_URL: process.env.SERVER_BACKEND,
       API_USER_VERIFY: process.env.USER_VERIFY,
       API_USER_FINISH_AUTH: process.env.USER_FINISH_AUTH,
+      API_Cloudinary_URL: process.env.CLOUDINARY_URL,
+
     },
+    images: {
+      domains: ['res.cloudinary.com']
+    }
   };
   
   module.exports = nextConfig;

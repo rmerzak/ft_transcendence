@@ -75,16 +75,17 @@ export class AuthService {
             const user = await this.prisma.user.findUnique({ where: { email: email } });
             if (!user)
                 throw new BadRequestException('User not found');
+            console.log(data)
             return await this.prisma.user.update({
                 where: {
                     id: user.id
                 },
                 data: {
-                    isVerified: data.twoFa,
-                    username: data.newUsername,
+                    isVerified: data.twoFa === 'true' ? true : false,
+                    username: data.username,
                     image: data.image,
                 }
-            }) && console.log(user);
+            });
         } catch (error) {
             console.log(error);
             throw new InternalServerErrorException('Error during user Update');
