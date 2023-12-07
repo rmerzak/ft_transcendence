@@ -1,0 +1,12 @@
+{
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  
+  "name": "ft_transcendence",
+  "scripts": {
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
+    "backend": "cd backend && npm run start:dev",
+    "frontend": "cd frontend && npm run dev"
+  }
+}
