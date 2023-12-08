@@ -82,8 +82,8 @@ export class AuthService {
                 },
                 data: {
                     isVerified: data.twoFa === 'true' ? true : false,
-                    username: data.username.lenght > 0 ? data.username : user.username,
-                    image: data.image,
+                    username: data.username.length > 0 ? data.username : user.username,
+                    image: data.image.length > 0 ? data.image : user.image,
                 }
             });
         } catch (error) {

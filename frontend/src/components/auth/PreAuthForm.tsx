@@ -5,9 +5,9 @@ import { UsersAPIService } from "../../api/users/users.api";
 import { CloudinaryAPIService } from "@/api/cloudinary/cloudinary.api";
 
 const PreAuthForm = () => {
-  const [user, setUser] = useState("");
+  const [user, setUser] = useState<any>("");
   const inputRef = useRef<HTMLInputElement>(null);
-  const [image, setImage] = useState("");
+  const [image, setImage] = useState<string>("");
   const [fil, setFile] = useState<File>();
   //const [checked, setChecked] = useState<boolean>(user.isVerified);
   
@@ -27,7 +27,7 @@ const PreAuthForm = () => {
     UsersAPIService.getVerify().then((res) => { setUser(res.data); setImage(res.data.image); }).catch((err) => { console.log(err) });
   }, []);
 
-  let ii = user.image;
+  let ii = user?.image;
   async function handleSubmit(event:any) {
     event.preventDefault();
     try {
@@ -39,9 +39,9 @@ const PreAuthForm = () => {
         ii = await CloudinaryAPIService.ImageName(formData);
       }
       const UserData = new FormData();
+      UserData.append("image", ii);
       UserData.append("username", newUsername);
       UserData.append("twoFa", twoFa.toString());
-      UserData.append("image", ii);
       UsersAPIService.postFinishAuth(UserData).then((res) => { console.log(res); }).catch((err) => { console.log(err) });
     } catch (error) {
       console.log(error);
@@ -69,7 +69,7 @@ const PreAuthForm = () => {
 
       <div className="flex items-center bg-white mt-6 border-[0.063rem] rounded-[1rem] overflow-hidden relative ">
         <label htmlFor="name"></label>
-        <input type="text" onChange={(e) => { setUsername(e.target.value); }} id="name" placeholder={`default: ${user.username}`} className="w-[20.438rem] h-[2.75rem] pl-[1.063rem] leading-normal" />
+        <input type="text" onChange={(e) => { setUsername(e.target.value); }} id="name" placeholder={`default: ${user?.username}`} className="w-[20.438rem] h-[2.75rem] pl-[1.063rem] leading-normal" />
         <User className="absolute right-3" />
       </div>
 
