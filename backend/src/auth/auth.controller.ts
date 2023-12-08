@@ -1,4 +1,4 @@
-import { Controller, Post, Body,  UseGuards, Get, Req, Res, SetMetadata, UnauthorizedException, UseInterceptors, BadRequestException } from "@nestjs/common";
+import { Controller, Post, Body, UseGuards, Get, Req, Res, SetMetadata, UnauthorizedException, UseInterceptors, BadRequestException } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { AuthDto } from "./Dto";
 import { LeetStrategy } from "./strategy";
@@ -12,9 +12,9 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { UploadedFile } from "@nestjs/common";
 @Controller('auth')
 export class AuthController {
-    constructor(private authService: AuthService, private jwtService: JwtService, private config: ConfigService ) {
+    constructor(private authService: AuthService, private jwtService: JwtService, private config: ConfigService) {
 
-     }
+    }
     @Post('signup')
     signup(@Body() dto: AuthDto) {
         // console.log(dto)
@@ -61,7 +61,6 @@ export class AuthController {
     @UseGuards(JwtGuard)
     @Post('finish-auth')
     async FinishAuth(@Req() req: Request, @Res() res: Response) {
-        console.log(req.body);
         return await this.authService.finishAuth(req.body, req.user['email']);
     }
     // @Post('upload')
@@ -77,20 +76,20 @@ export class AuthController {
 
     // }
     @Post('upload')
-@UseInterceptors(FileInterceptor('image'))
-async uploadFile(@UploadedFile() file: Express.Multer.File) {
-    try {
-        console.log("file :",file)
-        if (!file) {
-            throw new BadRequestException('Missing required parameter - file');
+    @UseInterceptors(FileInterceptor('image'))
+    async uploadFile(@UploadedFile() file: Express.Multer.File) {
+        try {
+            console.log("file :", file)
+            if (!file) {
+                throw new BadRequestException('Missing required parameter - file');
+            }
+            const result = await this.authService.uploadImage(file);
+            return result;
+        } catch (error) {
+            console.log("zzerror upload file", error);
+            throw new Error(error);
         }
-        const result = await this.authService.uploadImage(file);
-        return result;
-    } catch (error) {
-        console.log("zzerror upload file", error);
-        throw new Error(error);
     }
-}
     @UseGuards(JwtGuard)
     @Get('logout')
     async logout(@Req() req: Request, @Res() res: Response) {
@@ -101,5 +100,10 @@ async uploadFile(@UploadedFile() file: Express.Multer.File) {
             console.error('Logout error:', error);
             res.status(500).json({ message: 'Logout failed', error: error.message });
         }
+    }
+    @UseGuards(JwtGuard)
+    @Get('validateToken')
+    async validateToken(): Promise<any> {
+        return true;
     }
 }

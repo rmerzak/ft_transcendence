@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, Body, ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AuthDto } from './Dto';
 import * as argon from 'argon2'
@@ -75,7 +75,6 @@ export class AuthService {
             const user = await this.prisma.user.findUnique({ where: { email: email } });
             if (!user)
                 throw new BadRequestException('User not found');
-            console.log(data)
             return await this.prisma.user.update({
                 where: {
                     id: user.id
@@ -108,4 +107,14 @@ export class AuthService {
             streamifier.createReadStream(file.buffer).pipe(uploadStream);
         });
     }
+    async validateAccessToken(accessToken: string): Promise<boolean> {
+        try {
+            console.log("accessToken", accessToken) 
+          const decoded = await this.jwt.verify(accessToken, this.config.get('JWT_SERCRET'));
+          return !!decoded;
+        } catch (error) {
+          console.error('Error validating token:', error);
+          return false;
+        }
+      }
 }
