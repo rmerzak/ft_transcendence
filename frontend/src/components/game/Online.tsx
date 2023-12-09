@@ -1,9 +1,8 @@
 'use client';
-import { Link } from 'lucide-react'
 import styles from '../../app/dashboard/game/page.module.css'
 import React, { useState } from 'react';
-import Image from 'next/image'
-import { CirclePicker } from 'react-color';
+import dynamic from 'next/dynamic';
+const CirclePicker = dynamic(() => import('react-color').then((mod) => mod.CirclePicker), { ssr: false });
 
 
 function Online() {
@@ -84,6 +83,10 @@ function Online() {
 
                   </div>
                 </div>
+
+                <button className={styles.play_button}>
+                  Play
+                </button>
 
             </div>
  

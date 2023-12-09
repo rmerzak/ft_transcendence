@@ -1,10 +1,20 @@
 'use client';
-import { Link } from 'lucide-react'
+import Link from 'next/link'
 import styles from '../../app/dashboard/game/page.module.css'
 import Image from 'next/image'
 
 
 function OnlineOrBot() {
+
+  const handleButtonClick = () => {
+    // You can perform additional actions here if needed
+    // ...
+
+    // Use the Link component for client-side navigation
+    // This will navigate to the specified page without a full page reload
+    // <Link href="/dashboard/game/online" />
+    // window.location.href = '/dashboard/game/online'; // Use this if you want to fallback to a full page reload
+  };
   return (
     <>
       <div className={styles.title}>
@@ -16,7 +26,7 @@ function OnlineOrBot() {
 
             <div className={styles.row}>
               <h2 className={styles.typeOfGame}>Bot</h2>
-              <button className={styles.game_choice}>
+              <Link href='/dashboard/game/bot' className={styles.game_choice}>
 
                   <Image 
                     className={styles.game_img}
@@ -28,12 +38,11 @@ function OnlineOrBot() {
                     />
 
 
-              </button>
+              </Link>
             </div>
             <div className={styles.row}>
               <h2 className={styles.typeOfGame}>Online</h2>
-              <button className={styles.game_choice}>
-
+                  <Link href="/dashboard/game/online" className={styles.game_choice}>
                     <Image
                       className={styles.game_img}
                       src="/pong.jpg"
@@ -42,8 +51,7 @@ function OnlineOrBot() {
                       height={500}
                       draggable="false"
                       />
-
-              </button>
+                    </Link>
             </div>
           </div>
             <p className={styles.paragraph}>
