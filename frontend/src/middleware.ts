@@ -6,7 +6,7 @@ async function isValidAccessToken(accessToken: any): Promise<boolean> {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${accessToken}`
-      }
+      },
     });
     return response.ok;
   } catch (error) {
@@ -18,8 +18,9 @@ async function isValidAccessToken(accessToken: any): Promise<boolean> {
 
 export async function middleware(req: NextRequest) {
   const cookies  = req.cookies.get("accesstoken");
+  const userId = req.cookies.get("userId");
   const valid = await isValidAccessToken(cookies?.value);
-  if (!cookies || !valid) {
+  if (!cookies || !valid || !userId) {
     if (req.nextUrl.pathname !== "/auth/login") {
       return NextResponse.redirect(
         new URL("/", process.env.SERVER_FRONTEND)

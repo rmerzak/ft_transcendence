@@ -33,6 +33,8 @@ export class AuthController {
     @UseGuards(LeetGuard)
     @Get('42-redirect')
     async ftAuthCallback(@Req() req: Request, @Res() res: Response) {
+        console.log("req.user :", req.user['id'])
+        res.cookie('userId', req.user['id']);
         if (req.user['isVerified']) {
             const { accessToken } = await this.authService.signToken(req.user['id'], req.user['email']);
             // res.cookie('JWT', accessToken, { httpOnly: true, secure: true, sameSite: 'none' });
@@ -47,7 +49,6 @@ export class AuthController {
             res.cookie('accesstoken', accessToken, {
                 httpOnly: true,
             });
-            //res.cookie('JWT', accessToken);
             res.redirect('http://localhost:8080/auth/verify');
         }
     }
