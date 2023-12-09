@@ -1,5 +1,5 @@
 import { NextRequest,NextResponse } from "next/server";
-async function isValidAccessToken(accessToken: string): Promise<boolean> {
+async function isValidAccessToken(accessToken: any): Promise<boolean> {
   try {
     const response = await fetch('http://localhost:3000/auth/validateToken', {
       method: 'GET',
@@ -17,7 +17,7 @@ async function isValidAccessToken(accessToken: string): Promise<boolean> {
 
 
 export async function middleware(req: NextRequest) {
-  const cookies = req.cookies.get("accesstoken");
+  const cookies  = req.cookies.get("accesstoken");
   const valid = await isValidAccessToken(cookies?.value);
   if (!cookies || !valid) {
     if (req.nextUrl.pathname !== "/auth/login") {
@@ -26,6 +26,10 @@ export async function middleware(req: NextRequest) {
       );
     }
   }
+  // this is the logic to do
+  // if it his first time to login redirect him to /auth/verify if not /dashboard/profile
+  // if his login required two factor authentication redirect him to /auth/twoFactor then to /dashboard/profile
+
 }
 export const config = {
     matcher:["/dashboard/:path*","/auth/:path*"]
