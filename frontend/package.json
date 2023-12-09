@@ -24,12 +24,14 @@
     "lucide-react": "^0.292.0",
     "next": "14.0.3",
     "react": "^18",
+    "react-color": "^2.19.3",
     "react-dom": "^18",
     "tailwind-merge": "^2.0.0"
   },
   "devDependencies": {
     "@types/node": "^20",
     "@types/react": "^18",
+    "@types/react-color": "^3.0.10",
     "@types/react-dom": "^18",
     "autoprefixer": "^10.0.1",
     "eslint": "^8",

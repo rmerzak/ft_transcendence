@@ -1,12 +1,12 @@
-import styles from './page.module.css';
-import OnlineOrBot from '@/components/game/OnlineOrBot';
+import styles from '../page.module.css';
+import Online from '@/components/game/Online';
 import React from 'react';
 
 
 const Game = () => {
   return (
     <div className={styles.game_container}>
-      <OnlineOrBot />
+      <Online />
     </div>
   );
 };
