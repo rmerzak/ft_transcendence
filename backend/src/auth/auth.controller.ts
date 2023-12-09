@@ -15,16 +15,6 @@ export class AuthController {
     constructor(private authService: AuthService, private jwtService: JwtService, private config: ConfigService) {
 
     }
-    @Post('signup')
-    signup(@Body() dto: AuthDto) {
-        // console.log(dto)
-        // return this.authService.signup(dto);
-
-    }
-    @Post('signin')
-    signin(@Body() dto: AuthDto) {
-        // return this.authService.signin(dto);
-    }
     @UseGuards(LeetGuard)
     @Get('42')
     leet(@Req() req: Request) {
@@ -37,18 +27,11 @@ export class AuthController {
         res.cookie('userId', req.user['id']);
         if (req.user['isVerified']) {
             const { accessToken } = await this.authService.signToken(req.user['id'], req.user['email']);
-            // res.cookie('JWT', accessToken, { httpOnly: true, secure: true, sameSite: 'none' });
-            res.cookie('accesstoken', accessToken, {
-                httpOnly: true,
-            });
+            res.cookie('accesstoken', accessToken, {httpOnly: true,});
             res.redirect('http://localhost:8080/dashboard/profile');
         } else {
             const { accessToken } = await this.authService.signToken(req.user['id'], req.user['email']);
-
-            // res.cookie('JWT', accessToken, { httpOnly: true, secure: true, sameSite: 'none' });
-            res.cookie('accesstoken', accessToken, {
-                httpOnly: true,
-            });
+            res.cookie('accesstoken', accessToken, {httpOnly: true,});
             res.redirect('http://localhost:8080/auth/verify');
         }
     }
@@ -64,18 +47,7 @@ export class AuthController {
     async FinishAuth(@Req() req: Request, @Res() res: Response) {
         return await this.authService.finishAuth(req.body, req.user['email']);
     }
-    // @Post('upload')
-    // @UseInterceptors(FileInterceptor('image'))
-    // async uploadFile(@UploadedFile() file: Express.Multer.File) {
-    //     try {
-    //         const result = await this.authService.uploadImage(file.path);
-    //         return result;
-    //     } catch (error) {
-    //         console.log("error upload file",error);
-    //         throw new Error(error);
-    //     }
 
-    // }
     @Post('upload')
     @UseInterceptors(FileInterceptor('image'))
     async uploadFile(@UploadedFile() file: Express.Multer.File) {
@@ -104,7 +76,14 @@ export class AuthController {
     }
     @UseGuards(JwtGuard)
     @Get('validateToken')
-    async validateToken(): Promise<any> {
-        return true;
+    async validateToken(@Req() req: Request,@Body() body:any): Promise<any> {
+        console.log("body ",req.headers['body']) 
+        console.log("user ",req.user['id'])
+        if(req.headers['body'] === req.user['id'].toString()){
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 }

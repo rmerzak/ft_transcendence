@@ -1,5 +1,5 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
-
+import { useRouter } from "next/navigation";
 axios.interceptors.response.use(
   (response) => {
     return response;
@@ -16,7 +16,6 @@ axios.interceptors.response.use(
 );
 class UsersService {
     private axiosInstance: AxiosInstance;
-
     constructor() {
         this.axiosInstance = axios.create({
             baseURL: process.env.API_BASE_URL,
@@ -25,19 +24,6 @@ class UsersService {
                 "Content-Type": "application/json"
             }
         });
-        this.axiosInstance.interceptors.response.use(
-            (response) => {
-              return response;
-            },
-            (error) => {
-              const { response } = error;
-          
-              if (response && response.status === 401) {
-                console.error('Invalid token:', "i m here");
-              }
-              return Promise.reject(error);
-            }
-          );
     }
     private async axiosCall<T>(config: AxiosRequestConfig) {
         try {

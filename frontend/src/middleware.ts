@@ -1,14 +1,16 @@
 import { NextRequest,NextResponse } from "next/server";
-async function isValidAccessToken(accessToken: any): Promise<boolean> {
+async function isValidAccessToken(accessToken: any,userId :any): Promise<boolean> {
   try {
     const response = await fetch('http://localhost:3000/auth/validateToken', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${accessToken}`
+        'Authorization': `Bearer ${accessToken}`,
+        body: userId,
       },
     });
-    return response.ok;
+    const result = await response.json();
+    return result;
   } catch (error) {
     console.error('Error validating token:', error);
     return false;
@@ -19,7 +21,7 @@ async function isValidAccessToken(accessToken: any): Promise<boolean> {
 export async function middleware(req: NextRequest) {
   const cookies  = req.cookies.get("accesstoken");
   const userId = req.cookies.get("userId");
-  const valid = await isValidAccessToken(cookies?.value);
+  const valid = await isValidAccessToken(cookies?.value,userId?.value);
   if (!cookies || !valid || !userId) {
     if (req.nextUrl.pathname !== "/auth/login") {
       return NextResponse.redirect(
