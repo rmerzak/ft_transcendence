@@ -82,11 +82,11 @@ function Online() {
                     </label>
 
                   </div>
+                      <button className={styles.play_button}>
+                        Play
+                      </button>
                 </div>
 
-                <button className={styles.play_button}>
-                  Play
-                </button>
 
             </div>
  

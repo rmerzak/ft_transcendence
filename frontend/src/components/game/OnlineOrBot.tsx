@@ -5,16 +5,7 @@ import Image from 'next/image'
 
 
 function OnlineOrBot() {
-
-  const handleButtonClick = () => {
-    // You can perform additional actions here if needed
-    // ...
-
-    // Use the Link component for client-side navigation
-    // This will navigate to the specified page without a full page reload
-    // <Link href="/dashboard/game/online" />
-    // window.location.href = '/dashboard/game/online'; // Use this if you want to fallback to a full page reload
-  };
+  
   return (
     <>
       <div className={styles.title}>
