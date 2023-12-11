@@ -10,8 +10,6 @@ function Game() {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const score_p1 = useRef<HTMLHeadingElement>(null);
 	const score_p2 = useRef<HTMLHeadingElement>(null);
-	// useref for score
-	
 
 	useEffect(() => {
 		const canvas = canvasRef.current;
@@ -62,13 +60,13 @@ function Game() {
 						ctx.stroke();
 
 					    // Middle dashed line
-					    ctx.setLineDash([10, 10]); // Set the line dash pattern
+					    // ctx.setLineDash([10, 10]); // Set the line dash pattern
 					    ctx.beginPath();
 					    ctx.lineWidth = 5;
 					    ctx.moveTo(width / 2, 0);
 					    ctx.lineTo(width / 2, height);
 					    ctx.stroke();
-					    ctx.setLineDash([]); // Reset the line dash to default (solid)
+					    // ctx.setLineDash([]); // Reset the line dash to default (solid)
 
 					    // Left solid line
 					    // ctx.beginPath();
@@ -211,15 +209,28 @@ function Game() {
 				};
 
 				const ballCollisionWithThePaddle = (
-					ball: { pos: { x: number; y: number }; radius: number; velocity: { x: number } },
+					ball: { pos: { x: number; y: number }; radius: number; velocity: { x: number; y: number } },
 					paddle: { getCenter: () => { x: number; y: number }; getHalfWidth: () => number; getHalfHeight: () => number }
-				  ) => 
-				 {
-					let dx = Math.abs(ball.pos.x - paddle.getCenter().x);
-					let dy = Math.abs(ball.pos.y - paddle.getCenter().y);
-				  
+				) => {
+					const dx = Math.abs(ball.pos.x - paddle.getCenter().x);
+					const dy = Math.abs(ball.pos.y - paddle.getCenter().y);
+					const overlapX = ball.radius + paddle.getHalfWidth() - dx;
+					const overlapY = ball.radius + paddle.getHalfHeight() - dy;
+				
 					if (dx < ball.radius + paddle.getHalfWidth() && dy < ball.radius + paddle.getHalfHeight()) {
-					  ball.velocity.x *= -1;
+						ball.velocity.x *= -1;
+				
+						// Adjust the ball's position based on the overlap
+						if (overlapX < overlapY) {
+							ball.pos.x += ball.pos.x < paddle.getCenter().x ? -overlapX : overlapX;
+						} else {
+							ball.pos.y += ball.pos.y < paddle.getCenter().y ? -overlapY : overlapY;
+							ball.velocity.y *= -1;
+				
+							// Adjust the speed of the ball (you can experiment with the multiplier)
+						}
+						ball.velocity.y *= 1.1; // Adjust the multiplier as needed
+						ball.velocity.x *= 1.1; // Adjust the multiplier as needed
 					}
 				};
 				  
@@ -254,19 +265,26 @@ function Game() {
 				{
 				    if (ball.velocity.x > 0)
 				    {
-				        // ball.pos.x = width - 300;
-				        ball.pos.x = width / 2;
+				        ball.pos.x = width - 200;
+				        // ball.pos.x = width / 2;
 				        // ball.pos.y = (Math.random() * (height - 200)) + 100;
 				        ball.pos.y = height / 2;
+						ball.velocity.x = 5;
+						ball.velocity.y = 5;
 				    }
 
 				    if (ball.velocity.x < 0)
 				    {
-				        // ball.pos.x = 300;
-				        ball.pos.x = width / 2;
+				        ball.pos.x = 200;
+				        // ball.pos.x = width / 2;
 				        // ball.pos.y = (Math.random() * (height - 200)) + 100;
 				        ball.pos.y = height / 2;
+
+						ball.velocity.x = -5;
+						ball.velocity.y = -5;
 				    }
+					// ball.velocity.x = 5;
+					// ball.velocity.y = 5;
 
 				    ball.velocity.x *= -1;
 				    ball.velocity.y *= -1;
@@ -286,15 +304,16 @@ function Game() {
 					if (ball.pos.x <= 0 - ball.radius) {
 					  paddle2.score++;
 					  // Update the h3 tag for player 2 score
+					  
 					  score_p2.current!.innerHTML = paddle2.score.toString();
 					  // Respawn the ball
 					  respawnBall(ball);
 					}
 				  };
 
-				let ballObj = new ball(vec2(100, 100), vec2(10, 10), 15);
-				let paddle1 = new paddle(vec2(0, 50), vec2(15, 15), 25, 150);
-				let paddle2 = new paddle(vec2(width - 25, 50), vec2(15, 15), 25, 150);
+				let ballObj = new ball(vec2(100, 100), vec2(5, 5), 15);
+				let paddle1 = new paddle(vec2(0, 50), vec2(15, 15), 15, 150);
+				let paddle2 = new paddle(vec2(width - 15, 50), vec2(15, 15), 15, 150);
 
 				const gameUpdate = (keysPressed: { [key: string]: boolean }) => {
 					ballObj.update();

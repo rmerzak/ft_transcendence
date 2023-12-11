@@ -22,6 +22,7 @@
 }
 
 .content {
+    /* width: 75%; */
     display: flex;
     flex-direction :column;
     align-items: center;
@@ -234,7 +235,7 @@
 /* page 3 */
 
 .players {
-    width: 100%;
+    width: 70%;
     display: flex;
     /* flex-direction: row; */
     /* text-align: center; */
