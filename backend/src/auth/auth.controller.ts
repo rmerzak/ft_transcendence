@@ -94,9 +94,19 @@ export class AuthController {
     async generateQrcode(@Req() req: Request,@Res() res: Response) {
         const { secret, uri } = await this.twoFactorService.generateTwoFactorSecret(req.user['email']);
         await this.twoFactorService.enableTwoFactorAuth(req.user['email'], secret);
-        res.type('png')
-        return toFileStream(res, uri);
+        // res.type('png')
+        // return toFileStream(res, uri);
+        const qrCodeImage = await this.generateQrCodeImage(uri);
+        res.set('Content-Type', 'image/png');
+        res.send(qrCodeImage);
     }
+
+
+private async generateQrCodeImage(uri: string): Promise<Buffer> {
+    const qr = require('qrcode');
+    return qr.toBuffer(uri);
+}
+
     @UseGuards(JwtGuard)
     @Post('2fa/verify')
     async verifyTwoFactorToken(@Req() req: Request,@Body() body:any) {

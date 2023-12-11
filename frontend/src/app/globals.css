@@ -111,3 +111,7 @@ radial-gradient(at 0% 100%, hsla(5,88%,55%,1) 0px, transparent 50%);
     background: #65c4fa;
     filter: blur(150px);
 }
+
+button:hover{
+    background-color: #539D98;
+ }
