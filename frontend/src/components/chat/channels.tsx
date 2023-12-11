@@ -24,7 +24,7 @@ const Channels = () => {
         </div>
       </div>
 
-      <div className="scroll-y-auto max-h-[200px] rounded-md w-3/4 mx-auto mt-2">
+      <div className="rounded-md w-3/4 mx-auto mt-2">
         {channels.map((channel) => (
           <div
             key={channel.name}
@@ -42,6 +42,17 @@ const Channels = () => {
             </Link>
           </div>
         ))}
+        <div className="my-4 flex justify-center items-center">
+          <button>
+            <Image
+              src="/plus.svg"
+              alt="add channel"
+              width={25}
+              height={24}
+              className="w-10 h-10 object-cover"
+            />
+          </button>
+        </div>
       </div>
     </div>
   );

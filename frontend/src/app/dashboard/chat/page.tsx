@@ -1,5 +1,6 @@
 import UserOnline from "@/components/chat/userOnline";
 import Channels from "@/components/chat/channels";
+import Message  from "@/components/chat/msg";
 
 const Chat = () => {
   return (
@@ -8,9 +9,10 @@ const Chat = () => {
         Chat
       </h1>
       <div className="rounded-md mx-8 flex justify-between items-center">
-      <div className="bg-[#5D5959]/40 w-[38%] rounded-3xl p-5 shadow-lg">
+      <div className="bg-[#5D5959]/40 w-[38%] rounded-3xl p-5 shadow-lg scroll-y-auto max-h-full">
         <UserOnline />
         <Channels />
+        <Message />
       </div>
       <div className="bg-[#5D5959]/40 w-[60%]">hello</div>
     </div>
