@@ -18,13 +18,13 @@ const Channels = () => {
   return (
     <div className="">
       <div className="mt-6">
-        <h1 className="text-white text-xl  text-center">Channels</h1>
+        <h1 className="text-white text-xl text-center">Channels</h1>
         <div className="flex justify-center mt-2">
           <div className="mb-4 border-b border-white w-20"></div>
         </div>
       </div>
 
-      <div className="rounded-md w-3/4 mx-auto mt-2">
+      <div className="rounded-md w-3/4 mx-auto mt-2 scroll-y-auto max-h-[600px]">
         {channels.map((channel) => (
           <div
             key={channel.name}

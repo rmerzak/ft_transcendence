@@ -9,7 +9,7 @@ const Chat = () => {
         Chat
       </h1>
       <div className="rounded-md mx-8 flex justify-between items-center">
-      <div className="bg-[#5D5959]/40 w-[38%] rounded-3xl p-5 shadow-lg scroll-y-auto max-h-full">
+      <div className="bg-[#5D5959]/40 w-[32%] rounded-3xl p-2 shadow-lg">
         <UserOnline />
         <Channels />
         <Message />

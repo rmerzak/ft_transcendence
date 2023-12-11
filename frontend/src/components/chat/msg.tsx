@@ -11,12 +11,12 @@ const msg = [
 
 const Msg = () => {
     return (
-        <div className="flex justify-center items-center">
-            {msg.map((msg) => ()
-                }
-            <div className="bg-[#5D5959]/40 w-3/4 rounded-md text-white flex justify-between items-center">
+        <div className="mx-auto w-3/4 scroll-y-auto max-h-[108px]">
+            {msg.map((msg) => (
+            <div key={msg.name} className="bg-[#5D5959]/40 rounded-md my-2 text-white flex justify-between items-center">
                 hello
             </div>
+            ))}
         </div>
 
 )};
