@@ -21,16 +21,18 @@ export class AuthService {
         try {
             let user = await this.prisma.user.findUnique({ where: { email: dto.email } });
             if (user)
-                return user;
-            user = await this.prisma.user.create({
-                data: {
-                    email: dto.email,
-                    image: dto.image,
-                    firstname: dto.firstname,
-                    lastname: dto.lastname,
-                    username: dto.username,
-                }
-            })
+            return user;
+        user = await this.prisma.user.create({
+            data: {
+                email: dto.email,
+                image: dto.image,
+                firstname: dto.firstname,
+                lastname: dto.lastname,
+                username: dto.username,
+                //twoFactorSecret: "test",
+            },
+        })
+        console.log("dto :", user)
             return user;
         } catch (error) {
             if (error instanceof Prisma.PrismaClientKnownRequestError) {

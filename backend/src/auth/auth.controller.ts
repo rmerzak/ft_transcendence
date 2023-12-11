@@ -10,14 +10,16 @@ import { ConfigService } from "@nestjs/config";
 import { JwtGuard } from "./guard";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { UploadedFile } from "@nestjs/common";
+import { TwoFactorService } from "./two-factor/two-factor.service";
+import { toFileStream } from "qrcode";
 @Controller('auth')
 export class AuthController {
-    constructor(private authService: AuthService, private jwtService: JwtService, private config: ConfigService) {
+    constructor(private authService: AuthService, private jwtService: JwtService, private config: ConfigService, private readonly twoFactorService:TwoFactorService) {
 
     }
     @UseGuards(LeetGuard)
     @Get('42')
-    leet(@Req() req: Request) {
+    leet(@Req() req: Request) { 
         return;
     }
     @UseGuards(LeetGuard)
@@ -85,5 +87,27 @@ export class AuthController {
         else {
             return false;
         }
+    }
+    // this is a post not get
+    @UseGuards(JwtGuard)
+    @Get('2fa/generate')
+    async generateQrcode(@Req() req: Request,@Res() res: Response) {
+        const { secret, uri } = await this.twoFactorService.generateTwoFactorSecret(req.user['email']);
+        await this.twoFactorService.enableTwoFactorAuth(req.user['email'], secret);
+        res.type('png')
+        return toFileStream(res, uri);
+    }
+    @UseGuards(JwtGuard)
+    @Post('2fa/verify')
+    async verifyTwoFactorToken(@Req() req: Request,@Body() body:any) {
+        console.log("body ",body) 
+        console.log("user ",req.body) 
+//         const isTokenValid = this.twoFactorService.verifyTwoFactorToken(body.token, body.secret);
+//         if (isTokenValid) {
+// //            await this.twoFactorService.enableTwoFactorAuth(req.user['email'], body.secret);
+//             return true;
+//         } else {
+//             return false;
+//         }
     }
 }

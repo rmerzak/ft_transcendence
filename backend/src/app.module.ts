@@ -6,6 +6,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { MulterModule } from '@nestjs/platform-express';
 
 
+
 @Module({
   imports: [ AuthModule, UserModule, PrismaModule, ConfigModule.forRoot({isGlobal:true,}), MulterModule.register({dest : './uploads'})],
   controllers: [],
