@@ -88,11 +88,11 @@ export class AuthController {
             return false;
         }
     }
-    // this is a post not get
     @UseGuards(JwtGuard)
     @Get('2fa/generate')
     async generateQrcode(@Req() req: Request,@Res() res: Response) {
         const { secret, uri } = await this.twoFactorService.generateTwoFactorSecret(req.user['email']);
+        console.log({ secret, uri });
         await this.twoFactorService.enableTwoFactorAuth(req.user['email'], secret);
         res.type('png')
         return toFileStream(res, uri);
@@ -100,14 +100,12 @@ export class AuthController {
     @UseGuards(JwtGuard)
     @Post('2fa/verify')
     async verifyTwoFactorToken(@Req() req: Request,@Body() body:any) {
-        console.log("body ",body) 
-        console.log("user ",req.body) 
-//         const isTokenValid = this.twoFactorService.verifyTwoFactorToken(body.token, body.secret);
-//         if (isTokenValid) {
-// //            await this.twoFactorService.enableTwoFactorAuth(req.user['email'], body.secret);
-//             return true;
-//         } else {
-//             return false;
-//         }
+        const secret = req.user['twoFactorSecret'];
+        const isTokenValid = this.twoFactorService.verifyTwoFactorToken(body.token, secret);
+        if (isTokenValid) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
