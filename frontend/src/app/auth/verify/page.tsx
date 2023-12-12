@@ -1,5 +1,7 @@
 "use client";
 import PreAuthForm from "@/components/auth/PreAuthForm";
+
+
 const Verify = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2 login-gradient">

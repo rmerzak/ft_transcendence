@@ -21,7 +21,7 @@ const PreAuthForm = () => {
             withCredentials: true,
         });
         console.log(response.data);
-        const imageUrl = response.data.qrCodeImage;
+        const imageUrl = response.data.uri;
         setQrCodeImage(imageUrl);
     } catch (error) {
         console.error('Error fetching QR code:', error);
@@ -88,7 +88,7 @@ const PreAuthForm = () => {
 
       <div className="pt-5">
         <label htmlFor="factor" className="relative inline-flex items-center cursor-pointer">
-          <input id="factor" onChange={(e) => { settwoFa(e.target.checked); }} type="checkbox" className="sr-only peer" />
+          <input id="factor" onChange={(e) => { settwoFa(e.target.checked); setOpen(e.target.checked); (e.target.checked && fetchQrCode());}} type="checkbox" className="sr-only peer" />
           <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
           <span className="ms-3 text-bold font-medium text-white dark:text-gray-300">Two authentication factor</span>
         </label>
@@ -97,7 +97,6 @@ const PreAuthForm = () => {
       <div className="pt-5 flex items-center justify-between w-[20.438rem] h-[2.75rem] ">
         <button onClick={logout} className="bg-[#79196F]  w-[100px] h-[40px] text-white py-2 px-4 rounded-[10px]">Return</button>
         <button type="submit" className="bg-[#79196F] w-[100px] h-[40px] text-white py-2 px-4 rounded-[10px]">Continue</button>
-        <button onClick={() => {setOpen(true); fetchQrCode();}} className="bg-[#79196F] w-[100px] h-[40px] text-white py-2 px-4 rounded-[10px]">Model</button>
         <TwoFaPopUp open={open} onClose={() => setOpen(false)} image={qrCodeImage} />
       </div>
 
