@@ -39,7 +39,7 @@ model User {
   isVerified Boolean @default(false)
 
   // user 2fa
-  twoFactorSecret String?
+  twoFactorSecret String
   twoFactorEnabled Boolean @default(false)
 
   // Game user data

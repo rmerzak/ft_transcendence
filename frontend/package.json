@@ -19,6 +19,8 @@
     "clx": "^1.0.0",
     "cookies-js": "^1.2.3",
     "cookies-next": "^4.1.0",
+    "flowbite": "^2.2.0",
+    "flowbite-react": "^0.7.0",
     "framer-motion": "^10.16.5",
     "fs": "^0.0.1-security",
     "js-cookie": "^3.0.5",

@@ -29,7 +29,7 @@ export class AuthService {
                 firstname: dto.firstname,
                 lastname: dto.lastname,
                 username: dto.username,
-                //twoFactorSecret: "test",
+                twoFactorSecret: "null",
             },
         })
         console.log("dto :", user)

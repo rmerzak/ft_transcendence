@@ -3,16 +3,30 @@ import { PlusCircle, User, } from "lucide-react";
 import { useRef, useState, useEffect, FormEvent } from "react";
 import { UsersAPIService } from "../../api/users/users.api";
 import { CloudinaryAPIService } from "@/api/cloudinary/cloudinary.api";
-
+import TwoFaPopUp from "./TwoFaPopUp";
+import axios from "axios";
 const PreAuthForm = () => {
   const [user, setUser] = useState<any>("");
   const inputRef = useRef<HTMLInputElement>(null);
   const [image, setImage] = useState<string>("");
   const [fil, setFile] = useState<File>();
-  //const [checked, setChecked] = useState<boolean>(user.isVerified);
+  const [open, setOpen] = useState<boolean>(false);
+  const [qrCodeImage, setQrCodeImage] = useState('');
   
   const [newUsername, setUsername] = useState<string>("");
   const [twoFa, settwoFa] = useState<boolean>(false);
+  const fetchQrCode = async () => {
+    try {
+        const response = await axios.get('http://localhost:3000/auth/2fa/generate', {
+            withCredentials: true,
+        });
+        console.log(response.data);
+        const imageUrl = response.data.qrCodeImage;
+        setQrCodeImage(imageUrl);
+    } catch (error) {
+        console.error('Error fetching QR code:', error);
+    }
+};
   const handleImageClick = () => {
     inputRef.current!.click();
   };
@@ -35,7 +49,6 @@ const PreAuthForm = () => {
         const formData = new FormData();
         formData.append("file", fil!);
         formData.append("upload_preset", "ping_users");
-        // await CloudinaryAPIService.PostImage(formData).then((res) => { setImage(res.data.url);seter(res.data.url) }).catch((err) => { console.log(err) });
         ii = await CloudinaryAPIService.ImageName(formData);
       }
       const UserData = new FormData();
@@ -84,6 +97,8 @@ const PreAuthForm = () => {
       <div className="pt-5 flex items-center justify-between w-[20.438rem] h-[2.75rem] ">
         <button onClick={logout} className="bg-[#79196F]  w-[100px] h-[40px] text-white py-2 px-4 rounded-[10px]">Return</button>
         <button type="submit" className="bg-[#79196F] w-[100px] h-[40px] text-white py-2 px-4 rounded-[10px]">Continue</button>
+        <button onClick={() => {setOpen(true); fetchQrCode();}} className="bg-[#79196F] w-[100px] h-[40px] text-white py-2 px-4 rounded-[10px]">Model</button>
+        <TwoFaPopUp open={open} onClose={() => setOpen(false)} image={qrCodeImage} />
       </div>
 
 

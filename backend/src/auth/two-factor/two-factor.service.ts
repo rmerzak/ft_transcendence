@@ -28,9 +28,9 @@ export class TwoFactorService {
             return await this.prisma.user.update({
                 where: { email : email },
                 data: {
-                    twoFactorSecret: secret,
                     twoFactorEnabled: true,
-                } as any,
+                    twoFactorSecret: secret,
+                } ,
             });
         } catch (error) {
             throw error;

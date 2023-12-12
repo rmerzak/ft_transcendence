@@ -11,7 +11,7 @@ import { JwtGuard } from "./guard";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { UploadedFile } from "@nestjs/common";
 import { TwoFactorService } from "./two-factor/two-factor.service";
-import { toFileStream } from "qrcode";
+import  * as qrcode  from "qrcode";
 @Controller('auth')
 export class AuthController {
     constructor(private authService: AuthService, private jwtService: JwtService, private config: ConfigService, private readonly twoFactorService:TwoFactorService) {
@@ -93,13 +93,30 @@ export class AuthController {
     async generateQrcode(@Req() req: Request,@Res() res: Response) {
         const { secret, uri } = await this.twoFactorService.generateTwoFactorSecret(req.user['email']);
         console.log({ secret, uri });
-        await this.twoFactorService.enableTwoFactorAuth(req.user['email'], secret);
-        // res.type('png')
-        // return toFileStream(res, uri);
-        const qrCodeImage = await this.generateQrCodeImage(uri);
-        res.set('Content-Type', 'image/png');
-        res.send(qrCodeImage);
+        //const qrCodeImage = await this.generateQrCodeImage(uri);
+        console.log("qrCodeImage :", uri)
+        //res.set('Content-Type', 'image/png');
+        res.send({uri,secret});
+        // return qrCodeImage;
     }
+    // @UseGuards(JwtGuard)
+    // @Get('2fa/generate')
+    // async generateQrcode(@Req() req: Request, @Res() res: Response) {
+    //   try {
+    //     const { secret, uri } = await this.twoFactorService.generateTwoFactorSecret(req.user['email']);
+    //     console.log({ secret, uri });
+  
+    //     const qrCodeImageBuffer = await qrcode.toBuffer(uri, { type: 'png' });
+  
+    //     res.set('Content-Type', 'image/png');
+    //     res.write(qrCodeImageBuffer);
+    //     res.write(`\nSecret: ${secret}`);
+    //     res.end();
+    //   } catch (error) {
+    //     console.error('Error generating QR code:', error);
+    //     res.status(500).send('Internal Server Error');
+    //   }
+    // }
 
 
 private async generateQrCodeImage(uri: string): Promise<Buffer> {
@@ -110,9 +127,10 @@ private async generateQrCodeImage(uri: string): Promise<Buffer> {
     @UseGuards(JwtGuard)
     @Post('2fa/verify')
     async verifyTwoFactorToken(@Req() req: Request,@Body() body:any) {
-        const secret = req.user['twoFactorSecret'];
+        const secret = body.token;
         const isTokenValid = this.twoFactorService.verifyTwoFactorToken(body.token, secret);
         if (isTokenValid) {
+            await this.twoFactorService.enableTwoFactorAuth(req.user['email'], secret);
             return true;
         } else {
             return false;

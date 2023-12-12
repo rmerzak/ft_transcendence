@@ -5,25 +5,25 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { QrCode } from "lucide-react";
 const TwoFa = () => {
-    const [qrCodeImage, setQrCodeImage] = useState('');
+    // const [qrCodeImage, setQrCodeImage] = useState('');
 
-    useEffect(() => {
-        const fetchQrCode = async () => {
-            try {
-                const response = await axios.get('http://localhost:3000/auth/2fa/generate', {
-                    responseType: 'blob',
-                    withCredentials: true, // Include credentials in the request
-                });
+    // useEffect(() => {
+    //     const fetchQrCode = async () => {
+    //         try {
+    //             const response = await axios.get('http://localhost:3000/auth/2fa/generate', {
+    //                 responseType: 'blob',
+    //                 withCredentials: true, // Include credentials in the request
+    //             });
 
-                const imageUrl = URL.createObjectURL(response.data);
-                setQrCodeImage(imageUrl);
-            } catch (error) {
-                console.error('Error fetching QR code:', error);
-            }
-        };
+    //             const imageUrl = URL.createObjectURL(response.data);
+    //             setQrCodeImage(imageUrl);
+    //         } catch (error) {
+    //             console.error('Error fetching QR code:', error);
+    //         }
+    //     };
 
-        fetchQrCode();
-    }, []);
+    //     fetchQrCode();
+    // }, []);
 
 
     return (
@@ -31,9 +31,6 @@ const TwoFa = () => {
             <QrCode size={100} color="#fff" />
             <div className="text-white text-[20px]" style={{marginBottom: "10px", marginTop: "10px"}}>Please enter 2FA code</div>
             <div className="text-white font-extralight text-[14px]" style={{marginBottom: "10px", marginTop: "10px"}}>Two-factor authentication (2FA) is enable for your account. <br /> Please enter a code to log in.</div>
-            <div>
-                <img draggable="false" src={qrCodeImage} alt="" className="w-[200px]"/>
-            </div>
             <div className="flex items-center bg-white mt-6 border-[0.063rem] rounded-[1rem] overflow-hidden relative ">
         <label htmlFor="name"></label>
         <input type="text" id="name" placeholder="Two-factor authentication code"  className="w-[20.438rem] h-[2.75rem] pl-[1.063rem] leading-normal" />
