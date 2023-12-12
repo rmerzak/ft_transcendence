@@ -1,5 +1,5 @@
 'use client';
-import styles from '../../app/dashboard/game/page.module.css'
+import styles from '@/app/dashboard/game/page.module.css'
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 const CirclePicker = dynamic(() => import('react-color').then((mod) => mod.CirclePicker), { ssr: false });

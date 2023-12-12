@@ -1,4 +1,5 @@
 /* this css file is for the game page */
+  
 
 .game_container {
     margin: 0%;
@@ -15,11 +16,171 @@
 
 .title {
     font-family: 'Inter', sans-serif;
-    font-size: 2em;
+    font-size: 2rem;
     font-weight: 600;
     color: #fff;
     margin-bottom: 1em;
 }
+
+
+.container_for_contents
+{
+    display:flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+.left_content
+{
+    width: 35%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: rgba(83, 89, 89, 0.4);
+    border-radius: 25px;
+    box-shadow: 4px 8px 16px rgba(0, 0, 0, 0.2);
+    padding: 2%;
+}
+
+.right_content
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 55%;
+    background-color: rgba(83, 89, 89, 0.4);
+    border-radius: 25px;
+    box-shadow: 4px 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.scketch
+{
+    width: 80%;
+    background-color: #ffffff;
+    border-radius: 15px;
+}
+
+.choose {
+    width: 30%;
+    font-family: 'Inter', sans-serif;
+    font-weight: 100;
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.8);
+    /* border-bottom: rgba(255, 255, 255, 0.8) solid 1px; */
+    padding-top: 1.5rem;
+}
+
+.choose_container {
+    width: 100%;
+    margin-top: 7%;
+    display: flex;
+    justify-content: space-around;
+}
+
+.button_online {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #ffffff;
+    font-size: 1.2rem;
+    font-weight: 100;
+    background-color: #811B77;
+    border-radius: 25px;
+    margin-top: 3%;
+    /* padding: 3% 7% 3% 7%; */
+    padding:  10%  10%;
+}
+
+.button_bot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #ffffff;
+    background-color: #712ec3;
+    font-size: 1.2rem;
+    font-weight: 100;
+    border-radius: 25px;
+    margin-top: 3%;
+    padding:10% 10%;
+}
+
+.button_icon
+{
+    width: 20%;
+    opacity: 70%;
+}
+
+.button_bot:hover
+{
+    background-color: #580d50;
+}
+
+.button_online:hover
+{
+    background-color: #580d50;
+}
+
+.script
+{
+    font-family: 'Inter', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #fff;
+    margin: 2rem;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 .content {
     /* width: 75%; */
@@ -95,18 +256,6 @@
     margin-right: auto;
 }
 
-.typeOfGame {
-    width: 5em;
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: 2em;
-    font-family: 'Inter', sans-serif;
-    font-weight: 100;
-    font-size: 1.2em;
-    color: rgba(255, 255, 255, 0.8);
-    border-bottom: rgba(255, 255, 255, 0.8) solid 1px;
-    padding-bottom: 1em;
-}
 
 .row {
     margin-left: 8%;
