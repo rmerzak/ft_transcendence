@@ -1,6 +1,8 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
+import Popup from "./popup";
+import { useState } from "react";
 
 const channels = [
   { name: "General", avatar: "/channelssetting" },
@@ -15,6 +17,10 @@ const channels = [
   { name: "Technology", avatar: "/channelssetting" },
 ];
 const Channels = () => {
+  const [newChannel, setNewChannel] = useState<boolean>(false);
+  function handleNewChannel() {
+    setNewChannel(!newChannel);
+  }
   return (
     <div className="">
       <div className="mt-6">
@@ -24,11 +30,11 @@ const Channels = () => {
         </div>
       </div>
 
-      <div className="rounded-md w-3/4 mx-auto mt-2 scroll-y-auto max-h-[600px]">
+      <div className="rounded-md w-3/4 mx-auto mt-2 scroll-y-auto max-h-[300px]">
         {channels.map((channel) => (
           <div
             key={channel.name}
-            className="flex bg-[#811B77]/50 justify-between items-center p-3 my-[10px] rounded-md text-white"
+            className="flex bg-[#811B77]/50 justify-between items-center p-3 my-[10px] rounded-md text-white hover:bg-[#811B77]/100"
           >
             <p>#{channel.name}</p>
             <Link href="#">
@@ -37,23 +43,26 @@ const Channels = () => {
                 alt={channel.name}
                 width={25}
                 height={24}
+                priority={true}
                 className="w-5 h-5 object-cover"
               />
             </Link>
           </div>
         ))}
+      </div>
         <div className="my-4 flex justify-center items-center">
-          <button>
+          <button onClick={handleNewChannel}>
             <Image
               src="/plus.svg"
               alt="add channel"
               width={25}
               height={24}
+              priority={true}
               className="w-10 h-10 object-cover"
             />
           </button>
         </div>
-      </div>
+      {newChannel && <Popup setChannel={handleNewChannel}/>}
     </div>
   );
 };

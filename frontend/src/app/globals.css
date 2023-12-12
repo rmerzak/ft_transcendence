@@ -2,26 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-
 @layer utilities {
     .scroll-y-auto {
       overflow-y: auto;
     }
     ::-webkit-scrollbar {
-        width: 4px;
-      }
-      
-      ::-webkit-scrollbar-track {
-        background: rgba(10, 10, 10, 0.2); 
-      }
-       
-      ::-webkit-scrollbar-thumb {
-        background: #888;
-        border-radius: 4px;
-      }
-      
-      ::-webkit-scrollbar-thumb:hover {
-        background: #555; 
+        width: 0px;
       }
 }
 

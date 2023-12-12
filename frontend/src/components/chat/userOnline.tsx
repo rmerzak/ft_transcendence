@@ -72,13 +72,14 @@ const userOnline = () => {
         >
           {users.map((user, index) => (
             <SwiperSlide key={index}  className="swiper-slide">
-              <div>
+              <div onClick={() => alert("hello")}>
                 <Image
                   src={user.avatar}
                   alt={user.name}
                   width={60}
                   height={60}
-                  className="rounded-full mx-auto"
+                  priority={true}
+                  className="rounded-full mx-auto hover:cursor-pointer"
                 />
                 <span className="w-3 bg-green-400 h-3 left-[82px] top-12 rounded-full absolute "></span>
                 <p className="text-white text-center">{user.name}</p>
