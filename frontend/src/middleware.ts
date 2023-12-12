@@ -10,6 +10,9 @@ async function isValidAccessToken(accessToken: any,userId :any): Promise<boolean
       },
     });
     const result = await response.json();
+    
+    if(response.status === 401)
+      return false;
     return result;
   } catch (error) {
     console.error('Error validating token:', error);

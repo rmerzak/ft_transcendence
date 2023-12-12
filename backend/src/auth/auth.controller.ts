@@ -27,6 +27,9 @@ export class AuthController {
     async ftAuthCallback(@Req() req: Request, @Res() res: Response) {
         console.log("req.user :", req.user['id'])
         res.cookie('userId', req.user['id']);
+        if(req.user['twoFactorEnabled'] === true){
+            res.cookie('twoFactorEnabled', req.user['twoFactorEnabled']);
+        }
         if (req.user['isVerified']) {
             const { accessToken } = await this.authService.signToken(req.user['id'], req.user['email']);
             res.cookie('accesstoken', accessToken, {httpOnly: true,});
@@ -37,7 +40,6 @@ export class AuthController {
             res.redirect('http://localhost:8080/auth/verify');
         }
     }
-
     @UseGuards(JwtGuard)
     @Get('verify')
     async preAuthData(@Req() req: Request) {
@@ -123,15 +125,14 @@ private async generateQrCodeImage(uri: string): Promise<Buffer> {
 }
 
     @UseGuards(JwtGuard)
-    @Post('2fa/verify')
+    @Post('2fa/verify') 
     async verifyTwoFactorToken(@Req() req: Request,@Body() body:any) {
-        console.log("secret :", req)
-        // const isTokenValid = this.twoFactorService.verifyTwoFactorToken(body.token, secret);
-        // if (isTokenValid) {
-        //     await this.twoFactorService.enableTwoFactorAuth(req.user['email'], secret);
-        //     return true;
-        // } else {
-        //     return false; 
-        // }
+        const isTokenValid = this.twoFactorService.verifyTwoFactorToken(body.code, body.secret);
+        if (isTokenValid) {
+            await this.twoFactorService.enableTwoFactorAuth(req.user['email'], body.secret);
+            return true;
+        } else {
+            return false; 
+        }
     }
 }

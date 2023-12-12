@@ -12,6 +12,7 @@ const PreAuthForm = () => {
   const [fil, setFile] = useState<File>();
   const [open, setOpen] = useState<boolean>(false);
   const [qrCodeImage, setQrCodeImage] = useState('');
+  const [secret, setSecret] = useState('');
   
   const [newUsername, setUsername] = useState<string>("");
   const [twoFa, settwoFa] = useState<boolean>(false);
@@ -23,6 +24,7 @@ const PreAuthForm = () => {
         console.log(response.data);
         const imageUrl = response.data.uri;
         setQrCodeImage(imageUrl);
+        setSecret(response.data.secret);
     } catch (error) {
         console.error('Error fetching QR code:', error);
     }
@@ -69,6 +71,7 @@ const PreAuthForm = () => {
     }
   }
   return (
+    <>
     <form onSubmit={handleSubmit} className="bg-[#311251] drop-shadow-2xl w-[380px] md:w-[500px] bg-opacity-50 pb-10 rounded-2xl  flex items-center justify-center flex-col max-w-4xl">
 
       <div onClick={handleImageClick} className="w-[150px]  h-[150px] rounded-full">
@@ -97,11 +100,10 @@ const PreAuthForm = () => {
       <div className="pt-5 flex items-center justify-between w-[20.438rem] h-[2.75rem] ">
         <button onClick={logout} className="bg-[#79196F]  w-[100px] h-[40px] text-white py-2 px-4 rounded-[10px]">Return</button>
         <button type="submit" className="bg-[#79196F] w-[100px] h-[40px] text-white py-2 px-4 rounded-[10px]">Continue</button>
-        <TwoFaPopUp open={open} onClose={() => setOpen(false)} image={qrCodeImage} />
       </div>
-
-
     </form>
+        <TwoFaPopUp open={open} onClose={() => setOpen(false)} image={qrCodeImage} secret={secret}/>
+    </>
   )
 }
 
