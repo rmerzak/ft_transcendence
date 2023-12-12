@@ -79,8 +79,6 @@ export class AuthController {
     @UseGuards(JwtGuard)
     @Get('validateToken')
     async validateToken(@Req() req: Request,@Body() body:any): Promise<any> {
-        console.log("body ",req.headers['body']) 
-        console.log("user ",req.user['id'])
         if(req.headers['body'] === req.user['id'].toString()){
             return true;
         }
@@ -92,9 +90,9 @@ export class AuthController {
     @Get('2fa/generate')
     async generateQrcode(@Req() req: Request,@Res() res: Response) {
         const { secret, uri } = await this.twoFactorService.generateTwoFactorSecret(req.user['email']);
-        console.log({ secret, uri });
+        //console.log({ secret, uri });
         //const qrCodeImage = await this.generateQrCodeImage(uri);
-        console.log("qrCodeImage :", uri)
+        //console.log("qrCodeImage :", uri)
         //res.set('Content-Type', 'image/png');
         res.send({uri,secret});
         // return qrCodeImage;
@@ -127,13 +125,13 @@ private async generateQrCodeImage(uri: string): Promise<Buffer> {
     @UseGuards(JwtGuard)
     @Post('2fa/verify')
     async verifyTwoFactorToken(@Req() req: Request,@Body() body:any) {
-        const secret = body.token;
-        const isTokenValid = this.twoFactorService.verifyTwoFactorToken(body.token, secret);
-        if (isTokenValid) {
-            await this.twoFactorService.enableTwoFactorAuth(req.user['email'], secret);
-            return true;
-        } else {
-            return false;
-        }
+        console.log("secret :", req)
+        // const isTokenValid = this.twoFactorService.verifyTwoFactorToken(body.token, secret);
+        // if (isTokenValid) {
+        //     await this.twoFactorService.enableTwoFactorAuth(req.user['email'], secret);
+        //     return true;
+        // } else {
+        //     return false; 
+        // }
     }
 }
