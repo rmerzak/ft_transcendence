@@ -24,17 +24,17 @@ const Channels = () => {
   return (
     <div className="">
       <div className="mt-6">
-        <h1 className="text-white text-xl text-center">Channels</h1>
-        <div className="flex justify-center mt-2">
-          <div className="mb-4 border-b border-white w-20"></div>
+        <h1 className="text-white md:text-xl text-center">Channels</h1>
+        <div className="flex justify-center md:mt-2">
+          <div className="md:mb-4 border-b border-white w-16"></div>
         </div>
       </div>
 
-      <div className="rounded-md w-3/4 mx-auto mt-2 scroll-y-auto max-h-[300px]">
+      <div className="rounded-md md:w-3/4 mx-auto mt-2 md:scroll-y-auto md:max-h-[300px]">
         {channels.map((channel) => (
           <div
             key={channel.name}
-            className="flex bg-[#811B77]/50 justify-between items-center p-3 my-[10px] rounded-md text-white hover:bg-[#811B77]/100"
+            className="flex bg-[#811B77]/50 justify-between items-center text-xs md:text-base p-3 my-[6px] md:my-[10px] rounded-md text-white hover:bg-[#811B77]/100"
           >
             <p>#{channel.name}</p>
             <Link href="#">
@@ -50,7 +50,7 @@ const Channels = () => {
           </div>
         ))}
       </div>
-        <div className="my-4 flex justify-center items-center">
+        <div className="my-2 md:my-4 flex justify-center items-center">
           <button onClick={handleNewChannel}>
             <Image
               src="/plus.svg"
@@ -58,7 +58,7 @@ const Channels = () => {
               width={25}
               height={24}
               priority={true}
-              className="w-10 h-10 object-cover"
+              className="h-8 w-8 md:w-10 md:h-10 object-cover"
             />
           </button>
         </div>

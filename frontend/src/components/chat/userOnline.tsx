@@ -50,17 +50,17 @@ const userOnline = () => {
         <div className="flex justify-center items-center space-x-2">
           <input
             type="text"
-            className="bg-gray-300 text-black rounded-full px-2 h-11 w-3/5 focus:outline-none my-3"
+            className="bg-gray-300 text-black rounded-full px-2 h-[32px] md:h-11 w-3/5 focus:outline-none text-xs md:text-base my-3"
             placeholder="Your placeholder text"
           />
-          <button className="rounded-full text-white border w-1/5 h-11">
+          <button className="rounded-full text-white border w-[30%] md:w-1/5 md:h-11 text-xs md:text-base h-[32px]">
             Search
           </button>
         </div>
         <div className="my-5">
-          <h1 className="text-white text-xl  text-center">Online</h1>
-          <div className="flex justify-center mt-2">
-            <div className="mb-4 border-b border-white w-16"></div>
+          <h1 className="text-white md:text-xl text-center">Online</h1>
+          <div className="flex justify-center md:mt-2">
+            <div className="mb-4 border-b border-white w-12 md:w-16"></div>
           </div>
         </div>
         <Swiper
