@@ -12,11 +12,10 @@
   align-items: center;
 }
 
-@media (width <= 390px) {
+@media (width <= 640px) {
   .mySwiper {
     width: 300px;
     height: 65px;
-    background-color: red;
     margin: 0 auto;
     border-radius: 99px;
   }
@@ -32,10 +31,12 @@
   }
 }
 
-/* input[type="radio"] {
-  background-color: #eb1111;
-  border: 2px solid #df0d0d;
-  width: 15px;
-  height: 15px;
-  cursor: pointer;
-} */
+@media (width <= 1280px) {
+  .mySwiper {
+    width: 300px;
+    height: 65px;
+    margin: 0 auto;
+    border-radius: 99px;
+  }
+}
+
