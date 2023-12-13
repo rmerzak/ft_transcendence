@@ -4,8 +4,10 @@ import { useRef, useState, useEffect, FormEvent } from "react";
 import { UsersAPIService } from "../../api/users/users.api";
 import { CloudinaryAPIService } from "@/api/cloudinary/cloudinary.api";
 import TwoFaPopUp from "./TwoFaPopUp";
+import { useRouter } from "next/navigation";
 import axios from "axios";
 const PreAuthForm = () => {
+  const router = useRouter();
   const [user, setUser] = useState<any>("");
   const inputRef = useRef<HTMLInputElement>(null);
   const [image, setImage] = useState<string>("");
@@ -58,6 +60,7 @@ const PreAuthForm = () => {
       UserData.append("username", newUsername);
       UserData.append("twoFa", twoFa.toString());
       UsersAPIService.postFinishAuth(UserData).then((res) => { console.log(res); }).catch((err) => { console.log(err) });
+      router.push("/dashboard");
     } catch (error) {
       console.log(error);
     }

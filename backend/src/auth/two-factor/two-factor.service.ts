@@ -30,8 +30,8 @@ export class TwoFactorService {
                 data: {
                     twoFactorEnabled: true,
                     twoFactorSecret: secret,
-                } ,
-            });
+                },
+            }) ;
         } catch (error) {
             throw error;
         }

@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Get, Req, Res, SetMetadata, UnauthorizedException, UseInterceptors, BadRequestException } from "@nestjs/common";
+import { Controller, Post, Body, UseGuards, Get, Req, Res, SetMetadata, UnauthorizedException, UseInterceptors, BadRequestException, Param } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { AuthDto } from "./Dto";
 import { LeetStrategy } from "./strategy";
@@ -28,16 +28,25 @@ export class AuthController {
         console.log("req.user :", req.user['id'])
         res.cookie('userId', req.user['id']);
         if(req.user['twoFactorEnabled'] === true){
-            res.cookie('twoFactorEnabled', req.user['twoFactorEnabled']);
+            return res.redirect('http://localhost:8080/auth/twofa');
         }
-        if (req.user['isVerified']) {
+        // if (req.user['isVerified']) {
+        //     const { accessToken } = await this.authService.signToken(req.user['id'], req.user['email']);
+        //     res.cookie('accesstoken', accessToken, {httpOnly: true,});
+        //     res.redirect('http://localhost:8080/dashboard/profile');
+        // } else {
+        //     const { accessToken } = await this.authService.signToken(req.user['id'], req.user['email']);
+        //     res.cookie('accesstoken', accessToken, {httpOnly: true,});
+        //     res.redirect('http://localhost:8080/auth/verify');
+        // }
+        if (req.user['isVerified'] === false) {
             const { accessToken } = await this.authService.signToken(req.user['id'], req.user['email']);
             res.cookie('accesstoken', accessToken, {httpOnly: true,});
-            res.redirect('http://localhost:8080/dashboard/profile');
-        } else {
+            return res.redirect('http://localhost:8080/auth/verify');
+    } else {
             const { accessToken } = await this.authService.signToken(req.user['id'], req.user['email']);
             res.cookie('accesstoken', accessToken, {httpOnly: true,});
-            res.redirect('http://localhost:8080/auth/verify');
+            return res.redirect('http://localhost:8080/dashboard/profile');
         }
     }
     @UseGuards(JwtGuard)
@@ -82,10 +91,10 @@ export class AuthController {
     @Get('validateToken')
     async validateToken(@Req() req: Request,@Body() body:any): Promise<any> {
         if(req.headers['body'] === req.user['id'].toString()){
-            return true;
+            return {status:true, user:req.user};
         }
         else {
-            return false;
+            return {status:false, user:req.user};
         }
     }
     @UseGuards(JwtGuard)
@@ -127,12 +136,30 @@ private async generateQrCodeImage(uri: string): Promise<Buffer> {
     @UseGuards(JwtGuard)
     @Post('2fa/verify') 
     async verifyTwoFactorToken(@Req() req: Request,@Body() body:any) {
+        console.log("body :", body)
+        console.log(req.user)
         const isTokenValid = this.twoFactorService.verifyTwoFactorToken(body.code, body.secret);
         if (isTokenValid) {
+            console.log("isTokenValid :", isTokenValid)
             await this.twoFactorService.enableTwoFactorAuth(req.user['email'], body.secret);
             return true;
         } else {
-            return false; 
+            return false;  
+        }
+    }
+
+    @Get('2fa/check/:code') 
+    async checkTwoFactorAuth(@Req() req: Request, @Param('code') code:string, @Res() res: Response) {
+        console.log("body :", code)
+        const userId = req.cookies.userId;
+        const user = await this.authService.findUserById(Number(userId));
+        const isTokenValid = this.twoFactorService.verifyTwoFactorToken(code, user['twoFactorSecret']);
+        console.log("isTokenValid :", isTokenValid)
+        if (isTokenValid) {
+            console.log("i m herre")
+            const { accessToken } = await this.authService.signToken(user['id'], user['email']);
+            res.cookie('accesstoken', accessToken, {httpOnly: true,});
+            res.status(200).json({ success: true });
         }
     }
 }

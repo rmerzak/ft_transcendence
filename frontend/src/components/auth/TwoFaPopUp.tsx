@@ -8,13 +8,10 @@ const TwoFaPopUp = ({ open, onClose, image,secret }: any) => {
     const [code, setCode] = useState<string>("");
     async function handleSubmit(event: any) {
         event.preventDefault();
-        const Data = new FormData();
-        Data.append("code", code);
-        console.log('data', Data.get('code'));
-        Data.append("secret", secret);
         const response = await axios.post('http://localhost:3000/auth/2fa/verify', {code: code, secret: secret}, {
             withCredentials: true,
         });
+        console.log(response);
         if (response.data === true) {
             onClose();
         }

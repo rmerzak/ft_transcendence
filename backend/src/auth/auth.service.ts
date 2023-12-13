@@ -82,7 +82,7 @@ export class AuthService {
                     id: user.id
                 },
                 data: {
-                    isVerified: data.twoFa === 'true' ? true : false,
+                    isVerified: true,
                     username: data.username.length > 0 ? data.username : user.username,
                     image: data.image.length > 0 ? data.image : user.image,
                 }
@@ -119,4 +119,11 @@ export class AuthService {
           return false;
         }
       }
+    async findUserById(id: number) {
+        const user = await this.prisma.user.findUnique({ where: { id } });
+        if (!user) {
+            throw new ForbiddenException('Credentiel incorrect')
+        }
+        return user;
+    }
 }
