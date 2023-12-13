@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import Image from "next/image";
 
@@ -44,7 +45,18 @@ const users = [
     { name: "Mike Brown", avatar: "https://i.pravatar.cc/305" },
 ];
 
-const userOnline = () => {
+const UserOnline = () => {
+  const [istolong, setIstoolong] = useState<boolean>(false);
+  function handleIstolong(isLong: boolean) {
+    return isLong ? 'ah' : 'lla';
+  }
+
+  function makeIstolong(user: any) {
+    if (istolong && user.name.length >= 9)
+      return user.name.substring(0, 9) + "...";
+    else return user.name;
+  }
+
   return (
       <>
         <div className="flex justify-center items-center space-x-2">
@@ -79,10 +91,10 @@ const userOnline = () => {
                   width={60}
                   height={60}
                   priority={true}
-                  className="rounded-full mx-auto hover:cursor-pointer"
+                  className="h-[45px] w-[45px] md:h-[60px] md:w-[60px] rounded-full mx-auto hover:cursor-pointer"
                 />
-                <span className="w-3 bg-green-400 h-3 left-[82px] top-12 rounded-full absolute "></span>
-                <p className="text-white text-center">{user.name}</p>
+                <span className="w-2 md:w-3 bg-green-400 h-2 md:h-3 left-10 top-9 md:left-[82px] md:top-12 rounded-full absolute "></span>
+                <p className={`text-white text-center text-xs md:text-base ${handleIstolong(false)} md:${handleIstolong(true)}`}>{makeIstolong(user)}</p>
               </div>
             </SwiperSlide>
           ))}
@@ -90,4 +102,4 @@ const userOnline = () => {
       </>
   );
 };
-export default userOnline;
+export default UserOnline;

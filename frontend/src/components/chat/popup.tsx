@@ -9,20 +9,20 @@ const Popup: React.FC<PopupProps> = ({ setChannel }) => {
   return (
     <div>
       <div className="fixed top-0 left-0 w-screen h-screen bg-[#000000]/50 z-50 flex justify-center items-center font-inter">
-        <div className="bg-[#311150]/80 w-[550px] h-[300px] rounded-md shadow-lg font-light">
+        <div className="bg-[#311150]/80 w-[550px] h-[300px] rounded-md shadow-lg font-light mx-2">
           <div className="flex justify-center items-center p-3">
-            <h1 className="text-white text-lg">New Channel</h1>
+            <h1 className="text-white md:text-lg">New Channel</h1>
           </div>
           <div className="flex justify-center items-center my-2 w-3/4 mx-auto">
             <div className="w-[90%] h-full flex justify-center items-center bg-[#D9D9D9] rounded-lg">
               <input
                 type="text"
-                className="w-[90%] h-11 rounded-l-lg bg-[#D9D9D9] outline-none px-2 text-lg"
+                className="w-[90%] md:h-11 h-[36px] rounded-l-lg bg-[#D9D9D9] outline-none px-2 md:text-lg text-sm"
                 placeholder="Channel name Ex: #mychannel"
               />
-              <div className="w-[10%]">
+              <div className="w-[10%] mr-2 md:mr-0 ">
                 <svg
-                  className="w-6 h-6 text-gray-500"
+                  className="w-4 h-4 md:w-6 md:h-6 text-gray-500"
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="currentColor"
@@ -35,19 +35,19 @@ const Popup: React.FC<PopupProps> = ({ setChannel }) => {
             </div>
           </div>
           <div className="flex justify-center items-center my-2">
-            <input type="password" name="" id="" className="w-[67.5%] bg-[#D9D9D9] h-11 rounded-lg px-2 text-lg outline-none" placeholder="group password" />
+            <input type="password" name="" id="" className="w-[67.5%] bg-[#D9D9D9] md:h-11 h-[36px] rounded-lg px-2 md:text-lg text-sm outline-none" placeholder="group password" />
           </div>
           <div className="text-white font-light text-lg flex justify-center items-center space-x-1 my-3">
             <fieldset className="flex justify-between items-center space-x-4 w-[67.5%] h-10 p-2" id="safe">
-              <div className="space-x-1 flex justify-center items-center">
-                <input type="radio" name="safe" id="private" className="form-radio text-red-500 focus:ring-red-500" defaultChecked />
+              <div className="space-x-1 flex justify-center items-center text-base md:text-lg">
+                <input type="radio" name="safe" id="private" className="" defaultChecked />
                 <label htmlFor="private">public</label>
               </div>
-              <div className="space-x-1 flex justify-center items-center">
+              <div className="space-x-1 flex justify-center items-center text-base md:text-lg">
                 <input type="radio" name="safe" id="private"/>
                 <label htmlFor="private">private</label>
               </div>
-              <div className="space-x-1 flex justify-center items-center">
+              <div className="space-x-1 flex justify-center items-center text-base md:text-lg">
                 <input type="radio" name="safe" id="private"/>
                 <label htmlFor="private">protected</label>
               </div>
@@ -55,10 +55,10 @@ const Popup: React.FC<PopupProps> = ({ setChannel }) => {
           </div>
           <div className="flex justify-center items-center mt-4 text-sm">
             <div className="flex justify-between w-[67.5%]">
-            <button onClick={setChannel} className="w-[100px] h-[40px] rounded-xl text-white hover:bg-[#811B77]/100 border">
+            <button onClick={setChannel} className="w-[100px] h-9 md:h-[40px] rounded-xl text-white hover:bg-[#811B77]/100 border">
               Cancel
             </button>
-            <button className="bg-[#811B77] w-[100px] h-[40px] rounded-xl text-white hover:bg-[#811B77]/100 border">
+            <button className="bg-[#811B77] w-[100px] h-9 md:h-[40px] rounded-xl text-white hover:bg-[#811B77]/100 border">
               New
             </button>
             </div>

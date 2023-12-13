@@ -44,6 +44,7 @@ const Channels = () => {
                 width={25}
                 height={24}
                 priority={true}
+                draggable={false}
                 className="w-5 h-5 object-cover"
               />
             </Link>
@@ -58,6 +59,7 @@ const Channels = () => {
               width={25}
               height={24}
               priority={true}
+              draggable={false}
               className="h-8 w-8 md:w-10 md:h-10 object-cover"
             />
           </button>

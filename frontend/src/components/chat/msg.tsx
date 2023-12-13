@@ -45,6 +45,7 @@ const Msg = () => {
                 width={25}
                 height={24}
                 priority={true}
+                draggable={false}
                 className="w-10 h-10 object-cover rounded-full"
               />
               <div>
@@ -59,6 +60,7 @@ const Msg = () => {
                 width={25}
                 height={24}
                 priority={true}
+                draggable={false}
                 className="w-5 h-5 object-cover"
               />
             </button>
