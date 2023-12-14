@@ -6,8 +6,8 @@ import { Menu } from "@/constants";
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   // const Menu = ["Profile", "Settings", "Logout"]
-  const menyRef = useRef();
-  const imgRef = useRef();
+  const menyRef = useRef<HTMLDivElement | null>(null); // Change the type to HTMLDivElement | null
+  const imgRef = useRef<HTMLImageElement | null>(null); // Change the type to HTMLImageElement | null
   if (typeof window !== 'undefined') {
     window.addEventListener("click", (e) => {
       if (e.target !== menyRef.current && e.target !== imgRef.current) {

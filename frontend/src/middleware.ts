@@ -25,18 +25,18 @@ async function isValidAccessToken(accessToken: any,userId :any): Promise<boolean
 export async function middleware(req: NextRequest) {
   const cookies  = req.cookies.get("accesstoken");
   const userId = req.cookies.get("userId");
-  const valid = await isValidAccessToken(cookies?.value, userId?.value);
+  const valid: any = await isValidAccessToken(cookies?.value, userId?.value);
   if (!cookies && !userId) {
-    console.log("i m herre one")
+    console.log("i m here one");
+    return NextResponse.redirect(new URL("/", process.env.SERVER_FRONTEND));
+  }
+  if (userId && !cookies) {
+    if (req.nextUrl.pathname !== "/auth/twofa")
       return NextResponse.redirect(new URL("/", process.env.SERVER_FRONTEND));
   }
-  if(userId && !cookies) {
-    if(req.nextUrl.pathname !== "/auth/twofa")
-      return NextResponse.redirect(new URL("/", process.env.SERVER_FRONTEND));
-  }
-  if (valid.user?.isVerified === false) {
-    console.log("i m herre three")
-    if(req.nextUrl.pathname !== "/auth/verify")
+  if (valid?.user?.isVerified === false) {
+    console.log("i m here three");
+    if (req.nextUrl.pathname !== "/auth/verify")
       return NextResponse.redirect(new URL("/auth/verify", process.env.SERVER_FRONTEND));
   }
   // this is the logic to do
