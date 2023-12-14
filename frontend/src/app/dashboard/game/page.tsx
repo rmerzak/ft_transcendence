@@ -6,12 +6,14 @@ import React from 'react';
 
 const Game = () => {
   return (
-    <div className={styles.game_container} >
-      <h1 className={styles.title}>
-        Game
-      </h1>
-      <GameFirstPage />
-    </div>
+    <>
+      <div className={styles.game_container} >
+        <h1 className={styles.title}>
+          Game
+        </h1>
+        <GameFirstPage />
+      </div>
+    </>
   );
 };
 
