@@ -12,10 +12,12 @@ const TwoFa = () => {
     event.preventDefault();
     const response = await axios.get(`http://localhost:3000/auth/2fa/check/` + code, {
       withCredentials: true,
-    });
-    if (response.data.success) {
-      router.push("/dashboard");
-    }
+    }).then((res) => {
+
+      if (res.data.success === true)
+        router.push("/dashboard");
+      console.log(res.data.success);
+    }).catch((err) => { router.push("/");});
   }
 
 

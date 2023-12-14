@@ -42,11 +42,12 @@ const PreAuthForm = () => {
     }
   };
   useEffect(() => {
-    UsersAPIService.getVerify().then((res) => { setUser(res.data); setImage(res.data.image); }).catch((err) => { console.log(err) });
+    UsersAPIService.getVerify().then((res) => { setUser(res.data); setImage(res.data.image); }).catch((err) => { router.push("/"); });
   }, []);
 
   let ii = user?.image;
   async function handleSubmit(event:any) {
+    
     event.preventDefault();
     try {
       if (fil != undefined) {
@@ -55,24 +56,28 @@ const PreAuthForm = () => {
         formData.append("upload_preset", "ping_users");
         ii = await CloudinaryAPIService.ImageName(formData);
       }
-      const UserData = new FormData();
-      UserData.append("image", ii);
-      UserData.append("username", newUsername);
-      UserData.append("twoFa", twoFa.toString());
+
       const response = await axios.post('http://localhost:3000/auth/finish-auth', { image:ii, username:newUsername}, {
         withCredentials: true,
       });
-      if (response.status === 201) {
-        router.push("/dashboard");
-      }
+
+      
+      if (response.data.isVerified === true)
+          router.push('/dashboard/profile');
+      else
+        router.push("/");
     } catch (error) {
       console.log(error);
     }
   }
 
-  async function logout() {
+  async function logout(event:any) {
+
+    
     try {
+      event.preventDefault();
       await UsersAPIService.logout();
+      router.push("/");
     } catch (error) {
       console.log(error);
     }

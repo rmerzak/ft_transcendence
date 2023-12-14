@@ -27,7 +27,6 @@ export async function middleware(req: NextRequest) {
   const userId = req.cookies.get("userId");
   const valid: any = await isValidAccessToken(cookies?.value, userId?.value);
   if (!cookies && !userId) {
-    console.log("i m here one");
     return NextResponse.redirect(new URL("/", process.env.SERVER_FRONTEND));
   }
   if (userId && !cookies) {
@@ -35,15 +34,14 @@ export async function middleware(req: NextRequest) {
       return NextResponse.redirect(new URL("/", process.env.SERVER_FRONTEND));
   }
   if (valid?.user?.isVerified === false) {
-    console.log("i m here three");
     if (req.nextUrl.pathname !== "/auth/verify")
       return NextResponse.redirect(new URL("/auth/verify", process.env.SERVER_FRONTEND));
   }
-  // this is the logic to do
-  // if it his first time to login redirect him to /auth/verify if not /dashboard/profile
-  // if his login required two factor authentication redirect him to /auth/twoFactor then to /dashboard/profile
+  if(req.nextUrl.pathname === "/auth/verify" && !cookies){
+    return NextResponse.redirect(new URL("/", process.env.SERVER_FRONTEND));
+  }
   return NextResponse.next();
 }
 export const config = {
-    matcher:["/dashboard/:path*", "/auth/twofa"]
+    matcher:["/dashboard", "/dashboard/:path*", "/auth/twofa", "/auth/verify"]
 }

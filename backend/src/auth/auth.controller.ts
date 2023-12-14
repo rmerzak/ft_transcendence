@@ -82,6 +82,7 @@ export class AuthController {
     async logout(@Req() req: Request, @Res() res: Response) {
         try {
             res.clearCookie('accesstoken', { httpOnly: true });
+            res.clearCookie('userId', { httpOnly: true });
             res.status(200).json({ message: 'Logout successful' });
         } catch (error) {
             console.error('Logout error:', error);
@@ -102,31 +103,8 @@ export class AuthController {
     @Get('2fa/generate')
     async generateQrcode(@Req() req: Request,@Res() res: Response) {
         const { secret, uri } = await this.twoFactorService.generateTwoFactorSecret(req.user['email']);
-        //console.log({ secret, uri });
-        //const qrCodeImage = await this.generateQrCodeImage(uri);
-        //console.log("qrCodeImage :", uri)
-        //res.set('Content-Type', 'image/png');
         res.send({uri,secret});
-        // return qrCodeImage;
     }
-    // @UseGuards(JwtGuard)
-    // @Get('2fa/generate')
-    // async generateQrcode(@Req() req: Request, @Res() res: Response) {
-    //   try {
-    //     const { secret, uri } = await this.twoFactorService.generateTwoFactorSecret(req.user['email']);
-    //     console.log({ secret, uri });
-  
-    //     const qrCodeImageBuffer = await qrcode.toBuffer(uri, { type: 'png' });
-  
-    //     res.set('Content-Type', 'image/png');
-    //     res.write(qrCodeImageBuffer);
-    //     res.write(`\nSecret: ${secret}`);
-    //     res.end();
-    //   } catch (error) {
-    //     console.error('Error generating QR code:', error);
-    //     res.status(500).send('Internal Server Error');
-    //   }
-    // }
 
 
 private async generateQrCodeImage(uri: string): Promise<Buffer> {
