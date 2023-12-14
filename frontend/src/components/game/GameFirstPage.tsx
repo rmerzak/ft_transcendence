@@ -15,6 +15,7 @@ import './styles.css';
 
 // import required modules
 import { EffectCoverflow, Pagination } from 'swiper/modules';
+import GameCanvas from './GameCanvas';
 
 function GameFirstPage()
 {
@@ -22,7 +23,7 @@ function GameFirstPage()
         <div className={styles.container_for_contents}>
             <div className={styles.left_content}>
                 <h1 className={styles.script}>
-                    Play PingPong Online on the #1 Site!
+                    Play PingPong<br />Online<br />on the #1 Site!
                 </h1>
                 <Image
                     className={styles.scketch}
@@ -34,42 +35,50 @@ function GameFirstPage()
                     priority={true}
                 />
 
-                
-                <h1 className={styles.choose}>
-                    Choose
-                </h1>
+                <div className={styles.type_cont}>
+                    <div className={styles.button_container}>
+                        <h1 className={styles.choose}>
+                                Online
+                        </h1>
 
-                <div className={styles.choose_container}>
-                    <Link href='#'>
-                        <div className={styles.button_online}>
-                            <Image
-                                className={styles.button_icon}
-                                src="/paddle.png"
-                                alt="Scketch of PingPong"
-                                width={50}
-                                height={50}
-                                draggable={false}
-                                priority={true}
-                            />
-                                Play Online
-                        </div>
-                    </Link>
+                        <Link href='#'>
+                            <div className={styles.button_online}>
+                                <Image
+                                    className={styles.button_icon}
+                                    src="/paddle.png"
+                                    alt="Scketch of PingPong"
+                                    width={50}
+                                    height={50}
+                                    draggable={false}
+                                    priority={true}
+                                />
+                                    Play Online
+                            </div>
+                        </Link>
+                    </div>
 
-                    <Link href='#'>
-                        <button className={styles.button_bot}>
-                            <Image
-                                className={styles.button_icon}
-                                src="/bot.png"
-                                alt="Scketch of PingPong"
-                                width={50}
-                                height={50}
-                                priority={true}
-                                draggable={false}
-                            />
-                                Play a Bot
-                        </button>
-                    </Link>
+                    <div className={styles.button_container}>
+                        <h1 className={styles.choose}>
+                                Bot
+                        </h1>
+
+                        <Link href='#'>
+                            <button className={styles.button_bot}>
+                                <Image
+                                    className={styles.button_icon}
+                                    src="/bot.png"
+                                    alt="Scketch of PingPong"
+                                    width={50}
+                                    height={50}
+                                    priority={true}
+                                    draggable={false}
+                                />
+                                    Play a Bot
+                            </button>
+                        </Link>
+                    </div>
                 </div>
+ 
                 
             </div>
 
@@ -145,10 +154,9 @@ function GameFirstPage()
                     Preview
                 </h1>
 
-                <canvas style={{backgroundColor:'#ffffff', width:'60%', marginTop:'2%'}}>
-
-                </canvas>
-
+                <div className={styles.preview}>
+                    <GameCanvas />
+                </div>
             </div>
         </div>
     );

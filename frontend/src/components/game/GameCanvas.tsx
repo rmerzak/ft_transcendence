@@ -33,8 +33,88 @@ function Game() {
 					}
 				});
 
-				const width = 1500; //canvas.width;
-				const height = 650; //canvas.height;
+				const width = 1908; //canvas.width;
+				const height = 1146; //canvas.height;
+
+				let balls: any[] = [];
+
+				let rgb = [
+					"rgb(20, 20, 20)",
+					"rgb(50, 50, 50)",
+					"rgb(100, 100, 100)",
+					"rgb(125, 125, 125)",
+					"rgb(160, 160, 160)",
+					"rgb(200, 200, 200)",
+					"rgb(230, 230, 230)"
+				]
+				
+				
+				
+				const getRandomInt = (min: number, max: number) => {
+					return Math.round(Math.random() * (max - min)) + min;
+				}
+				
+				const easeOutQuart = (x: number) => {
+					return 1 - Math.pow(1 - x, 4);
+				}
+				
+				const drawBalls = () => {
+					for (let i = 0; i < balls.length; i++) {
+						balls[i].update();
+						balls[i].draw();
+					}
+				}
+				
+				class Balls {
+					start: { x: number; y: number; size: number; };
+					end: { x: any; y: any; };
+					x: any;
+					y: any;
+					size: any;
+					style: string;
+					time: number;
+					ttl: number;
+					constructor(ball: { pos: { x: number; y: number; }; }) {
+						this.start = {
+							x:  ball.pos.x + getRandomInt(-20, 20),
+							y:  ball.pos.y + getRandomInt(-20, 20),
+							size: getRandomInt(10,25)
+						}
+						this.end = {
+							x: this.start.x + getRandomInt(-300, 300),
+							y: this.start.y + getRandomInt(-300, 300)
+						}
+				
+						this.x = this.start.x;
+						this.y = this.start.y;
+						this.size = this.start.size;
+				
+						this.style = rgb[getRandomInt(0, rgb.length - 1)];
+				
+						this.time = 0;
+						this.ttl = 120;
+					}
+					draw() {
+						if (ctx)
+						{
+							ctx.fillStyle = this.style;
+							ctx.beginPath();
+							ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+							ctx.closePath();
+							ctx.fill();
+						}
+					}
+					update() {
+						if (this.time <= this.ttl) {
+							let progress = 1 - (this.ttl - this.time) / this.ttl;
+				
+							this.size = this.start.size * (1 - easeOutQuart(progress));
+							this.x = this.x + (this.end.x - this.x) * 0.01;
+							this.y = this.y + (this.end.y - this.y) * 0.01;
+						}
+						this.time++;
+					}
+				}
 
 				canvas.width = width;
 				canvas.height = height;
@@ -61,26 +141,26 @@ function Game() {
 
 					    // Middle dashed line
 					    // ctx.setLineDash([10, 10]); // Set the line dash pattern
-					    ctx.beginPath();
-					    ctx.lineWidth = 5;
-					    ctx.moveTo(width / 2, 0);
-					    ctx.lineTo(width / 2, height);
-					    ctx.stroke();
+					    // ctx.beginPath();
+					    // ctx.lineWidth = 5;
+					    // ctx.moveTo(width / 2, 0);
+					    // ctx.lineTo(width / 2, height);
+					    // ctx.stroke();
 					    // ctx.setLineDash([]); // Reset the line dash to default (solid)
 
 					    // Left solid line
-					    // ctx.beginPath();
-					    // ctx.lineWidth = 15;
-					    // ctx.moveTo(0, 0);
-					    // ctx.lineTo(0, height);
-					    // ctx.stroke();
+					    ctx.beginPath();
+					    ctx.lineWidth = 15;
+					    ctx.moveTo(0, 0);
+					    ctx.lineTo(0, height);
+					    ctx.stroke();
 
 					    // Right solid line
-					    // ctx.beginPath();
-					    // ctx.lineWidth = 15;
-					    // ctx.moveTo(width, 0);
-					    // ctx.lineTo(width, height);
-					    // ctx.stroke();
+					    ctx.beginPath();
+					    ctx.lineWidth = 15;
+					    ctx.moveTo(width, 0);
+					    ctx.lineTo(width, height);
+					    ctx.stroke();
 
 					    // draw cercle in the meddle
 					    // ctx.beginPath();
@@ -110,13 +190,17 @@ function Game() {
 					}
 				  
 					update() {
-					  this.pos.x += this.velocity.x;
-					  this.pos.y += this.velocity.y;
+					  	this.pos.x += this.velocity.x;
+					  	this.pos.y += this.velocity.y;
+
+					  	for (let i = 0; i < 3; i++) {
+							balls.push(new Balls(this));
+						}	
 					}
 				  
 					draw(ctx: CanvasRenderingContext2D) {
-					  ctx.fillStyle = '#891974';
-					  ctx.strokeStyle = '#891974';
+					  ctx.fillStyle = '#ffffff';
+					  ctx.strokeStyle = '#ffffff';
 					  ctx.beginPath();
 					  ctx.arc(this.pos.x, this.pos.y, this.radius, 0, 2 * Math.PI);
 					  ctx.fill();
@@ -150,7 +234,7 @@ function Game() {
 					}
 				  
 					draw(ctx: CanvasRenderingContext2D) {
-					  ctx.fillStyle = '#891974';
+					  ctx.fillStyle = '#ffffff';
 					  ctx.fillRect(this.pos.x, this.pos.y, this.width, this.height);
 					}
 				  
@@ -296,7 +380,7 @@ function Game() {
 					if (ball.pos.x >= width + ball.radius) {
 					  paddle1.score++;
 					  // Update the h3 tag for player 1 score
-					  score_p1.current!.innerHTML = paddle1.score.toString();
+					//   score_p1.current!.innerHTML = paddle1.score.toString();
 					  // Respawn the ball
 					  respawnBall(ball);
 					}
@@ -305,15 +389,15 @@ function Game() {
 					  paddle2.score++;
 					  // Update the h3 tag for player 2 score
 					  
-					  score_p2.current!.innerHTML = paddle2.score.toString();
+					//   score_p2.current!.innerHTML = paddle2.score.toString();
 					  // Respawn the ball
 					  respawnBall(ball);
 					}
 				  };
 
 				let ballObj = new ball(vec2(100, 100), vec2(5, 5), 15);
-				let paddle1 = new paddle(vec2(0, 50), vec2(15, 15), 15, 150);
-				let paddle2 = new paddle(vec2(width - 15, 50), vec2(15, 15), 15, 150);
+				let paddle1 = new paddle(vec2(25, 50), vec2(15, 15), 15, 150);
+				let paddle2 = new paddle(vec2(width - 40, 50), vec2(15, 15), 15, 150);
 
 				const gameUpdate = (keysPressed: { [key: string]: boolean }) => {
 					ballObj.update();
@@ -324,6 +408,7 @@ function Game() {
 					ballCollisionWithThePaddle(ballObj, paddle1);
 					ballCollisionWithThePaddle(ballObj, paddle2);
 					player2AI(ballObj, paddle2);
+					// player2AI(ballObj, paddle1);
 					increaseScore(ballObj, paddle1, paddle2);
 				};
 
@@ -343,6 +428,18 @@ function Game() {
 						return;
 					  }
 				    ctx.clearRect(0, 0, width, height);
+
+					ctx.globalCompositeOperation = 'lighter';
+					drawBalls();
+
+					let temp = [];
+					for (let i = 0; i < balls.length; i++) {
+						if (balls[i].time <= balls[i].ttl) {
+							temp.push(balls[i]);
+						}
+					}
+					balls = temp;
+
 				    ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
 				    // ctx.fillRect(0, 0, width, height);
 				    requestAnimationFrame(gameLoop);
@@ -357,57 +454,10 @@ function Game() {
 		}
 	}, []);
 	return (
-		<>
-	      <div className={styles.title}>
-	        <h1>Game</h1>
-	      </div>
-		  <div className={styles.content}>
-
-		  	<div className={styles.players}>
-
-				<div className={styles.user}>
-					<Link href='#'>
-						<Image 
-							className={styles.player_profile}
-							src="/pong.jpg"
-							alt="bot"
-							width={500}
-							height={500}
-							draggable="false"
-							/>
-					</Link>
-					<h2 className={styles.username}> 
-						User1
-					</h2>
-				</div>
-				<h2 className={styles.vs_style}>
-					Vs
-				</h2>
-				<div className={styles.user}>
-					<Link href='#'>
-						<Image
-							className={styles.player_profile}
-							src='/bot.png'
-							alt="pong"
-							width={500}
-							height={500}
-							draggable="false"
-							priority={true}
-						/>
-					</Link>
-					<h2 className={styles.username}> 
-						Bot
-					</h2>
-				</div>
-			</div>
+		<div className={styles.canvas_container}>		 
 			<canvas ref={canvasRef} className={styles.game_canvas}>
 			</canvas>
-			<div className={styles.score}>
-				<h3 ref={score_p1} className={styles.score_1}> 0 </h3>
-				<h3 ref={score_p2} className={styles.score_2}> 0 </h3>
-			</div>
-		  </div>
-	 	</>
+		</div>
 	);
 }
 
