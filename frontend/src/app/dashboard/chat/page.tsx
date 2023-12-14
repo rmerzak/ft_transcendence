@@ -1,6 +1,7 @@
 import UserOnline from "@/components/chat/userOnline";
 import Channels from "@/components/chat/channels";
 import Message from "@/components/chat/msg";
+import MsgShow from "@/components/chat/msgshow";
 
 const Chat = () => {
   return (
@@ -16,22 +17,7 @@ const Chat = () => {
           <Message />
         </div>
         {/* message show here */}
-        <div className="bg-[#5D5959]/40 w-[66%] text-white h-[1090px] rounded-3xl p-4 hidden md:block">
-          <div>
-            <div className="w-full flex justify-center items-center space-x-2">
-              <span className="bg-orange-300 rounded-full h-3 w-3"></span>
-              <h1 className="text-xl font-thin">User here</h1>
-            </div>
-            <div className="flex justify-center">
-              <hr className="w-1/5" />
-            </div>
-          </div>
-          <div className="flex justify-center my-3 bg-slate-400">
-            <div>
-              msg here
-            </div>
-          </div>
-        </div>
+        <MsgShow />
       </div>
     </div>
   );

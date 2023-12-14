@@ -7,7 +7,7 @@ interface PopupProps {
 
 const Popup: React.FC<PopupProps> = ({ setChannel }) => {
   return (
-    <div>
+    <>
       <div className="fixed top-0 left-0 w-screen h-screen bg-[#000000]/50 z-50 flex justify-center items-center font-inter">
         <div className="bg-[#311150]/80 w-[550px] h-[300px] rounded-md shadow-lg font-light mx-2">
           <div className="flex justify-center items-center p-3">
@@ -65,7 +65,7 @@ const Popup: React.FC<PopupProps> = ({ setChannel }) => {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 export default Popup;
