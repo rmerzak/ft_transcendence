@@ -59,8 +59,12 @@ const PreAuthForm = () => {
       UserData.append("image", ii);
       UserData.append("username", newUsername);
       UserData.append("twoFa", twoFa.toString());
-      UsersAPIService.postFinishAuth(UserData).then((res) => { console.log(res); }).catch((err) => { console.log(err) });
-      router.push("/dashboard");
+      const response = await axios.post('http://localhost:3000/auth/finish-auth', { image:ii, username:newUsername}, {
+        withCredentials: true,
+      });
+      if (response.status === 201) {
+        router.push("/dashboard");
+      }
     } catch (error) {
       console.log(error);
     }

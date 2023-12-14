@@ -57,8 +57,9 @@ export class AuthController {
 
     @UseGuards(JwtGuard)
     @Post('finish-auth')
-    async FinishAuth(@Req() req: Request, @Res() res: Response) {
-        return await this.authService.finishAuth(req.body, req.user['email']);
+    async FinishAuth(@Req() req: Request,@Body() body:any) {
+        console.log("body :", body)
+        return await this.authService.finishAuth(body, req.user['email']);
     }
 
     @Post('upload')
