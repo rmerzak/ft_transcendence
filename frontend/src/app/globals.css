@@ -115,3 +115,8 @@ radial-gradient(at 0% 100%, hsla(5,88%,55%,1) 0px, transparent 50%);
 button:hover{
     background-color: #539D98;
  }
+
+ .bg-mberri {
+    background-color: rgba(31, 12, 51, 0.60);
+    border-radius: 20px;
+}
