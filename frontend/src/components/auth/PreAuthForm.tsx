@@ -15,7 +15,6 @@ const PreAuthForm = () => {
   const [open, setOpen] = useState<boolean>(false);
   const [qrCodeImage, setQrCodeImage] = useState('');
   const [secret, setSecret] = useState('');
-  
   const [newUsername, setUsername] = useState<string>("");
   const [twoFa, settwoFa] = useState<boolean>(false);
   const fetchQrCode = async () => {

@@ -3,14 +3,30 @@ import ProfileInformation from "@/components/profile/ProfileInformation"
 import MatchHistory from "@/components/profile/MatchHistory"
 import Achievements from "@/components/profile/Achievements"
 import Statistics from "@/components/profile/Statistics"
+import { data } from "@/data/MatchHistory"
 const Profile = () => {
   return (
     <>
-    <div>
-    <ProfileInformation />
-    <MatchHistory />
-    <Achievements />
-    <Statistics />
+    {/* <div>
+      <div className="h-[200px]">
+      </div>
+      <MatchHistory />
+
+    </div> */}
+
+    <div className="py-8 mx-2">
+      <div className="w-full h-[250px] bg-mberri border-spacing-1 border-[#ffff]">
+    {/* <ProfileInformation /> */}
+      </div>
+      <div className="flex flex-row">
+        <div className="w-[33.33%] h-full bg-indigo-500">
+        <Achievements />
+        <Statistics />
+        </div>
+        <div className=" w-[66.33%]">
+        <MatchHistory data={data} head={["Player","Result","Opponents"]}/>
+        </div>
+      </div>
     </div>
     </>
   )
