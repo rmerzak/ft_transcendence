@@ -18,12 +18,12 @@ const Profile = () => {
       <div className="w-full h-[250px] bg-mberri border-spacing-1 border-[#ffff]">
     {/* <ProfileInformation /> */}
       </div>
-      <div className="flex flex-row">
+      <div className="flex md:flex-row flex-col">
         <div className="w-[33.33%] h-full bg-indigo-500">
         <Achievements />
         <Statistics />
         </div>
-        <div className=" w-[66.33%]">
+        <div className=" md:w-[66.33%]">
         <MatchHistory data={data} head={["Player","Result","Opponents"]}/>
         </div>
       </div>
