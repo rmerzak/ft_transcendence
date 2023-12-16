@@ -1,10 +1,25 @@
+'use client';
 import UserOnline from "@/components/chat/userOnline";
 import Channels from "@/components/chat/channels";
 import Message from "@/components/chat/msg";
 import MsgShow from "@/components/chat/msgshow";
+import { useEffect } from "react";
+import io from "socket.io-client";
 
 const Chat = () => {
   
+  useEffect(() => {
+    const socket = io("http://localhost:3000");
+    //some code here
+    socket.on("message", (message) => {
+      console.log(message);
+    });
+    socket.emit("test", "hello");
+    return () => {
+      socket.disconnect();
+    }
+  }, []);
+
   return (
     <div className="w-full bg-[#311251]/80 md:rounded-3xl rounded-t-md md:w-[95%] md:h-[90%] md:mt-6 md:overflow-auto md:mx-auto md:shadow-lg">
       <h1 className="text-white md:text-2xl text-lg md:font-bold text-center m-2 p-1 md:m-4 md:p-2 font-inter w-full">

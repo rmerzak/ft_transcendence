@@ -55,7 +55,7 @@ const MsgShow = () => {
                 width={20}
                 height={20}
                 draggable={false}
-                className="cursor-pointer"
+                className="cursor-pointer h-5 w-5"
               />
             </div>
             <div className=" bg-gray-300 text-black flex justify-center items-center w-[30%] space-x-2 h-9 rounded-3xl font-light">
