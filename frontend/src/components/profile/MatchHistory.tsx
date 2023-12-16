@@ -50,7 +50,7 @@ const MatchHistory = ({ data, head }: { data: MatchHistoryItemInterface[]; head:
 
     return (
         <>
-            <div className="flex items-center justify-between h-[40px] bg-head text-white">
+            <div className="flex items-center justify-between h-[40px] bg-head text-white text-[14px] md:text-[16px]">
                 {head.map((item, index) => (
                     <div className="w-1/2 flex items-center justify-center" key={index}>
                         {item}
