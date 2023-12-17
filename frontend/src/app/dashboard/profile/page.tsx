@@ -15,11 +15,11 @@ const Profile = () => {
     </div> */}
 
     <div className="py-8 mx-2">
-      <div className="w-full h-[250px] bg-mberri border-spacing-1 border-[#ffff]">
-      {/* <ProfileInformation /> */}
+      <div className="w-full h-[250px] border-spacing-1 border-[#ffff]">
+      { <ProfileInformation />}
       </div>
       <div className="flex md:flex-row flex-col">
-        <div className="w-[33.33%] h-full bg-mberri">
+        <div className="w-[33.33%] h-full">
         <Achievements />
         <Statistics />
         </div>
