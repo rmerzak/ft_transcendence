@@ -140,7 +140,10 @@ button:hover{
     border-radius: 12px;
 }
 
-
+.bg-navbar {
+    background-color: rgba(31, 12, 51, 0.60);
+    border-radius: 12px;
+}
 
 .bg-custom-green {
     background-color: #00FF29;
