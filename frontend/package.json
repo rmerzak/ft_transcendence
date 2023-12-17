@@ -11,6 +11,7 @@
   "dependencies": {
     "@cloudinary/react": "^1.11.2",
     "@cloudinary/url-gen": "^1.13.0",
+    "@headlessui/react": "^1.7.17",
     "@iconify/react": "^4.1.1",
     "@next/eslint-plugin-next": "14.0.1",
     "axios": "^1.6.2",

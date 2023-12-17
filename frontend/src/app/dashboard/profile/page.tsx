@@ -1,10 +1,15 @@
-
+'use client'
 import ProfileInformation from "@/components/profile/ProfileInformation"
 import MatchHistory from "@/components/profile/MatchHistory"
 import Achievements from "@/components/profile/Achievements"
 import Statistics from "@/components/profile/Statistics"
 import { data } from "@/data/MatchHistory"
+import { useContext } from "react"
+import { ContextGlobal } from "@/context/contex"
+import { useEffect } from "react"
+import { getUserInfo } from "@/api/user/user"
 const Profile = () => {
+
   return (
     <>
     {/* <div>
@@ -13,9 +18,8 @@ const Profile = () => {
       <MatchHistory />
 
     </div> */}
-
     <div className="py-8 mx-2">
-      <div className="w-full h-[250px] bg-mberri border-spacing-1 border-[#ffff]">
+      <div className="w-full h-[250px] bg-mberri border-spacing-1 text-white">
       {/* <ProfileInformation /> */}
       </div>
       <div className="flex md:flex-row flex-col">

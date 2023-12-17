@@ -1,11 +1,13 @@
 "use client";
 
 import { color } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { QrCode } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { ContextGlobal } from "@/context/contex";
 const TwoFa = () => {
+  const { profile, setProfile } = useContext(ContextGlobal);
   const router = useRouter();
   const [code, setCode] = useState<string>("");
   async function handleSubmit(event: any) {
@@ -14,8 +16,10 @@ const TwoFa = () => {
       withCredentials: true,
     }).then((res) => {
 
-      if (res.data.success === true)
-        router.push("/dashboard");
+      if (res.data.success === true){
+        setProfile({...profile, twoFactorEnabled: true});
+        router.push("/dashboard/profile");
+      }
       console.log(res.data.success);
     }).catch((err) => { router.push("/");});
   }
