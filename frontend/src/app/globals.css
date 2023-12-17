@@ -116,12 +116,6 @@ button:hover{
     background-color: #539D98;
  }
 
-.bg_container
-{
-    margin : 30px;
-}
-
-
  .bg-mberri {
     /*background-color: rgba(31, 12, 51, 0.60);*/
     border-radius: 6px;
@@ -136,10 +130,17 @@ button:hover{
 .bg-mberri1{
     font-size: 12px;
     width: 100%;
-    height: 50%;
+    height: 53%;
     background-color: rgba(31, 12, 51, 0.60);
     /* filter: blur(1px); */
 }
+
+.bg-achievements {
+    background-color: rgb(90, 90, 90, 0.40);
+    border-radius: 12px;
+}
+
+
 
 .bg-custom-green {
     background-color: #00FF29;

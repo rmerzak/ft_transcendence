@@ -7,22 +7,18 @@ const ProfileInformation = () => {
     <div className="bg-mberri1 flex items-center justify-evenly w-full backdrop-blur-sm relative">
        <div>
             <p className="text-[#CE6FF5]">First Name</p>
-            <br></br>
             <p className="text-[#FFFFFF] text-opacity-50">Name</p>
         </div>
         <div>
             <p className="text-[#CE6FF5]">Last Name</p>
-            <br></br>
             <p className="text-[#FFFFFF] text-opacity-50">Name</p>
         </div>
         <div>
             <p className="text-[#CE6FF5]">Nick Name</p>
-            <br></br>
             <p className="text-[#FFFFFF] text-opacity-50">Name</p>
         </div>
         <div>
             <p className="text-[#CE6FF5]">Email</p>
-            <br></br>
             <p className="text-[#FFFFFF] text-opacity-50">test@student.1337.ma</p>
         </div>
        </div>

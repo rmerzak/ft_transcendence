@@ -19,7 +19,7 @@ const Profile = () => {
       { <ProfileInformation />}
       </div>
       <div className="flex md:flex-row flex-col">
-        <div className="w-[33.33%] h-full">
+        <div className="pb-6 bg-achievements w-[33.33%] h-full backdrop-blur-lg mx-2">
         <Achievements />
         <Statistics />
         </div>

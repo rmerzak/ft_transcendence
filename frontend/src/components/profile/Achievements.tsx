@@ -13,9 +13,8 @@ const Achievements = () => {
 
   return (
     <>
-    <div className="text-white text-[24px] font-thin w-full flex items-center justify-center pt-5">
-        Achievements :
-    </div>
+    <div className="pb-2 text-gray-400 text-[18px]font-thin w-full flex items-center justify-center pt-4">Achievements</div>
+    <div className="border-b border-gray-400 w-[60px] mx-auto mb-4"></div>
     <div className="grid grid-cols-4 gap-4">
       {achievements.map((achievement, index) => (
         <img key={index} src={`/Achievements/${achievement}`} alt={`Achievement ${index + 1}`} className="rounded-full"/>
