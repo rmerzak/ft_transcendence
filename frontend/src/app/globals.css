@@ -116,24 +116,35 @@ button:hover{
     background-color: #539D98;
  }
 
+.bg_container
+{
+    margin : 30px;
+}
+
+
  .bg-mberri {
-    /*background-color: rgba(31, 12, 51, 0.60);
-    border-radius: 10px;*/
+    /*background-color: rgba(31, 12, 51, 0.60);*/
+    border-radius: 10px;
     position: relative;
-    background-image: url('/bg_ping-pong.png');
+    background-image: url('/bg-ping-pong.jpeg');
     background-size: cover;
     background-position: center;
     width: 100%;
     height: 100%;
+    box-shadow : 0 4px 8px 8px rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 .bg-mberri1{
     font-size: 12px;
-    width: 50%;
-    height: 20%;
+    width: 100%;
+    height: 50%;
     background-color: rgba(31, 12, 51, 0.60);
-    border-radius: 10px;
+    /* filter: blur(1px); */
 }
+
+.bg-custom-green {
+    background-color: #00FF29;
+  }  
 
 .bg-head {
     background-color: rgba(182, 176, 176, 0.14);

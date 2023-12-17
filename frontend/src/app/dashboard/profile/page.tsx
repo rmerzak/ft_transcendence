@@ -15,7 +15,7 @@ const Profile = () => {
     </div> */}
 
     <div className="py-8 mx-2">
-      <div className="w-full h-[250px] border-spacing-1 border-[#ffff]">
+      <div className=" w-full h-[250px] border-spacing-1 mb-3 border-[#ffff]">
       { <ProfileInformation />}
       </div>
       <div className="flex md:flex-row flex-col">
