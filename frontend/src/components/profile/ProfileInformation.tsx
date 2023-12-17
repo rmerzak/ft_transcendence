@@ -3,37 +3,41 @@ import Image from "next/image"
 
 const ProfileInformation = () => {     
     return (     
-    <div className="bg-mberri w-full">
-    <div className=" w-full flex items-end justify-between">
-       <div className="relative ">
-            <div className="w-[120px] h-[120px] rounded-full">
+    <div className="bg-mberri w-full flex items-end relative">
+    <div className="bg-mberri1 flex items-center justify-evenly w-full backdrop-blur-sm relative">
+       <div>
+            <p className="text-[#CE6FF5]">First Name</p>
+            <br></br>
+            <p className="text-[#FFFFFF] text-opacity-50">Name</p>
+        </div>
+        <div>
+            <p className="text-[#CE6FF5]">Last Name</p>
+            <br></br>
+            <p className="text-[#FFFFFF] text-opacity-50">Name</p>
+        </div>
+        <div>
+            <p className="text-[#CE6FF5]">Nick Name</p>
+            <br></br>
+            <p className="text-[#FFFFFF] text-opacity-50">Name</p>
+        </div>
+        <div>
+            <p className="text-[#CE6FF5]">Email</p>
+            <br></br>
+            <p className="text-[#FFFFFF] text-opacity-50">test@student.1337.ma</p>
+        </div>
+       </div>
+       <div className="w-full flex items-end justify-between absolute top-12 left-0">
+       <div>
+            <div className="relative w-[120px] h-[120px] rounded-full">
                 <Image src="/dfpic.png" alt="profile pic" width={100} height={100}/>
                     <div className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 text-[50px] h-[15px] w-[15px] rounded-full bg-custom-green"></div>
             </div>
         </div>
         <div>
-       <p className="text-white font-bold text-400 text-center" style={{fontSize: '1.4vw', marginRight: "10px"}}>Freax</p>
-       <Image src="/freax.png" alt="freax" width={100} height={100} style={{width: "50px", height: "100px", marginRight: "10px"}}/>
+       <p className="text-gray-300 font-thin ml-1">Freax</p>
+       <Image src="/freax.png" alt="freax" width={100} height={100} style={{width: "50px", height: "101px", marginRight: "5px"}}/>
        </div>
     </div>
-    <div className=" bg-mberri1 flex items-center justify-evenly w-full ">
-       <div>
-            <p className="text-[#CE6FF5]">First Name</p>
-            <p className="text-[#FFFFFF] text-opacity-50">Name</p>
-        </div>
-        <div>
-            <p className="text-[#CE6FF5]">Last Name</p>
-            <p className="text-[#FFFFFF] text-opacity-50">Name</p>
-        </div>
-        <div>
-            <p className="text-[#CE6FF5]">Nick Name</p>
-            <p className="text-[#FFFFFF] text-opacity-50">Name</p>
-        </div>
-        <div>
-            <p className="text-[#CE6FF5]">Email</p>
-            <p className="text-[#FFFFFF] text-opacity-50">test@student.1337.ma</p>
-        </div>
-       </div>
     </div>
     )
 }
