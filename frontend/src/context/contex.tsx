@@ -3,7 +3,10 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 import { User } from '@/interfaces';
 
-export const ContextGlobal = createContext({});
+export const ContextGlobal = createContext({
+  setProfile() {},
+  profile: null
+});
 
 export const ContextProvider = ({ children }: { children: any }) => {
   const [profile, setProfile] = useState<User | null>({
@@ -21,5 +24,5 @@ export const ContextProvider = ({ children }: { children: any }) => {
     return <ContextGlobal.Provider value={{
       profile,
       setProfile
-  }} > {children} </ContextGlobal.Provider>;
+  } } > {children} </ContextGlobal.Provider>;
 };

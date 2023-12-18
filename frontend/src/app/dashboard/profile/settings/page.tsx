@@ -10,9 +10,9 @@ function Settings() {
         <>
             <div className="flex flex-col items-center justify-center h-[calc(70%)]">
                 <div className="flex flex-col items-center justify-center w-full flex-1 px-5 md:px-20 text-center">
-                    <div className="text-white font-bold text-[48px]">Settings: </div>
+                    <div className="text-white font-bold md:text-[48px] border">Settings: </div>
                     <PreAuthForm exit={false} />
-                    <div className='text-white'>
+                    <div className='text-white bg-[#311251] w-[380px] md:w-[500px] border'>
                         {profile?.twoFactorEnabled == true ? "2FA is enabled" : "2FA is disabled"}
                         {
                             profile?.twoFactorEnabled == true ? <form>
