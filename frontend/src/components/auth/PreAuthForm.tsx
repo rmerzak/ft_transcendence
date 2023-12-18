@@ -8,6 +8,8 @@ import { Switch } from '@headlessui/react'
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { ContextGlobal } from "@/context/contex";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const PreAuthForm = ({ exit }: { exit: boolean }) => {
   const router = useRouter();
   const [user, setUser] = useState<any>("");
@@ -65,7 +67,12 @@ const PreAuthForm = ({ exit }: { exit: boolean }) => {
       });
       if (response.data.isVerified === true) {
         setProfile(response.data); // must find the error here
-        router.push('/dashboard/profile');
+        if(exit == true)
+          router.push('/dashboard/profile');
+        else{
+          toast("Profile updated successfully!")
+        }
+          
       }
       else
         router.push("/");
@@ -85,9 +92,9 @@ const PreAuthForm = ({ exit }: { exit: boolean }) => {
   }
   return (
     <>
-      <form onSubmit={handleSubmit} className="bg-[#311251] drop-shadow-2xl w-[380px] md:w-[500px] bg-opacity-50 pb-10 rounded-2xl  flex items-center justify-center flex-col max-w-4xl">
+      <form onSubmit={handleSubmit} className="bg-[#311251] drop-shadow-2xl w-[260px] md:w-[500px] bg-opacity-50 pb-10 rounded-2xl  flex items-center justify-center flex-col max-w-4xl">
 
-        <div onClick={handleImageClick} className="w-[150px]  h-[150px] rounded-full">
+        <div onClick={handleImageClick} className="w-[100px]  h-[100px] md:w-[150px]  md:h-[150px] rounded-full">
           <img src={image} className="rounded-full" />
           <label htmlFor="file"></label>
           <input type="file"
@@ -98,7 +105,7 @@ const PreAuthForm = ({ exit }: { exit: boolean }) => {
 
         <div className="flex items-center bg-white mt-6 border-[0.063rem] rounded-[1rem] overflow-hidden relative ">
           <label htmlFor="name"></label>
-          <input type="text" onChange={(e) => { setUsername(e.target.value); }} id="name" placeholder={`default: ${user?.username}`} className="w-[20.438rem] h-[2.75rem] pl-[1.063rem] leading-normal" />
+          <input type="text" onChange={(e) => { setUsername(e.target.value); }} id="name" placeholder={`default: ${user?.username}`} className="w-[15.438rem] h-[2.5rem] md:w-[20.438rem] md:h-[2.75rem] pl-[1.063rem] leading-normal" />
           <User className="absolute right-3" />
         </div>
 
@@ -120,6 +127,7 @@ const PreAuthForm = ({ exit }: { exit: boolean }) => {
         </div>
       </form>
       <TwoFaPopUp open={open} onClose={() => setOpen(false)} image={qrCodeImage} secret={secret} />
+      <ToastContainer />
     </>
   )
 }

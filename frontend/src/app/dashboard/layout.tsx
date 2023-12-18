@@ -3,20 +3,13 @@ import { getUserInfo } from '@/api/user/user';
 import Navbar from '@/components/dashboard/navbar/navbar'
 import Sidebar from '@/components/dashboard/sidebar/sidebar'
 import { ContextGlobal, ContextProvider } from '@/context/contex';
+import axios from 'axios';
 import { useContext, useEffect } from 'react';
 const Layout = ({children} : any) => {
-  // const { profile, setProfile } = useContext(ContextGlobal);
-  // useEffect(() => {
-  //   async function getUser() {
-  //     try {
-  //       const res = await getUserInfo();
-  //       setProfile(res.data);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   }
-  //   getUser();
-  // }, []);
+  const { profile, setProfile } = useContext(ContextGlobal);
+  useEffect(() => {
+    const user = axios.get(`http://localhost:3000/users/me`).then((res) => {setProfile(res.data);}).catch((err) => { console.log(err)});
+  }, []);
     return (
       <div className="flex login-gradient">
         <ContextProvider>

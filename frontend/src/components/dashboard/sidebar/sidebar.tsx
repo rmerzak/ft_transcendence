@@ -38,27 +38,22 @@ const Sidebar = () => {
   const [expanded, setExpanded] = useState(true);
   const currentRoute = usePathname();
   return (
-    <aside className={`h-screen shadow-lg shadow-[#78196F]  bg-fuchsia-900/50 ${expanded ? "w-40" : "md:w-20 w-15"}`}>
+    <aside className={`h-screen shadow-lg shadow-[#78196F]  bg-fuchsia-900/50 md:w-40`}>
       <nav className={`h-full w-fill flex flex-col  `}>
         <div className='flex items-center justify-between mt-8 mb-32 scroll-pl-6 '>
-          <img src="/pingsvg.svg" alt="42" className={`overflow-hidden transition-all ${expanded ? "w-10" : "w-0 "}`} />
-          <span className={`text-white font-bold ${expanded ? "w-20" : "hidden"}`}>PingPong</span>
-          <div onClick={() => setExpanded(curr => !curr)} className='p-1 rounded-lg  bg-gray-50 hover:bg-slate-100 cursor-pointer'>
-            {expanded ? <ChevronLeft size={20} className='rounded-full' /> : <ChevronRight size={20} />}
-          </div>
+          <img src="/pingsvg.svg" alt="42" className={`overflow-hidden transition-all md:w-10 w-0`} />
+          <span className={`text-white font-bold md:w-20 lg:block hidden`}>PingPong</span>
         </div>
         {sidebarItems.map(({ icon, to, text }, index) => (
           <Link key={index} href={to}>
-            <li className={` ${currentRoute === to ? " bg-[#78196F]" : "text-white"} relative flex items-center py-2 px-3 my-1 font-medium rounded-md cursor-pointer transition-colors group text-white ${expanded ? "w-35 ml-3" : "w-15"}`}>
+            <li className={` ${currentRoute === to ? " bg-[#78196F]" : "text-white"} relative flex items-center py-2 px-3 my-1 font-medium rounded-md cursor-pointer transition-colors group text-white md:w-35 md:ml-3 w-15`}>
               {icon}
-              <span className={` overflow-hidden transition-all  ${expanded ? "w-35 ml-3" : "w-0"}`}>
+              <span className={` overflow-hidden transition-all  md:w-35 md:ml-3 hidden lg:block`}>
                 {text}
               </span>
-              {!expanded && (
                 <div className={` absolute left-full rounded-md px-2 py-1 ml-6 bg-indigo-100 text-indigo-800 text-sm invisible opacity-20 -translate-x-3 transition-all group-hover:visible group-hover:opacity-100 group-hover:translate-x-0`}>
                   {text}
                 </div>
-              )}
             </li>
           </Link>
         ))}
