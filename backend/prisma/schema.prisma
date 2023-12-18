@@ -45,6 +45,9 @@ model User {
   gamepoints Int @default(0)
   
   games Game[]
+
+  // Chat user data]
+  // messages Message[] @relation(name: "users")
 }
 
 model Game {
@@ -57,3 +60,37 @@ model Game {
   dateStart DateTime
   user User @relation(fields: [userPlayerId], references: [id])
 }
+
+// model ChatRoom {
+//   id Int @id @default(autoincrement())
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+//   name String
+//   password String?
+//   isPrivate Boolean @default(false)
+//   message Message[] @relation(name: "rooms")
+// }
+
+
+// model Message {
+//   id Int @id @default(autoincrement())
+//   createdAt DateTime @default(now())
+//   content String
+//   imageUrl String?
+//   user User @relation(name: "users", fields: [userId], references: [id], onDelete: Cascade)
+//   userId Int
+//   chatRoom ChatRoom @relation(name: "rooms", fields: [chatRoomId], references: [id], onDelete: Cascade)
+//   chatRoomId Int
+// }
+
+// model UserChatRoom {
+//   id Int @id @default(autoincrement())
+//   userId Int
+//   chatRoomId Int
+
+//   // Foreign keys
+//   user User @relation(fields: [userId], references: [id])
+//   chatRoom ChatRoom @relation(fields: [chatRoomId], references: [id])
+
+//   // ... other fields ...
+// }

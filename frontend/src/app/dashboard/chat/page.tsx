@@ -8,20 +8,52 @@ import io from "socket.io-client";
 
 const Chat = () => {
   
+  // useEffect(() => {
+  //   const socket = io("http://localhost:3000");
+  //   // console.log(socket.connected);
+  //   // socket.connect();
+  //   //some code here
+  //   console.log(socket.connected);
+  //   socket.emit('message', 'Hello World');
+  //   socket.on('message', (data) => {
+  //     console.log(data);
+  //   });
+
+  //   return () => {
+  //     console.log("disconnect");
+  //     socket.disconnect();
+  //   }
+  // }, []);
+
   useEffect(() => {
-    const socket = io("http://localhost:3000");
-    //some code here
-    socket.emit('message', 'Hello World');
-    socket.on('message', (data) => {
-      console.log(data);
+    const socket = io("http://localhost:3000", {
+      autoConnect: false,
     });
-
+  
+    socket.connect();
+    // Listen for the 'connect' event
+    socket.on('connect', () => {
+      console.log('Connected to the server');
+      
+      // Now you can perform operations after the connection is established
+      console.log(socket);
+      socket.emit('message', 'Hello World');
+      socket.on('message', (data) => {
+        console.log(data);
+      });
+    });
+  
+    // Listen for the 'disconnect' event
+    // socket.on('disconnect', () => {
+    //   console.log("Disconnected from the server");
+    // });
+  
+    // Cleanup function
     return () => {
-      console.log("disconnect");
+      console.log("Cleanup: Disconnecting socket");
       socket.disconnect();
-    }
+    };
   }, []);
-
   return (
     <div className="w-full bg-[#311251]/80 md:rounded-3xl rounded-t-md md:w-[95%] md:h-[90%] md:mt-6 md:overflow-auto md:mx-auto md:shadow-lg">
       <h1 className="text-white md:text-2xl text-lg md:font-bold text-center m-2 p-1 md:m-4 md:p-2 font-inter w-full">

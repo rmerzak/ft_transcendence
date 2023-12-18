@@ -19,6 +19,7 @@ export class GatewayGateway
   @WebSocketServer()
   server: Server;
 
+  constructor() {}
   handleConnection(_client: any) {
     console.log('connected: ' + _client.id);
   }
@@ -27,7 +28,7 @@ export class GatewayGateway
     console.log('disconnected: ' + _client.id);
   }
 
-  @SubscribeMessage('message')
+  @SubscribeMessage('sendmessage')
   handleMessage(
     @MessageBody() data: string,
     @ConnectedSocket() client: Socket,
