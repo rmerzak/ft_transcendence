@@ -5,6 +5,7 @@ import styles from '../../app/dashboard/game/page.module.css'
 import Image from 'next/image'
 import { useEffect, useRef } from 'react';
 
+
 function Game({imgIndex}: {imgIndex: number}){
 
 	const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -37,15 +38,33 @@ function Game({imgIndex}: {imgIndex: number}){
 
 				let balls: any[] = [];
 
-				let rgb = [
-					"rgb(20, 20, 20)",
-					"rgb(50, 50, 50)",
-					"rgb(100, 100, 100)",
-					"rgb(125, 125, 125)",
-					"rgb(160, 160, 160)",
-					"rgb(200, 200, 200)",
-					"rgb(230, 230, 230)"
-				]
+				let rgb: string | any[] = []
+				
+
+				if (imgIndex === 0)
+				{
+					rgb = [
+						"rgb(20, 20, 20)",
+						"rgb(50, 50, 50)",
+						"rgb(100, 100, 100)",
+						"rgb(125, 125, 125)",
+						"rgb(160, 160, 160)",
+						"rgb(200, 200, 200)",
+						"rgb(230, 230, 230)"
+					]
+				}
+				else if (imgIndex === 1)
+				{
+					rgb = [
+						"rgb(0, 0, 0)",
+						"rgb(10, 10, 10)",
+						"rgb(20, 20, 20)",
+						"rgb(30, 30, 30)",
+						"rgb(40, 40, 40)",
+						"rgb(50, 50, 50)",
+						"rgb(60, 60, 60)"
+					]
+				}
 
 
 
@@ -119,7 +138,15 @@ function Game({imgIndex}: {imgIndex: number}){
 
 				const drawGameScreen = () => {
 					if (ctx) {
-						ctx.strokeStyle = '#ffffff';
+						if (imgIndex === 0)
+						{
+							ctx.fillStyle = '#000000';
+						} 
+						else if (imgIndex === 1)
+						{
+							ctx.fillStyle = '#ffffff';
+						}
+
 
 						// Top solid line
 						ctx.beginPath();
@@ -193,8 +220,16 @@ function Game({imgIndex}: {imgIndex: number}){
 					}
 
 					draw(ctx: CanvasRenderingContext2D) {
-						ctx.fillStyle = '#ffffff';
-						ctx.strokeStyle = '#ffffff';
+						if (imgIndex === 0)
+						{
+							ctx.fillStyle = '#ffffff';
+							ctx.strokeStyle = '#ffffff';
+						}
+						else if (imgIndex === 1)
+						{
+							ctx.fillStyle = '#000000';
+							ctx.strokeStyle = '#000000';
+						}
 						ctx.beginPath();
 						ctx.arc(this.pos.x, this.pos.y, this.radius, 0, 2 * Math.PI);
 						ctx.fill();
@@ -228,7 +263,11 @@ function Game({imgIndex}: {imgIndex: number}){
 					}
 
 					draw(ctx: CanvasRenderingContext2D) {
-						ctx.fillStyle = '#ffffff';
+						if (imgIndex === 1)
+							ctx.fillStyle = '#000000';
+						else 
+							ctx.fillStyle = '#ffffff';
+						// ctx.fillStyle = '#ffffff';
 						ctx.fillRect(this.pos.x, this.pos.y, this.width, this.height);
 					}
 
@@ -449,9 +488,9 @@ function Game({imgIndex}: {imgIndex: number}){
 				};
 
 				const gameDraw = () => {
+					drawGameScreen();
 					paddle1.draw(ctx);
 					paddle2.draw(ctx);
-					drawGameScreen();
 					ballObj.draw(ctx);
 				};
 
@@ -465,6 +504,7 @@ function Game({imgIndex}: {imgIndex: number}){
 					ctx.clearRect(0, 0, width, height);
 
 					ctx.globalCompositeOperation = 'lighter';
+
 					drawBalls();
 
 					let temp = [];
@@ -487,7 +527,7 @@ function Game({imgIndex}: {imgIndex: number}){
 
 			}
 		}
-	}, []);
+	}, [imgIndex]);
 
 	// declare array of images
 	const bgimages = ['A1', 'B1', 'C1', 'D1'];

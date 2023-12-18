@@ -2,7 +2,7 @@
 import styles from '@/app/dashboard/game/page.module.css'
 import Image from 'next/image'
 import Link from 'next/link';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 // Import Swiper React components
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { useRouter } from 'next/navigation';
@@ -17,6 +17,8 @@ import './styles.css';
 import { EffectCoverflow, Pagination } from 'swiper/modules';
 import GameCanvas from './GameCanvas';
 
+import io from 'socket.io-client';
+
 export const userContext = React.createContext(0);
 
 
@@ -24,6 +26,29 @@ const img = ['A2', 'B2', 'C2', 'D2'];
 
 function GameFirstPage()
 {
+    const socket = io('http://localhost:3000/',);
+    socket.on('connect', () => {
+        console.log('connected');
+    });
+    console.log("kk", socket);
+
+    // useEffect(() => {
+    //     const socket = io('http://localhost:3000/', {withCredentials: true, transports: ['websocket']});
+    //     socket.connect();
+    //     socket.on('connect', () => {
+    //         console.log('connected');
+    //     });
+    //     console.log(socket);
+    //     socket.on('connect_error', (error) => {
+    //         console.error('Connection error:', error);
+    //     });
+
+    //     return () => {
+    //         console.log('disconnecting...')
+    //         socket.disconnect();
+    //     }
+    // },[]);
+    
     const [imgIndex, setImgIndex] = useState<number>(1);
 
     const handleSlideChange = (swiper : any) => {
