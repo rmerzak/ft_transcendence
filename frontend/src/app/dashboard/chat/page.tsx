@@ -11,11 +11,13 @@ const Chat = () => {
   useEffect(() => {
     const socket = io("http://localhost:3000");
     //some code here
-    socket.on("message", (message) => {
-      console.log(message);
+    socket.emit('message', 'Hello World');
+    socket.on('message', (data) => {
+      console.log(data);
     });
-    socket.emit("test", "hello");
+
     return () => {
+      console.log("disconnect");
       socket.disconnect();
     }
   }, []);

@@ -1,36 +1,37 @@
-import { OnModuleInit } from '@nestjs/common';
 import { Server } from 'socket.io';
 import {
+  ConnectedSocket,
   MessageBody,
+  OnGatewayConnection,
+  OnGatewayDisconnect,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
+import { Socket } from 'socket.io';
+
+// let users = new Map<string, string[]>();
 
 @WebSocketGateway({ cors: { origin: 'http://localhost:8080' } })
-export class GatewayGateway implements OnModuleInit {
+export class GatewayGateway
+  implements OnGatewayConnection, OnGatewayDisconnect
+{
   @WebSocketServer()
   server: Server;
-  onModuleInit() {
-    this.server.on('connection', (socket) => {
-      console.log(socket.id);
-      console.log('connection');
-    });
+
+  handleConnection(_client: any) {
+    console.log('connected: ' + _client.id);
   }
+
+  handleDisconnect(_client: any) {
+    console.log('disconnected: ' + _client.id);
+  }
+
   @SubscribeMessage('message')
-  handleMessage(@MessageBody() body: any) {
-    console.log('message:' + body);
-    this.server.emit('message', {
-      event: 'message',
-      data: body,
-    });
-  }
-  @SubscribeMessage('test')
-  handleTest(@MessageBody() body: any) {
-    console.log('test:' + body);
-    this.server.emit('message', {
-      event: 'test',
-      data: body,
-    });
+  handleMessage(
+    @MessageBody() data: string,
+    @ConnectedSocket() client: Socket,
+  ) {
+    this.server.emit('message', { message: data, id: client.id });
   }
 }
