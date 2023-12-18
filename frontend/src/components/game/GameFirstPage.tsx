@@ -26,11 +26,11 @@ const img = ['A2', 'B2', 'C2', 'D2'];
 
 function GameFirstPage()
 {
-    const socket = io('http://localhost:3000/',);
-    socket.on('connect', () => {
-        console.log('connected');
-    });
-    console.log("kk", socket);
+    // const socket = io('http://localhost:3000/',);
+    // socket.on('connect', () => {
+    //     console.log('connected');
+    // });
+    // console.log("kk", socket);
 
     // useEffect(() => {
     //     const socket = io('http://localhost:3000/', {withCredentials: true, transports: ['websocket']});
@@ -48,6 +48,36 @@ function GameFirstPage()
     //         socket.disconnect();
     //     }
     // },[]);
+
+    useEffect(() => {
+        const socket = io("http://localhost:3000", {
+          autoConnect: false,
+        });
+      
+        socket.connect();
+        // Listen for the 'connect' event
+        socket.on('connect', () => {
+          console.log('Connected to the server');
+          
+          // Now you can perform operations after the connection is established
+          console.log(socket);
+          socket.emit('message', 'Hello World');
+          socket.on('message', (data) => {
+            console.log(data);
+          });
+        });
+      
+        // Listen for the 'disconnect' event
+        socket.on('disconnect', () => {
+          console.log("Disconnected from the server");
+        });
+      
+        // Cleanup function
+        return () => {
+          console.log("Cleanup: Disconnecting socket");
+          socket.disconnect();
+        };
+      }, []);
     
     const [imgIndex, setImgIndex] = useState<number>(1);
 
