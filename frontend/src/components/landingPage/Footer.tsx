@@ -4,9 +4,9 @@ import styles from '../index';
 import { socials } from '../../constants/index';
 import { footerVariants } from '../../utils/motion';
 const Footer = () => (
-  <motion.footer variants={footerVariants} initial='hidden' whileInView='show' className={`${styles.paddings} py-8 relative`}>
+  <motion.footer variants={footerVariants} initial='hidden' whileInView='show' className="sm:p-16 xs:p-8 px-6 py-12 py-8 relative">
     <div className='footer-gradient' />
-    <div className={`${styles.innerWidth} mx-auto flex flex-col gap-8`}>
+    <div className="2xl:max-w-[1280px] w-full mx-auto flex flex-col gap-8">
       <div className='flex items-center justify-between flex-wrap gap-5'>
         <h4 className='font-bold md:text-[64px] text-[44px] text-white'>Enter the Game</h4>
         <a href='/auth/login' className='flex items-center h-fit py-4 px-6 bg-[#25618b] rounded-[32px] gap-[12px]'>

@@ -38,6 +38,10 @@ model User {
   // verification user authentification
   isVerified Boolean @default(false)
 
+  // user 2fa
+  twoFactorSecret String
+  twoFactorEnabled Boolean @default(false)
+
   // Game user data
   gamewins Int @default(0)
   gameplays Int @default(0)

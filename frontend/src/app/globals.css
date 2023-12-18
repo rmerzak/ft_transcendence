@@ -111,3 +111,49 @@ radial-gradient(at 0% 100%, hsla(5,88%,55%,1) 0px, transparent 50%);
     background: #65c4fa;
     filter: blur(150px);
 }
+
+button:hover{
+    background-color: #539D98;
+ }
+
+ .bg-mberri {
+    /*background-color: rgba(31, 12, 51, 0.60);*/
+    border-radius: 6px;
+    background-image: url('/bg-ping-pong.jpeg');
+    background-size: cover;
+    background-position: center;
+    width: 100%;
+    height: 100%;
+    box-shadow : 0 4px 8px 8px rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.bg-mberri1{
+    font-size: 12px;
+    width: 100%;
+    height: 53%;
+    background-color: rgba(31, 12, 51, 0.60);
+    /* filter: blur(1px); */
+}
+
+.bg-achievements {
+    background-color: rgb(90, 90, 90, 0.40);
+    border-radius: 12px;
+}
+
+.bg-navbar {
+    background-color: rgba(31, 12, 51, 0.60);
+    border-radius: 12px;
+}
+
+.bg-custom-green {
+    background-color: #00FF29;
+  }  
+
+.bg-head {
+    background-color: rgba(182, 176, 176, 0.14);
+    border-radius: 10px;
+}
+.bg-body {
+    background-color: rgba(118, 73, 153, 0.461);
+    border-radius: 10px;
+}

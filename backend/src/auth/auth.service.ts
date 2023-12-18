@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, Body, ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AuthDto } from './Dto';
 import * as argon from 'argon2'
@@ -21,16 +21,18 @@ export class AuthService {
         try {
             let user = await this.prisma.user.findUnique({ where: { email: dto.email } });
             if (user)
-                return user;
-            user = await this.prisma.user.create({
-                data: {
-                    email: dto.email,
-                    image: dto.image,
-                    firstname: dto.firstname,
-                    lastname: dto.lastname,
-                    username: dto.username,
-                }
-            })
+            return user;
+        user = await this.prisma.user.create({
+            data: {
+                email: dto.email,
+                image: dto.image,
+                firstname: dto.firstname,
+                lastname: dto.lastname,
+                username: dto.username,
+                twoFactorSecret: "null",
+            },
+        })
+        console.log("dto :", user)
             return user;
         } catch (error) {
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -75,15 +77,14 @@ export class AuthService {
             const user = await this.prisma.user.findUnique({ where: { email: email } });
             if (!user)
                 throw new BadRequestException('User not found');
-            console.log(data)
             return await this.prisma.user.update({
                 where: {
                     id: user.id
                 },
                 data: {
-                    isVerified: data.twoFa === 'true' ? true : false,
-                    username: data.username.lenght > 0 ? data.username : user.username,
-                    image: data.image,
+                    isVerified: true,
+                    username: data.username.length > 0 ? data.username : user.username,
+                    image: data.image.length > 0 ? data.image : user.image,
                 }
             });
         } catch (error) {
@@ -107,5 +108,22 @@ export class AuthService {
             );
             streamifier.createReadStream(file.buffer).pipe(uploadStream);
         });
+    }
+    async validateAccessToken(accessToken: string): Promise<boolean> {
+        try {
+            console.log("accessToken", accessToken) 
+          const decoded = await this.jwt.verify(accessToken, this.config.get('JWT_SERCRET'));
+          return !!decoded;
+        } catch (error) {
+          console.error('Error validating token:', error);
+          return false;
+        }
+      }
+    async findUserById(id: number) {
+        const user = await this.prisma.user.findUnique({ where: { id } });
+        if (!user) {
+            throw new ForbiddenException('Credentiel incorrect')
+        }
+        return user;
     }
 }

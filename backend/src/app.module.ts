@@ -7,6 +7,7 @@ import { MulterModule } from '@nestjs/platform-express';
 import { GameModule } from './game/game.module';
 
 
+
 @Module({
   imports: [ AuthModule, UserModule, PrismaModule, ConfigModule.forRoot({isGlobal:true,}), MulterModule.register({dest : './uploads'}), GameModule],
   controllers: [],

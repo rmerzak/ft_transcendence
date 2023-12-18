@@ -7,11 +7,11 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe())
 
-
+ 
 app.enableCors({
     origin: ['http://localhost:8080'],
-    // methods: ["GET","HEAD","PUT","PATCH","POST","DELETE"],
-    // allowedHeaders: 'Content-Type, Accept, Authorization, X-Requested-With, Access-Control-Allow-Origin, Access-Control-Allow-Headers, Access-Control-Allow-Credentials, Access-Control-Allow-Methods',
+    methods: ["GET","HEAD","PUT","PATCH","POST","DELETE"],
+    allowedHeaders: 'Content-Type, Accept, Authorization, X-Requested-With, Access-Control-Allow-Origin, Access-Control-Allow-Headers, Access-Control-Allow-Credentials, Access-Control-Allow-Methods',
     credentials: true,
   });  
   app.use(cookieParser());

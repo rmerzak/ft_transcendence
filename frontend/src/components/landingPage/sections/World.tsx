@@ -1,14 +1,18 @@
 'use client';
 
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import styles from "../..";
 import { TypingText, TitleText } from "../CustomTexts";
 import { fadeIn, staggerContainer } from "../../../utils/motion";
+const myVariants: Variants = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1 },
+};
 const World = () => (
-  <section className={`${styles.paddings} relative z-10`}>
-    <motion.div variants="hidden" whileInView="show" viewport={{once:'false' , amount:0.25}} className={`${styles.innerWidth} mx-auto flex flex-col`}>
-      <TypingText title="| PingPong in the world" textStyles="text-center" />
-      <TitleText title={<>PingPong is used by players all over the world</>} textStyles="text-center" />
+  <section className="sm:p-16 xs:p-8 px-6 py-12 relative z-10">
+    <motion.div variants={myVariants} whileInView="show" viewport={{once:false , amount:0.25}} className="2xl:max-w-[1280px] w-full mx-auto flex flex-col">
+      <TypingText title="| PingPong in the world"/>
+      <TitleText title="PingPong is used by players all over the world" />
       <motion.div variants={fadeIn('up','tween' ,0.3, 1)} className="relative mt-[68px] flex w-full h-[550px]">
         <img src="/map.png" alt="image" className="w-full h-full object-contain"/>
         <div className="absolute md:bottom-20 md:right-20 top-1/2 right-10 md:w-[70px] md:h-[70px] w-[30px] h-[30px] rounded-full bg-[#5d6680]">
