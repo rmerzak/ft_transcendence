@@ -1,4 +1,6 @@
-import { PlusCircle } from "lucide-react"
+import { PlusCircle } from "lucide-react";
+import { UserPlus } from 'lucide-react';
+import { MessageCircle } from 'lucide-react';
 import Image from "next/image"
 
 const ProfileInformation = () => {     
@@ -20,6 +22,10 @@ const ProfileInformation = () => {
         <div>
             <p className="text-[#CE6FF5]">Email</p>
             <p className="text-[#FFFFFF] text-opacity-50">test@student.1337.ma</p>
+        </div>
+        <div>
+            <button className="text-[#FFFFFF]  pr-1"> <MessageCircle /></button>
+            <button className="text-[#FFFFFF]  pl-1"><UserPlus /></button>
         </div>
        </div>
        <div className="w-full flex items-end justify-between absolute top-12 left-0">
