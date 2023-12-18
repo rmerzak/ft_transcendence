@@ -8,7 +8,7 @@ import { useContext, useEffect } from 'react';
 const Layout = ({children} : any) => {
   const { profile, setProfile } = useContext(ContextGlobal);
   useEffect(() => {
-    const user = axios.get(`http://localhost:3000/users/me`).then((res) => {setProfile(res.data);}).catch((err) => { console.log(err)});
+    const user = axios.get(`http://localhost:3000/users/me`, {withCredentials:true}).then((res) => {setProfile(res.data);}).catch((err) => { console.log(err)});
   }, []);
     return (
       <div className="flex login-gradient">

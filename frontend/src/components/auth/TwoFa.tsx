@@ -32,9 +32,8 @@ const TwoFa = () => {
       <div className="text-white font-extralight text-[14px]" style={{ marginBottom: "10px", marginTop: "10px" }}>Two-factor authentication (2FA) is enable for your account. <br /> Please enter a code to log in.</div>
       <form onSubmit={handleSubmit}>
         <div className="flex items-center bg-white mt-6 border-[0.063rem] rounded-[1rem] overflow-hidden relative ">
-          <label htmlFor="name"></label>
-          <input type="text" id="name" onChange={(e) => {setCode(e.target.value)}} placeholder="Two-factor authentication code" className="w-[20.438rem] h-[2.75rem] pl-[1.063rem] leading-normal" />
-
+          <label htmlFor="code"></label>
+          <input type="text" id="code" onChange={(e) => {setCode(e.target.value)}} placeholder="Two-factor authentication code" className="w-[20.438rem] h-[2.75rem] pl-[1.063rem] leading-normal" />
         </div>
         <div className="pt-5 flex items-center justify-between w-[20.438rem] h-[2.75rem]" style={{ marginBottom: "10px", marginTop: "10px" }}>
           <button className="bg-[#79196F]  w-[100px] h-[40px] text-white py-2 px-4 rounded-[10px] border-colors">Back</button>
