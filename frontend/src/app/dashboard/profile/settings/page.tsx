@@ -4,7 +4,7 @@ import { ContextGlobal } from '@/context/contex';
 import React, { useContext, useState } from 'react'
 
 function Settings() {
-    const { profile, updateUser } = useContext(ContextGlobal);
+    const { profile, updateUser } : any= useContext(ContextGlobal);
     const [code, setCode] = useState<string>("");
     return (
         <>

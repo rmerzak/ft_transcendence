@@ -43,7 +43,7 @@ const Navbar = () => {
         <div className="relative ">
           <img ref={imgRef} src={profile?.image} onClick={() => setOpen(!open)} alt="foto" className="w-10 h-10 rounded-full cursor-pointer" />
           {open &&
-            <div ref={menyRef} className=" p-4 w-30 shadow-lg absolute -left-16 ">
+            <div ref={menyRef} className=" p-4 w-30 bg-navbar shadow-lg absolute z-10 -left-16 ">
               <ul>
                 <li onClick={() => setOpen(false)} className="text-white p-2 text-lg cursor-pointer rounded hover:bg-[#78196F]"><Link href="/dashboard/profile">Profile </Link> </li>
                 <li onClick={() => setOpen(false)} className="text-white p-2 text-lg cursor-pointer rounded hover:bg-[#78196F]"><Link href="/dashboard/profile/settings">Settings </Link> </li>

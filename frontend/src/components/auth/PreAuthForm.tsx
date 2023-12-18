@@ -11,7 +11,7 @@ import { ContextGlobal } from "@/context/contex";
 const PreAuthForm = ({ exit }: { exit: boolean }) => {
   const router = useRouter();
   const [user, setUser] = useState<any>("");
-  const { profile, setProfile } = useContext(ContextGlobal);
+  const { profile, setProfile }: any = useContext(ContextGlobal);
   const inputRef = useRef<HTMLInputElement>(null);
   const [image, setImage] = useState<string>("");
   const [fil, setFile] = useState<File>();
@@ -64,7 +64,7 @@ const PreAuthForm = ({ exit }: { exit: boolean }) => {
         withCredentials: true,
       });
       if (response.data.isVerified === true) {
-        // setProfile(response.data); // must find the error here
+        setProfile(response.data); // must find the error here
         router.push('/dashboard/profile');
       }
       else

@@ -1,47 +1,91 @@
-const ProfileInformation = () => {
-    return (
-        <div className="bg-mberri py-8 mx-2">
-      <div className='text-white font-bold text-[28px] text-center'>
-          Profile
-      </div>
-      <div className="relative ">
-        <div className="relative">
-            <img src="/bg_ping-pong.png" alt="pingpong" className="w-full object-cover"/>
-           
-            <div className="absolute bg-mberri p-4 text-white grid font-bold grid-cols-4 flex justify-center text-center" style={{fontSize: '1vw', top: '60%', left: '20%'}}>
-                <div>
-                    <p className="text-pink-700">First Name</p>
-                    <p>Name</p>
-                  </div>
-                  <div>
-                      <p className="text-pink-700">Last Name</p>
-                      <p>Name</p>
-                  </div>
-                  <div>
-                      <p className="text-pink-700">Nick Name</p>
-                      <p>Name</p>
-                  </div>
-                  <div>
-                      <p className="text-pink-700">Email</p>
-                      <p>test@student.1337.ma</p>
-                  </div>
-              </div>
-          </div>
-        <div className="absolute " style={{width: '12%', height: '12%',top: '35%', left: '6%'}}>
-            <img src="/dfpic.png" alt="profile" className="w-full object-cover"/>
-            <div className="absolute" style={{width: '17%', height: '17%',top: '220%', left: '70%'}}>
-                <div className="relative">
-                    <img src="/green_icon.png" alt="green" className="w-full  object-cover"/>
-                </div>
+import { PlusCircle } from "lucide-react"
+import Image from "next/image"
+
+const ProfileInformation = () => {     
+    return (     
+    <div className="bg-mberri w-full flex items-end relative">
+    <div className="bg-mberri1 flex items-center justify-evenly w-full backdrop-blur-sm relative">
+       <div>
+            <p className="text-[#CE6FF5]">First Name</p>
+            <p className="text-[#FFFFFF] text-opacity-50">Name</p>
+        </div>
+        <div>
+            <p className="text-[#CE6FF5]">Last Name</p>
+            <p className="text-[#FFFFFF] text-opacity-50">Name</p>
+        </div>
+        <div>
+            <p className="text-[#CE6FF5]">Nick Name</p>
+            <p className="text-[#FFFFFF] text-opacity-50">Name</p>
+        </div>
+        <div>
+            <p className="text-[#CE6FF5]">Email</p>
+            <p className="text-[#FFFFFF] text-opacity-50">test@student.1337.ma</p>
+        </div>
+       </div>
+       <div className="w-full flex items-end justify-between absolute top-12 left-0">
+       <div>
+            <div className="relative w-[120px] h-[120px] rounded-full">
+                <Image src="/dfpic.png" alt="profile pic" width={100} height={100}/>
+                    <div className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 text-[50px] h-[15px] w-[15px] rounded-full bg-custom-green"></div>
             </div>
         </div>
-        <div className="absolute " style={{width: '7%', height: '7%',top: '25%', left: '86%'}}>
-            <p className="text-gray-400 text-center" style={{fontSize: '2vw'}}>Freax</p>
-            <img src="/freax.png" alt="freax" className="w-full object-cover"/>
-        </div>
-      </div>
+        <div>
+       <p className="text-gray-300 font-thin ml-1">Freax</p>
+       <Image src="/freax.png" alt="freax" width={100} height={100} style={{width: "50px", height: "101px", marginRight: "5px"}}/>
+       </div>
+    </div>
     </div>
     )
 }
 
 export default ProfileInformation
+
+/**
+ * 
+ * <div className="bg-mberri1 flex items-center justify-evenly w-full">
+       <div>
+            <p className="text-[#CE6FF5]">First Name</p>
+            <p className="text-[#FFFFFF] text-opacity-50">Name</p>
+        </div>
+        <div>
+            <p className="text-[#CE6FF5]">Last Name</p>
+            <p className="text-[#FFFFFF] text-opacity-50">Name</p>
+        </div>
+        <div>
+            <p className="text-[#CE6FF5]">Nick Name</p>
+            <p className="text-[#FFFFFF] text-opacity-50">Name</p>
+        </div>
+        <div>
+            <p className="text-[#CE6FF5]">Email</p>
+            <p className="text-[#FFFFFF] text-opacity-50">test@student.1337.ma</p>
+        </div>
+       </div>
+ * 
+ * flex items-end py-4 justify-around mx-auto
+ * <div className="w-[150px]  h-[150px] rounded-full">
+        <img src={image} className="rounded-full" />
+        <label htmlFor="file"></label>
+        <input type="file"
+        
+          id="file" className="hidden" />
+        <div className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 text-[50px] rounded-full bg-white"><PlusCircle color="#7a7a7a" /></div>
+      </div>
+
+
+
+
+
+      <div className="relative ">
+            <div className="w-[130px] border h-[130px] rounded-full">
+                <img src="/dfpic.png" className="rounded-full" />
+                    <div className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 text-[50px] h-[20px] w-[20px] rounded-full  bg-green-500">
+                    </div>
+            </div>
+        </div>
+
+         <div>
+       <p className="text-gray-400 text-center" style={{fontSize: '1vw'}}>Freax</p>
+       <img src="/freax.png" alt="freax" style={{width: "60px", height: "110px"}}/>
+       </div>
+ * 
+ */

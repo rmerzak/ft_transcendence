@@ -7,7 +7,7 @@ import { QrCode } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { ContextGlobal } from "@/context/contex";
 const TwoFa = () => {
-  const { profile, setProfile } = useContext(ContextGlobal);
+  const { profile, setProfile }:any = useContext(ContextGlobal);
   const router = useRouter();
   const [code, setCode] = useState<string>("");
   async function handleSubmit(event: any) {
