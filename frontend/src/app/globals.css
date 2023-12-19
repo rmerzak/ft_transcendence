@@ -136,8 +136,13 @@ button:hover{
 }
 
 .bg-achievements {
-    background-color: rgb(90, 90, 90, 0.40);
+    background-color: rgb(90, 90, 90, 0.30);
     border-radius: 10px;
+}
+
+.bg-achievements2 {
+    background-color: rgb(90, 90, 90, 0.10);
+    border-radius: 14px;
 }
 
 .bg-achievements1 {
