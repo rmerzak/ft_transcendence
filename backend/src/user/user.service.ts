@@ -23,4 +23,24 @@ export class UserService {
 
         return users;
     }
+    async getUserProfile(username: string) {
+        const user = await this.prismaService.user.findUnique({
+            where: {
+                username: username,
+            },
+            select: {
+                id: true,
+                username: true,
+                image: true,
+                email: true,
+                isVerified: true,
+                createdAt: true,
+                updatedAt: true,
+                firstname: true,
+                lastname: true,
+            },
+        });
+        console.log("user :", user) 
+        return user;
+    }
 }

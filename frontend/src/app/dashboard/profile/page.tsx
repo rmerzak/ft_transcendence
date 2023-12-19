@@ -21,7 +21,7 @@ const Profile = () => {
     </div> */}
     <div className="py-8 mx-2">
       <div className=" w-full h-[250px] border-spacing-1 mb-3 border-[#ffff]">
-       <ProfileInformation profile={profile}/>
+       <ProfileInformation profile={profile} btnFriend={false}/>
       </div>
       <div className="flex md:flex-row flex-col">
         <div className="pb-6 bg-achievements w-[33.33%] h-full backdrop-blur-lg mx-2">
