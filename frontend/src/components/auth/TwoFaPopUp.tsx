@@ -1,11 +1,15 @@
 "use client";
 
+import { ContextGlobal } from "@/context/contex";
 import axios from "axios";
 import { LockKeyhole, User, XSquare } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import QRCode from "react-qr-code";
-const TwoFaPopUp = ({ open, onClose, image,secret }: any) => {
+import {  toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+const TwoFaPopUp = ({ open, onClose, image, secret }: any) => {
     const [code, setCode] = useState<string>("");
+    const { profile, setProfile } : any= useContext(ContextGlobal);
     async function handleSubmit(event: any) {
         event.preventDefault();
         const response = await axios.post('http://localhost:3000/auth/2fa/verify', {code: code, secret: secret}, {
@@ -14,6 +18,10 @@ const TwoFaPopUp = ({ open, onClose, image,secret }: any) => {
         console.log(response);
         if (response.data === true) {
             onClose();
+            setProfile({...profile, twoFactorEnabled: true});
+            toast("new 2FA secret has been generated!");
+        } else {
+            toast.error("2FA code is invalid!");
         }
     }
     if (!open) return null;
@@ -29,10 +37,10 @@ const TwoFaPopUp = ({ open, onClose, image,secret }: any) => {
                             <div className="text-[16px] text-black font-bold">Please scan the QR code below</div>
                             <QRCode size={25} style={{ height: "50%", maxWidth: "50%", width: "50%" }} className="w-50 h-50 mx-auto" value={image} viewBox={`0 0 256 256`} />
                             <form onSubmit={handleSubmit}>
-                                <div className="flex items-center bg-white mt-6 border-[0.063rem] rounded-[1rem] overflow-hidden relative ">
+                                <div className="flex items-center bg-white mt-6 rounded-[1rem]  relative ">
                                 <label htmlFor="code" className="hidden">Code:</label>
-                                    <input onChange={(e) => { setCode(e.target.value); }} type="text" id="code" placeholder="code" className="w-[20.438rem] h-[2.75rem] pl-[1.063rem] leading-normal" />
-                                    <LockKeyhole className="absolute right-3" />
+                                    <input onChange={(e) => { setCode(e.target.value); }} type="text" id="code" placeholder="code" className=" w-[20.438rem] h-[2.75rem] pl-[1.063rem] leading-normal" />
+                                    <LockKeyhole className=" border absolute right-3" />
                                 </div>
                                 <div className="flex justify-between pt-3">
                                     <button onClick={onClose} data-modal-hide="popup-modal" type="button" className="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">No, cancel</button>
@@ -41,7 +49,6 @@ const TwoFaPopUp = ({ open, onClose, image,secret }: any) => {
                                     </button>
                                 </div>
                             </form>
-
                         </div>
                     </div>
                 </div>

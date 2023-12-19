@@ -154,7 +154,13 @@ button:hover{
     background-color: rgb(40, 18, 65, 0.70);
     border-radius: 16px;
 }
-
+.bg-navbar {
+    background-color: rgba(31, 12, 51, 0.60);
+    border-radius: 12px;
+}
+.bg-search {
+    background-color: rgba(31, 12, 51, 0.60);
+}
 
 .bg-custom-green {
     background-color: #00FF29;
