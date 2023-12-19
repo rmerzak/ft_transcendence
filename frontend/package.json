@@ -32,6 +32,7 @@
     "react-paginate": "^8.2.0",
     "react-qr-code": "^2.0.12",
     "react-router-dom": "^6.20.1",
+    "swiper": "^11.0.5",
     "tailwind-merge": "^2.0.0"
   },
   "devDependencies": {

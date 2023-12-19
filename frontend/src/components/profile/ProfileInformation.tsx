@@ -24,7 +24,7 @@ const ProfileInformation = () => {
             <p className="text-[#FFFFFF] text-opacity-50">test@student.1337.ma</p>
         </div>
         <div>
-            <button className="text-green-500  pr-1"> <MessageCircle /></button>
+            <button className="text-green-500 pr-1"> <MessageCircle /></button>
             <button className="text-blue-500  pl-1"><UserPlus /></button>
         </div>
        </div>
