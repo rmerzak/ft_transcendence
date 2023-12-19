@@ -10,6 +10,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// room visibility
+enum RoomVisibility {
+  PUBLIC
+  PRIVATE
+  PROTECTED
+}
+
+// permissions
+enum Privileges {
+  ADMIN
+  MEMBER
+}
+
 // model User {
 //   id Int @id @default(autoincrement())
 //   createdAt DateTime @default(now())
@@ -46,8 +59,10 @@ model User {
   
   games Game[]
 
-  // Chat user data]
-  // messages Message[] @relation(name: "users")
+  // Chat user data
+  chatRooms UserChatRoom[]
+  sentMessages Message[] @relation(name: "SentMessages")
+  receivedMessages Message[] @relation(name: "ReceivedMessages")
 }
 
 model Game {
@@ -61,36 +76,43 @@ model Game {
   user User @relation(fields: [userPlayerId], references: [id])
 }
 
-// model ChatRoom {
-//   id Int @id @default(autoincrement())
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-//   name String
-//   password String?
-//   isPrivate Boolean @default(false)
-//   message Message[] @relation(name: "rooms")
-// }
+model ChatRoom {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name String
+  passwordHash String?
+  visibility RoomVisibility @default(PUBLIC)
+  users UserChatRoom[]
+}
 
+model UserChatRoom {
+  // Foreign keys
+  userId Int @unique
+  chatRoomId Int @unique
+  user User @relation(fields: [userId], references: [id])
+  chatRoom ChatRoom @relation(fields: [chatRoomId], references: [id])
+  privaligeUser Privileges @default(MEMBER)
+  msgRoom MessageRoom[] @relation(name: "SentMessages")
+  @@id([userId, chatRoomId])
+}
 
-// model Message {
-//   id Int @id @default(autoincrement())
-//   createdAt DateTime @default(now())
-//   content String
-//   imageUrl String?
-//   user User @relation(name: "users", fields: [userId], references: [id], onDelete: Cascade)
-//   userId Int
-//   chatRoom ChatRoom @relation(name: "rooms", fields: [chatRoomId], references: [id], onDelete: Cascade)
-//   chatRoomId Int
-// }
+// model messageRoom for chat in room
+model MessageRoom {
+  id Int @id @default(autoincrement()) 
+  createdAt DateTime @default(now())
+  text String
+  senderUserId    Int @unique
+  senderChatRoomId    Int @unique
+  sender    UserChatRoom @relation(name: "SentMessages", fields: [senderUserId, senderChatRoomId], references: [userId, chatRoomId])
+}
 
-// model UserChatRoom {
-//   id Int @id @default(autoincrement())
-//   userId Int
-//   chatRoomId Int
-
-//   // Foreign keys
-//   user User @relation(fields: [userId], references: [id])
-//   chatRoom ChatRoom @relation(fields: [chatRoomId], references: [id])
-
-//   // ... other fields ...
-// }
+model Message {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  text String
+  sender User @relation(name: "SentMessages", fields: [senderId], references: [id])
+  receiver User @relation(name: "ReceivedMessages", fields: [receiverId], references: [id])
+  senderId Int @unique
+  receiverId Int @unique
+}
