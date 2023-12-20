@@ -51,7 +51,7 @@ const handleNicknameChange = (e: { target: { value: React.SetStateAction<string>
   ];
 
     return (
-        <div  className="text-gray-400 pb-6 bg-achievements md:w-[42%] h-full mx-1">
+        <div  className="text-gray-400 pb-6 bg-achievements md:w-[42%] h-full mx-1 mt-2">
           <div className="pb-1 text-gray-300 text-[15px] font-thin w-full flex items-center justify-center pt-2">Invite Friends</div>
             <div className="border-b border-gray-200 w-[50px] mx-auto mb-7"></div>
         <div className="flex justify-center text-gray-200">
@@ -70,7 +70,7 @@ const handleNicknameChange = (e: { target: { value: React.SetStateAction<string>
         <div className="pb-1 text-gray-300 text-[16px] font-thin w-full flex items-center justify-center pt-2">Friends Requests</div>
             <div className="border-b border-gray-200 w-[60px] mx-auto mb-7"></div>
           <div className="flex justify-center">
-            <Swiper navigation={true} className="mySwiper" style={styles.swiperContainer} slidesPerView={'auto'}>
+            <Swiper navigation={true} style={styles.swiperContainer} slidesPerView={'auto'}>
               {pictures.map((picture, index) => (
                 <SwiperSlide key={index} style={styles.swiperSlide}>
                   <Piece picture={picture} />
