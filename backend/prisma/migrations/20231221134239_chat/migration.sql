@@ -5,6 +5,38 @@ CREATE TYPE "RoomVisibility" AS ENUM ('PUBLIC', 'PRIVATE', 'PROTECTED');
 CREATE TYPE "Privileges" AS ENUM ('ADMIN', 'MEMBER');
 
 -- CreateTable
+CREATE TABLE "User" (
+    "id" SERIAL NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "email" TEXT NOT NULL,
+    "firstname" TEXT NOT NULL,
+    "lastname" TEXT NOT NULL,
+    "username" TEXT NOT NULL,
+    "image" TEXT NOT NULL,
+    "isVerified" BOOLEAN NOT NULL DEFAULT false,
+    "gamewins" INTEGER NOT NULL DEFAULT 0,
+    "gameplays" INTEGER NOT NULL DEFAULT 0,
+    "gamefails" INTEGER NOT NULL DEFAULT 0,
+    "gamepoints" INTEGER NOT NULL DEFAULT 0,
+
+    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Game" (
+    "game-id" TEXT NOT NULL,
+    "userPlayerId" INTEGER NOT NULL,
+    "userOpponnentId" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "score" INTEGER NOT NULL,
+    "status" TEXT NOT NULL,
+    "dateStart" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Game_pkey" PRIMARY KEY ("game-id")
+);
+
+-- CreateTable
 CREATE TABLE "ChatRoom" (
     "id" SERIAL NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -48,22 +80,10 @@ CREATE TABLE "Message" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "UserChatRoom_userId_key" ON "UserChatRoom"("userId");
+CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
--- CreateIndex
-CREATE UNIQUE INDEX "UserChatRoom_chatRoomId_key" ON "UserChatRoom"("chatRoomId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "MessageRoom_senderUserId_key" ON "MessageRoom"("senderUserId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "MessageRoom_senderChatRoomId_key" ON "MessageRoom"("senderChatRoomId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Message_senderId_key" ON "Message"("senderId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Message_receiverId_key" ON "Message"("receiverId");
+-- AddForeignKey
+ALTER TABLE "Game" ADD CONSTRAINT "Game_userPlayerId_fkey" FOREIGN KEY ("userPlayerId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "UserChatRoom" ADD CONSTRAINT "UserChatRoom_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

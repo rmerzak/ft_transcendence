@@ -76,6 +76,7 @@ model Game {
   user User @relation(fields: [userPlayerId], references: [id])
 }
 
+// begin chat models
 model ChatRoom {
   id Int @id @default(autoincrement())
   createdAt DateTime @default(now())
@@ -88,8 +89,8 @@ model ChatRoom {
 
 model UserChatRoom {
   // Foreign keys
-  userId Int @unique
-  chatRoomId Int @unique
+  userId Int
+  chatRoomId Int
   user User @relation(fields: [userId], references: [id])
   chatRoom ChatRoom @relation(fields: [chatRoomId], references: [id])
   privaligeUser Privileges @default(MEMBER)
@@ -99,11 +100,11 @@ model UserChatRoom {
 
 // model messageRoom for chat in room
 model MessageRoom {
-  id Int @id @default(autoincrement()) 
+  id Int @id @default(autoincrement())
   createdAt DateTime @default(now())
   text String
-  senderUserId    Int @unique
-  senderChatRoomId    Int @unique
+  senderUserId    Int 
+  senderChatRoomId    Int
   sender    UserChatRoom @relation(name: "SentMessages", fields: [senderUserId, senderChatRoomId], references: [userId, chatRoomId])
 }
 
@@ -113,6 +114,7 @@ model Message {
   text String
   sender User @relation(name: "SentMessages", fields: [senderId], references: [id])
   receiver User @relation(name: "ReceivedMessages", fields: [receiverId], references: [id])
-  senderId Int @unique
-  receiverId Int @unique
+  senderId Int 
+  receiverId Int
 }
+// end chat models
