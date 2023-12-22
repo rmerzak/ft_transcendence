@@ -81,7 +81,7 @@ model ChatRoom {
   id Int @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  name String
+  name String @unique
   passwordHash String?
   visibility RoomVisibility @default(PUBLIC)
   users UserChatRoom[]

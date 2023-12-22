@@ -50,7 +50,7 @@ export class ChatController {
     }
     if (
       chatRoomData.name === '' ||
-      $Enums.RoomVisibility[chatRoomData.visibility] === undefined
+      !(chatRoomData.visibility in $Enums.RoomVisibility)
     ) {
       throw new HttpException(
         {
@@ -60,7 +60,17 @@ export class ChatController {
         HttpStatus.BAD_REQUEST,
       );
     }
-    return await this.chatService.createChatRoom(chatRoomData);
+    try {
+      return await this.chatService.createChatRoom(chatRoomData);
+    } catch (error) {
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: error.message,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 
   // update chat room
