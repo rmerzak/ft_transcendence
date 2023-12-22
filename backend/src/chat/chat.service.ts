@@ -1,26 +1,28 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { ChatRoom, Message, PrismaClient, UserChatRoom } from '@prisma/client';
 
 // Chat service class
-const prismaClient = new PrismaClient();
+// const prismaClient = new PrismaClient();
 @Injectable()
 export class ChatService {
-  // constructor(private readonly prismaClient: PrismaClient) {}
+  constructor(
+    @Inject('PrismaClient') private readonly prismaClient: PrismaClient,
+  ) {}
 
   // start chat room
   // get all chat rooms
   async getChatRooms(): Promise<ChatRoom[]> {
-    return await prismaClient.chatRoom.findMany();
+    return await this.prismaClient.chatRoom.findMany();
   }
   // get chat room by id
   async getChatRoom(id: number): Promise<ChatRoom | null> {
-    return await prismaClient.chatRoom.findUnique({
+    return await this.prismaClient.chatRoom.findUnique({
       where: { id: id },
     });
   }
   // create chat room
   async createChatRoom(chatRoomData: ChatRoom): Promise<ChatRoom> {
-    return await prismaClient.chatRoom.create({
+    return await this.prismaClient.chatRoom.create({
       data: chatRoomData,
     });
   }
@@ -29,23 +31,37 @@ export class ChatService {
     id: number,
     chatRoomData: ChatRoom,
   ): Promise<ChatRoom | null> {
-    return await prismaClient.chatRoom.update({
+    return await this.prismaClient.chatRoom.update({
       where: { id },
-      data: chatRoomData,
+      data: {
+        name: chatRoomData.name,
+        visibility: chatRoomData.visibility,
+      },
     });
   }
   // delete chat room
   async deleteChatRoom(id: number): Promise<ChatRoom | null> {
-    return await prismaClient.chatRoom.delete({
-      where: { id: id },
-    });
+    try {
+      const existingChatRoom = await this.prismaClient.chatRoom.findUnique({
+        where: { id },
+      });
+
+      if (!existingChatRoom) throw new Error('Chat room not found');
+
+      return await this.prismaClient.chatRoom.delete({
+        where: { id },
+      });
+    } catch (error) {
+      console.error('Error deleting chat room:', error.message);
+      return null;
+    }
   }
   // end chat room
 
   // start user chat room
   // get all user chat rooms
   async getUserChatRooms(): Promise<UserChatRoom[]> {
-    return await prismaClient.userChatRoom.findMany();
+    return await this.prismaClient.userChatRoom.findMany();
   }
 
   // get user chat room by id
@@ -53,7 +69,7 @@ export class ChatService {
     userId: number,
     chatRoomId: number,
   ): Promise<UserChatRoom | null> {
-    return await prismaClient.userChatRoom.findUnique({
+    return await this.prismaClient.userChatRoom.findUnique({
       where: { userId_chatRoomId: { userId, chatRoomId } },
     });
   }
@@ -62,7 +78,7 @@ export class ChatService {
   async createUserChatRoom(
     userChatRoomData: UserChatRoom,
   ): Promise<UserChatRoom> {
-    return await prismaClient.userChatRoom.create({
+    return await this.prismaClient.userChatRoom.create({
       data: userChatRoomData,
     });
   }
@@ -73,7 +89,7 @@ export class ChatService {
     chatRoomId: number,
     userChatRoomData: UserChatRoom,
   ): Promise<UserChatRoom | null> {
-    return await prismaClient.userChatRoom.update({
+    return await this.prismaClient.userChatRoom.update({
       where: { userId_chatRoomId: { userId, chatRoomId } },
       data: userChatRoomData,
     });
@@ -84,7 +100,7 @@ export class ChatService {
     userId: number,
     chatRoomId: number,
   ): Promise<UserChatRoom | null> {
-    return await prismaClient.userChatRoom.delete({
+    return await this.prismaClient.userChatRoom.delete({
       where: { userId_chatRoomId: { userId, chatRoomId } },
     });
   }
@@ -96,7 +112,7 @@ export class ChatService {
     senderId: number,
     receiverId: number,
   ): Promise<Message[]> {
-    return await prismaClient.message.findMany({
+    return await this.prismaClient.message.findMany({
       where: {
         senderId: senderId,
         receiverId: receiverId,
@@ -109,14 +125,14 @@ export class ChatService {
 
   // add user message
   async addUserMessage(messageData: Message): Promise<Message> {
-    return await prismaClient.message.create({
+    return await this.prismaClient.message.create({
       data: messageData,
     });
   }
 
   // delete user message
   async deleteUserMessage(id: number): Promise<Message | null> {
-    return await prismaClient.message.delete({
+    return await this.prismaClient.message.delete({
       where: { id },
     });
   }
