@@ -7,28 +7,24 @@ import axios from 'axios';
 import { useContext, useEffect } from 'react';
 
 
-const NotFound = ({children} : any) => {
-  const { profile, setProfile } = useContext(ContextGlobal);
-  useEffect(() => {
-    const user = axios.get(`http://localhost:3000/users/me`, {withCredentials:true}).then((res) => {setProfile(res.data);}).catch((err) => { console.log(err)});
-  }, []);
+const NotFound = () => {
     return (
       <div className="flex login-gradient h-screen">
 
-        <div className='bg-profile mx-4 my-8 w-full'>
-
-            <div className='text-white text-center mt-10'>
-              <h1 className='font-bold text-4xl mb-8'>Oops!</h1>
-              <h1 className='font-thin mt-12 text-3xl'>Page Not Found</h1> </div>
+        <div className='bg-profile mx-6 my-6 w-full'>
             
-            <div className='text-pink-400 flex items-center justify-center w-full m-10'>
-                <div className='font-thin text-[18rem]'>4</div>
-                <div className='flex items-center rounded-full bg-white'>
-                <img src="/pong.gif" alt="not found" className='rounded-full object-cover w-[170px] h-[240px]'/></div>
-                <div className='font-thin text-[18rem]'>4</div>
-            </div>
-          </div>
+            <div className='text-white text-center md:mt-10 mt-2'>
+              <h1 className='font-bold md:text-4xl md:mb-8 text-2xl'>Oops!</h1>
+              <h1 className='font-thin mt-1 md:mt-12 md:text-3xl text-1xl'>Page Not Found</h1> </div>
 
+            <div className='text-pink-400 flex items-center justify-center w-full h-[60%]'>
+                <div className='font-thin md:text-[19rem] text-[10rem]'>4</div>
+                <div className='rounded-t-full rounded-b-full bg-white'>
+                <img src="/pong.gif" alt="not found" className='rounded-full object-cover md:w-[200px] md:h-[230px] w-[100px] h-[115px]'/></div>
+                <div className='font-thin md:text-[19rem] text-[10rem]'>4</div>
+            </div>
+          
+        </div>
       </div>
     )
   }
