@@ -35,6 +35,7 @@ export class ChatService {
       where: { id },
       data: {
         name: chatRoomData.name,
+        passwordHash: chatRoomData.passwordHash,
         visibility: chatRoomData.visibility,
       },
     });
