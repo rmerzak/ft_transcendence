@@ -69,8 +69,8 @@ const handleNicknameChange = (e: { target: { value: React.SetStateAction<string>
         </div>
         <div className="pb-1 text-gray-300 text-[16px] font-thin w-full flex items-center justify-center pt-2">Friends Requests</div>
             <div className="border-b border-gray-200 w-[60px] mx-auto mb-7"></div>
-          <div className="flex justify-center">
-            <Swiper navigation={true} style={styles.swiperContainer} slidesPerView={'auto'}>
+          <div>
+            <Swiper  style={styles.swiperContainer} slidesPerView={'auto'}>
               {pictures.map((picture, index) => (
                 <SwiperSlide key={index} style={styles.swiperSlide}>
                   <Piece picture={picture} />
