@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ChatRoom, Message, UserChatRoom } from '@prisma/client';
+import { ChatRoom, Message, MessageRoom, UserChatRoom } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 
 // Chat service class
@@ -134,10 +134,47 @@ export class ChatService {
       data: messageData,
     });
   }
+  // update user message
+  async updateUserMessage(messageData: Message): Promise<Message> {
+    return await this.prisma.message.update({
+      where: { id: messageData.id },
+      data: {
+        status: messageData.status,
+      },
+    });
+  }
 
   // delete user message
   async deleteUserMessage(id: number): Promise<Message | null> {
     return await this.prisma.message.delete({
+      where: { id },
+    });
+  }
+  // end user message
+
+  // start chat room message
+  // get all messages of specific chat room
+  async getChatRoomMessages(chatRoomId: number): Promise<MessageRoom[]> {
+    return await this.prisma.messageRoom.findMany({
+      where: {
+        recieverChatRoomId: chatRoomId,
+      },
+      orderBy: {
+        createdAt: 'asc',
+      },
+    });
+  }
+
+  // add chat room message
+  async addChatRoomMessage(messageData: MessageRoom): Promise<MessageRoom> {
+    return await this.prisma.messageRoom.create({
+      data: messageData,
+    });
+  }
+
+  // delete chat room message
+  async deleteChatRoomMessage(id: number): Promise<MessageRoom | null> {
+    return await this.prisma.messageRoom.delete({
       where: { id },
     });
   }

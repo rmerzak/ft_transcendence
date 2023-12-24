@@ -144,7 +144,20 @@ export class ChatController {
     }
     return await this.chatService.addUserMessage(messageData);
   }
-
+  // update message
+  @Put()
+  async updateUserMessage(@Body() messageData: Message): Promise<Message> {
+    if (isEmpty(messageData)) {
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: 'Message data not provided',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    return await this.chatService.updateUserMessage(messageData);
+  }
   // delete user message
   @Delete()
   async deleteUserMessage(@Query('id') id: number): Promise<Message | null> {

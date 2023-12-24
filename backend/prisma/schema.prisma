@@ -85,6 +85,7 @@ model ChatRoom {
   passwordHash String?
   visibility RoomVisibility @default(PUBLIC)
   users UserChatRoom[]
+  // show Int[]
 }
 
 model UserChatRoom {
@@ -104,8 +105,8 @@ model MessageRoom {
   createdAt DateTime @default(now())
   text String
   senderUserId    Int 
-  senderChatRoomId    Int
-  sender    UserChatRoom @relation(name: "SentMessages", fields: [senderUserId, senderChatRoomId], references: [userId, chatRoomId])
+  recieverChatRoomId    Int
+  sender    UserChatRoom @relation(name: "SentMessages", fields: [senderUserId, recieverChatRoomId], references: [userId, chatRoomId])
 }
 
 model Message {
@@ -116,5 +117,13 @@ model Message {
   receiver User @relation(name: "ReceivedMessages", fields: [receiverId], references: [id])
   senderId Int 
   receiverId Int
+  // status Int @default(-1)
 }
+
+// model room {
+//   id int @id @default(autoincrement())
+//   messageRoom Message[]
+//   show User[] @relation(name: "show")
+// }
+
 // end chat models
