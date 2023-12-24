@@ -1,3 +1,9 @@
+-- CreateEnum
+CREATE TYPE "FriendshipStatus" AS ENUM ('PENDING', 'ACCEPTED', 'DECLINED');
+
+-- CreateEnum
+CREATE TYPE "Blocker" AS ENUM ('SENDER', 'RECEIVER');
+
 -- CreateTable
 CREATE TABLE "User" (
     "id" SERIAL NOT NULL,
@@ -32,8 +38,34 @@ CREATE TABLE "Game" (
     CONSTRAINT "Game_pkey" PRIMARY KEY ("game-id")
 );
 
+-- CreateTable
+CREATE TABLE "Friendship" (
+    "id" SERIAL NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updateAt" TIMESTAMP(3) NOT NULL,
+    "status" "FriendshipStatus" NOT NULL,
+    "senderId" INTEGER NOT NULL,
+    "receiverId" INTEGER NOT NULL,
+    "block" BOOLEAN NOT NULL DEFAULT false,
+    "blockBy" "Blocker",
+
+    CONSTRAINT "Friendship_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "User_username_key" ON "User"("username");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Friendship_senderId_receiverId_key" ON "Friendship"("senderId", "receiverId");
+
 -- AddForeignKey
 ALTER TABLE "Game" ADD CONSTRAINT "Game_userPlayerId_fkey" FOREIGN KEY ("userPlayerId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Friendship" ADD CONSTRAINT "Friendship_senderId_fkey" FOREIGN KEY ("senderId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Friendship" ADD CONSTRAINT "Friendship_receiverId_fkey" FOREIGN KEY ("receiverId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
