@@ -155,6 +155,10 @@ button:hover{
     border-radius: 20px;
 }
 
+.bg-achievements3 {
+    background-color: rgba(93, 89, 89, 0.40);
+    border-radius: 20px;
+}
 
 .bg-profile {
     background-color: rgb(40, 18, 65, 0.70);

@@ -12,7 +12,7 @@ export const BlackList = () => {
     };
 
     return (
-        <div  className="text-gray-400 pb-6 bg-achievements md:w-[24%] h-full mt-2">
+        <div  className="text-gray-400 pb-6 bg-achievements md:w-[24%] h-full md:mt-2 mt-2">
             <div className="pb-1 text-gray-300 text-[15px] font-thin w-full flex items-center justify-center pt-2">Black List</div>
             <div className="border-b border-gray-200 w-[30px] mx-auto mb-7"></div>
             <div className="bg-black-list flex w-fill mx-3 mb-3 items-center">

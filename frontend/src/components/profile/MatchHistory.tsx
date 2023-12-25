@@ -67,7 +67,7 @@ const MatchHistory = ({ data, head }: { data: MatchHistoryItemInterface[]; head:
                     result={`${item.ScorePlayerOne}-${item.ScorePlayerTwo}`}
                 />
             ))}
-            <div className="pagination flex items-center justify-center text-white">{renderPageNumbers()}</div>
+            <div className="pagination flex items-center justify-center text-white bg-achievements3">{renderPageNumbers()}</div>
         </>
     );
 };
