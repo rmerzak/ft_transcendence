@@ -14,7 +14,7 @@ function page() {
     const [profile, setProfile] = useState<any>();
     useEffect(() => {
         
-        const response = axios.get(`http://localhost:3000/users/profile/${username}`,{withCredentials:true}).then((res) => {setProfile(res.data); console.log(res.data);});
+        const response = axios.get(`http://localhost:3000/users/profile/${username}`,{withCredentials:true}).then((res) => {setProfile(res.data); console.log(res);});
         console.log("responce",response);
     }, [username]);
     console.log("profile",profile);
