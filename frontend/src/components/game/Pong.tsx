@@ -1,6 +1,6 @@
 'use client'
 import styles from '@/app/dashboard/game/page.module.css'
-import { useEffect, useRef } from 'react';
+import { use, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 
 function Pong()
@@ -8,12 +8,29 @@ function Pong()
     const gameRef = useRef<HTMLCanvasElement>(null);
 
      // socket.io
-     const socket = io('http://localhost:3000', {
-        transports: ['websocket'],
+    const socket = io('http://localhost:3000/', {
+        withCredentials: true,
+        autoConnect: false,
+        // transports: ['websocket'],
     });
 
     useEffect(() => {
-        console.log('Hello from Pong.tsx');
+        if (socket.connect())
+        {
+            socket.emit('join');
+        }
+        return () => {
+            // off event listener
+            socket.off('playerNo');
+            socket.off('startingGame');
+            socket.off('startedGame');
+            socket.off('updateGame');
+            socket.off('gameOver');
+            socket.disconnect();
+            };
+    }, []);
+
+    useEffect(() => {
         const canvas = gameRef.current;
         if (!canvas) return;
 
@@ -237,14 +254,12 @@ function Pong()
 
         // starting game
         socket.on('startingGame', () => {
-            console.log ('Im here');
             isGameStarted = true;
         });
 
 
         // start game
         socket.on('startedGame', (room) => {
-            console.log(room);
             roomID = room.id;
             player1 = new Player(room.players[0].x, room.players[0].y, room.players[0].width, room.players[0].height, room.players[0].color);
             player2 = new Player(room.players[1].x, room.players[1].y, room.players[1].width, room.players[1].height, room.players[1].color);
@@ -317,26 +332,7 @@ function Pong()
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
             }, 4000);
         });
-
-        // startGame();
-        if (socket.connect())
-        {
-            socket.emit('join');
-        }
-        return () => {
-            // off event listener
-            socket.off('playerNo');
-            socket.off('startingGame');
-            socket.off('startedGame');
-            socket.off('updateGame');
-            socket.off('gameOver');
-            socket.off('join');
-            socket.off('leave');
-            socket.off('move');
-            socket.disconnect();
-                // socket.off('disconnect');
-            };
-    }, []);
+    }, [socket]);
     return (
         <>
             <div className= {styles.canvas_container}>
