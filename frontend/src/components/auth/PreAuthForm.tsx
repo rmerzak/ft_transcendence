@@ -21,7 +21,6 @@ const PreAuthForm = ({ exit }: { exit: boolean }) => {
   const [qrCodeImage, setQrCodeImage] = useState('');
   const [secret, setSecret] = useState('');
   const [newUsername, setUsername] = useState<string>("");
-  const [twoFa, settwoFa] = useState<boolean>(false);
   const fetchQrCode = async () => {
     try {
       const response = await axios.get('http://localhost:3000/auth/2fa/generate', {

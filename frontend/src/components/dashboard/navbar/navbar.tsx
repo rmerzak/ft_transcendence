@@ -1,5 +1,5 @@
 'use client';
-import { BellDot, MoreVertical } from "lucide-react"
+import { BellDot, MoreVertical, Search } from "lucide-react"
 import { use, useContext, useEffect, useRef, useState } from "react";
 import Link from "next/link"
 import { getUserInfo } from "@/api/user/user";
@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { logout } from "@/api/user/user";
 import { UsersAPIService } from "@/api/users/users.api";
 import { ContextGlobal } from "@/context/contex";
+import SearchBar from "../search/SearchBar";
 const Navbar = () => {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -37,7 +38,8 @@ const Navbar = () => {
     }
   }
   return (
-    <div className=" flex justify-end px-4 pt-4">
+    <div className=" flex items-center justify-between px-4 pt-4">
+      <SearchBar />
       <div className='flex items-center space-x-4 justify-center p-3 ps-6'>
         <BellDot color="#ffff" size={30} />
         <div className="relative ">
@@ -48,7 +50,6 @@ const Navbar = () => {
                 <li onClick={() => setOpen(false)} className="text-white p-2 text-lg cursor-pointer rounded hover:bg-[#78196F]"><Link href="/dashboard/profile">Profile </Link> </li>
                 <li onClick={() => setOpen(false)} className="text-white p-2 text-lg cursor-pointer rounded hover:bg-[#78196F]"><Link href="/dashboard/profile/settings">Settings </Link> </li>
                 <li onClick={() =>{ logout(); setOpen(false);}} className="text-white p-2 text-lg cursor-pointer rounded hover:bg-[#78196F]">Logout</li>
-
               </ul>
             </div>
           }

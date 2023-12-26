@@ -2,32 +2,20 @@
 import PreAuthForm from '@/components/auth/PreAuthForm'
 import { ContextGlobal } from '@/context/contex';
 import React, { useContext, useState } from 'react'
-
+import DisableTwoFa from '@/components/auth/DisableTwoFa';
 function Settings() {
-    const { profile, updateUser } : any= useContext(ContextGlobal);
-    const [code, setCode] = useState<string>("");
+    const { profile } : any = useContext(ContextGlobal);
     return (
         <>
-            <div className="flex flex-col items-center justify-center h-[calc(70%)]">
-                <div className="flex flex-col items-center justify-center w-full flex-1 px-5 md:px-20 text-center">
-                    <div className="text-white font-bold md:text-[48px] border">Settings: </div>
+            <div className="flex items-center justify-center w-[300px] md:w-full ">
+                <div className="flex flex-col items-center justify-center w-full  flex-1 px-3 md:px-20 text-center">
+                    <div className="text-white font-bold md:text-[48px]">Settings: </div>
                     <PreAuthForm exit={false} />
-                    <div className='text-white bg-[#311251] w-[380px] md:w-[500px] border'>
-                        {profile?.twoFactorEnabled == true ? "2FA is enabled" : "2FA is disabled"}
+                    <div className="bg-[#311251] drop-shadow-2xl w-[260px] md:w-[500px] bg-opacity-50 pb-10 rounded-2xl  flex items-center justify-center flex-col max-w-4xl">
+                    <div className='text-white'>{profile?.twoFactorEnabled == true ?"2FA is enabled" : "2FA is disabled"} </div>
                         {
-                            profile?.twoFactorEnabled == true ? <form>
-                                <div className="flex items-center bg-white mt-6 border-[0.063rem] rounded-[1rem] overflow-hidden relative ">
-                                    <label htmlFor="name"></label>
-                                    <input type="text" id="name" onChange={(e) => { setCode(e.currentTarget.value)}} placeholder="Two-factor authentication code" className="w-[20.438rem] h-[2.75rem] pl-[1.063rem] leading-normal" />
-
-                                </div>
-                                <div className="pt-5 flex items-center justify-between w-[20.438rem] h-[2.75rem]" style={{ marginBottom: "10px", marginTop: "10px" }}>
-                                    <button type="submit" className="bg-[#79196F] w-[100px] h-[40px] text-white py-2 px-4 rounded-[10px]">Disable</button>
-                                </div>
-
-                            </form> : ""
+                            profile?.twoFactorEnabled == true ? <DisableTwoFa /> : ""
                         }
-
                     </div>
                     <div className="flex pt-5 items-center flex-col">
                         <div>
@@ -36,7 +24,6 @@ function Settings() {
                         <div className="text-white">PingPong</div>
                     </div>
                 </div>
-
             </div>
         </>
     )

@@ -107,8 +107,6 @@ export class AuthController {
     @UseGuards(JwtGuard)
     @Post('2fa/verify')
     async verifyTwoFactorToken(@Req() req: Request, @Body() body: any) {
-        console.log("body :", body)
-        console.log(req.user)
         const isTokenValid = this.twoFactorService.verifyTwoFactorToken(body.code, body.secret);
         if (isTokenValid) {
             console.log("isTokenValid :", isTokenValid)
@@ -131,6 +129,21 @@ export class AuthController {
             const { accessToken } = await this.authService.signToken(user['id'], user['email']);
             res.cookie('accesstoken', accessToken, { httpOnly: true, });
             res.status(200).json({ success: true });
+        }
+    }
+    @Get('2fa/disable/:code')
+    async disableTwoFactorToken(@Req() req: Request, @Param('code') code: string) {
+        console.log("body :", code)
+        const userId = req.cookies.userId;
+        const user = await this.authService.findUserById(Number(userId));
+        const isTokenValid = this.twoFactorService.verifyTwoFactorToken(code, user['twoFactorSecret']);
+        console.log("isTokenValid :", isTokenValid)
+        console.log( user)
+        if (isTokenValid) {
+            await this.twoFactorService.disableTwoFactorAuth(user['email']);
+            return true;
+        } else {
+            return false;
         }
     }
 }

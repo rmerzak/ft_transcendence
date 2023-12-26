@@ -1,11 +1,15 @@
 "use client";
 
+import { ContextGlobal } from "@/context/contex";
 import axios from "axios";
 import { LockKeyhole, User, XSquare } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import QRCode from "react-qr-code";
-const TwoFaPopUp = ({ open, onClose, image,secret }: any) => {
+import {  toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+const TwoFaPopUp = ({ open, onClose, image, secret }: any) => {
     const [code, setCode] = useState<string>("");
+    const { profile, setProfile } : any= useContext(ContextGlobal);
     async function handleSubmit(event: any) {
         event.preventDefault();
         const response = await axios.post('http://localhost:3000/auth/2fa/verify', {code: code, secret: secret}, {
@@ -14,6 +18,10 @@ const TwoFaPopUp = ({ open, onClose, image,secret }: any) => {
         console.log(response);
         if (response.data === true) {
             onClose();
+            setProfile({...profile, twoFactorEnabled: true});
+            toast("new 2FA secret has been generated!");
+        } else {
+            toast.error("2FA code is invalid!");
         }
     }
     if (!open) return null;
@@ -41,7 +49,6 @@ const TwoFaPopUp = ({ open, onClose, image,secret }: any) => {
                                     </button>
                                 </div>
                             </form>
-
                         </div>
                     </div>
                 </div>

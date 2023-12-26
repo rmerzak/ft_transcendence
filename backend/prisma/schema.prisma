@@ -9,19 +9,6 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-
-// model User {
-//   id Int @id @default(autoincrement())
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-
-//   email String @unique
-//   hash String
-
-//   firstname String?
-//   lastname String?
-//   username String?
-// }
 model User {
   // initial user data
   id Int @id @default(autoincrement())
@@ -32,7 +19,7 @@ model User {
   email String @unique
   firstname String
   lastname String
-  username String
+  username String @unique
   image String
 
   // verification user authentification
@@ -49,6 +36,8 @@ model User {
   gamepoints Int @default(0)
   
   games Game[]
+  sentFriendRequests Friendship[] @relation("Sender")
+  receivedFriendRequests Friendship[] @relation("Receiver")
 }
 
 model Game {
@@ -60,4 +49,31 @@ model Game {
   status String
   dateStart DateTime
   user User @relation(fields: [userPlayerId], references: [id])
+
+}
+
+enum FriendshipStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+enum Blocker {
+  SENDER
+  RECEIVER
+}
+model Friendship {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updateAt DateTime @updatedAt
+
+  status FriendshipStatus
+
+  sender User @relation("Sender", fields: [senderId], references: [id])
+  senderId Int
+  receiver User @relation("Receiver", fields: [receiverId], references: [id])
+  receiverId Int
+
+  block Boolean @default(false)
+  blockBy Blocker?
+  @@unique([senderId, receiverId])
 }
