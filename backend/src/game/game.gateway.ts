@@ -9,6 +9,8 @@ import { Socket, Server } from 'socket.io';
 import { GameService } from './game.service';
 import { GameController } from './game.controller';
 import * as cookie from 'cookie';
+import { SocketAuthMiddleware } from 'src/auth/middleware/ws.mw';
+import { get } from 'http';
 
 @WebSocketGateway({
   cors :{
@@ -27,29 +29,25 @@ export class GameGateway implements OnGatewayConnection , OnGatewayDisconnect{
 
   @WebSocketServer()
   server: Server;
-  async getUser(request: any) {
+  afterInit(socket: Socket) {
+    console.log('init');
+    socket.use(SocketAuthMiddleware() as any);
+  }
+
+  async getUser(socket: any) {
     console.log("get user");
 
-    // Parse cookies from the request
-    const cookies = cookie.parse(request.headers.cookie || '');
-    const user = await this.game.findUserById(+cookies.userId);
-    // console.log("cookies" ,user);
-    return user;
-    // console.log("cookies" ,cookies);
+    const user = await this.game.findUserByEmail(socket['payload']['email']);
+
+    console.log(user);
   }
 
   async handleConnection(socket: Socket, request: Request) {
-    console.log("connected"); // just for debugging
-    this.getUser(socket.request);
-    // const userId  = socket.handshake.headers.cookie.split(';')[0].split('=')[1];
-    // console.log(user);
-    let rooms = [];
-    let width = 1908;
-    let height = 1146;
-    socket["user"] = await this.getUser(socket.request);
-    // socket.on('leave', (roomID) => {
-    //   socket.leave(roomID);
-    // });
+    // console.log(socket['payload']['email']);
+    // this.getUser(socket.request);
+    // socket["user"] = await this.getUser(socket.request);
+    // console.log(this.getUser(socket));
+    this.getUser(socket);
 
   }
   handleDisconnect(client: Socket): any
@@ -58,7 +56,6 @@ export class GameGateway implements OnGatewayConnection , OnGatewayDisconnect{
     //   socket.leave(roomID);
 
   }
-
   
   @SubscribeMessage('join')
   join(socket: any, payload: any): any {
