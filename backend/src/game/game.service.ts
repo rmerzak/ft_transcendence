@@ -4,12 +4,11 @@ import { PrismaService } from 'src/prisma/prisma.service';
 @Injectable()
 export class GameService {
     constructor(private prisma: PrismaService) {}  
-    async findUserById(id: number) {
-        const user = await this.prisma.user.findUnique({ where: { id },
+    async findUserByEmail(email: string) {
+        const user = await this.prisma.user.findUnique({ where: { email },
         select: {
             id: true,
             username: true,
-            email: true,
             image: true,
          }
         });
