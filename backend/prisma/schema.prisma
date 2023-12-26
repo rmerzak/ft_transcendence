@@ -38,6 +38,8 @@ model User {
   games Game[]
   sentFriendRequests Friendship[] @relation("Sender")
   receivedFriendRequests Friendship[] @relation("Receiver")
+  receivedNotification Notification[] @relation("Receiver")
+  sendNotification Notification[] @relation("Sender")
 }
 
 model Game {
@@ -76,4 +78,22 @@ model Friendship {
   block Boolean @default(false)
   blockBy Blocker?
   @@unique([senderId, receiverId])
+}
+
+enum RequestType {
+  FRIENDSHIP
+  GAME
+}
+model Notification {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  type String
+  content String
+  RequestId Int
+  RequestType RequestType
+  vue Boolean @default(false)
+  userId Int
+  senderId Int
+  Receiver User @relation( "Receiver",fields: [userId], references: [id])
+  sender User @relation( "Sender",fields: [senderId], references: [id])
 }

@@ -16,8 +16,8 @@ export class LeetStrategy extends PassportStrategy(Strategy, '42') {
   }
   async validate(accessToken: string, refreshToken: string, profile: Profile) {
     try {
-      console.log("profile :", profile._raw)
       let user = await this.authService.signup({
+        id: profile._json.id,
         email: profile.emails[0].value,
         image: profile._json.image.link,
         firstname: profile._json.first_name,
