@@ -51,7 +51,8 @@ export const ContextProvider = ({ children }: { children: any }) => {
     image: '/avatar.jpeg',
     isVerified: false,
     twoFactorSecret: '',
-    twoFactorEnabled: false
+    twoFactorEnabled: false,
+    
   });
 
     return <ContextGlobal.Provider value={{

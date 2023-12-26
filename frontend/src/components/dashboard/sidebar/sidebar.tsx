@@ -7,11 +7,6 @@ import { usePathname } from 'next/navigation';
 import {  BookUser,  Gamepad2, Home , MessageCircle, User } from 'lucide-react'
 const sidebarItems = [
   {
-    icon: <Home color="#ffff" size={25} />,
-    to: "/dashboard/home",
-    text: "Home"
-  },
-  {
     icon: <User color="#ffff" size={25} />,
     to: "/dashboard/profile",
     text: "Profile"

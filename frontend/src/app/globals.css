@@ -113,7 +113,8 @@ radial-gradient(at 0% 100%, hsla(5,88%,55%,1) 0px, transparent 50%);
 }
 
 button:hover{
-    background-color: #539D98;
+    /*background-color: #539D98;*/
+    transform: scale(1.1);
  }
 
  .bg-mberri {
@@ -148,6 +149,16 @@ button:hover{
 .bg-achievements1 {
     background-color: rgba(255, 255, 255, 0.30);
     border-radius: 22px;
+}
+
+.bg-black-list {
+    background-color: rgba(90, 90, 90, 0.80);
+    border-radius: 20px;
+}
+
+.bg-achievements3 {
+    background-color: rgba(93, 89, 89, 0.40);
+    border-radius: 20px;
 }
 
 .bg-profile {

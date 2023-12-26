@@ -9,10 +9,13 @@ import BlackList from "@/components/Friends/BlackList";
 
 const Friends = () => {
     return (
-      <div className="flex justify-between bg-profile p-4 mx-4">
-          <ListOfFriends />
-          <InviteFriends />
-          <BlackList />
+      <div className="md:justify-between bg-profile p-4 mx-4">
+        <h1 className="text-white font-bold text-3xl text-center mb-4">Friends</h1>
+        <div className="flex  justify-center ">
+            <ListOfFriends />
+            <InviteFriends />
+            <BlackList />
+        </div>
       </div>
     )
   }

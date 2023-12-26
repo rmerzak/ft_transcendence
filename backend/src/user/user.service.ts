@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -7,7 +7,7 @@ export class UserService {
         
     }
 
-    async searchUser(username: string) {
+    async searchUser(username: string, name:string) {
         const users = await this.prismaService.user.findMany({
             where: {
                 OR: [
@@ -20,13 +20,15 @@ export class UserService {
                 username: true,
             },
         });
-
-        return users;
+        const filteredUsers = users.filter(user => user.username !== name);
+        return filteredUsers;
     }
-    async getUserProfile(username: string) {
+    async getUserProfile(username: string, name: string) {
+        // if (name === username)
+        //     return null;
         const user = await this.prismaService.user.findUnique({
             where: {
-                username: username,
+                username: username , 
             },
             select: {
                 id: true,
@@ -40,7 +42,8 @@ export class UserService {
                 lastname: true,
             },
         });
-        console.log("user :", user) 
+        if (!user)
+            throw new BadRequestException('User not found');
         return user;
     }
 }

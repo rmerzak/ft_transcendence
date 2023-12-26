@@ -16,10 +16,10 @@ export class UserController {
 
     @Get('search/:username')
     async searchUser(@Req() req: Request, @Param('username') username: string) {
-        return this.userService.searchUser(username);
+        return this.userService.searchUser(username, req.user['username']);
     }
     @Get('profile/:username')
     async getUserProfile(@Req() req: Request, @Param('username') username: string) {
-        return this.userService.getUserProfile(username);
+        return this.userService.getUserProfile(username, req.user['username']);
     }
 }
