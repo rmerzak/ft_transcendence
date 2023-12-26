@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { FriendshipStatus, RequestType, User } from '@prisma/client';
+import { Blocker, FriendshipStatus, RequestType, User } from '@prisma/client';
 import { Socket } from 'socket.io';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserDto } from './Dto';
@@ -96,14 +96,22 @@ export class FriendshipService {
         const user = await this.prisma.user.findUnique({ where: { id: userId } });
         if (!user) throw new Error('user not found');
         const friendRequest = await this.prisma.friendship.findFirst({ where: { senderId: userId, receiverId: socket['payload']['sub'] } });
-        if (friendRequest == null) throw new Error('friend request not found');
-        console.log("friend request",friendRequest); 
+        if (!friendRequest) throw new Error('friend request not found'); 
         if (friendRequest.status !== FriendshipStatus.ACCEPTED) throw new Error('friend request not accepted');
         const friendRequestRemoved = await this.prisma.friendship.delete({
             where: { id: friendRequest.id }
         });
         console.log(friendRequestRemoved);
         //return friendRequestRemoved;
+    }
+    async BlockFriend(socket:Socket,userId: number) {
+        const user = await this.prisma.user.findUnique({where:{id:userId}});
+        if(!user) throw new Error('user not found');
+        const friendRequest = await this.prisma.friendship.findFirst({ where: { senderId: userId, receiverId: socket['payload']['sub'] } });
+        if (!friendRequest) throw new Error('friend request not found');
+        /// must check if the blocker is the sender or the receiver
+        
+        const friendRequestBlocked = await this.prisma.friendship.update({where:{id: friendRequest.id},data:{status:FriendshipStatus.DECLINED, block:true,blockBy:Blocker.SENDER}}); //TODO
     }
     
 }

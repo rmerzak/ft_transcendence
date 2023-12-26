@@ -9,6 +9,11 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+// enum UserStatus {
+//   ONLINE
+//   OFFLINE
+//   INGAME
+// }
 model User {
   // initial user data
   id Int @id @default(autoincrement())
@@ -25,6 +30,8 @@ model User {
   // verification user authentification
   isVerified Boolean @default(false)
 
+  // user status online , offline ,in game
+  //status UserStatus @default("offline")
   // user 2fa
   twoFactorSecret String
   twoFactorEnabled Boolean @default(false)

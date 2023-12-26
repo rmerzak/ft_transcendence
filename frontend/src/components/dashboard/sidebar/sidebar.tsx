@@ -43,7 +43,7 @@ const Sidebar = () => {
           <Link key={index} href={to}>
             <li className={` ${currentRoute === to ? " bg-[#78196F]" : "text-white"} relative flex items-center py-2 px-3 my-1 font-medium rounded-md cursor-pointer transition-colors group text-white md:w-35 md:ml-3 w-15`}>
               {icon}
-              <span className={` overflow-hidden transition-all  md:w-35 md:ml-3 hidden lg:block`}>
+              <span className={` overflow-hidden transition-all  md:w-35 md:ml-3 hidden md:block`}>
                 {text}
               </span>
                 <div className={` absolute left-full rounded-md px-2 py-1 ml-6 bg-indigo-100 text-indigo-800 text-sm invisible opacity-20 -translate-x-3 transition-all group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-10`}>

@@ -6,7 +6,7 @@ import { Logger } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { User } from '@prisma/client';
 import { UserDto } from '../Dto';
-
+/// dont forget to add the userin the socket using the methode socket.data = user
 
 @WebSocketGateway({ cors: { origin: 'http://localhost:8080', credentials: true } })
 export class FriendshipGateway {
@@ -17,6 +17,7 @@ export class FriendshipGateway {
   afterInit(socket: Socket) {
     console.log('init');
     socket.use(SocketAuthMiddleware() as any);
+    console.log("socket",socket.data)
   }
 
   handleConnection(socket: Socket) {
@@ -60,26 +61,28 @@ export class FriendshipGateway {
   async removeFriend(socket: Socket, payload: number) {
     try {
       const emitClient = this.friendship.getSocketsByUser(Number(payload));
-      const friendshipRemoved = this.friendship.RemoveFriend(socket, Number(payload));
+      const friendshipRemoved = await this.friendship.RemoveFriend(socket, Number(payload));
       emitClient.forEach((socket) => {
         socket.emit('removeFriend', "notification");
       });
     } catch (error) {
-      console.error('Error processing friend request:', error.message);
+      console.error('Error removing friend:', error.message);
       socket.emit('RequestError', { error: error.message });
     }
   }
-  @SubscribeMessage('friendRefuseRequest')
-  friendRefuseRequest(socket: Socket, payload: number) {
-    const emitClient = this.friendship.getSocketsByUser(Number(payload));
 
-    this.server.emit('friendRefuseRequest', "hello");
-  }
   @SubscribeMessage('blockFriend')
-  blockFriend(socket: Socket, payload: number) {
-    const emitClient = this.friendship.getSocketsByUser(Number(payload));
-
-    this.server.emit('blockFriend', "hello");
+  async blockFriend(socket: Socket, payload: number) {
+    try {
+      const emitClient = this.friendship.getSocketsByUser(Number(payload));
+      const friendshipBlock = await this.friendship.BlockFriend(socket, Number(payload));
+      emitClient.forEach((socket) => {
+        socket.emit('removeFriend', "notification");
+      });
+    } catch (error) {
+      console.error('Error removing friend:', error.message);
+      socket.emit('RequestError', { error: error.message });
+    }
   }
   @SubscribeMessage('unblockFriend')
   unblockFriend(socket: Socket, payload: number) {
