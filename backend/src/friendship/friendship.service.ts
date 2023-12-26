@@ -51,11 +51,13 @@ export class FriendshipService {
     }
     async AcceptFriendRequest(socket: Socket, userId: number) {
         const user = await this.prisma.user.findUnique({where:{id:userId}});
-        // if(!user) throw new Error('user not found');
-        // const friendRequest = await this.prisma.friendship.update({where:{senderId:userId,receiverId:socket['payload']['sub']},data:{
-        //     status: FriendshipStatus.ACCEPTED,
-        // }});
-        return null;
+        if(!user) throw new Error('user not found');
+        const friendRequest = await this.prisma.friendship.findFirst({where:{senderId:userId,receiverId:socket['payload']['sub']}});
+        if(!friendRequest) throw new Error('friend request not found');
+        const friendRequestAccepted = await this.prisma.friendship.update({where:{id:friendRequest.id},data:{
+            status: FriendshipStatus.ACCEPTED,
+        }});
+        return friendRequestAccepted;
 
     }
     async CreateNotification(socket: Socket,userId:number, type:string, content:string,RequestId:number) {
