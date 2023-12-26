@@ -57,10 +57,17 @@ export class FriendshipGateway {
     }
   }
   @SubscribeMessage('removeFriend')
-  removeFriend(socket: Socket, payload: number) {
-    const emitClient = this.friendship.getSocketsByUser(Number(payload));
-
-    this.server.emit('removeFriend', "hello");
+  async removeFriend(socket: Socket, payload: number) {
+    try {
+      const emitClient = this.friendship.getSocketsByUser(Number(payload));
+      const friendshipRemoved = this.friendship.RemoveFriend(socket, Number(payload));
+      emitClient.forEach((socket) => {
+        socket.emit('removeFriend', "notification");
+      });
+    } catch (error) {
+      console.error('Error processing friend request:', error.message);
+      socket.emit('RequestError', { error: error.message });
+    }
   }
   @SubscribeMessage('friendRefuseRequest')
   friendRefuseRequest(socket: Socket, payload: number) {

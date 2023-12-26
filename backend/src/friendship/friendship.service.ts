@@ -38,7 +38,22 @@ export class FriendshipService {
     getSocketsByUser(userId: number): any {
         return this.connectedClients.get(userId) || [];
     }
-
+    async CreateNotification(socket: Socket, userId: number, type: string, content: string, RequestId: number) {
+        //type: 'friendRequest' | 'friendRequestAccepted' | 'friendRequestRejected' | 'friendRequestCanceled' | 'friendRequestDeleted' | 'friendRequestBlocked' | 'friendRequestUnblocked' | 'friendRequestUnfriended' | 'friendRequestUnblocked'
+        const Receiver = await this.prisma.user.findUnique({ where: { id: userId } });
+        const Sender = await this.prisma.user.findUnique({ where: { id: socket['payload']['sub'] } });
+        const notification = await this.prisma.notification.create({
+            data: {
+                type: type,
+                content: content,
+                RequestId: RequestId,
+                userId: Receiver.id,
+                senderId: Sender.id,
+                RequestType: RequestType.FRIENDSHIP
+            }
+        });
+        return notification;
+    }
     async CreateFriendRequest(socket: Socket, userId: number) {
         const senderId = socket['payload']['sub'];
         const existingFriendship = await this.prisma.friendship.findFirst({
@@ -77,20 +92,18 @@ export class FriendshipService {
         return friendRequestAccepted.id;
 
     }
-    async CreateNotification(socket: Socket, userId: number, type: string, content: string, RequestId: number) {
-        //type: 'friendRequest' | 'friendRequestAccepted' | 'friendRequestRejected' | 'friendRequestCanceled' | 'friendRequestDeleted' | 'friendRequestBlocked' | 'friendRequestUnblocked' | 'friendRequestUnfriended' | 'friendRequestUnblocked'
-        const Receiver = await this.prisma.user.findUnique({ where: { id: userId } });
-        const Sender = await this.prisma.user.findUnique({ where: { id: socket['payload']['sub'] } });
-        const notification = await this.prisma.notification.create({
-            data: {
-                type: type,
-                content: content,
-                RequestId: RequestId,
-                userId: Receiver.id,
-                senderId: Sender.id,
-                RequestType: RequestType.FRIENDSHIP
-            }
+    async RemoveFriend(socket:Socket,userId: number) {
+        const user = await this.prisma.user.findUnique({ where: { id: userId } });
+        if (!user) throw new Error('user not found');
+        const friendRequest = await this.prisma.friendship.findFirst({ where: { senderId: userId, receiverId: socket['payload']['sub'] } });
+        if (friendRequest == null) throw new Error('friend request not found');
+        console.log("friend request",friendRequest); 
+        if (friendRequest.status !== FriendshipStatus.ACCEPTED) throw new Error('friend request not accepted');
+        const friendRequestRemoved = await this.prisma.friendship.delete({
+            where: { id: friendRequest.id }
         });
-        return notification;
+        console.log(friendRequestRemoved);
+        //return friendRequestRemoved;
     }
+    
 }
