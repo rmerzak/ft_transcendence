@@ -2,7 +2,8 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import io from 'socket.io-client';
 import { User } from '@/interfaces';
-
+import {  toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 export const ContextGlobal = createContext({
   setProfile() {},
   profile: null
@@ -19,16 +20,17 @@ export const ContextProvider = ({ children }: { children: any }) => {
     socket.on('connect', () => {
       console.log('Connected to the server');
       console.log(socket);
-      socket.emit('message', 'Hello World');
-      socket.on('message', (data) => {
-        console.log(data);
-      });
+    });
+    socket.on('friendRequest', (data: any) => {
+      console.log('You have a new friend request');
+      toast.success('You have a new friend request');
+      console.log(data);
     });
   
     // Listen for the 'disconnect' event
-    // socket.on('disconnect', () => {
-    //   console.log("Disconnected from the server");
-    // });
+    socket.on('disconnect', () => {
+      console.log("Disconnected from the server");
+    });
   
     // Cleanup function
     return () => {
