@@ -26,7 +26,11 @@ export const ContextProvider = ({ children }: { children: any }) => {
       toast.success('You have a new friend request');
       console.log(data);
     });
-  
+    socket.on('friendAcceptRequest', (data: any) => {
+      toast.success('Your friend accepted your request');
+      console.log(data);
+    });
+    
     // Listen for the 'disconnect' event
     socket.on('disconnect', () => {
       console.log("Disconnected from the server");

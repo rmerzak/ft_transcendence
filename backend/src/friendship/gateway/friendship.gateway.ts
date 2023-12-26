@@ -8,9 +8,9 @@ import { User } from '@prisma/client';
 import { UserDto } from '../Dto';
 
 
-@WebSocketGateway({cors:{origin:'http://localhost:8080',credentials:true}})
+@WebSocketGateway({ cors: { origin: 'http://localhost:8080', credentials: true } })
 export class FriendshipGateway {
-  constructor(private readonly friendship:FriendshipService) {}
+  constructor(private readonly friendship: FriendshipService) { }
   @WebSocketServer()
   server: Server;
 
@@ -29,44 +29,55 @@ export class FriendshipGateway {
   }
   @SubscribeMessage('friendRequest')
   async friendRequest(socket: Socket, payload: number) {
-    const emitClient = this.friendship.getSocketsByUser(Number(payload));
-    console.log("emitClient = ",emitClient)
-    const Request = this.friendship.CreateFriendRequest(socket, Number(payload));
-    const notification = await this.friendship.CreateNotification(socket, Number(payload), 'friendRequest', 'you have a friend request', await Request);
-    emitClient.forEach((socket) => {
-      socket.emit('friendRequest', notification);
-    });
-
+    try {
+      const emitClient = this.friendship.getSocketsByUser(Number(payload));
+      const Request = await this.friendship.CreateFriendRequest(socket, Number(payload));
+      const notification = await this.friendship.CreateNotification(socket, Number(payload), 'friendRequest', 'you have a friend request', Request);
+      emitClient.forEach((socket) => {
+        socket.emit('friendRequest', notification);
+      });
+    } catch (error) {
+      console.error('Error processing friend request:', error.message);
+      socket.emit('RequestError', { error: error.message });
+    }
   }
 
   @SubscribeMessage('friendAcceptRequest')
-  friendAcceptRequest(socket: Socket, payload: number) {
-    const emitClient = this.friendship.getSocketsByUser(Number(payload));
-    const RequestAccepted = this.friendship.AcceptFriendRequest(socket, Number(payload));
-    this.server.emit('friendAcceptRequest', "hello"); 
+  async friendAcceptRequest(socket: Socket, payload: number) {
+    try {
+      const emitClient = this.friendship.getSocketsByUser(Number(payload));
+      const RequestAccepted = this.friendship.AcceptFriendRequest(socket, Number(payload));
+      const notification = this.friendship.CreateNotification(socket, Number(payload), 'friendAcceptRequest', 'your friend request has been accepted', await RequestAccepted);
+      emitClient.forEach((socket) => {
+        socket.emit('friendAcceptRequest', notification);
+      });
+    } catch (error) {
+      console.error('Error processing friend request:', error.message);
+      socket.emit('RequestError', { error: error.message });
+    }
   }
   @SubscribeMessage('removeFriend')
   removeFriend(socket: Socket, payload: number) {
     const emitClient = this.friendship.getSocketsByUser(Number(payload));
-    
-    this.server.emit('removeFriend', "hello"); 
+
+    this.server.emit('removeFriend', "hello");
   }
   @SubscribeMessage('friendRefuseRequest')
   friendRefuseRequest(socket: Socket, payload: number) {
     const emitClient = this.friendship.getSocketsByUser(Number(payload));
 
-    this.server.emit('friendRefuseRequest', "hello"); 
+    this.server.emit('friendRefuseRequest', "hello");
   }
   @SubscribeMessage('blockFriend')
   blockFriend(socket: Socket, payload: number) {
     const emitClient = this.friendship.getSocketsByUser(Number(payload));
 
-    this.server.emit('blockFriend', "hello"); 
+    this.server.emit('blockFriend', "hello");
   }
   @SubscribeMessage('unblockFriend')
   unblockFriend(socket: Socket, payload: number) {
     const emitClient = this.friendship.getSocketsByUser(Number(payload));
 
-    this.server.emit('unblockFriend', "hello"); 
+    this.server.emit('unblockFriend', "hello");
   }
 }

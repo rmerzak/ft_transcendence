@@ -6,7 +6,7 @@ import { UserDto } from './Dto';
 
 @Injectable()
 export class FriendshipService {
-    constructor(private prisma:PrismaService) {}
+    constructor(private prisma: PrismaService) { }
     public readonly connectedClients: Map<number, Socket[]> = new Map(); // must change to private its just for testing
 
     async handleConnection(socket: Socket): Promise<void> {
@@ -40,38 +40,57 @@ export class FriendshipService {
     }
 
     async CreateFriendRequest(socket: Socket, userId: number) {
-        const user = await this.prisma.user.findUnique({where:{id:userId}});
-        if(!user) throw new Error('user not found');
-        const friendRequest = await this.prisma.friendship.create({data:{
-            status: FriendshipStatus.PENDING,
-            senderId: socket['payload']['sub'],
-            receiverId: userId
-        }});
+        const senderId = socket['payload']['sub'];
+        const existingFriendship = await this.prisma.friendship.findFirst({
+            where: {
+                OR: [
+                    { senderId, receiverId: userId },
+                    { senderId: userId, receiverId: senderId },
+                ],
+            },
+        });
+        if (existingFriendship) {
+            throw new Error('Friendship request already sent or accepted');
+        }
+        const user = await this.prisma.user.findUnique({ where: { id: userId } });
+        if (!user) throw new Error('user not found');
+        const friendRequest = await this.prisma.friendship.create({
+            data: {
+                status: FriendshipStatus.PENDING,
+                senderId: socket['payload']['sub'],
+                receiverId: userId
+            }
+        });
         return friendRequest.id;
     }
     async AcceptFriendRequest(socket: Socket, userId: number) {
-        const user = await this.prisma.user.findUnique({where:{id:userId}});
-        if(!user) throw new Error('user not found');
-        const friendRequest = await this.prisma.friendship.findFirst({where:{senderId:userId,receiverId:socket['payload']['sub']}});
-        if(!friendRequest) throw new Error('friend request not found');
-        const friendRequestAccepted = await this.prisma.friendship.update({where:{id:friendRequest.id},data:{
-            status: FriendshipStatus.ACCEPTED,
-        }});
-        return friendRequestAccepted;
+        const user = await this.prisma.user.findUnique({ where: { id: userId } });
+        if (!user) throw new Error('user not found');
+        const friendRequest = await this.prisma.friendship.findFirst({ where: { senderId: userId, receiverId: socket['payload']['sub'] } });
+        if (!friendRequest) throw new Error('friend request not found');
+        if (friendRequest.status !== FriendshipStatus.PENDING) throw new Error('friend request already accepted or rejected');
+        const friendRequestAccepted = await this.prisma.friendship.update({
+            where: { id: friendRequest.id }, data: {
+                status: FriendshipStatus.ACCEPTED,
+            }
+        });
+        return friendRequestAccepted.id;
 
     }
-    async CreateNotification(socket: Socket,userId:number, type:string, content:string,RequestId:number) {
+    async CreateNotification(socket: Socket, userId: number, type: string, content: string, RequestId: number) {
         //type: 'friendRequest' | 'friendRequestAccepted' | 'friendRequestRejected' | 'friendRequestCanceled' | 'friendRequestDeleted' | 'friendRequestBlocked' | 'friendRequestUnblocked' | 'friendRequestUnfriended' | 'friendRequestUnblocked'
-        const Receiver = await this.prisma.user.findUnique({where:{id:userId}});
-        const Sender = await this.prisma.user.findUnique({where:{id:socket['payload']['sub']}});
-        const notification = await this.prisma.notification.create({data:{
-            type: type,
-            content: content,
-            RequestId: RequestId,
-            userId: Receiver.id,
-            senderId: Sender.id,
-            RequestType: RequestType.FRIENDSHIP
-        }});
+        const Receiver = await this.prisma.user.findUnique({ where: { id: userId } });
+        const Sender = await this.prisma.user.findUnique({ where: { id: socket['payload']['sub'] } });
+        const notification = await this.prisma.notification.create({
+            data: {
+                type: type,
+                content: content,
+                RequestId: RequestId,
+                userId: Receiver.id,
+                senderId: Sender.id,
+                RequestType: RequestType.FRIENDSHIP
+            }
+        });
         return notification;
     }
 }
