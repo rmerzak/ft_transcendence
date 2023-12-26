@@ -1,7 +1,8 @@
 "use client"
 import React, { useEffect, useState } from 'react'
 
-const Page_502 = () => {
+
+const UserNotFound = () => {
     const [height, setHeight] = useState(0);
     const [width, setWidth] = useState(0);
     useEffect(() => {
@@ -39,6 +40,6 @@ const Page_502 = () => {
         </div>
       </div>
     )
-  }
+}
 
-export default Page_502
+export default UserNotFound
