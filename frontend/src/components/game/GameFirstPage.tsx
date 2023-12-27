@@ -2,7 +2,7 @@
 import styles from '@/app/dashboard/game/page.module.css'
 import Image from 'next/image'
 import Link from 'next/link';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 // Import Swiper React components
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { useRouter } from 'next/navigation';
@@ -18,10 +18,14 @@ import { EffectCoverflow, Pagination } from 'swiper/modules';
 import GameCanvas from './GameCanvas';
 
 
+export const userContext = React.createContext(0);
+
+
 const img = ['A2', 'B2', 'C2', 'D2'];
 
 function GameFirstPage()
 {
+    
     const [imgIndex, setImgIndex] = useState<number>(1);
 
     const handleSlideChange = (swiper : any) => {
@@ -133,10 +137,13 @@ function GameFirstPage()
                     <h1 className={styles.choose}>
                         Preview
                     </h1>
-
-                    <div className={styles.preview}>
+                    {/* change the value of userContex */}
+                    <userContext.Provider value={imgIndex}>
                         <GameCanvas imgIndex={imgIndex} />
-                    </div>
+                    </userContext.Provider>
+                    {/* <div className={styles.preview}>
+                        <GameCanvas imgIndex={value} />
+                    </div> */}
                 </div>
             </div>
         </>

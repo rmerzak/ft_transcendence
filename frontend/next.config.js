@@ -36,9 +36,8 @@ const nextConfig = {
     },
     images: {
       domains: ['res.cloudinary.com','cdn.intra.42.fr','i.pravatar.cc']
-    }
+    },
+    reactStrictMode: false,
   };
   
   module.exports = nextConfig;
-  
-  

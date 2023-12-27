@@ -1,6 +1,9 @@
 import { IsEmail, IsInt, IsNotEmpty, IsOptional, IsString } from "class-validator"
 
 export class AuthDto {
+    @IsInt()
+    id?: number;
+
     @IsEmail()
     email: string;
   

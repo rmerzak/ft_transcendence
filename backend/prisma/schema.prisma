@@ -9,19 +9,11 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-
-// model User {
-//   id Int @id @default(autoincrement())
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-
-//   email String @unique
-//   hash String
-
-//   firstname String?
-//   lastname String?
-//   username String?
-// }
+enum UserStatus {
+  ONLINE
+  OFFLINE
+  INGAME
+}
 model User {
   // initial user data
   id Int @id @default(autoincrement())
@@ -38,6 +30,8 @@ model User {
   // verification user authentification
   isVerified Boolean @default(false)
 
+  // user status online , offline ,in game
+  status UserStatus @default(OFFLINE)
   // user 2fa
   twoFactorSecret String
   twoFactorEnabled Boolean @default(false)
@@ -49,6 +43,10 @@ model User {
   gamepoints Int @default(0)
   
   games Game[]
+  sentFriendRequests Friendship[] @relation("Sender")
+  receivedFriendRequests Friendship[] @relation("Receiver")
+  receivedNotification Notification[] @relation("Receiver")
+  sendNotification Notification[] @relation("Sender")
 }
 
 model Game {
@@ -60,4 +58,49 @@ model Game {
   status String
   dateStart DateTime
   user User @relation(fields: [userPlayerId], references: [id])
+
+}
+
+enum FriendshipStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+enum Blocker {
+  SENDER
+  RECEIVER
+}
+model Friendship {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updateAt DateTime @updatedAt
+
+  status FriendshipStatus
+
+  sender User @relation("Sender", fields: [senderId], references: [id])
+  senderId Int
+  receiver User @relation("Receiver", fields: [receiverId], references: [id])
+  receiverId Int
+
+  block Boolean @default(false)
+  blockBy Blocker?
+  @@unique([senderId, receiverId])
+}
+
+enum RequestType {
+  FRIENDSHIP
+  GAME
+}
+model Notification {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  type String
+  content String
+  RequestId Int
+  RequestType RequestType
+  vue Boolean @default(false)
+  userId Int
+  senderId Int
+  Receiver User @relation( "Receiver",fields: [userId], references: [id])
+  sender User @relation( "Sender",fields: [senderId], references: [id])
 }

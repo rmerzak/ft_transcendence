@@ -5,6 +5,7 @@ import styles from '../../app/dashboard/game/page.module.css'
 import Image from 'next/image'
 import { useEffect, useRef } from 'react';
 
+
 function Game({imgIndex}: {imgIndex: number}){
 
 	const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -37,15 +38,33 @@ function Game({imgIndex}: {imgIndex: number}){
 
 				let balls: any[] = [];
 
-				let rgb = [
-					"rgb(20, 20, 20)",
-					"rgb(50, 50, 50)",
-					"rgb(100, 100, 100)",
-					"rgb(125, 125, 125)",
-					"rgb(160, 160, 160)",
-					"rgb(200, 200, 200)",
-					"rgb(230, 230, 230)"
-				]
+				let rgb: string | any[] = []
+				
+
+				if (imgIndex === 0)
+				{
+					rgb = [
+						"rgb(20, 20, 20)",
+						"rgb(50, 50, 50)",
+						"rgb(100, 100, 100)",
+						"rgb(125, 125, 125)",
+						"rgb(160, 160, 160)",
+						"rgb(200, 200, 200)",
+						"rgb(230, 230, 230)"
+					]
+				}
+				else if (imgIndex === 1)
+				{
+					rgb = [
+						"rgb(0, 0, 0)",
+						"rgb(10, 10, 10)",
+						"rgb(20, 20, 20)",
+						"rgb(30, 30, 30)",
+						"rgb(40, 40, 40)",
+						"rgb(50, 50, 50)",
+						"rgb(60, 60, 60)"
+					]
+				}
 
 
 
@@ -119,7 +138,15 @@ function Game({imgIndex}: {imgIndex: number}){
 
 				const drawGameScreen = () => {
 					if (ctx) {
-						ctx.strokeStyle = '#ffffff';
+						if (imgIndex === 0)
+						{
+							ctx.fillStyle = '#000000';
+						} 
+						else if (imgIndex === 1)
+						{
+							ctx.fillStyle = '#ffffff';
+						}
+
 
 						// Top solid line
 						ctx.beginPath();
@@ -193,8 +220,16 @@ function Game({imgIndex}: {imgIndex: number}){
 					}
 
 					draw(ctx: CanvasRenderingContext2D) {
-						ctx.fillStyle = '#ffffff';
-						ctx.strokeStyle = '#ffffff';
+						if (imgIndex === 0)
+						{
+							ctx.fillStyle = '#ffffff';
+							ctx.strokeStyle = '#ffffff';
+						}
+						else if (imgIndex === 1)
+						{
+							ctx.fillStyle = '#000000';
+							ctx.strokeStyle = '#000000';
+						}
 						ctx.beginPath();
 						ctx.arc(this.pos.x, this.pos.y, this.radius, 0, 2 * Math.PI);
 						ctx.fill();
@@ -228,7 +263,11 @@ function Game({imgIndex}: {imgIndex: number}){
 					}
 
 					draw(ctx: CanvasRenderingContext2D) {
-						ctx.fillStyle = '#ffffff';
+						if (imgIndex === 1)
+							ctx.fillStyle = '#000000';
+						else 
+							ctx.fillStyle = '#ffffff';
+						// ctx.fillStyle = '#ffffff';
 						ctx.fillRect(this.pos.x, this.pos.y, this.width, this.height);
 					}
 
@@ -280,31 +319,66 @@ function Game({imgIndex}: {imgIndex: number}){
 					}
 				};
 
+				// const ballCollisionWithThePaddle = (
+				// 	ball: { pos: { x: number; y: number }; radius: number; velocity: { x: number; y: number } },
+				// 	paddle: { getCenter: () => { x: number; y: number }; getHalfWidth: () => number; getHalfHeight: () => number }
+				// ) => {
+				// 	const dx = Math.abs(ball.pos.x - paddle.getCenter().x);
+				// 	const dy = Math.abs(ball.pos.y - paddle.getCenter().y);
+				// 	const overlapX = ball.radius + paddle.getHalfWidth() - dx;
+				// 	const overlapY = ball.radius + paddle.getHalfHeight() - dy;
+
+				// 	if (dx < ball.radius + paddle.getHalfWidth() && dy < ball.radius + paddle.getHalfHeight()) {
+				// 		ball.velocity.x *= -1;
+
+				// 		// Adjust the ball's position based on the overlap
+				// 		if (overlapX < overlapY) {
+				// 			ball.pos.x += ball.pos.x < paddle.getCenter().x ? -overlapX : overlapX;
+				// 		} else {
+				// 			ball.pos.y += ball.pos.y < paddle.getCenter().y ? -overlapY : overlapY;
+				// 			ball.velocity.y *= -1;
+
+				// 			// Adjust the speed of the ball (you can experiment with the multiplier)
+				// 		}
+				// 		ball.velocity.y *= 1.1; // Adjust the multiplier as needed
+				// 		ball.velocity.x *= 1.1; // Adjust the multiplier as needed
+				// 	}
+				// };
+
 				const ballCollisionWithThePaddle = (
 					ball: { pos: { x: number; y: number }; radius: number; velocity: { x: number; y: number } },
-					paddle: { getCenter: () => { x: number; y: number }; getHalfWidth: () => number; getHalfHeight: () => number }
-				) => {
+					paddle: { getCenter: () => { x: number; y: number }; getHalfWidth: () => number; getHalfHeight: () => number },
+					canvasHeight: number
+				  ) => {
 					const dx = Math.abs(ball.pos.x - paddle.getCenter().x);
 					const dy = Math.abs(ball.pos.y - paddle.getCenter().y);
 					const overlapX = ball.radius + paddle.getHalfWidth() - dx;
 					const overlapY = ball.radius + paddle.getHalfHeight() - dy;
-
+				  
 					if (dx < ball.radius + paddle.getHalfWidth() && dy < ball.radius + paddle.getHalfHeight()) {
+					  // Ball collides with the paddle
+					  if (overlapX < overlapY) {
 						ball.velocity.x *= -1;
-
+				  
 						// Adjust the ball's position based on the overlap
-						if (overlapX < overlapY) {
-							ball.pos.x += ball.pos.x < paddle.getCenter().x ? -overlapX : overlapX;
-						} else {
-							ball.pos.y += ball.pos.y < paddle.getCenter().y ? -overlapY : overlapY;
-							ball.velocity.y *= -1;
-
-							// Adjust the speed of the ball (you can experiment with the multiplier)
-						}
-						ball.velocity.y *= 1.1; // Adjust the multiplier as needed
-						ball.velocity.x *= 1.1; // Adjust the multiplier as needed
+						ball.pos.x += ball.pos.x < paddle.getCenter().x ? -overlapX : overlapX;
+					  } else {
+						ball.velocity.y *= -1;
+				  
+						// Adjust the ball's position based on the overlap
+						ball.pos.y += ball.pos.y < paddle.getCenter().y ? -overlapY : overlapY;
+					  }
+					  	ball.velocity.y *= 1.05; // Adjust the multiplier as needed
+						ball.velocity.x *= 1.05; // Adjust the multiplier as needed
 					}
-				};
+				  
+					// Check for collisions with the top and bottom edges
+					if (ball.pos.y - ball.radius <= 0 || ball.pos.y + ball.radius >= canvasHeight) {
+					  ball.velocity.y *= -1;
+					}
+				  };
+				  
+									
 
 
 				const player2AI = (ball: { velocity: { x: number; }; pos: { y: number; }; }, paddle: { pos: { y: number; }; velocity: { y: number; }; height: number; }) => {
@@ -352,21 +426,21 @@ function Game({imgIndex}: {imgIndex: number}){
 
 				const respawnBall = (ball: { velocity: { x: number; y: number; }; pos: { x: number; y: number; }; }) => {
 					if (ball.velocity.x > 0) {
-						ball.pos.x = width - 200;
-						// ball.pos.x = width / 2;
-						// ball.pos.y = (Math.random() * (height - 200)) + 100;
-						ball.pos.y = height / 2;
-						ball.velocity.x = 5;
+						// ball.pos.x = width - 200;
+						ball.pos.x = width / 2;
+						ball.pos.y = (Math.random() * (height - 200)) + 100;
+						// ball.pos.y = height / 2;
+						ball.velocity.x = 7;
 						ball.velocity.y = 5;
 					}
 
 					if (ball.velocity.x < 0) {
-						ball.pos.x = 200;
-						// ball.pos.x = width / 2;
-						// ball.pos.y = (Math.random() * (height - 200)) + 100;
-						ball.pos.y = height / 2;
+						// ball.pos.x = 200;
+						ball.pos.x = width / 2;
+						ball.pos.y = (Math.random() * (height - 200)) + 100;
+						// ball.pos.y = height / 2;
 
-						ball.velocity.x = -5;
+						ball.velocity.x = -7;
 						ball.velocity.y = -5;
 					}
 					// ball.velocity.x = 5;
@@ -396,9 +470,9 @@ function Game({imgIndex}: {imgIndex: number}){
 					}
 				};
 
-				let ballObj = new ball(vec2(100, 100), vec2(5, 5), 15);
-				let paddle1 = new paddle(vec2(25, 50), vec2(20, 20), 15, 150);
-				let paddle2 = new paddle(vec2(width - 40, 50), vec2(20, 20), 15, 150);
+				let ballObj = new ball(vec2(100, 100), vec2(7, 5), 15);
+				let paddle1 = new paddle(vec2(25, 50), vec2(15, 15), 15, 150);
+				let paddle2 = new paddle(vec2(width - 40, 50), vec2(15, 15), 15, 150);
 
 				const gameUpdate = (keysPressed: { [key: string]: boolean }) => {
 					ballObj.update();
@@ -406,17 +480,17 @@ function Game({imgIndex}: {imgIndex: number}){
 
 					paddleCollisionWithTheEges(paddle1);
 					ballCollisionWithTheEges(ballObj);
-					ballCollisionWithThePaddle(ballObj, paddle1);
-					ballCollisionWithThePaddle(ballObj, paddle2);
+					ballCollisionWithThePaddle(ballObj, paddle1, height);
+					ballCollisionWithThePaddle(ballObj, paddle2, height);
 					player2AI(ballObj, paddle2);
 					playerAI1(ballObj, paddle1, height);
 					increaseScore(ballObj, paddle1, paddle2);
 				};
 
 				const gameDraw = () => {
+					drawGameScreen();
 					paddle1.draw(ctx);
 					paddle2.draw(ctx);
-					drawGameScreen();
 					ballObj.draw(ctx);
 				};
 
@@ -430,6 +504,7 @@ function Game({imgIndex}: {imgIndex: number}){
 					ctx.clearRect(0, 0, width, height);
 
 					ctx.globalCompositeOperation = 'lighter';
+
 					drawBalls();
 
 					let temp = [];
@@ -440,7 +515,7 @@ function Game({imgIndex}: {imgIndex: number}){
 					}
 					balls = temp;
 
-					ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
+					// ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
 					// ctx.fillRect(0, 0, width, height);
 					requestAnimationFrame(gameLoop);
 
@@ -452,7 +527,7 @@ function Game({imgIndex}: {imgIndex: number}){
 
 			}
 		}
-	}, []);
+	}, [imgIndex]);
 
 	// declare array of images
 	const bgimages = ['A1', 'B1', 'C1', 'D1'];
