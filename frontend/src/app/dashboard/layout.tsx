@@ -12,7 +12,7 @@ const Layout = ({children} : any) => {
     const user = axios.get(`http://localhost:3000/users/me`, {withCredentials:true}).then((res) => {setProfile(res.data);}).catch((err) => { console.log(err)});
   }, []);
     return (
-      <div className="flex login-gradient">
+      <div className="flex login-gradient  w-screen">
         <ContextProvider>
         <div className="flex-1 ">
             <Sidebar />
