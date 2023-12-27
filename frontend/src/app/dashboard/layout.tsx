@@ -7,12 +7,13 @@ import axios from 'axios';
 import { useContext, useEffect } from 'react';
 import { ToastContainer } from 'react-toastify';
 const Layout = ({children} : any) => {
-  const { profile, setProfile } = useContext(ContextGlobal);
+  const { profile, setProfile, notification } = useContext(ContextGlobal);
   useEffect(() => {
     const user = axios.get(`http://localhost:3000/users/me`, {withCredentials:true}).then((res) => {setProfile(res.data);}).catch((err) => { console.log(err)});
   }, []);
     return (
       <div className="flex login-gradient">
+        {notification?.id}
         <ContextProvider>
         <div className="flex-1 ">
             <Sidebar />

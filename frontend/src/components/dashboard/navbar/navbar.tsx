@@ -1,5 +1,5 @@
 'use client';
-import { BellDot, MoreVertical, Search } from "lucide-react"
+import { Bell, BellDot, MoreVertical, Search } from "lucide-react"
 import { use, useContext, useEffect, useRef, useState } from "react";
 import Link from "next/link"
 import { getUserInfo } from "@/api/user/user";
@@ -41,7 +41,10 @@ const Navbar = () => {
     <div className=" flex items-center justify-between px-4 pt-4">
       <SearchBar />
       <div className='flex items-center space-x-4 justify-center p-3 ps-6'>
-        <BellDot color="#ffff" size={30} />
+        <div className="flex relative">
+          <Bell color="#ffff" className="color-red-500" size={30} />
+          <span className="text-white bg-red-500 flex items-center justify-center font-bold text-[12px] rounded-full  w-[16px] h-[16px]  absolute top-0 left-4">9</span>
+        </div>
         <div className="relative ">
           <img ref={imgRef} src={profile?.image} onClick={() => setOpen(!open)} alt="foto" className="w-10 h-10 rounded-full cursor-pointer" />
           {open &&
