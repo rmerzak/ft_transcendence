@@ -11,6 +11,7 @@ import { useParams } from 'next/navigation'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 
 import UserNotFound from '@/components/profile/UserNotFound'
+import Loading from '@/components/Loading/Loading'
 import { ContextGlobal } from '@/context/contex'
 
 import Profile from '../page'
@@ -22,7 +23,6 @@ function page() {
   const [error, setError] = useState<string | null>(null);
   const { profile }:User = useContext(ContextGlobal);
   const [loading, setLoading] = useState(true);
-  
   const [BtnFriend, setBtnFriend] = useState<boolean>(false);
 
   useEffect(() => {
@@ -31,10 +31,6 @@ function page() {
               const response = await axios.get(`http://localhost:3000/users/profile/${username}`, { withCredentials: true });
               const  user  = response.data;
               setUser(user);
-              //setBtnFriend(profile?.username !== username);
-              //console.log(user);
-              //console.log('username :' , username);
-              //console.log(response.data);
             } catch (error) {
               console.error('Error fetching profile:', error);
               setError('Error fetching profile');
@@ -45,23 +41,11 @@ function page() {
     fetchProfile();
     setBtnFriend(profile?.username !== username);
 }, [username, profile]);
-  if (loading) {
-    return <div className="text-white text-3xl font-bold bg-profile w-full h-full flex items-center justify-center">Loading...</div>;
-  }
-
-  if (error || !user) {
-    return <UserNotFound />;
-  }
-  //const shouldRenderErrorPage = error || !user;
   return (
-    //profile?.username === username ? setBtnFriend(true) :
-    //console.log('herrrrreee', profile?.username),
-    //error ? <Page_502 /> :
-    /*shouldRenderErrorPage ? (
-      <UserNotFound />
-    ) : (*/
+      loading ? <Loading /> :
+      error || !user ? <UserNotFound /> :
       <div className="p-4 mx-2 bg-profile">
-        <h1 className="text-white font-bold text-3xl text-center mb-3">Profile</h1>
+        <h1 className="text-white font-bold text-3xl text-center mb-7 mt-2">Profile</h1>
         <div className="w-full h-[250px] border-spacing-1 mb-3 border-[#ffff]">
           <ProfileInformation profile={user} BtnFriend={BtnFriend} />
         </div>
