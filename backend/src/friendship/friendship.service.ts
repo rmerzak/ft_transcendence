@@ -56,6 +56,7 @@ export class FriendshipService {
     }
     async CreateFriendRequest(socket: Socket, userId: number) {
         const senderId = socket['payload']['sub'];
+        if (senderId === userId) throw new Error('cannot send friend request to yourself');
         const existingFriendship = await this.prisma.friendship.findFirst({
             where: {
                 OR: [
@@ -67,6 +68,7 @@ export class FriendshipService {
         if (existingFriendship) {
             throw new Error('Friendship request already sent or accepted');
         }
+        if 
         const user = await this.prisma.user.findUnique({ where: { id: userId } });
         if (!user) throw new Error('user not found');
         const friendRequest = await this.prisma.friendship.create({
@@ -98,7 +100,7 @@ export class FriendshipService {
         if (!user) throw new Error('user not found');
         const friendRequest = await this.prisma.friendship.findFirst({ where: { senderId: userId, receiverId: socket['payload']['sub'] } });
         if (!friendRequest) throw new Error('friend request not found');
-        if (friendRequest.status === FriendshipStatus.DECLINED) throw new Error('friend request already accepted or rejected');
+        if (friendRequest.status === FriendshipStatus.DECLINED || friendRequest.status === FriendshipStatus.ACCEPTED) throw new Error('friend request already accepted or rejected');
         const friendRequestRefused = await this.prisma.friendship.update({
             where: { id: friendRequest.id }, data: {
                 status: FriendshipStatus.DECLINED,
@@ -141,10 +143,10 @@ export class FriendshipService {
           });
           console.log(friendRequest);
         if (!friendRequest) throw new Error('friend request not found 1');
+        if(friendRequest.block === true) throw new Error('friend request already blocked');
         const friendRequestBlocked = await this.prisma.friendship.update({
             where: { id: friendRequest.id },
             data: {
-                status: FriendshipStatus.DECLINED,
                 block: true,
                 blockBy: user.id !== friendRequest.senderId ? Blocker.SENDER : Blocker.RECEIVER
             }
@@ -168,7 +170,6 @@ export class FriendshipService {
         const friendRequestUnblocked = await this.prisma.friendship.update({
             where: { id: friendRequest.id },
             data: {
-                status: FriendshipStatus.DECLINED,
                 block: false,
                 blockBy: null
             }
