@@ -1,4 +1,7 @@
 -- CreateEnum
+CREATE TYPE "UserStatus" AS ENUM ('ONLINE', 'OFFLINE', 'INGAME');
+
+-- CreateEnum
 CREATE TYPE "FriendshipStatus" AS ENUM ('PENDING', 'ACCEPTED', 'DECLINED');
 
 -- CreateEnum
@@ -18,6 +21,7 @@ CREATE TABLE "User" (
     "username" TEXT NOT NULL,
     "image" TEXT NOT NULL,
     "isVerified" BOOLEAN NOT NULL DEFAULT false,
+    "status" "UserStatus" NOT NULL DEFAULT 'OFFLINE',
     "twoFactorSecret" TEXT NOT NULL,
     "twoFactorEnabled" BOOLEAN NOT NULL DEFAULT false,
     "gamewins" INTEGER NOT NULL DEFAULT 0,

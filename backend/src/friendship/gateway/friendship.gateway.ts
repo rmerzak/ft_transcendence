@@ -47,10 +47,25 @@ export class FriendshipGateway {
   async friendAcceptRequest(socket: Socket, payload: number) {
     try {
       const emitClient = this.friendship.getSocketsByUser(Number(payload));
-      const RequestAccepted = this.friendship.AcceptFriendRequest(socket, Number(payload));
-      const notification = this.friendship.CreateNotification(socket, Number(payload), 'friendAcceptRequest', 'your friend request has been accepted', await RequestAccepted);
+      const RequestAccepted = await this.friendship.AcceptFriendRequest(socket, Number(payload));
+      const notification = await this.friendship.CreateNotification(socket, Number(payload), 'friendAcceptRequest', 'your friend request has been accepted',  RequestAccepted);
       emitClient.forEach((socket) => {
         socket.emit('friendAcceptRequest', notification);
+      });
+    } catch (error) {
+      console.error('Error processing friend request:', error.message);
+      socket.emit('RequestError', { error: error.message });
+    }
+  }
+  @SubscribeMessage('friendRefuseRequest')
+  async friendRefuseRequest(socket: Socket, payload: number) {
+    try {
+      const emitClient = this.friendship.getSocketsByUser(Number(payload));
+      const RequestRefused = await this.friendship.RefuseFriendRequest(socket, Number(payload));
+      const notification = await this.friendship.CreateNotification(socket, Number(payload), 'friendRefuseRequest', 'your friend request has been refused',  RequestRefused);
+      console.log("notification", notification)
+      emitClient.forEach((socket) => {
+        socket.emit('friendRefuseRequest', notification);
       });
     } catch (error) {
       console.error('Error processing friend request:', error.message);
@@ -85,9 +100,16 @@ export class FriendshipGateway {
     }
   }
   @SubscribeMessage('unblockFriend')
-  unblockFriend(socket: Socket, payload: number) {
-    const emitClient = this.friendship.getSocketsByUser(Number(payload));
-
-    this.server.emit('unblockFriend', "hello");
+  async unblockFriend(socket: Socket, payload: number) {
+    try {
+      const emitClient = this.friendship.getSocketsByUser(Number(payload));
+      const friendshipUnblock = await this.friendship.UnBlockFriend(socket, Number(payload));
+      emitClient.forEach((socket) => {
+        socket.emit('removeFriend', "notification");
+      });
+    }catch(error) {
+      console.error('Error removing friend:', error.message);
+      socket.emit('RequestError', { error: error.message });
+    }
   }
 }
