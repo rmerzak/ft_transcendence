@@ -1,6 +1,6 @@
 'use client'
 import styles from '@/app/dashboard/game/page.module.css'
-import { use, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 
 function Pong()
@@ -8,10 +8,9 @@ function Pong()
     const gameRef = useRef<HTMLCanvasElement>(null);
 
      // socket.io
-    const socket = io('http://localhost:3000/', {
+    const socket = io('http://localhost:3000/game', {
         withCredentials: true,
         autoConnect: false,
-        // transports: ['websocket'],
     });
 
     useEffect(() => {
@@ -41,8 +40,6 @@ function Pong()
         let playerNo = 0;
         let roomID = 0;
 
-       
-
         class Player {
             x: number;
             y: number;
@@ -59,7 +56,6 @@ function Pong()
                 this.score = 0
             }
         }
-        
         class Ball {
             x: number;
             y: number;

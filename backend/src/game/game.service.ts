@@ -9,6 +9,7 @@ export class GameService {
         select: {
             id: true,
             username: true,
+            email: true,
             image: true,
          }
         });

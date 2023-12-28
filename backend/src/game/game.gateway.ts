@@ -7,15 +7,12 @@ import {
 
 import { Socket, Server } from 'socket.io';
 import { GameService } from './game.service';
-import { GameController } from './game.controller';
-import * as cookie from 'cookie';
 import { SocketAuthMiddleware } from 'src/auth/middleware/ws.mw';
-import { get } from 'http';
 
 @WebSocketGateway({
   cors :{
-    origin:"http://localhost:8080",
-    // namespace: "/game",
+    origin:"http://localhost:8080/game",
+    namespace: "/game",
     credentials: true
   }
 })
@@ -30,12 +27,10 @@ export class GameGateway implements OnGatewayConnection , OnGatewayDisconnect{
   @WebSocketServer()
   server: Server;
   afterInit(socket: Socket) {
-    console.log('init');
     socket.use(SocketAuthMiddleware() as any);
   }
 
   async getUser(socket: any) {
-    console.log("get user");
 
     const user = await this.game.findUserByEmail(socket['payload']['email']);
 
@@ -61,9 +56,7 @@ export class GameGateway implements OnGatewayConnection , OnGatewayDisconnect{
   join(socket: any, payload: any): any {
     {
       let room;
-      console.log(socket.user)
-      // if( this.gameService)
-      // get room
+
       if (this.rooms.length > 0 && this.rooms[this.rooms.length - 1].players.length === 1)
       room = this.rooms[this.rooms.length - 1];
       if (room)

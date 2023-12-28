@@ -1,6 +1,5 @@
 'use client'
 import styles from './page.module.css';
-import OnlineOrBot from '@/components/game/OnlineOrBot';
 import GameFirstPage from '@/components/game/GameFirstPage';
 
 

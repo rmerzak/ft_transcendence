@@ -660,3 +660,37 @@
 .score_2 {
     right: 50px;
 }
+
+/* .profile_image {
+    width: 30%;
+    height: 30%;
+    border-radius: 50%;
+    object-fit: cover; 
+} */
+
+/* .profile_container {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    text-align: center;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+}
+
+.page_container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+}
+
+.pong_container {
+   
+} */
