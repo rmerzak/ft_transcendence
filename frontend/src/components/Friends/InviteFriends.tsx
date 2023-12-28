@@ -31,7 +31,7 @@ const handleNicknameChange = (e: { target: { value: React.SetStateAction<string>
   ];
 
     return (
-        <div  className="text-gray-400 pb-6 bg-achievements md:w-[42%] h-full mx-1 md:mt-0 mt-4">
+        <div  className="text-gray-400 pb-6 bg-achievements md:w-[41%] mx-2 md:mt-0 mt-4">
           <div className="pb-1 text-gray-300 text-[15px] font-thin w-full flex items-center justify-center pt-2">Invite Friends</div>
             <div className="border-b border-gray-200 w-[50px] mx-auto mb-7"></div>
         <div className="flex justify-center text-gray-200">
@@ -49,8 +49,10 @@ const handleNicknameChange = (e: { target: { value: React.SetStateAction<string>
         </div>
         <div className="pb-1 text-gray-300 text-[16px] font-thin w-full flex items-center justify-center pt-2">Friends Requests</div>
             <div className="border-b border-gray-200 w-[60px] mx-auto mb-7"></div>
-          <div className="flex justify-center">
-            <Piece picture={pictures[0]} />
+          <div className="overflow-auto h-[450px] space-y-3 flex flex-col items-center">
+            {pictures.map((pic, index) => (
+              <Piece key={index} picture={pic} />
+            ))}
           </div>
         </div>
     )

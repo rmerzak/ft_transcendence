@@ -10,8 +10,8 @@ enum statue {
 
 const FriendItem = ({ name, statues, pic } : { name: string, statues: statue, pic: string }) => {
   return (
-    <div className={`text-white bg-achievements1 flex items-center justify-between py-2 my-2 mx-3`}>
-      <div className="flex items-center w-[50%]">
+    <div className={`text-white bg-achievements1 flex items-center justify-between py-1 mx-3`}>
+      <div className="flex items-center">
         <div className="relative w-[30px] h-[30px] md:w-[40px] md:h-[40px] ml-2 mb-2 rounded-full">
           <img src={'/' + pic} className="w-[40px] h-[40px] rounded-full " alt="default pic" />
           <div

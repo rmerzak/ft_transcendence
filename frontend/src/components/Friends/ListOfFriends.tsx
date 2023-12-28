@@ -13,9 +13,21 @@ enum statue {
 }
 
 const ListOfFriends = () => {
-    
+  const pictures = [
+    'mberri.png',
+    'people-01.png',
+    'dfpic.png',
+    'people-02.png',
+    'people-03.png',
+    'dfpic.png',
+    'dfpic.png',
+    'people-03.png',
+    'dfpic.png',
+    // Add more pictures as needed
+  ];
+
     return (
-        <div className="text-gray-400 pb-6 bg-achievements w-full md:w-[33.33%] w-full h-full ">
+        <div className="text-gray-400 pb-6 bg-achievements w-full md:w-[33%]">
             <div className="pb-1 text-gray-300 text-[15px] font-thin w-full flex items-center justify-center pt-2">List of Friends</div>
             <div className="border-b border-gray-200 w-[50px] mx-auto mb-7"></div>
             <div className="bg-achievements flex w-fill justify-between mx-3 mb-4 py-2">
@@ -23,14 +35,11 @@ const ListOfFriends = () => {
               <div className="text-white text-[15px] font-bold  text-center pr-2">Action</div>
             </div>
 
-            <FriendItem name="Test" statues={statue.ONLINE } pic="people-02.png" />
-            <FriendItem name="Test" statues={statue.IN_GAME} pic="mberri.png" />
-            <FriendItem name="Test" statues={statue.OFFLINE} pic="people-01.png" />
-            <FriendItem name="Test" statues={statue.IN_GAME} pic="dfpic.png" />
-            <FriendItem name="Test" statues={statue.ONLINE } pic="dfpic.png" />
-            <FriendItem name="Test" statues={statue.ONLINE } pic="people-03.png" />
-            <FriendItem name="Test" statues={statue.OFFLINE} pic="dfpic.png" />
-            <FriendItem name="Test" statues={statue.ONLINE } pic="mberri.png" />
+            <div className="overflow-auto h-[576px] space-y-3 flex flex-col ">
+              {pictures.map((pic, index) => (
+                <FriendItem key={index} name="UserGuest" statues={statue.ONLINE} pic={pic}/>
+              ))}
+            </div>
         </div>
     )
 }

@@ -213,18 +213,26 @@ button:hover{
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
   }
-  
 
-  .swiper {
-    width: 100%;
-    height: 100%;
-  }
-                                                                                                                        
-  .swiper-slide {
+/* Add the following styles to your stylesheet */
 
-  
-    /* Center slide text vertically */
-    display: flex;
-    justify-content: center;
-    align-items: center;
+/* Hide the vertical scrollbar */
+::-webkit-scrollbar {
+    width: 0;
   }
+  
+  /* Optional: Hide the horizontal scrollbar */
+  ::-webkit-scrollbar-horizontal {
+    display: none;
+  }
+  
+  /* Optional: If you want to style the scrollbar track, you can use the following */
+  ::-webkit-scrollbar-track {
+    background-color: transparent; /* Set the color you want */
+  }
+  
+  /* Optional: If you want to style the scrollbar thumb (the draggable part), you can use the following */
+  ::-webkit-scrollbar-thumb {
+    background-color: transparent; /* Set the color you want */
+  }
+  

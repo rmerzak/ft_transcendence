@@ -6,6 +6,7 @@ import { ContextGlobal, ContextProvider } from '@/context/contex';
 import axios from 'axios';
 import { useContext, useEffect } from 'react';
 import { ToastContainer } from 'react-toastify';
+
 const Layout = ({children} : any) => {
   const { profile, setProfile } = useContext(ContextGlobal);
   useEffect(() => {
