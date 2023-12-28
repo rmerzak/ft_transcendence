@@ -38,19 +38,21 @@ export class FriendshipService {
     getSocketsByUser(userId: number): any {
         return this.connectedClients.get(userId) || [];
     }
-    async CreateNotification(socket: Socket, userId: number, type: string, content: string, RequestId: number) {
+    async CreateNotification(socket: Socket, user: any, type: string, content: string, RequestId: number) {
         //type: 'friendRequest' | 'friendRequestAccepted' | 'friendRequestRejected' | 'friendRequestCanceled' | 'friendRequestDeleted' | 'friendRequestBlocked' | 'friendRequestUnblocked' | 'friendRequestUnfriended' | 'friendRequestUnblocked'
-        const Receiver = await this.prisma.user.findUnique({ where: { id: userId } });
+        const Receiver = await this.prisma.user.findUnique({ where: { id: user } });
         const Sender = await this.prisma.user.findUnique({ where: { id: socket['payload']['sub'] } });
         const notification = await this.prisma.notification.create({
             data: {
                 type: type,
                 content: content,
                 RequestId: RequestId,
-                userId: Receiver.id,
-                senderId: Sender.id,
-                RequestType: RequestType.FRIENDSHIP
-            }
+                Receiver: { connect: { id: Receiver?.id } },
+                sender: { connect: { id: Sender?.id } },
+                RequestType: RequestType.FRIENDSHIP, 
+                vue: false,
+                createdAt: new Date(),
+            } as any
         });
         return notification;
     }
@@ -68,8 +70,13 @@ export class FriendshipService {
         if (existingFriendship) {
             throw new Error('Friendship request already sent or accepted');
         }
+<<<<<<< HEAD
         if 
         const user = await this.prisma.user.findUnique({ where: { id: userId }});
+=======
+    
+        const user = await this.prisma.user.findUnique({ where: { id: userId } });
+>>>>>>> origin/rmerzak
         if (!user) throw new Error('user not found');
         const friendRequest = await this.prisma.friendship.create({
             data: {

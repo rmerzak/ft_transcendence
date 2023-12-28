@@ -17,3 +17,15 @@ export interface MatchHistoryItemInterface {
     twoFactorSecret: string | null;
     twoFactorEnabled: boolean;
   }
+
+export  interface Notification {
+    id: number;
+    createdAt: string;
+    type: string;
+    content: string;
+    RequestId: number;
+    RequestType: string;
+    vue: boolean;
+    userId: number;
+    senderId: number;
+  }

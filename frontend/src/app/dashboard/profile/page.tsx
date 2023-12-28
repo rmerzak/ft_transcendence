@@ -15,6 +15,7 @@ const Profile = () => {
   const { profile }:User = useContext(ContextGlobal);
 
   const BtnFriend = false;
+  console.log("profile =",profile);
   return (
     <>
     {/* <div>
