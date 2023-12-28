@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 import { useRouter } from "next/navigation";
+
 axios.interceptors.response.use(
   (response) => {
     return response;

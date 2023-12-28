@@ -9,9 +9,9 @@ import BlackList from "@/components/Friends/BlackList";
 
 const Friends = () => {
     return (
-      <div className="md:justify-between bg-profile p-4 mx-4">
+      <div className="bg-profile py-4 px-2 mx-4 ">
         <h1 className="text-white font-bold text-3xl text-center mb-4">Friends</h1>
-        <div className="flex  justify-center ">
+        <div className="flex md:flex-row flex-col">
             <ListOfFriends />
             <InviteFriends />
             <BlackList />
