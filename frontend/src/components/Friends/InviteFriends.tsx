@@ -43,15 +43,22 @@ const handleNicknameChange = (e: { target: { value: React.SetStateAction<string>
           className="bg-achievements1 mb-4 w-[80%] placeholder-gray-400"
         />
         </div>
-        <div className="flex justify-center text-gray-300 mb-6">
+        <div className="flex justify-center text-gray-300 mb-4">
             <button onClick={handleInviteClick} className="bg-achievements2 w-[26%] py-1 border">
             invite</button>
         </div>
         <div className="pb-1 text-gray-300 text-[16px] font-thin w-full flex items-center justify-center pt-2">Friends Requests</div>
-            <div className="border-b border-gray-200 w-[60px] mx-auto mb-7"></div>
-          <div className="overflow-auto h-[450px] space-y-3 flex flex-col items-center">
+            <div className="border-b border-gray-200 w-[60px] mx-auto mb-4"></div>
+          <div className="overflow-auto h-[250px] space-y-3 flex flex-col items-center">
             {pictures.map((pic, index) => (
-              <Piece key={index} picture={pic} />
+              <Piece key={index} picture={pic} check={true}/>
+            ))}
+          </div>
+          <div className="pb-1 text-gray-300 text-[16px] font-thin w-full flex items-center justify-center pt-4">Pending Requests</div>
+            <div className="border-b border-gray-200 w-[60px] mx-auto mb-4"></div>
+              <div className="overflow-auto h-[140px] space-y-3 flex flex-col items-center">
+            {pictures.map((pic, index) => (
+              <Piece key={index} picture={pic}  check={false}/>
             ))}
           </div>
         </div>
