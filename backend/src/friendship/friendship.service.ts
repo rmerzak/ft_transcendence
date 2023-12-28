@@ -70,13 +70,8 @@ export class FriendshipService {
         if (existingFriendship) {
             throw new Error('Friendship request already sent or accepted');
         }
-<<<<<<< HEAD
-        if 
-        const user = await this.prisma.user.findUnique({ where: { id: userId }});
-=======
     
         const user = await this.prisma.user.findUnique({ where: { id: userId } });
->>>>>>> origin/rmerzak
         if (!user) throw new Error('user not found');
         const friendRequest = await this.prisma.friendship.create({
             data: {

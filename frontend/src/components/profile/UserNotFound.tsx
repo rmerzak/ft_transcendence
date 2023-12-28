@@ -21,7 +21,7 @@ const UserNotFound = () => {
       };
     }, []);
     return (
-      <div className="flex login-gradient h-screen ">
+      <div className="flex border  h-screen">
 
         <div className='relative bg-profile mx-6 my-2 w-full h-[96%]'>
             
