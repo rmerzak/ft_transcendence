@@ -2,55 +2,23 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import io from 'socket.io-client';
 import { User } from '@/interfaces';
-import {  toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 export const ContextGlobal = createContext({
-  setProfile() {},
+  setProfile() { },
   profile: null,
-  notifications: [] as Notification[],
-  setNotifications() {},
+  socket: null,
+  setSocket() { },
 });
 
 export const ContextProvider = ({ children }: { children: any }) => {
   useEffect(() => {
-    const socket = io("http://localhost:3000", {
-      autoConnect: false,
-      withCredentials: true,
-    });
-  
-    socket.connect();
-    socket.on('connect', () => {
-      console.log('Connected to the server');
-      console.log(socket);
-    });
-    socket.on('friendRequest', (data: any) => {
-      console.log('You have a new friend request');
-      console.log("data", data);
-      setNotifications([...notifications, data]);
-
-      console.log("notif",notifications);
-      toast.success('You have a new friend request');
-      //console.log(data);
-    });
-    socket.on('friendAcceptRequest', (data: any) => {
-      toast.success('Your friend accepted your request');
-      console.log(data);
-    });
-    // socket.on('friendRefuseRequest', (data: any) => {
-    //   toast.success('Your friend declined your request');
-    //   console.log(data);
-    // });
     
-    // Listen for the 'disconnect' event
-    socket.on('disconnect', () => {
-      console.log("Disconnected from the server");
-    });
-  
+
+    
+
     // Cleanup function
-    return () => {
-      console.log("Cleanup: Disconnecting socket");
-      socket.disconnect();
-    };
+    
   }, []);
   const [profile, setProfile] = useState<User | null>({
     id: -1,
@@ -63,12 +31,11 @@ export const ContextProvider = ({ children }: { children: any }) => {
     twoFactorSecret: '',
     twoFactorEnabled: false,
   });
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-
-    return <ContextGlobal.Provider value={{
-      profile,
-      setProfile,
-      notifications,
-      setNotifications
-  } } > {children} </ContextGlobal.Provider>;
+  const [socket, setSocket] = useState<any>(null);
+  return <ContextGlobal.Provider value={{
+    profile,
+    setProfile,
+    socket,
+    setSocket,
+  }} > {children} </ContextGlobal.Provider>;
 };

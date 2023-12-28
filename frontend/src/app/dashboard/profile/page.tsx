@@ -12,18 +12,11 @@ import { User } from "@/interfaces"
 import { useParams } from "next/navigation"
 
 const Profile = () => {
-  const { profile }:User = useContext(ContextGlobal);
-
+  const { profile } : User = useContext(ContextGlobal);
   const BtnFriend = false;
   console.log("profile =",profile);
   return (
     <>
-    {/* <div>
-      <div className="h-[200px]">
-      </div>
-      <MatchHistory />
-
-    </div> */}
     <div className="p-4 mx-2 bg-profile">
       <h1 className="text-white font-bold text-3xl text-center mb-7 mt-2">Profile</h1>
       <div className=" w-full h-[250px] border-spacing-1 mb-3 border-[#ffff]">

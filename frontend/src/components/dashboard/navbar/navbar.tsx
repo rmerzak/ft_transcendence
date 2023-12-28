@@ -8,6 +8,7 @@ import { logout } from "@/api/user/user";
 import { UsersAPIService } from "@/api/users/users.api";
 import { ContextGlobal } from "@/context/contex";
 import SearchBar from "../search/SearchBar";
+import Notification from "@/components/notification/Notification";
 const Navbar = () => {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -41,10 +42,7 @@ const Navbar = () => {
     <div className=" flex items-center justify-between px-4 pt-4">
       <SearchBar />
       <div className='flex items-center space-x-4 justify-center p-3 ps-6'>
-        <div className="flex relative">
-          <Bell color="#ffff" className="color-red-500" size={30} />
-          <span className="text-white bg-red-500 flex items-center justify-center font-bold text-[12px] rounded-full  w-[16px] h-[16px]  absolute top-0 left-4">9</span>
-        </div>
+        <Notification />
         <div className="relative ">
           <img ref={imgRef} src={profile?.image} onClick={() => setOpen(!open)} alt="foto" className="w-10 h-10 rounded-full cursor-pointer" />
           {open &&
