@@ -8,7 +8,7 @@ function Pong()
     const gameRef = useRef<HTMLCanvasElement>(null);
 
      // socket.io
-    const socket = io('http://localhost:3000/game', {
+    const socket = io('http://localhost:3000', {
         withCredentials: true,
         autoConnect: false,
     });
