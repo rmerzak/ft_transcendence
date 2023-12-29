@@ -38,7 +38,6 @@ export class FriendshipGateway {
         socket.emit('friendRequest', notification);
       });
     } catch (error) {
-      console.error('Error processing friend request:', error.message);
       socket.emit('RequestError', { error: error.message });
     }
   }
@@ -53,7 +52,6 @@ export class FriendshipGateway {
         socket.emit('friendAcceptRequest', notification);
       });
     } catch (error) {
-      console.error('Error processing friend request:', error.message);
       socket.emit('RequestError', { error: error.message });
     }
   }
@@ -62,13 +60,7 @@ export class FriendshipGateway {
     try {
       const emitClient = this.friendship.getSocketsByUser(Number(payload));
       const RequestRefused = await this.friendship.RefuseFriendRequest(socket, Number(payload));
-      const notification = await this.friendship.CreateNotification(socket, Number(payload), 'friendRefuseRequest', 'your friend request has been refused',  RequestRefused);
-      console.log("notification", notification)
-      emitClient.forEach((socket) => {
-        socket.emit('friendRefuseRequest', notification);
-      });
     } catch (error) {
-      console.error('Error processing friend request:', error.message);
       socket.emit('RequestError', { error: error.message });
     }
   }
@@ -81,7 +73,6 @@ export class FriendshipGateway {
         socket.emit('removeFriend', "notification");
       });
     } catch (error) {
-      console.error('Error removing friend:', error.message);
       socket.emit('RequestError', { error: error.message });
     }
   }
@@ -95,7 +86,6 @@ export class FriendshipGateway {
         socket.emit('removeFriend', "notification");
       });
     } catch (error) {
-      console.error('Error removing friend:', error.message);
       socket.emit('RequestError', { error: error.message });
     }
   }
@@ -108,7 +98,6 @@ export class FriendshipGateway {
         socket.emit('removeFriend', "notification");
       });
     }catch(error) {
-      console.error('Error removing friend:', error.message);
       socket.emit('RequestError', { error: error.message });
     }
   }

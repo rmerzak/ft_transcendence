@@ -14,9 +14,6 @@ const Layout = ({children} : any) => {
     const user = axios.get(`http://localhost:3000/users/me`, {withCredentials:true}).then((res) => {setProfile(res.data);}).catch((err) => { console.log(err)});
   }, []);
     return (
-
-      <div className="flex login-gradient  w-screen">
-
       <div className="flex login-gradient">
         <ContextProvider>
         <div className="flex-1 ">
@@ -28,7 +25,6 @@ const Layout = ({children} : any) => {
         </div>
         <ToastContainer />
         </ContextProvider>
-      </div>
       </div>
     )
   }

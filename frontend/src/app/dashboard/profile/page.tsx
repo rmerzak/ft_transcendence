@@ -14,7 +14,6 @@ import { useParams } from "next/navigation"
 const Profile = () => {
   const { profile } : User = useContext(ContextGlobal);
   const BtnFriend = false;
-  console.log("profile =",profile);
   return (
     <>
     <div className="p-4 mx-2 bg-profile">

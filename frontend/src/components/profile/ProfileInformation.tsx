@@ -1,13 +1,37 @@
+'use client'
 import { ContextGlobal } from "@/context/contex";
 import { User } from "@/interfaces"
-import { PlusCircle } from "lucide-react";
+import {  UserCheck, UserMinus } from "lucide-react";
 import { UserPlus } from 'lucide-react';
-import { MessageCircle } from 'lucide-react';
+
 import Image from "next/image"
-import { useContext } from "react";
-
+import { use, useContext, useEffect, useState } from "react";
+import { getFriendshipStatus } from "@/api/friendship/friendship.api";
 const ProfileInformation = ({profile, BtnFriend}:{profile:User, BtnFriend:boolean}) => { 
-
+    const { socket }: any = useContext(ContextGlobal);
+    const [friend, setFriend] = useState<boolean | null>(null);
+    function HandleUnfriend() {
+        socket.emit('removeFriend', profile?.id);
+        setFriend(null);
+    }
+    function HandleSendFriendRequest() {
+        socket.emit('friendRequest', profile?.id);
+        setFriend(false);
+    }
+    function HandleAccepteFriendRequest() {
+        socket.emit('friendAcceptRequest', profile?.id);
+        setFriend(true);
+    }
+    useEffect(() => {
+        getFriendshipStatus(profile?.id).then((res) => {
+            console.log("friendship status = ",friend);
+            if(res.data === 'ACCEPTED')
+                setFriend(true);
+            if(res.data === 'PENDING')
+                setFriend(false);
+            console.log("friendship status = ",friend);
+        }).catch((err) => { console.log(err)});
+    }, []);
     return (     
     <div className="bg-mberri w-full flex items-end relative">
     <div className="bg-mberri1 flex items-center justify-evenly w-full backdrop-blur-sm relative">
@@ -28,7 +52,20 @@ const ProfileInformation = ({profile, BtnFriend}:{profile:User, BtnFriend:boolea
             <p className="text-[#FFFFFF] text-opacity-50">{profile?.email}</p>
         </div>
         {BtnFriend && <div>
-        <button className="text-blue-500 pl-1"><UserPlus/></button>
+            {friend === true ? (
+              <button className="text-red-500 pl-1" onClick={HandleUnfriend}>
+                <UserMinus />
+              </button>
+            ) : friend === null ? (
+                <button className="text-blue-500 pl-1" onClick={HandleSendFriendRequest}>
+                <UserPlus /> Send Request
+              </button>
+            ) : (
+              
+              <button className="text-blue-500 pl-1" onClick={HandleAccepteFriendRequest}>
+              <UserCheck /> Accept
+            </button>
+            )}
         </div>
         }
        </div>
@@ -49,54 +86,3 @@ const ProfileInformation = ({profile, BtnFriend}:{profile:User, BtnFriend:boolea
 }
 
 export default ProfileInformation
-
-
-/**
- * 
- * <div className="bg-mberri1 flex items-center justify-evenly w-full">
-       <div>
-            <p className="text-[#CE6FF5]">First Name</p>
-            <p className="text-[#FFFFFF] text-opacity-50">Name</p>
-        </div>
-        <div>
-            <p className="text-[#CE6FF5]">Last Name</p>
-            <p className="text-[#FFFFFF] text-opacity-50">Name</p>
-        </div>
-        <div>
-            <p className="text-[#CE6FF5]">Nick Name</p>
-            <p className="text-[#FFFFFF] text-opacity-50">Name</p>
-        </div>
-        <div>
-            <p className="text-[#CE6FF5]">Email</p>
-            <p className="text-[#FFFFFF] text-opacity-50">test@student.1337.ma</p>
-        </div>
-       </div>
- * 
- * flex items-end py-4 justify-around mx-auto
- * <div className="w-[150px]  h-[150px] rounded-full">
-        <img src={image} className="rounded-full" />
-        <label htmlFor="file"></label>
-        <input type="file"
-        
-          id="file" className="hidden" />
-        <div className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 text-[50px] rounded-full bg-white"><PlusCircle color="#7a7a7a" /></div>
-      </div>
-
-
-
-
-
-      <div className="relative ">
-            <div className="w-[130px] border h-[130px] rounded-full">
-                <img src="/dfpic.png" className="rounded-full" />
-                    <div className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 text-[50px] h-[20px] w-[20px] rounded-full  bg-green-500">
-                    </div>
-            </div>
-        </div>
-
-         <div>
-       <p className="text-gray-400 text-center" style={{fontSize: '1vw'}}>Freax</p>
-       <img src="/freax.png" alt="freax" style={{width: "60px", height: "110px"}}/>
-       </div>
- * 
- */

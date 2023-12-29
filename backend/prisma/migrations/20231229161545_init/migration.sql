@@ -70,6 +70,8 @@ CREATE TABLE "Notification" (
     "vue" BOOLEAN NOT NULL DEFAULT false,
     "userId" INTEGER NOT NULL,
     "senderId" INTEGER NOT NULL,
+    "senderName" TEXT NOT NULL,
+    "senderImage" TEXT NOT NULL,
 
     CONSTRAINT "Notification_pkey" PRIMARY KEY ("id")
 );

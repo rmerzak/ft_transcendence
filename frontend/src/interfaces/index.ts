@@ -28,4 +28,6 @@ export  interface Notification {
     vue: boolean;
     userId: number;
     senderId: number;
+    senderName: string;
+    senderImage: string;
   }

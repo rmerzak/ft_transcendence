@@ -51,6 +51,8 @@ export class FriendshipService {
                 sender: { connect: { id: Sender?.id } },
                 RequestType: RequestType.FRIENDSHIP, 
                 vue: false,
+                senderName: Sender?.username,
+                senderImage: Sender?.image,
                 createdAt: new Date(),
             } as any
         });
@@ -177,6 +179,22 @@ export class FriendshipService {
             }
         });
         return friendRequestUnblocked;
+    }
+    async getStatus(userId: number, friendId: number) {
+        const user = await this.prisma.user.findUnique({ where: { id: userId } });
+        if (!user) throw new Error('user not found');
+        const friend = await this.prisma.user.findUnique({ where: { id: friendId } });
+        if (!friend) throw new Error('friend not found');
+        const friendRequest = await this.prisma.friendship.findFirst({
+            where: {
+              OR: [
+                { senderId: userId, receiverId: friendId },
+                { senderId: friendId, receiverId: userId }
+              ]
+            }
+          });
+        if (!friendRequest) throw new Error('friend request not found');
+        return friendRequest.status;
     }
 
 }

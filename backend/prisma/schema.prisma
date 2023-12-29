@@ -101,6 +101,8 @@ model Notification {
   vue Boolean @default(false)
   userId Int
   senderId Int
+  senderName String
+  senderImage String
   Receiver User @relation( "Receiver",fields: [userId], references: [id])
   sender User @relation( "Sender",fields: [senderId], references: [id])
 }
