@@ -17,12 +17,6 @@ enum RoomVisibility {
   PROTECTED
 }
 
-// permissions
-enum Privileges {
-  ADMIN
-  MEMBER
-}
-
 // model User {
 //   id Int @id @default(autoincrement())
 //   createdAt DateTime @default(now())
@@ -60,9 +54,8 @@ model User {
   games Game[]
 
   // Chat user data
-  chatRooms UserChatRoom[]
+  chatRooms ChatRoomMember[]
   sentMessages Message[] @relation(name: "SentMessages")
-  receivedMessages Message[] @relation(name: "ReceivedMessages")
 }
 
 model Game {
@@ -81,49 +74,32 @@ model ChatRoom {
   id Int @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  name String @unique
+  name String? @unique
   passwordHash String?
-  visibility RoomVisibility @default(PUBLIC)
-  users UserChatRoom[]
-  // show Int[]
+  visibility RoomVisibility? @default(PUBLIC)
+  users ChatRoomMember[]
+  messages Message[]
 }
 
-model UserChatRoom {
+model ChatRoomMember {
   // Foreign keys
   userId Int
   chatRoomId Int
   user User @relation(fields: [userId], references: [id])
   chatRoom ChatRoom @relation(fields: [chatRoomId], references: [id])
-  privaligeUser Privileges @default(MEMBER)
-  msgRoom MessageRoom[] @relation(name: "SentMessages")
+  is_admin Boolean
+  joinedAt DateTime @default(now())
+  leftAt DateTime?
   @@id([userId, chatRoomId])
-}
-
-// model messageRoom for chat in room
-model MessageRoom {
-  id Int @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  text String
-  senderUserId    Int 
-  recieverChatRoomId    Int
-  sender    UserChatRoom @relation(name: "SentMessages", fields: [senderUserId, recieverChatRoomId], references: [userId, chatRoomId])
 }
 
 model Message {
   id Int @id @default(autoincrement())
   createdAt DateTime @default(now())
-  text String
+  senderId Int
+  ChatRoomId Int 
   sender User @relation(name: "SentMessages", fields: [senderId], references: [id])
-  receiver User @relation(name: "ReceivedMessages", fields: [receiverId], references: [id])
-  senderId Int 
-  receiverId Int
-  // status Int @default(-1)
+  chatRoom ChatRoom @relation(fields: [ChatRoomId], references: [id])
+  text String
 }
 
-// model room {
-//   id int @id @default(autoincrement())
-//   messageRoom Message[]
-//   show User[] @relation(name: "show")
-// }
-
-// end chat models
