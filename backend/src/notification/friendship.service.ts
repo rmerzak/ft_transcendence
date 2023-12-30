@@ -180,7 +180,7 @@ export class FriendshipService {
         });
         return friendRequestUnblocked;
     }
-    async getStatus(userId: number, friendId: number) {
+    async getFriendship(userId: number, friendId: number) {
         const user = await this.prisma.user.findUnique({ where: { id: userId } });
         if (!user) throw new Error('user not found');
         const friend = await this.prisma.user.findUnique({ where: { id: friendId } });
@@ -191,10 +191,17 @@ export class FriendshipService {
                 { senderId: userId, receiverId: friendId },
                 { senderId: friendId, receiverId: userId }
               ]
+            },
+            select:{
+                status:true,
+                block:true,
+                blockBy:true,
+                senderId:true,
+                receiverId:true,
             }
           });
         if (!friendRequest) throw new Error('friend request not found');
-        return friendRequest.status;
+        return friendRequest;
     }
 
 }

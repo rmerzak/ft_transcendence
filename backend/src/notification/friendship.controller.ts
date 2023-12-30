@@ -8,10 +8,10 @@ import { Request } from "express";
 export class FriendshipController {
     constructor(private friendship:FriendshipService) {}
     @Get('status/:id')
-    async getStatus(@Req() req: Request) {
+    async getFriendshipStatus(@Req() req: Request) {
         try {
-            const status = await this.friendship.getStatus(req.user['id'], Number(req.params.id));
-            return status;
+            const friendship = await this.friendship.getFriendship(req.user['id'], Number(req.params.id));
+            return friendship;
         } catch (error) {
             return error.message;
         }
