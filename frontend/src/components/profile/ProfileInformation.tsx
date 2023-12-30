@@ -40,8 +40,9 @@ const ProfileInformation = ({ profile, BtnFriend }: { profile: User, BtnFriend: 
             socket.on('removeFriend', (data: any) => {
                 setFriend(null);
             });
+
         }).catch((err) => { console.log(err) });
-    }, []);
+    }, [socket, friend]);
     return (
         <div className="bg-mberri w-full flex items-end relative">
             <div className="bg-mberri1 flex items-center justify-evenly w-full backdrop-blur-sm relative">
