@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ChatRoom, Message, MessageRoom, UserChatRoom } from '@prisma/client';
+import { ChatRoom, Message, ChatRoomMember } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 
 // Chat service class
@@ -65,47 +65,47 @@ export class ChatService {
 
   // start user chat room
   // get all user chat rooms
-  async getUserChatRooms(): Promise<UserChatRoom[]> {
-    return await this.prisma.userChatRoom.findMany();
+  async getChatRoomMembers(): Promise<ChatRoomMember[]> {
+    return await this.prisma.chatRoomMember.findMany();
   }
 
   // get user chat room by id
-  async getUserChatRoom(
+  async getChatRoomMember(
     userId: number,
     chatRoomId: number,
-  ): Promise<UserChatRoom | null> {
-    return await this.prisma.userChatRoom.findUnique({
+  ): Promise<ChatRoomMember | null> {
+    return await this.prisma.chatRoomMember.findUnique({
       where: { userId_chatRoomId: { userId, chatRoomId } },
     });
   }
 
   // create user chat room
-  async createUserChatRoom(
-    userChatRoomData: UserChatRoom,
-  ): Promise<UserChatRoom> {
-    return await this.prisma.userChatRoom.create({
-      data: userChatRoomData,
+  async createchatRoomMember(
+    chatRoomMemData: ChatRoomMember,
+  ): Promise<ChatRoomMember> {
+    return await this.prisma.chatRoomMember.create({
+      data: chatRoomMemData,
     });
   }
 
   // update user chat room
-  async updateUserChatRoom(
+  async updatechatRoomMember(
     userId: number,
     chatRoomId: number,
-    userChatRoomData: UserChatRoom,
-  ): Promise<UserChatRoom | null> {
-    return await this.prisma.userChatRoom.update({
+    chatRoomMemData: ChatRoomMember,
+  ): Promise<ChatRoomMember | null> {
+    return await this.prisma.chatRoomMember.update({
       where: { userId_chatRoomId: { userId, chatRoomId } },
-      data: userChatRoomData,
+      data: chatRoomMemData,
     });
   }
 
   // delete user chat room
-  async deleteUserChatRoom(
+  async deletechatRoomMember(
     userId: number,
     chatRoomId: number,
-  ): Promise<UserChatRoom | null> {
-    return await this.prisma.userChatRoom.delete({
+  ): Promise<ChatRoomMember | null> {
+    return await this.prisma.chatRoomMember.delete({
       where: { userId_chatRoomId: { userId, chatRoomId } },
     });
   }
@@ -115,12 +115,12 @@ export class ChatService {
   // get all messages of specific users
   async getUserMessages(
     senderId: number,
-    receiverId: number,
+    chatRoomId: number,
   ): Promise<Message[]> {
     return await this.prisma.message.findMany({
       where: {
         senderId: senderId,
-        receiverId: receiverId,
+        ChatRoomId: chatRoomId,
       },
       orderBy: {
         createdAt: 'asc',
@@ -129,53 +129,23 @@ export class ChatService {
   }
 
   // add user message
-  async addUserMessage(messageData: Message): Promise<Message> {
+  async addMessage(messageData: Message): Promise<Message> {
     return await this.prisma.message.create({
       data: messageData,
     });
   }
   // update user message
-  async updateUserMessage(messageData: Message): Promise<Message> {
+  async updateMessage(messageData: Message): Promise<Message> {
     return await this.prisma.message.update({
       where: { id: messageData.id },
-      data: {
-        status: messageData.status,
-      },
+      data: messageData,
     });
   }
-
   // delete user message
-  async deleteUserMessage(id: number): Promise<Message | null> {
+  async deleteMessage(id: number): Promise<Message | null> {
     return await this.prisma.message.delete({
       where: { id },
     });
   }
   // end user message
-
-  // start chat room message
-  // get all messages of specific chat room
-  async getChatRoomMessages(chatRoomId: number): Promise<MessageRoom[]> {
-    return await this.prisma.messageRoom.findMany({
-      where: {
-        recieverChatRoomId: chatRoomId,
-      },
-      orderBy: {
-        createdAt: 'asc',
-      },
-    });
-  }
-
-  // add chat room message
-  async addChatRoomMessage(messageData: MessageRoom): Promise<MessageRoom> {
-    return await this.prisma.messageRoom.create({
-      data: messageData,
-    });
-  }
-
-  // delete chat room message
-  async deleteChatRoomMessage(id: number): Promise<MessageRoom | null> {
-    return await this.prisma.messageRoom.delete({
-      where: { id },
-    });
-  }
 }

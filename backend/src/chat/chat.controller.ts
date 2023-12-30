@@ -121,7 +121,7 @@ export class ChatController {
 
   // get all messages of specific users
   @Get()
-  async getUserMessages(
+  async getMessages(
     @Query('sdId') sdId: number,
     @Query('rcId') rcId: number,
   ): Promise<Message[]> {
@@ -132,7 +132,7 @@ export class ChatController {
 
   // add message
   @Post()
-  async addUserMessage(@Body() messageData: Message): Promise<Message> {
+  async addMessage(@Body() messageData: Message): Promise<Message> {
     if (isEmpty(messageData)) {
       throw new HttpException(
         {
@@ -142,11 +142,11 @@ export class ChatController {
         HttpStatus.BAD_REQUEST,
       );
     }
-    return await this.chatService.addUserMessage(messageData);
+    return await this.chatService.addMessage(messageData);
   }
   // update message
   @Put()
-  async updateUserMessage(@Body() messageData: Message): Promise<Message> {
+  async updateMessage(@Body() messageData: Message): Promise<Message> {
     if (isEmpty(messageData)) {
       throw new HttpException(
         {
@@ -156,13 +156,13 @@ export class ChatController {
         HttpStatus.BAD_REQUEST,
       );
     }
-    return await this.chatService.updateUserMessage(messageData);
+    return await this.chatService.updateMessage(messageData);
   }
   // delete user message
   @Delete()
-  async deleteUserMessage(@Query('id') id: number): Promise<Message | null> {
+  async deleteMessage(@Query('id') id: number): Promise<Message | null> {
     checkIfNumber(id.toString(), 'Message id must be a number');
-    return await this.chatService.deleteUserMessage(Number(id));
+    return await this.chatService.deleteMessage(Number(id));
   }
 }
 
