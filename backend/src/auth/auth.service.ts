@@ -21,16 +21,19 @@ export class AuthService {
         try {
             let user = await this.prisma.user.findUnique({ where: { email: dto.email } });
             if (user)
-                return user;
-            user = await this.prisma.user.create({
-                data: {
-                    email: dto.email,
-                    image: dto.image,
-                    firstname: dto.firstname,
-                    lastname: dto.lastname,
-                    username: dto.username,
-                }
-            })
+            return user;
+        user = await this.prisma.user.create({
+            data: {
+                id: dto.id,
+                email: dto.email,
+                image: dto.image,
+                firstname: dto.firstname,
+                lastname: dto.lastname,
+                username: dto.username,
+                twoFactorSecret: "null",
+            },
+        })
+        console.log("dto :", user)
             return user;
         } catch (error) {
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -80,7 +83,7 @@ export class AuthService {
                     id: user.id
                 },
                 data: {
-                    isVerified: data.twoFa === 'true' ? true : false,
+                    isVerified: true,
                     username: data.username.length > 0 ? data.username : user.username,
                     image: data.image.length > 0 ? data.image : user.image,
                 }
@@ -117,4 +120,11 @@ export class AuthService {
           return false;
         }
       }
+    async findUserById(id: number) {
+        const user = await this.prisma.user.findUnique({ where: { id } });
+        if (!user) {
+            throw new ForbiddenException('Credentiel incorrect')
+        }
+        return user;
+    }
 }

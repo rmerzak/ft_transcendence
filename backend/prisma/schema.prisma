@@ -38,11 +38,17 @@ model User {
   email String @unique
   firstname String
   lastname String
-  username String
+  username String @unique
   image String
 
   // verification user authentification
   isVerified Boolean @default(false)
+
+  // user status online , offline ,in game
+  status UserStatus @default(OFFLINE)
+  // user 2fa
+  twoFactorSecret String
+  twoFactorEnabled Boolean @default(false)
 
   // Game user data
   gamewins Int @default(0)
@@ -55,6 +61,10 @@ model User {
   // Chat user data
   chatRooms ChatRoomMember[]
   sentMessages Message[] @relation(name: "SentMessages")
+  sentFriendRequests Friendship[] @relation("Sender")
+  receivedFriendRequests Friendship[] @relation("Receiver")
+  receivedNotification Notification[] @relation("Receiver")
+  sendNotification Notification[] @relation("Sender")
 }
 
 model Game {
@@ -66,6 +76,13 @@ model Game {
   status String
   dateStart DateTime
   user User @relation(fields: [userPlayerId], references: [id])
+
+}
+
+enum FriendshipStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
 }
 
 // begin chat models
