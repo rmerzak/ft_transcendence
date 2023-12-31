@@ -1,4 +1,4 @@
-import { NextRequest,NextResponse } from "next/server";
+import { NextRequest, NextResponse } from 'next/server';
 async function isValidAccessToken(accessToken: any,userId :any): Promise<boolean> {
   try {
     const response = await fetch('http://localhost:3000/auth/validateToken', {
@@ -10,6 +10,9 @@ async function isValidAccessToken(accessToken: any,userId :any): Promise<boolean
       },
     });
     const result = await response.json();
+    
+    if(response.status === 401)
+      return false;
     return result;
   } catch (error) {
     console.error('Error validating token:', error);
@@ -21,19 +24,23 @@ async function isValidAccessToken(accessToken: any,userId :any): Promise<boolean
 export async function middleware(req: NextRequest) {
   const cookies  = req.cookies.get("accesstoken");
   const userId = req.cookies.get("userId");
-  const valid = await isValidAccessToken(cookies?.value,userId?.value);
-  if (!cookies || !valid || !userId) {
-    if (req.nextUrl.pathname !== "/auth/login") {
-      return NextResponse.redirect(
-        new URL("/", process.env.SERVER_FRONTEND)
-      );
-    }
+  const valid: any = await isValidAccessToken(cookies?.value, userId?.value);
+  if (!cookies && !userId) {
+    return NextResponse.redirect(new URL("/", process.env.SERVER_FRONTEND));
   }
-  // this is the logic to do
-  // if it his first time to login redirect him to /auth/verify if not /dashboard/profile
-  // if his login required two factor authentication redirect him to /auth/twoFactor then to /dashboard/profile
-
+  if (userId && !cookies) {
+    if (req.nextUrl.pathname !== "/auth/twofa")
+      return NextResponse.redirect(new URL("/", process.env.SERVER_FRONTEND));
+  }
+  if (valid?.user?.isVerified === false) {
+    if (req.nextUrl.pathname !== "/auth/verify")
+      return NextResponse.redirect(new URL("/auth/verify", process.env.SERVER_FRONTEND));
+  }
+  if(req.nextUrl.pathname === "/auth/verify" && !cookies){
+    return NextResponse.redirect(new URL("/", process.env.SERVER_FRONTEND));
+  }
+  return NextResponse.next();
 }
 export const config = {
-    matcher:["/dashboard/:path*","/auth/:path*"]
+    matcher:["/dashboard", "/dashboard/:path*", "/auth/twofa", "/auth/verify"]
 }
