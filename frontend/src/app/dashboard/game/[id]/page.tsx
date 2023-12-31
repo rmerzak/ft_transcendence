@@ -13,10 +13,10 @@ const Game = () => {
             <h1>Game</h1>
           </div>
         <div className="flex flex-col items-center rounded-lg bg-gradient-to-r from-[#510546]/40 to-[#6958be]/40 p-4 ml-20 mr-20 backdrop-blur">
-          <div className="flex justify-between w-full max-w-screen-xl">
+          {/* <div className="flex justify-between w-full max-w-screen-xl">
             <ProfileComp className="ml-5" />
             <ProfileComp className="mr-5" />
-          </div>
+          </div> */}
           <div className={styles.pong_container}>
             <Pong />
           </div>

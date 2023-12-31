@@ -243,6 +243,7 @@ function Pong()
             balls = temp;
         }
 
+
         // get player no
         socket.on('playerNo', (newPlayerNo) => {
             playerNo = newPlayerNo;
@@ -251,6 +252,7 @@ function Pong()
         // starting game
         socket.on('startingGame', () => {
             isGameStarted = true;
+            // console.log('starting game');
         });
 
 

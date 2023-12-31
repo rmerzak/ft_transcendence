@@ -19,7 +19,7 @@ export class FriendshipService {
         }
 
         this.connectedClients.get(userId).push(socket);
-        console.log('connected client', this.connectedClients.size);
+        // console.log('', this.connectedClients.size);
     }
 
     handleDisconnect(socket: Socket): void {
