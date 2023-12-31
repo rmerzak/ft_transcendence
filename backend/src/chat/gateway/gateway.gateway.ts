@@ -1,7 +1,7 @@
 import { Server } from 'socket.io';
 import {
-  ConnectedSocket,
-  MessageBody,
+  // ConnectedSocket,
+  // MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
   SubscribeMessage,
@@ -9,6 +9,8 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
+import { ChatService } from '../chat.service';
+import { ChatRoom } from '@prisma/client';
 
 // let users = new Map<string, string[]>();
 
@@ -22,7 +24,7 @@ export class GatewayGateway
   @WebSocketServer()
   server: Server;
 
-  constructor() {}
+  constructor(private chatService: ChatService) {}
   handleConnection(_client: Socket) {
     console.log('connected: ' + _client);
     //check jwt token
@@ -31,18 +33,19 @@ export class GatewayGateway
     // users.set(_client.id, []);
   }
 
+  @SubscribeMessage('createRoom')
+  async createChatRoom(socket: Socket, room: ChatRoom) {
+    try {
+      await this.chatService.createChatRoom(room);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   handleDisconnect(_client: Socket) {
     console.log('disconnected: ' + _client.id);
     // check jwt token
     // remove user from map
     // users.delete(_client.id);
-  }
-
-  @SubscribeMessage('sendmessage')
-  handleMessage(
-    @MessageBody() data: string,
-    @ConnectedSocket() client: Socket,
-  ) {
-    this.server.emit('message', { message: data, id: client.id });
   }
 }

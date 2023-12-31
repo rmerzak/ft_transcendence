@@ -8,14 +8,16 @@ export class ChatService {
   constructor(private readonly prisma: PrismaService) {}
 
   // start chat room
-  // get all chat rooms
-  async getChatRooms(): Promise<ChatRoom[]> {
-    return await this.prisma.chatRoom.findMany();
-  }
-  // get chat room by id
-  async getChatRoom(id: number): Promise<ChatRoom | null> {
-    return await this.prisma.chatRoom.findUnique({
-      where: { id: id },
+  // get chat room for user
+  async getChatRoomsForUser(userId: number): Promise<ChatRoom[]> {
+    return await this.prisma.chatRoom.findMany({
+      where: {
+        users: {
+          some: {
+            userId: userId,
+          },
+        },
+      },
     });
   }
   // create chat room
@@ -64,11 +66,6 @@ export class ChatService {
   // end chat room
 
   // start user chat room
-  // get all user chat rooms
-  async getChatRoomMembers(): Promise<ChatRoomMember[]> {
-    return await this.prisma.chatRoomMember.findMany();
-  }
-
   // get user chat room by id
   async getChatRoomMember(
     userId: number,
@@ -80,11 +77,28 @@ export class ChatService {
   }
 
   // create user chat room
-  async createchatRoomMember(
+  async addUserToChatRoom(
     chatRoomMemData: ChatRoomMember,
   ): Promise<ChatRoomMember> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: chatRoomMemData.userId },
+    });
+    if (!user) throw new Error('User not found');
+    const chatRoom = await this.prisma.chatRoom.findUnique({
+      where: { id: chatRoomMemData.chatRoomId },
+    });
+    if (!chatRoom) throw new Error('Chat room not found');
+    const existingChatRoomMember = await this.prisma.chatRoomMember.findUnique({
+      where: { userId_chatRoomId: { userId: user.id, chatRoomId: chatRoom.id } },
+    });
+    if (existingChatRoomMember) throw new Error('User already in chat room');
     return await this.prisma.chatRoomMember.create({
-      data: chatRoomMemData,
+      data: {
+        user: { connect: { id: user.id } },
+        chatRoom: { connect: { id: chatRoom.id } },
+        is_admin: chatRoomMemData.is_admin,
+        leftAt: chatRoomMemData.leftAt,
+      }
     });
   }
 

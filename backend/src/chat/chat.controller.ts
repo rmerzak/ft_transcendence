@@ -2,7 +2,6 @@ import {
   Body,
   Controller,
   Get,
-  Param,
   Post,
   Put,
   Delete,
@@ -11,33 +10,14 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { ChatService } from './chat.service';
-import { $Enums, ChatRoom, Message } from '@prisma/client';
+import { $Enums, ChatRoom, ChatRoomMember, Message } from '@prisma/client';
 import { isAlpha } from 'class-validator';
 
 @Controller('chat')
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
-  // get chat room by id using query string
-  @Get()
-  async getChatRooms(
-    @Query('id') id?: number,
-  ): Promise<ChatRoom[] | ChatRoom | null> {
-    if (id !== undefined) {
-      checkIfNumber(id.toString(), 'Chat room id must be a number');
-      return await this.chatService.getChatRoom(Number(id));
-    } else return await this.chatService.getChatRooms();
-  }
-
-  // get chat room by id
-  @Get(':id')
-  async getChatRoom(@Param('id') id: number): Promise<ChatRoom | null> {
-    checkIfNumber(id.toString(), 'Chat room id must be a number');
-    return await this.chatService.getChatRoom(Number(id));
-  }
-
   // create chat room
-  @Post()
   async createChatRoom(@Body() chatRoomData: ChatRoom): Promise<ChatRoom> {
     if (isEmpty(chatRoomData)) {
       throw new HttpException(
@@ -118,7 +98,43 @@ export class ChatController {
     // checkIfNumber(body.id.toString(), 'Chat room id must be a number');
     return await this.chatService.deleteChatRoom(body.id);
   }
+  // end chat room
 
+  // start user chat room
+  // get chat room for user
+  @Get()
+  async getChatRoomsForUser(@Query('id') id: number): Promise<ChatRoom[]> {
+    checkIfNumber(id.toString(), 'User id must be a number');
+    return await this.chatService.getChatRoomsForUser(Number(id));
+  }
+  // create chat room
+  @Post()
+  async createChatRoomMember(@Body() chatRoomMemberData: ChatRoomMember) {
+    if (isEmpty(chatRoomMemberData)) {
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: 'Chat room member data not provided',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    checkIfNumber(chatRoomMemberData.userId.toString(), 'User id must be a number');
+    checkIfNumber(chatRoomMemberData.chatRoomId.toString(), 'Chat room id must be a number');
+    try {
+      return await this.chatService.addUserToChatRoom(chatRoomMemberData);
+    } catch (error) {
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: error.message,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  // end user chat room
   // get all messages of specific users
   @Get()
   async getMessages(
@@ -131,7 +147,6 @@ export class ChatController {
   }
 
   // add message
-  @Post()
   async addMessage(@Body() messageData: Message): Promise<Message> {
     if (isEmpty(messageData)) {
       throw new HttpException(
@@ -164,10 +179,12 @@ export class ChatController {
     checkIfNumber(id.toString(), 'Message id must be a number');
     return await this.chatService.deleteMessage(Number(id));
   }
+
 }
 
 // helper functions
 const isEmpty = (obj: any): boolean => {
+  if (obj === null || obj === undefined) return true;
   return Object.getOwnPropertyNames(obj).length === 0;
 };
 

@@ -48,7 +48,7 @@ export class FriendshipService {
                 content: content,
                 RequestId: RequestId,
                 Receiver: { connect: { id: Receiver?.id } },
-                sender: { connect: { id: Sender?.id } },
+        sender: { connect: { id: Sender?.id } },
                 RequestType: RequestType.FRIENDSHIP, 
                 vue: false,
                 senderName: Sender?.username,

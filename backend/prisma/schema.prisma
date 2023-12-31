@@ -16,18 +16,11 @@ enum RoomVisibility {
   PRIVATE
   PROTECTED
 }
-// model User {
-//   id Int @id @default(autoincrement())
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-
-//   email String @unique
-//   hash String
-
-//   firstname String?
-//   lastname String?
-//   username String?
-// }
+enum UserStatus {
+  ONLINE
+  OFFLINE
+  INGAME
+}
 model User {
   // initial user data
   id Int @id @default(autoincrement())
@@ -79,10 +72,50 @@ model Game {
 
 }
 
+
 enum FriendshipStatus {
   PENDING
   ACCEPTED
   DECLINED
+}
+enum Blocker {
+  SENDER
+  RECEIVER
+}
+model Friendship {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updateAt DateTime @updatedAt
+
+  status FriendshipStatus
+
+  sender User @relation("Sender", fields: [senderId], references: [id])
+  senderId Int
+  receiver User @relation("Receiver", fields: [receiverId], references: [id])
+  receiverId Int
+
+  block Boolean @default(false)
+  blockBy Blocker?
+}
+
+enum RequestType {
+  FRIENDSHIP
+  GAME
+}
+model Notification {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  type String
+  content String
+  RequestId Int
+  RequestType RequestType
+  vue Boolean @default(false)
+  userId Int
+  senderId Int
+  senderName String
+  senderImage String
+  Receiver User @relation( "Receiver",fields: [userId], references: [id])
+  sender User @relation( "Sender",fields: [senderId], references: [id])
 }
 
 // begin chat models
