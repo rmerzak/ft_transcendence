@@ -10,6 +10,10 @@ export class ChatService {
   // start chat room
   // get chat room for user
   async getChatRoomsForUser(userId: number): Promise<ChatRoom[]> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+    if (!user) throw new Error('User not found');
     return await this.prisma.chatRoom.findMany({
       where: {
         users: {
@@ -27,7 +31,13 @@ export class ChatService {
     });
 
     if (existingChatRoom) throw new Error('Chat room already exists');
-
+    if (chatRoomData.hasOwnProperty('owner'))
+    {
+      const owner = await this.prisma.user.findUnique({
+        where: { id: chatRoomData.owner },
+      });
+      if (!owner) throw new Error('Owner not found');
+    }
     return await this.prisma.chatRoom.create({
       data: chatRoomData,
     });
@@ -127,21 +137,39 @@ export class ChatService {
 
   // start user message
   // get all messages of specific users
-  async getUserMessages(
-    senderId: number,
+  // async getUserMessages(
+  //   userId: number,
+  // ): Promise<Message[]> {
+  //   const user = await this.prisma.user.findUnique({
+  //     where: { id: userId },
+  //   });
+  //   if (!user) throw new Error('User not found');
+  //   return await this.prisma.message.findMany({
+  //     where: {
+  //       senderId: userId,
+  //       OR: {
+  //         receiverId: userId,
+  //       },
+  //     },
+  //     orderBy: {
+  //       createdAt: 'asc',
+  //     },
+  //   });
+  // }
+
+  // get all messages of room
+  async getChatRoomMessages(
     chatRoomId: number,
   ): Promise<Message[]> {
     return await this.prisma.message.findMany({
       where: {
-        senderId: senderId,
-        ChatRoomId: chatRoomId,
+        chatRoomId: chatRoomId,
       },
       orderBy: {
         createdAt: 'asc',
       },
     });
   }
-
   // add user message
   async addMessage(messageData: Message): Promise<Message> {
     return await this.prisma.message.create({

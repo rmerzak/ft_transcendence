@@ -108,7 +108,7 @@ CREATE TABLE "Message" (
     "id" SERIAL NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "senderId" INTEGER NOT NULL,
-    "ChatRoomId" INTEGER NOT NULL,
+    "chatRoomId" INTEGER NOT NULL,
     "text" TEXT NOT NULL,
 
     CONSTRAINT "Message_pkey" PRIMARY KEY ("id")
@@ -119,9 +119,6 @@ CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_username_key" ON "User"("username");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Friendship_senderId_receiverId_key" ON "Friendship"("senderId", "receiverId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "ChatRoom_name_key" ON "ChatRoom"("name");
@@ -151,4 +148,4 @@ ALTER TABLE "ChatRoomMember" ADD CONSTRAINT "ChatRoomMember_chatRoomId_fkey" FOR
 ALTER TABLE "Message" ADD CONSTRAINT "Message_senderId_fkey" FOREIGN KEY ("senderId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Message" ADD CONSTRAINT "Message_ChatRoomId_fkey" FOREIGN KEY ("ChatRoomId") REFERENCES "ChatRoom"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Message" ADD CONSTRAINT "Message_chatRoomId_fkey" FOREIGN KEY ("chatRoomId") REFERENCES "ChatRoom"("id") ON DELETE CASCADE ON UPDATE CASCADE;

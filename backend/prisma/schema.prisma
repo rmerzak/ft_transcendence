@@ -147,8 +147,18 @@ model Message {
   id Int @id @default(autoincrement())
   createdAt DateTime @default(now())
   senderId Int
-  ChatRoomId Int 
+  chatRoomId Int 
   sender User @relation(name: "SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
-  chatRoom ChatRoom @relation(fields: [ChatRoomId], references: [id], onDelete: Cascade)
+  chatRoom ChatRoom @relation(fields: [chatRoomId], references: [id], onDelete: Cascade)
   text String
 }
+
+// model userMessage {
+//   id Int @id @default(autoincrement())
+//   createdAt DateTime @default(now())
+//   senderId Int
+//   receiverId Int
+//   sender User @relation(fields: [senderId], references: [id], onDelete: Cascade)
+//   receiver User @relation(fields: [receiverId], references: [id], onDelete: Cascade)
+//   text String
+// }

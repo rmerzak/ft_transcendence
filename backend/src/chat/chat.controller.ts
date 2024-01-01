@@ -108,7 +108,7 @@ export class ChatController {
     return await this.chatService.getChatRoomsForUser(Number(id));
   }
   // create chat room
-  @Post()
+  // @Post()
   async createChatRoomMember(@Body() chatRoomMemberData: ChatRoomMember) {
     if (isEmpty(chatRoomMemberData)) {
       throw new HttpException(
@@ -136,15 +136,13 @@ export class ChatController {
 
   // end user chat room
   // get all messages of specific users
-  @Get()
-  async getMessages(
-    @Query('sdId') sdId: number,
-    @Query('rcId') rcId: number,
-  ): Promise<Message[]> {
-    checkIfNumber(sdId.toString(), 'Sender id must be a number');
-    checkIfNumber(rcId.toString(), 'Receiver id must be a number');
-    return await this.chatService.getUserMessages(Number(sdId), Number(rcId));
-  }
+  // @Get()
+  // async getMessages(
+  //   @Query('sdId') sdId: number,
+  // ): Promise<Message[]> {
+  //   checkIfNumber(sdId.toString(), 'Sender id must be a number');
+  //   return await this.chatService.getUserMessages(Number(sdId));
+  // }
 
   // add message
   async addMessage(@Body() messageData: Message): Promise<Message> {
@@ -180,6 +178,35 @@ export class ChatController {
     return await this.chatService.deleteMessage(Number(id));
   }
 
+  // handle http post request
+  @Post()
+  async handlePostRequest(@Body() data: any): Promise<any> {
+    if (isEmpty(data)) {
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: 'Data not provided',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    if (data.hasOwnProperty('chatRoomData')) {
+      return await this.createChatRoom(data.chatRoomData);
+    } else if (data.hasOwnProperty('chatRoomMemberData')) {
+      return await this.createChatRoomMember(data.chatRoomMemberData);
+    }else if (data.hasOwnProperty('messageData')) {
+      return await this.addMessage(data.messageData);
+    } else {
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: 'Data not provided',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+  //end handle http post request
 }
 
 // helper functions

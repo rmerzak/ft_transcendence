@@ -11,11 +11,13 @@ import {
 import { Socket } from 'socket.io';
 import { ChatService } from '../chat.service';
 import { ChatRoom } from '@prisma/client';
+import { SocketAuthMiddleware } from 'src/auth/middleware/ws.mw';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 // let users = new Map<string, string[]>();
 
 @WebSocketGateway({
-  cors: { origin: 'http://localhost:8080', namespace: '/chat' },
+  cors: { origin: 'http://localhost:8080', namespace: '/chat', credentials: true},
 })
 export class GatewayGateway
   implements OnGatewayConnection, OnGatewayDisconnect
@@ -23,18 +25,26 @@ export class GatewayGateway
   // add a map to store users
   @WebSocketServer()
   server: Server;
+  afterInit(socket: Socket) {
+    socket.use(SocketAuthMiddleware() as any);
+  }
 
-  constructor(private chatService: ChatService) {}
-  handleConnection(_client: Socket) {
-    console.log('connected: ' + _client);
-    //check jwt token
-    // const isValidToken = this.validateToken(_client.handshake.query.token);
-    // add user to map
-    // users.set(_client.id, []);
+  constructor(private chatService: ChatService,private prisma:PrismaService) {}
+  async handleConnection(_client: Socket) {
+    const user = await this.prisma.user.findUnique({where:{id:_client['payload']['sub']}});
+    if(user){
+      _client['user'] = user;
+    }else{
+      _client.disconnect();
+    }
+    console.log('connected: ' + _client.id);
   }
 
   @SubscribeMessage('createRoom')
   async createChatRoom(socket: Socket, room: ChatRoom) {
+    console.log(socket);
+    console.log("inside the chat gateway");
+    socket.emit('roomCreated', socket['user']);
     try {
       await this.chatService.createChatRoom(room);
     } catch (error) {
