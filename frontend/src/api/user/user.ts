@@ -8,3 +8,5 @@ const apiInstance = axios.create({
 export const getUserInfo = () => apiInstance.get("/users/me");
 
 export const logout = () => apiInstance.get("/auth/logout");
+
+export const getUserInfoById = (id: number) => apiInstance.get(`/users/user/${id}`);

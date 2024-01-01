@@ -33,7 +33,6 @@ export class AuthService {
                 twoFactorSecret: "null",
             },
         })
-        console.log("dto :", user)
             return user;
         } catch (error) {
             if (error instanceof Prisma.PrismaClientKnownRequestError) {

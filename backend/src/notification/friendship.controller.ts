@@ -16,4 +16,14 @@ export class FriendshipController {
             return error.message;
         }
     }
+    @Get('friendlist/:id')
+    async getFriendList(@Req() req : Request) {
+        console.log("i m here")
+        try {
+            const friendlist = await this.friendship.getFriendListByUserId(req.user['id']);
+            return friendlist;
+        } catch (error) {
+            return error.message;
+        }
+    }
 }

@@ -22,4 +22,9 @@ export class UserController {
     async getUserProfile(@Req() req: Request, @Param('username') username: string) {
         return this.userService.getUserProfile(username, req.user['username']);
     }
+
+    @Get('user/:id')
+    async getUserProfileById(@Param('id') id: number) {
+        return this.userService.getUserProfileById(Number(id));
+    }
 }
