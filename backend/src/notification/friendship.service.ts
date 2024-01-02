@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { Blocker, FriendshipStatus, RequestType, User } from '@prisma/client';
+import { Blocker, FriendshipStatus, RequestType, User, UserStatus } from '@prisma/client';
 import { Socket } from 'socket.io';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { UserDto } from './Dto';
 
 @Injectable()
 export class FriendshipService {
@@ -14,6 +13,7 @@ export class FriendshipService {
         let payload = socket['payload'];
         let user = await this.prisma.user.findUnique({ where: { email: payload['email'] } });
         const userId = user?.id;
+        let updatedUser = await this.prisma.user.update({where:{id:userId},data:{status:UserStatus.ONLINE}});
         if (!this.connectedClients.has(userId)) {
             this.connectedClients.set(userId, []);
         }
@@ -22,9 +22,10 @@ export class FriendshipService {
         console.log('connected client', this.connectedClients.size);
     }
 
-    handleDisconnect(socket: Socket): void {
+    async handleDisconnect(socket: Socket): Promise<void> {
         const userId = socket['payload']['sub'];
         const sockets = this.connectedClients.get(userId);
+        let updatedUser = await this.prisma.user.update({where:{id:userId},data:{status:UserStatus.OFFLINE}});
         if (sockets) {
             const index = sockets.indexOf(socket);
             if (index !== -1) {
@@ -202,6 +203,30 @@ export class FriendshipService {
           });
         if (!friendRequest) throw new Error('friend request not found');
         return friendRequest;
+    }
+
+    async getFriendListByUserId(userId:number) {
+        const user = this.prisma.user.findUnique({where:{id:userId}});
+        if(!user) throw new Error('user not found');
+        const friendList = await this.prisma.friendship.findMany({
+            where:{
+                OR:[
+                    {senderId:userId},
+                    {receiverId:userId},
+                ]
+            },
+            select:{
+                id:true,
+                senderId:true,
+                receiverId:true,
+                createdAt:true,
+                updateAt:true,
+                status:true,
+                block:true,
+                blockBy:true,
+            }
+        });
+        return friendList;
     }
 
 }

@@ -25,7 +25,7 @@ export class AuthController {
     @UseGuards(LeetGuard)
     @Get('42-redirect')
     async ftAuthCallback(@Req() req: Request, @Res() res: Response) {
-        console.log("req.user :", req.user['id'])
+        console.log("req :", req)
         res.cookie('userId', req.user['id']);
         if (req.user['twoFactorEnabled'] === true) {
             return res.redirect('http://localhost:8080/auth/twofa');

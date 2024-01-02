@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import Image from "next/image";
+import axios from "axios";
 
 // Import Swiper styles
 import "swiper/css";
@@ -12,41 +13,28 @@ import "./userOnline.css";
 // import Swiper core and required modules
 import { FreeMode, Pagination } from "swiper/modules";
 
-const users = [
-  { name: "John Doe", avatar: "https://i.pravatar.cc/300" },
-  { name: "Jane Doe", avatar: "https://i.pravatar.cc/301" },
-  { name: "Bob Smith", avatar: "https://i.pravatar.cc/302" },
-  { name: "Alice Johnson", avatar: "https://i.pravatar.cc/303" },
-  { name: "Kate Williams", avatar: "https://i.pravatar.cc/304" },
-  { name: "Mike Brown", avatar: "https://i.pravatar.cc/305" },
-  { name: "John Doe", avatar: "https://i.pravatar.cc/300" },
-  { name: "Jane Doe", avatar: "https://i.pravatar.cc/301" },
-  { name: "Bob Smith", avatar: "https://i.pravatar.cc/302" },
-  { name: "Alice Johnson", avatar: "https://i.pravatar.cc/303" },
-  { name: "Kate Williams", avatar: "https://i.pravatar.cc/304" },
-  { name: "Mike Brown", avatar: "https://i.pravatar.cc/305" },
-  { name: "John Doe", avatar: "https://i.pravatar.cc/300" },
-  { name: "Jane Doe", avatar: "https://i.pravatar.cc/301" },
-  { name: "Bob Smith", avatar: "https://i.pravatar.cc/302" },
-  { name: "Alice Johnson", avatar: "https://i.pravatar.cc/303" },
-  { name: "Kate Williams", avatar: "https://i.pravatar.cc/304" },
-  { name: "Mike Brown", avatar: "https://i.pravatar.cc/305" },
-  { name: "John Doe", avatar: "https://i.pravatar.cc/300" },
-  { name: "Jane Doe", avatar: "https://i.pravatar.cc/301" },
-  { name: "Bob Smith", avatar: "https://i.pravatar.cc/302" },
-  { name: "Alice Johnson", avatar: "https://i.pravatar.cc/303" },
-  { name: "Kate Williams", avatar: "https://i.pravatar.cc/304" },
-  { name: "Mike Brown", avatar: "https://i.pravatar.cc/305" },
-  { name: "John Doe", avatar: "https://i.pravatar.cc/300" },
-  { name: "Jane Doe", avatar: "https://i.pravatar.cc/301" },
-  { name: "Bob Smith", avatar: "https://i.pravatar.cc/302" },
-  { name: "Alice Johnson", avatar: "https://i.pravatar.cc/303" },
-  { name: "Kate Williams", avatar: "https://i.pravatar.cc/304" },
-  { name: "Mike Brown", avatar: "https://i.pravatar.cc/305" },
-];
+interface friends {
+  id: number;
+  firstName: string;
+  lastName: string;
+  avatar: string;
+}
 
 const UserOnline = () => {
   const [isResponsive, setIsResponsive] = useState(false);
+  const [users, setUsers] = useState<friends[]>([]);
+
+  useEffect(() => {
+    const getUsers = async () => {
+      try {
+        const res = await axios.get<friends[]>("http://localhost:3000/friendship");
+        setUsers(res.data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    getUsers();
+  }, []);
 
   useEffect(() => {
     const checkIsResponsive = () => {
@@ -64,14 +52,12 @@ const UserOnline = () => {
     return () => {
       window.removeEventListener('resize', checkIsResponsive);
     };
-  }, []); 
+  }, []);
 
   function makeIstolong(user: any) {
-    if (isResponsive == true && user.name.length >= 9) {
-      let name = user.name.substring(0, 6) + "...";
-      console.log(name);
-      return name;
-    } else return user.name;
+    if (isResponsive == true && (user.firstName.length + user.lastName.length) >= 9) {
+      return user.lastName;
+    } else return user.firsName + " " + user.lastName;
   }
 //some test here 
 
@@ -105,7 +91,7 @@ const UserOnline = () => {
             <div onClick={() => alert("hello")}>
               <Image
                 src={user.avatar}
-                alt={user.name}
+                alt={user.firstName}
                 width={60}
                 height={60}
                 priority={true}

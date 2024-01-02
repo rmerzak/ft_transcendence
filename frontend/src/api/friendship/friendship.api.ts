@@ -7,3 +7,4 @@ const apiInstance = axios.create({
 
 
 export const getFriendshipStatus = (id: number) => apiInstance.get(`/friendship/status/${id}`);
+export const getFriendList = (id: number) => apiInstance.get(`/friendship/friendlist/${id}`);
