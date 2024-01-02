@@ -31,13 +31,13 @@ const Friends = () => {
       getFriends(profile?.id);
     };
   
-    socket?.on('friendAcceptRequest', handleFriendAccept);
+    socket?.on('AcceptRequest', handleFriendAccept);
     socket?.on('friendRequest', handleFriendRequest);
     socket?.on('removeFriend', handleRemoveFriend);
   
     // Cleanup function
     return () => {
-      socket?.off('friendAcceptRequest', handleFriendAccept);
+      socket?.off('AcceptRequest', handleFriendAccept);
       socket?.off('friendRequest', handleFriendRequest);
       socket?.off('removeFriend', handleRemoveFriend);
     };

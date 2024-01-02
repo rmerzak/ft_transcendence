@@ -51,7 +51,7 @@ export class FriendshipGateway {
       emitClient.forEach((socket) => {
         socket.emit('friendAcceptRequest', notification);
       });
-      socket.emit('friendAcceptRequest', 'notification');
+      socket.emit('AcceptRequest', 'notification');
     } catch (error) {
       socket.emit('RequestError', { error: error.message });
     }
