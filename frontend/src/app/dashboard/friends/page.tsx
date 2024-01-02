@@ -1,11 +1,11 @@
 'use client'
 import React, { use, useContext, useEffect } from "react";
-import ListOfFriends from "@/components/Friends/ListOfFriends";
-import InviteFriends from "@/components/Friends/InviteFriends";
-import BlackList from "@/components/Friends/BlackList";
 import { getFriendList } from "@/api/friendship/friendship.api";
 import { ContextGlobal } from "@/context/contex";
 import { get } from "https";
+import ListOfFriends from "@/components/Friends/friends/ListOfFriends";
+import InviteFriends from "@/components/Friends/invitefriend/InviteFriends";
+import BlackList from "@/components/Friends/blockedFriends/BlackList";
 
 const Friends = () => {
   const { profile, setProfile, setFriends, friends, socket }: any = useContext(ContextGlobal);
@@ -13,23 +13,36 @@ const Friends = () => {
     getFriendList(number).then((res) => {
       if (res.data)
         setFriends(res.data);
-      console.log("friends inside ", friends);
+      console.log("friends inside 1", friends);
     }).catch((err) => { console.log(err) });
   }
   useEffect(() => {
     getFriends(profile?.id);
-    socket?.on('friendAcceptRequest', (data: any) => {
-      console.log("friendAcceptRequest", data)
+  
+    const handleFriendAccept = (data: any) => {
       getFriends(profile?.id);
-    });
-    socket?.on('friendRequest', (data: any) => {
+    };
+  
+    const handleFriendRequest = (data: any) => {
       getFriends(profile?.id);
-    });
-    socket?.on('removeFriend', (data: any) => {
+    };
+  
+    const handleRemoveFriend = (data: any) => {
       getFriends(profile?.id);
-    });
-
+    };
+  
+    socket?.on('friendAcceptRequest', handleFriendAccept);
+    socket?.on('friendRequest', handleFriendRequest);
+    socket?.on('removeFriend', handleRemoveFriend);
+  
+    // Cleanup function
+    return () => {
+      socket?.off('friendAcceptRequest', handleFriendAccept);
+      socket?.off('friendRequest', handleFriendRequest);
+      socket?.off('removeFriend', handleRemoveFriend);
+    };
   }, [profile, socket]);
+  
   return (
     <div className="bg-profile py-4 px-2 mx-4 ">
       <h1 className="text-white font-bold text-3xl text-center mb-4">Friends</h1>

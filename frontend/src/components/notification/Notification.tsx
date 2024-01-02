@@ -46,7 +46,7 @@ const Notification = () => {
         </div>
         <div className="z-10 right-0 absolute bg-search rounded-b-lg w-[500px]">
             {
-                open && notification.map((item, index) => (
+                open && notification.map((item :any, index:any) => (
                     <div key={index} className="flex items-center justify-between p-2 hover:bg-purple-300/50">
                        <NotificationItem item={item} setOpen={setOpen} />
                     </div>

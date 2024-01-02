@@ -21,7 +21,7 @@ function page() {
   const { username } = useParams();
   const [user, setUser] = useState<any>();
   const [error, setError] = useState<string | null>(null);
-  const { profile }:User = useContext(ContextGlobal);
+  const { profile }:any = useContext(ContextGlobal);
   const [loading, setLoading] = useState(true);
   const [BtnFriend, setBtnFriend] = useState<boolean>(false);
 
@@ -43,7 +43,7 @@ function page() {
 }, [username, profile]);
   return (
     loading ? <Loading /> :
-    error ? <UserNotFound /> :
+    
       <div className="p-4 mx-2 bg-profile">
         <h1 className="text-white font-bold text-3xl text-center mb-7 mt-2">Profile</h1>
         <div className="w-full h-[250px] border-spacing-1 mb-3 border-[#ffff]">

@@ -18,7 +18,6 @@ export class FriendshipController {
     }
     @Get('friendlist/:id')
     async getFriendList(@Req() req : Request) {
-        console.log("i m here")
         try {
             const friendlist = await this.friendship.getFriendListByUserId(req.user['id']);
             return friendlist;

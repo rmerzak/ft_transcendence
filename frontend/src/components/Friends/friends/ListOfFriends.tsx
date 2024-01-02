@@ -4,8 +4,9 @@ import { MessagesSquare } from 'lucide-react';
 import { Gamepad2 } from 'lucide-react';
 import { XOctagon } from 'lucide-react';
 
-import FriendItem from "./FriendItem";
+
 import { Friendship } from "@/interfaces";
+import FriendItem from "./FriendItem";
 
 
 

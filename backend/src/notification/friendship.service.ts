@@ -129,13 +129,11 @@ export class FriendshipService {
         const friendRequestRemoved = await this.prisma.friendship.delete({
             where: { id: friendRequest.id }
         });
-        console.log(friendRequestRemoved);
         return friendRequestRemoved;
     }
 
     async BlockFriend(socket: Socket, userId: number) {
         const user = await this.prisma.user.findUnique({ where: { id: userId } });
-        console.log(userId,socket['payload']['sub']);
         if (!user) throw new Error('user not found');
         const friendRequest = await this.prisma.friendship.findFirst({
             where: {
@@ -145,7 +143,6 @@ export class FriendshipService {
               ]
             }
           });
-          console.log(friendRequest);
         if (!friendRequest) throw new Error('friend request not found 1');
         if(friendRequest.block === true) throw new Error('friend request already blocked');
         const friendRequestBlocked = await this.prisma.friendship.update({

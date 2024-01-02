@@ -7,11 +7,9 @@ export class LeetGuard extends AuthGuard('42') {
         super();
     }
     async canActivate(context: ExecutionContext) {
-        //console.log("context :", context)
         try {
             const activate = (await super.canActivate(context)) as boolean;
             const request = context.switchToHttp().getRequest();
-            //console.log("request :", request)
             await super.logIn(request);
             return activate;
         } catch (error) {

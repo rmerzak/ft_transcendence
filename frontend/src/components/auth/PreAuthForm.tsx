@@ -51,8 +51,6 @@ const PreAuthForm = ({ exit }: { exit: boolean }) => {
 
   let ii = user?.image;
   async function handleSubmit(event: any) {
-
-    console.log(profile);
     event.preventDefault();
     try {
       if (fil != undefined) {

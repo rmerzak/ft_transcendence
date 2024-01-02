@@ -35,7 +35,6 @@ export class GameGateway implements OnGatewayConnection , OnGatewayDisconnect{
   }
 
   async getUser(socket: any) {
-    console.log("get user");
 
     const user = await this.game.findUserByEmail(socket['payload']['email']);
 

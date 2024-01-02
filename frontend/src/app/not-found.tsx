@@ -7,17 +7,20 @@ const NotFound = () => {
     const [width, setWidth] = useState(0);
     useEffect(() => {
       const calculateSize = () => {
+        if (typeof window !== 'undefined') {
         const windowHeight = window.innerHeight;
         const secondDivHeight = 0.3 * windowHeight;
         const windowWidth = window.innerWidth;
         const secondWidth = 0.3 * windowWidth;
         setWidth(secondWidth);
         setHeight(secondDivHeight);
-      };
+      }};
       calculateSize();
-      window.addEventListener("resize", calculateSize);
+      if (typeof window !== 'undefined') {
+      window.addEventListener("resize", calculateSize);}
       return () => {
-        window.removeEventListener("resize", calculateSize);
+        if (typeof window !== 'undefined') {
+        window.removeEventListener("resize", calculateSize);}
       };
     }, []);
     return (
