@@ -126,7 +126,6 @@ export class FriendshipService {
             }
         });
         if (!friendRequest) throw new Error('friend request not found');
-        if (friendRequest.status !== FriendshipStatus.ACCEPTED) throw new Error('friend request not accepted');
         const friendRequestRemoved = await this.prisma.friendship.delete({
             where: { id: friendRequest.id }
         });
@@ -224,6 +223,24 @@ export class FriendshipService {
                 status:true,
                 block:true,
                 blockBy:true,
+                sender:{
+                    select:
+                    {
+                        id:true,
+                        username:true,
+                        image:true,
+                        status:true,
+                    }
+                },
+                receiver:{
+                    select:
+                    {
+                        id:true,
+                        username:true,
+                        image:true,
+                        status:true,
+                    }
+                }
             }
         });
         return friendList;

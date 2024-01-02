@@ -7,27 +7,18 @@ import { getUserInfoById } from '@/api/user/user';
 import { ContextGlobal } from '@/context/contex';
 
 const FriendItem = ({ friend } : { friend: Friendship }) => {
-  const {  profile, friends  } = useContext(ContextGlobal);
-
-  const [user, setUser] = useState<User>()
-  useEffect(() => {
-    getUserInfoById((profile?.id ===  friend.senderId ? friend.receiverId : friend.senderId)).then((res) => {
-      if (res.data)
-        setUser(res.data);
-      console.log("user ", user);
-    }).catch((err) => { console.log(err) });
-  }, [friend,friends]);
+  const {  profile  } : any = useContext(ContextGlobal);
   return (
     (friend.status === 'ACCEPTED' && !friend.blocked) ? (
     <div className={`text-white bg-achievements1 flex items-center justify-between py-1 mx-3`}>
       <div className="flex items-center">
         <div className="relative w-[30px] h-[30px] md:w-[40px] md:h-[40px] ml-2 mb-2 rounded-full">
-          <img src={user?.image} className="w-[40px] h-[40px] rounded-full " alt="default pic" />
-          <div
+          <img src={profile?.id === friend.sender.id ? friend.receiver.image : friend.sender.image } className="w-[40px] h-[40px] rounded-full " alt="default pic" />
+          {/* <div
             className={`absolute left-5 top-10  -translate-x-1/2 -translate-y-1/2 text-[8px] h-[8px] w-[8px] rounded-full ${user?.status === 'ONLINE' ? 'bg-custom-green' : user?.status === 'IN_GAME' ? 'bg-orange-400' : 'bg-gray-400'}`}> 
-            </div>
+            </div> */}
         </div>
-        <div className="text-gray-200 text-[16px] font-thin pl-1">{user?.username}</div>
+        <div className="text-gray-200 text-[16px] font-thin pl-1">{profile?.id === friend.sender.id ? friend.receiver.username : friend.sender.username}</div>
       </div>
       <div className="                                    ">
         <button className="md:px-2 px-1">

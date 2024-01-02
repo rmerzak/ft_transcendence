@@ -45,4 +45,6 @@ export interface Friendship {
   receiverId: number;
   blocked: boolean;
   blockBy: Blocker | null;
+  sender: User;
+  receiver: User;
 }
