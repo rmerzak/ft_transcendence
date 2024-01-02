@@ -7,6 +7,11 @@ import { Request } from "express";
 @UseGuards(JwtGuard)
 export class FriendshipController {
     constructor(private friendship:FriendshipService) {}
+    @Get()
+    test() {
+        console.log("i m here")
+        return "hello";
+    }
     @Get('status/:id')
     async getFriendshipStatus(@Req() req: Request) {
         try {

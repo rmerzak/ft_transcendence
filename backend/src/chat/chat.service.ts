@@ -24,6 +24,12 @@ export class ChatService {
       },
     });
   }
+  // get chat room by by name
+  async getChatRoomByName(name: string): Promise<ChatRoom | null> {
+    return await this.prisma.chatRoom.findUnique({
+      where: { name },
+    });
+  }
   // create chat room
   async createChatRoom(chatRoomData: ChatRoom): Promise<ChatRoom> {
     const existingChatRoom = await this.prisma.chatRoom.findUnique({

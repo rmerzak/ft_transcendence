@@ -224,6 +224,24 @@ export class FriendshipService {
                 status:true,
                 block:true,
                 blockBy:true,
+                sender:{
+                    select:{
+                        id:true,
+                        username:true,
+                        email:true,
+                        image:true,
+                        status:true,
+                    }
+                },
+                receiver:{
+                    select:{
+                        id:true,
+                        username:true,
+                        email:true,
+                        image:true,
+                        status:true,
+                    }
+                }
             }
         });
         return friendList;

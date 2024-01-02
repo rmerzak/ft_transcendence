@@ -8,16 +8,23 @@ import {
   Query,
   HttpException,
   HttpStatus,
+  Req,
+  Param,
+  UseGuards,
 } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { $Enums, ChatRoom, ChatRoomMember, Message } from '@prisma/client';
 import { isAlpha } from 'class-validator';
+import { Request } from 'express';
+import { JwtGuard } from 'src/auth/guard';
 
 @Controller('chat')
+@UseGuards(JwtGuard)
 export class ChatController {
-  constructor(private readonly chatService: ChatService) {}
+  constructor(private readonly chatService: ChatService) { }
 
   // create chat room
+  @Post('room/:id')
   async createChatRoom(@Body() chatRoomData: ChatRoom): Promise<ChatRoom> {
     if (isEmpty(chatRoomData)) {
       throw new HttpException(
@@ -42,6 +49,35 @@ export class ChatController {
     }
     try {
       return await this.chatService.createChatRoom(chatRoomData);
+    } catch (error) {
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: error.message,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+  // create user conversation room
+  
+  @Post('user/:id')
+  async createConversationRoom(@Body() chatRoomData: ChatRoom,@Req() req:Request): Promise<ChatRoom> {
+    // console.log(req.user)
+    // console.log(req.params.id)
+    // console.log("chat room =",chatRoomData)
+    if (isEmpty(chatRoomData)) {
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: 'Chat room data not provided',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const chatRoom = await this.chatService.getChatRoomByName(chatRoomData.name)
+    try {
+      return this.chatService.createChatRoom(chatRoomData);
     } catch (error) {
       throw new HttpException(
         {
@@ -178,34 +214,6 @@ export class ChatController {
     return await this.chatService.deleteMessage(Number(id));
   }
 
-  // handle http post request
-  @Post()
-  async handlePostRequest(@Body() data: any): Promise<any> {
-    if (isEmpty(data)) {
-      throw new HttpException(
-        {
-          statusCode: HttpStatus.BAD_REQUEST,
-          message: 'Data not provided',
-        },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-    if (data.hasOwnProperty('chatRoomData')) {
-      return await this.createChatRoom(data.chatRoomData);
-    } else if (data.hasOwnProperty('chatRoomMemberData')) {
-      return await this.createChatRoomMember(data.chatRoomMemberData);
-    }else if (data.hasOwnProperty('messageData')) {
-      return await this.addMessage(data.messageData);
-    } else {
-      throw new HttpException(
-        {
-          statusCode: HttpStatus.BAD_REQUEST,
-          message: 'Data not provided',
-        },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-  }
   //end handle http post request
 }
 
@@ -225,3 +233,32 @@ const checkIfNumber = (id: string, str: string) => {
       HttpStatus.BAD_REQUEST,
     );
 };
+
+// handle http post request
+// @Post()
+// async handlePostRequest(@Body() data: any): Promise<any> {
+//   if (isEmpty(data)) {
+//     throw new HttpException(
+//       {
+//         statusCode: HttpStatus.BAD_REQUEST,
+//         message: 'Data not provided',
+//       },
+//       HttpStatus.BAD_REQUEST,
+//     );
+//   }
+//   if (data.hasOwnProperty('chatRoomData')) {
+//     return await this.createChatRoom(data.chatRoomData);
+//   } else if (data.hasOwnProperty('chatRoomMemberData')) {
+//     return await this.createChatRoomMember(data.chatRoomMemberData);
+//   }else if (data.hasOwnProperty('messageData')) {
+//     return await this.addMessage(data.messageData);
+//   } else {
+//     throw new HttpException(
+//       {
+//         statusCode: HttpStatus.BAD_REQUEST,
+//         message: 'Data not provided',
+//       },
+//       HttpStatus.BAD_REQUEST,
+//     );
+//   }
+// }

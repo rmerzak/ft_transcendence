@@ -1,8 +1,6 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import Image from "next/image";
-import axios from "axios";
 
 // Import Swiper styles
 import "swiper/css";
@@ -12,53 +10,25 @@ import "./userOnline.css";
 
 // import Swiper core and required modules
 import { FreeMode, Pagination } from "swiper/modules";
-
-interface friends {
-  id: number;
-  firstName: string;
-  lastName: string;
-  avatar: string;
-}
+import { getFriendList } from "@/api/friendship/friendship.api";
+import { Friendship } from "@/interfaces";
+import { ContextGlobal } from "@/context/contex";
+import UserItem from "./UserItem";
 
 const UserOnline = () => {
-  const [isResponsive, setIsResponsive] = useState(false);
-  const [users, setUsers] = useState<friends[]>([]);
+  const { profile }: any = useContext(ContextGlobal);
+  const [users, setUsers] = useState<Friendship[]>([]);
 
-  useEffect(() => {
-    const getUsers = async () => {
-      try {
-        const res = await axios.get<friends[]>("http://localhost:3000/friendship");
+  function getFriends(number: number) {
+    getFriendList(number).then((res) => {
+      if (res.data)
         setUsers(res.data);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    getUsers();
-  }, []);
-
-  useEffect(() => {
-    const checkIsResponsive = () => {
-      const isResponsiveNow = window.innerWidth <= 390;
-      setIsResponsive(isResponsiveNow);
-    };
-
-    // Initial check when the component mounts
-    checkIsResponsive();
-
-    // Event listener to check for changes in screen width
-    window.addEventListener('resize', checkIsResponsive);
-
-    // Cleanup the event listener on component unmount
-    return () => {
-      window.removeEventListener('resize', checkIsResponsive);
-    };
-  }, []);
-
-  function makeIstolong(user: any) {
-    if (isResponsive == true && (user.firstName.length + user.lastName.length) >= 9) {
-      return user.lastName;
-    } else return user.firsName + " " + user.lastName;
+    }).catch((err) => { console.log(err) });
   }
+  useEffect(() => {
+    getFriends(profile?.id);
+  }, [profile]);
+
 //some test here 
 
   return (
@@ -86,24 +56,11 @@ const UserOnline = () => {
         modules={[FreeMode, Pagination]}
         className="mySwiper"
       >
-        {users.map((user, index) => (
+        {users.length > 0 ? users.map((user, index) => (
           <SwiperSlide key={index} className="swiper-slide">
-            <div onClick={() => alert("hello")}>
-              <Image
-                src={user.avatar}
-                alt={user.firstName}
-                width={60}
-                height={60}
-                priority={true}
-                className="h-[45px] w-[45px] md:h-[60px] md:w-[60px] rounded-full mx-auto hover:cursor-pointer"
-              />
-              <span className="w-2 md:w-3 bg-green-400 h-2 md:h-3 left-10 top-9 md:left-[82px] md:top-12 rounded-full absolute "></span>
-              <p className={`text-white text-center text-xs md:text-base`}>
-                {makeIstolong(user)}
-              </p>
-            </div>
+              <UserItem friend={user} />
           </SwiperSlide>
-        ))}
+        )) : <div className="flex justify-center items-center h-96"><h1 className="text-white text-2xl">No user online</h1></div>}
       </Swiper>
     </>
   );

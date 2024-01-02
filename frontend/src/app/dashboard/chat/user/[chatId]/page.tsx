@@ -1,15 +1,17 @@
 'use client'
+import React, { useEffect } from 'react'
 import { useParams } from 'next/navigation'
+import MsgShow from '@/components/chat/msgshow';
 
 const Chat = () => {
-  const {chatId} = useParams()
-  
-
+  const { chatId } = useParams();
+  useEffect(() => {
+    console.log("this is " + chatId);
+  }, [chatId])
   return (
-    <div>
-      <h1 className='text-white'>Chat User 3adi Id= {chatId}</h1>
-      {/* Your Chat content goes here */}
-    </div>
+    <>
+      <MsgShow/>
+    </>
   );
 };
 

@@ -1,4 +1,3 @@
-// FriendItem.js
 'use client'
 import React, { use, useContext, useEffect, useState } from 'react';
 import { MessagesSquare, Gamepad2, XOctagon } from 'lucide-react';
@@ -29,7 +28,7 @@ const FriendItem = ({ friend } : { friend: Friendship }) => {
         </div>
         <div className="text-gray-200 text-[16px] font-thin pl-1">{user?.username}</div>
       </div>
-      <div className="                                    ">
+      <div className="">
         <button className="md:px-2 px-1">
           <MessagesSquare />
         </button>

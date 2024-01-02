@@ -45,4 +45,38 @@ export interface Friendship {
   receiverId: number;
   blocked: boolean;
   blockBy: Blocker | null;
+  sender: User;
+  receiver: User;
+}
+
+export enum RoomVisibility {
+  'PUBLIC',
+  'PRIVATE',
+  'PROTECTED'
+}
+
+export interface chatRoom {
+  id?: number;
+  name?: string;
+  visibility?: RoomVisibility;
+  createdAt?: string;
+  updatedAt?: string;
+  password?: string;
+  ownerId?: number;
+}
+
+export interface ChatRoomMember {
+  userId: number;
+  chatRoomId: number;
+  joinedAt: string;
+  is_admin: boolean;
+  leftAt: string;
+}
+
+export interface Message {
+  id: number;
+  content: string;
+  createdAt: string;
+  senderId: number;
+  chatRoomId: number;
 }
