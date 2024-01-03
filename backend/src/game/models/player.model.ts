@@ -11,4 +11,8 @@ export interface Player {
   height: number;
   color: string;
   score: number;
+  top: number;
+  bottom: number;
+  left: number;
+  right: number;
 }

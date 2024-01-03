@@ -52,16 +52,18 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     GameService.rooms;
 
     // loop through rooms and remove player from room
-    for (const [id, room] of GameService.rooms) {
-      if (room.players.has(client.id)) {
-        room.players.delete(client.id);
-        // if room is empty delete room
-        if (room.players.size === 0) {
-          GameService.rooms.delete(id);
-          GameService.roomIdCounter--;
-        }
-      }
-    }
+    // for (const [id, room] of GameService.rooms) {
+    //   const index = room.players.findIndex(player => player.socketId === client.id);
+
+    //   if (index !== -1) {
+    //     room.players.splice(index, 1);
+    //     // if room is empty delete room
+    //     if (room.players.length === 0) {
+    //       GameService.rooms.delete(id);
+    //       GameService.roomIdCounter--;
+    //     }
+    //   }
+    // }
 
 
     // console.log(client.id);
@@ -70,6 +72,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // this.room.removePlayer(socket.id);
   }
 
+  // this method is called when a player joins a room
+  // if the room is full, the game is started immediately
   @SubscribeMessage('join')
   joinRoom(client: Socket): void {
     
@@ -84,19 +88,30 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     width: 15,
     height: 180,
     color: 'white',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
   }
 
-  this.roomId = this.game.joinRoom(player);
-  
+  this.roomId = this.game.joinRoom(player, client, this.server);
 
-  // this.server.to(player.roomID).emit('startingGame');
   }
+
+  // this mothod is for moving the player
+  // the payload contains the direction the player is moving
+  @SubscribeMessage('move')
+  move(client: Socket, payload: any): any {
+    this.game.move(payload, this.roomId, this.server);
+  }
+
 
   // @SubscribeMessage('leaveRoom')
   // leaveRoom(client: Socket) {
   //   console.log("leave room");
   //   this.game.leaveRoom(this.roomId, client.id);
   // }
+
 
 
 

@@ -1,13 +1,17 @@
-import { Player } from './player.model';
+import { Player, Position } from './player.model';
 import { State } from './state.model';
 
-// interface Ball {
-//   position: Position;
-//   velocity: Position;
-//   radius: number;
-//   color: string;
-//   speed: number;
-// }
+export interface Ball {
+  position: Position;
+  velocity: Position;
+  radius: number;
+  color: string;
+  speed: number;
+  top: number;
+  bottom: number;
+  left: number;
+  right: number;
+}
 
 // export interface options {
 //     width: number;
@@ -20,33 +24,43 @@ import { State } from './state.model';
 export class Room {
   id: number;
   state: State;
-  players: Map<string, Player> = new Map();
-  // ball: Ball;
+  players: Array<Player> = [];
+  ball: Ball;
   winner: number;
-  // width: number;
-  // height: number;
   constructor(id: number) {
     this.id = id;
     this.state = State.WAITING;
-    // this.width = width;
-    // this.height = height;
-    // this.ball = ball;
     this.winner = 0;
+    this.ball = {
+      position: {
+        x: 1908 / 2,
+        y: 1908 / 2,
+      },
+      velocity: {
+        x: 5,
+        y: 5,
+      },
+      radius: 20,
+      color: 'white',
+      speed: 10,
+      top: 0,
+      bottom: 0,
+      left: 0,
+      right: 0,
+    };
   }
 
-  addPlayer(player: Player): boolean {
-    if (!this.players.has(player.socketId)) {
-      this.players.set(player.socketId, player);
-      return true;
+  addPlayer(player: Player): void {
+    if (!this.players.some(existingPlayer => existingPlayer.socketId === player.socketId)) {
+        this.players.push(player);
     }
-    return false;
-  }
+}
 
   removePlayer(socketId: string): void {
-    this.players.delete(socketId);
+    this.players = this.players.filter(player => player.socketId !== socketId);
   }
 
-  isEmtpy(): boolean {
-    return this.players.size === 0;
+  isEmpty(): boolean {
+    return this.players.length === 0;
   }
 }
