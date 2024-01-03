@@ -75,8 +75,9 @@ export interface ChatRoomMember {
 
 export interface Message {
   id: number;
-  content: string;
+  text: string;
   createdAt: string;
   senderId: number;
   chatRoomId: number;
+  sender: User;
 }

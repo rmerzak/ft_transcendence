@@ -188,6 +188,20 @@ export class ChatService {
       orderBy: {
         createdAt: 'asc',
       },
+      select: {
+        id: true,
+        text: true,
+        createdAt: true,
+        senderId: true,
+        chatRoomId: true,
+        sender: {
+          select: {
+            id: true,
+            username: true,
+            image: true,
+          }
+        }
+      }
     });
   }
   // add user message

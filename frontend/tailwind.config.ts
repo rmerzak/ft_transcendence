@@ -8,6 +8,9 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      colors: {
+        purplee:"#811B77"
+      },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":
@@ -17,10 +20,10 @@ const config: Config = {
         inter: ['var(--font-inter)'],
       },
     },
-    plugins: [],
   },
   plugins: [
     require("flowbite/plugin"),
+    require("daisyui")
   ],
 }
 export default config
