@@ -1,5 +1,6 @@
 'use client'
 import styles from '@/app/dashboard/game/page.module.css'
+import { Socket } from 'dgram';
 import { useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 
@@ -7,7 +8,7 @@ function Pong()
 {
     const gameRef = useRef<HTMLCanvasElement>(null);
 
-     // socket.io
+    //  socket.io
     const socket = io('http://localhost:3000', {
         withCredentials: true,
         autoConnect: false,
@@ -21,7 +22,7 @@ function Pong()
         return () => {
             // off event listener
             socket.off('playerNo');
-            socket.off('startingGame');
+            socket.off('roomIsFull');
             socket.off('startedGame');
             socket.off('updateGame');
             socket.off('gameOver');
@@ -94,15 +95,15 @@ function Pong()
         // 	"rgb(230, 230, 230)"
         // ]
 
-        let rgb = [
-            "rgb(139, 69, 19)",
-            "rgb(160, 82, 45)",
-            "rgb(205, 133, 63)",
-            "rgb(244, 164, 96)",
-            "rgb(210, 105, 30)",
-            "rgb(139, 69, 19)",
-            "rgb(165, 42, 42)"
-        ];
+        // let rgb = [
+        //     "rgb(139, 69, 19)",
+        //     "rgb(160, 82, 45)",
+        //     "rgb(205, 133, 63)",
+        //     "rgb(244, 164, 96)",
+        //     "rgb(210, 105, 30)",
+        //     "rgb(139, 69, 19)",
+        //     "rgb(165, 42, 42)"
+        // ];
 
         // let rgb = [
         //     "rgb(255, 223, 186)",
@@ -115,15 +116,15 @@ function Pong()
         // ];
 
 
-        // let rgb = [
-        //     "rgb(0, 0, 255)",
-        //     "rgb(30, 144, 255)",
-        //     "rgb(70, 130, 180)",
-        //     "rgb(0, 191, 255)",
-        //     "rgb(135, 206, 250)",
-        //     "rgb(70, 130, 180)",
-        //     "rgb(100, 149, 237)"
-        // ];
+        let rgb = [
+            "rgb(0, 0, 255)",
+            "rgb(30, 144, 255)",
+            "rgb(70, 130, 180)",
+            "rgb(0, 191, 255)",
+            "rgb(135, 206, 250)",
+            "rgb(70, 130, 180)",
+            "rgb(100, 149, 237)"
+        ];
 
         function getRandomInt(min: number, max: number) {
             return Math.round(Math.random() * (max - min)) + min;
@@ -250,18 +251,39 @@ function Pong()
         });
 
         // starting game
-        socket.on('startingGame', () => {
-            isGameStarted = true;
-            // console.log('starting game');
+        socket.on('roomIsFull', (flag) => {
+            isGameStarted = flag;
         });
 
 
         // start game
         socket.on('startedGame', (room) => {
             roomID = room.id;
-            player1 = new Player(room.players[0].x, room.players[0].y, room.players[0].width, room.players[0].height, room.players[0].color);
-            player2 = new Player(room.players[1].x, room.players[1].y, room.players[1].width, room.players[1].height, room.players[1].color);
-            ball = new Ball(room.ball.x, room.ball.y, room.ball.radius, room.ball.speed, room.ball.velocityX, room.ball.velocityY, room.ball.color);
+            player1 = new Player(
+                room.players[0].position.x,
+                room.players[0].position.y,
+                room.players[0].width,
+                room.players[0].height,
+                room.players[0].color
+            );
+
+            player2 = new Player(
+                room.players[1].position.x,
+                room.players[1].position.y,
+                room.players[1].width,
+                room.players[1].height,
+                room.players[1].color
+            );
+
+            ball = new Ball(
+                room.ball.position.x,
+                room.ball.position.y,
+                room.ball.radius,
+                room.ball.speed,
+                room.ball.velocity.x,
+                room.ball.velocity.y,
+                room.ball.color
+            );
 
             player1.score = room.players[0].score;
             player2.score = room.players[1].score;
@@ -292,7 +314,7 @@ function Pong()
             setInterval(() => {
                 if (movement.up || movement.down) {
                     socket.emit("move", {
-                        roomID: roomID,
+                        roomId: roomID,
                         playerNo: playerNo,
                         direction: movement.up ? 'up' : 'down'
                     });
@@ -303,18 +325,18 @@ function Pong()
         // update game
         socket.on("updateGame", (room) => {
             if (!ball || !player1 || !player2) return;
-            ball.x = room.ball.x;
-            ball.y = room.ball.y;
+            ball.x = room.ball.position.x;
+            ball.y = room.ball.position.y;
 
             for (let i = 0; i < 3; i++) {
                 balls.push(new Balls(ball));
             }
 
-            player1.x = room.players[0].x;
-            player1.y = room.players[0].y;
+            player1.x = room.players[0].position.x;
+            player1.y = room.players[0].position.y;
 
-            player2.x = room.players[1].x;
-            player2.y = room.players[1].y;
+            player2.x = room.players[1].position.x;
+            player2.y = room.players[1].position.y;
 
             player1.score = room.players[0].score;
             player2.score = room.players[1].score;

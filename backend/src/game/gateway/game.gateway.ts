@@ -52,18 +52,18 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     GameService.rooms;
 
     // loop through rooms and remove player from room
-    // for (const [id, room] of GameService.rooms) {
-    //   const index = room.players.findIndex(player => player.socketId === client.id);
+    for (const [id, room] of GameService.rooms) {
+      const index = room.players.findIndex(player => player.socketId === client.id);
 
-    //   if (index !== -1) {
-    //     room.players.splice(index, 1);
-    //     // if room is empty delete room
-    //     if (room.players.length === 0) {
-    //       GameService.rooms.delete(id);
-    //       GameService.roomIdCounter--;
-    //     }
-    //   }
-    // }
+      if (index !== -1) {
+        room.players.splice(index, 1);
+        // if room is empty delete room
+        if (room.players.length === 0) {
+          GameService.rooms.delete(id);
+          GameService.roomIdCounter--;
+        }
+      }
+    }
 
 
     // console.log(client.id);
