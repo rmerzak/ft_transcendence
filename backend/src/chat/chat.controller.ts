@@ -13,7 +13,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ChatService } from './chat.service';
-import { $Enums, ChatRoom, ChatRoomMember, Message } from '@prisma/client';
+import { $Enums, ChatRoom, ChatRoomMember, Message, User } from '@prisma/client';
 import { isAlpha } from 'class-validator';
 import { Request } from 'express';
 import { JwtGuard } from 'src/auth/guard';
@@ -62,27 +62,66 @@ export class ChatController {
   // create user conversation room
   
   @Post('user/:id')
-  async createConversationRoom(@Body() chatRoomData: ChatRoom,@Req() req:Request): Promise<ChatRoom> {
-    // console.log(req.user)
-    // console.log(req.params.id)
-    // console.log("chat room =",chatRoomData)
-    if (isEmpty(chatRoomData)) {
+  async createConversationRoom(@Body() chatRoomData: ChatRoom, @Req() req: Request): Promise<ChatRoom> {
+    const user = req.user as User;
+    // console.log(user);
+    const targetUserId = Number(req.params.id);
+    if (isNaN(targetUserId) || !Number.isInteger(targetUserId) || targetUserId <= 0) {
       throw new HttpException(
         {
           statusCode: HttpStatus.BAD_REQUEST,
-          message: 'Chat room data not provided',
+          message: 'Invalid target user ID',
         },
         HttpStatus.BAD_REQUEST,
       );
     }
-    const chatRoom = await this.chatService.getChatRoomByName(chatRoomData.name)
+    if (!chatRoomData.name || typeof chatRoomData.name !== 'string') {
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: 'Invalid chat room data',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
     try {
-      return this.chatService.createChatRoom(chatRoomData);
+      let existingChatRoom = await this.chatService.getChatRoomByName(user.id + '_' + targetUserId);
+      if (existingChatRoom) {
+        return existingChatRoom;
+      }else if (existingChatRoom === null) {
+        existingChatRoom = await this.chatService.getChatRoomByName(targetUserId + '_' + user.id);
+        if (existingChatRoom) {
+          return existingChatRoom;
+        }
+      }
+
+      const newChatRoom = await this.chatService.makeConversation(chatRoomData);
+      if (!newChatRoom) {
+        throw new Error('Error creating chat room');
+      }
+      await this.chatService.addUserToChatRoom({
+        userId: user.id,
+        chatRoomId: newChatRoom.id,
+        joinedAt: undefined,
+        is_admin: false,
+        leftAt: undefined,
+      });
+
+      await this.chatService.addUserToChatRoom({
+        userId: targetUserId,
+        chatRoomId: newChatRoom.id,
+        joinedAt: undefined,
+        is_admin: false,
+        leftAt: undefined,
+      });
+
+      return newChatRoom;
     } catch (error) {
       throw new HttpException(
         {
           statusCode: HttpStatus.BAD_REQUEST,
-          message: error.message,
+          message: error.message || 'Error creating chat room',
         },
         HttpStatus.BAD_REQUEST,
       );
@@ -179,6 +218,15 @@ export class ChatController {
   //   checkIfNumber(sdId.toString(), 'Sender id must be a number');
   //   return await this.chatService.getUserMessages(Number(sdId));
   // }
+
+  // get all messages of specific private user conversation
+  @Get('user/:id')
+  async getChatRoomMessages(
+    @Param('id') id: number,
+  ): Promise<Message[]> {
+    checkIfNumber(id.toString(), 'Chat room id must be a number');
+    return await this.chatService.getChatRoomMessages(Number(id));
+  }
 
   // add message
   async addMessage(@Body() messageData: Message): Promise<Message> {

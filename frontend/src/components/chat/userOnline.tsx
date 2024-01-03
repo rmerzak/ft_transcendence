@@ -60,7 +60,7 @@ const UserOnline = () => {
           <SwiperSlide key={index} className="swiper-slide">
               <UserItem friend={user} />
           </SwiperSlide>
-        )) : <div className="flex justify-center items-center h-96"><h1 className="text-white text-2xl">No user online</h1></div>}
+        )) : <div className="flex justify-center items-center"><h1 className="text-white text-2xl">You have no friends</h1></div>}
       </Swiper>
     </>
   );

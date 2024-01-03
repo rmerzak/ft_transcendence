@@ -48,6 +48,20 @@ export class ChatService {
       data: chatRoomData,
     });
   }
+  async makeConversation(chatRoomData: ChatRoom): Promise<ChatRoom> {
+    const existingChatRoom = await this.prisma.chatRoom.findUnique({
+      where: { name: chatRoomData.name },
+    });
+    if (existingChatRoom) throw new Error('Chat room already exists');
+    try {
+      return await this.prisma.chatRoom.create({
+        data: chatRoomData,
+      });
+    }
+    catch (error) {
+      return null;
+    }
+  }
   // update chat room
   async updateChatRoom(
     id: number,

@@ -7,3 +7,4 @@ const apiInstance = axios.create({
 });
 
 export const makeConversation = (id: number, chatRoomData:chatRoom) => apiInstance.post(`/chat/user/${id}`, chatRoomData);
+export const getChatRoomMessages = (id: number) => apiInstance.get(`/chat/user/${id}`);

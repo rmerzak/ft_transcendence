@@ -125,7 +125,7 @@ export class AuthController {
         const isTokenValid = this.twoFactorService.verifyTwoFactorToken(code, user['twoFactorSecret']);
         console.log("isTokenValid :", isTokenValid)
         if (isTokenValid) {
-            console.log("i m herre")
+            // console.log("i m herre")
             const { accessToken } = await this.authService.signToken(user['id'], user['email']);
             res.cookie('accesstoken', accessToken, { httpOnly: true, });
             res.status(200).json({ success: true });

@@ -4,11 +4,13 @@ import { Friendship, chatRoom,RoomVisibility } from '@/interfaces';
 import { ContextGlobal } from '@/context/contex';
 import Image from 'next/image';
 import { makeConversation } from '@/api/chat/chat.api';
+import { useRouter } from 'next/navigation';
 
 
 const UserItem = ({ friend } : { friend: Friendship }) => {
   const {  profile  }:any = useContext(ContextGlobal);
   const [status, setStatus] = useState<string>('');
+  const router = useRouter();
   useEffect(() => {
     if (profile?.id === friend.sender.id) {
       setStatus(friend.receiver.status);
@@ -20,11 +22,12 @@ const UserItem = ({ friend } : { friend: Friendship }) => {
   function makeMessage() {
     const chatRoomData: chatRoom = {
       visibility: RoomVisibility.PRIVATE,
-      password: '',
-      name: profile.username + '_' + (profile?.id === friend.sender.id ? friend.receiver.username : friend.sender.username),
+      passwordHash: '',
+      name: profile.id + '_' + (profile?.id === friend.sender.id ? friend.receiver.id : friend.sender.id),
     };
     makeConversation((profile?.id === friend.sender.id ? friend.receiver.id : friend.sender.id), chatRoomData).then((res) => {
       console.log(res.data);
+      router.push(`/dashboard/chat/user/${res.data.id}`);
     }).catch((err) => {
       console.log(err);
     });

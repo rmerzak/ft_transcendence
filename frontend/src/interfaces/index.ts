@@ -50,9 +50,9 @@ export interface Friendship {
 }
 
 export enum RoomVisibility {
-  'PUBLIC',
-  'PRIVATE',
-  'PROTECTED'
+  PUBLIC = 'PUBLIC',
+  PRIVATE = 'PRIVATE',
+  PROTECTED = 'PROTECTED'
 }
 
 export interface chatRoom {
@@ -61,7 +61,7 @@ export interface chatRoom {
   visibility?: RoomVisibility;
   createdAt?: string;
   updatedAt?: string;
-  password?: string;
+  passwordHash?: string;
   ownerId?: number;
 }
 
