@@ -20,20 +20,27 @@ const Friends = () => {
     getFriends(profile?.id);
   
     const handleFriendAccept = (data: any) => {
-      getFriends(profile?.id);
+      console.log("friend accept");
+      if(data.status === true)
+        getFriends(profile?.id);
     };
   
     const handleFriendRequest = (data: any) => {
-      getFriends(profile?.id);
+      if(data.status === true)
+        getFriends(profile?.id);
     };
   
     const handleRemoveFriend = (data: any) => {
-      getFriends(profile?.id);
+      if(data.status === true)
+        getFriends(profile?.id);
     };
   
     socket?.on('AcceptRequest', handleFriendAccept);
+    socket?.on('friendAcceptRequest', handleFriendAccept);
     socket?.on('friendRequest', handleFriendRequest);
     socket?.on('removeFriend', handleRemoveFriend);
+    socket?.on('blockFriend', handleRemoveFriend);
+    socket?.on('unblockFriend', handleRemoveFriend);
   
     // Cleanup function
     return () => {

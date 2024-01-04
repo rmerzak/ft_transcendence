@@ -64,7 +64,7 @@ model Game {
 enum FriendshipStatus {
   PENDING
   ACCEPTED
-  DECLINED
+  BLOCKED
 }
 enum Blocker {
   SENDER

@@ -6,6 +6,7 @@ import { io } from "socket.io-client";
 import { getUnreadNotification } from "@/api/notifications/notifications.api";
 import { data } from "@/data/MatchHistory";
 import NotificationItem from "./NotificationItem";
+import OutsideClickHandler from 'react-outside-click-handler';
 const Notification = () => {
     const { setSocket, notification ,setNotification}: any = useContext(ContextGlobal);
     const [open, setOpen] = useState<boolean>(false);
@@ -19,22 +20,27 @@ const Notification = () => {
             setSocket(socket);
         });
         socket.on('friendRequest', (data: any) => {
-            if (data)
-                setNotification((prev: Notification[]) => [data, ...prev]);
-            toast.success('You have a new friend request');
+            if(data.notification){
+                setNotification((prev: Notification[]) => [data.notification, ...prev]);
+                toast.success('You have a new friend request');
+            }
         });
         socket.on('friendAcceptRequest', (data: any) => {
-            if(data)
-                setNotification((prev: Notification[]) => [data, ...prev]);
-            toast.success('Your friend accepted your request');
-            console.log(data);
+            if(data.notification){
+                setNotification((prev: Notification[]) => [data.notification, ...prev]);
+                toast.success('Your friend accepted your request');
+            }
         });
         socket.on('RequestError', (data) => {
-            console.log(data.error);
-            toast.error(data.error);
+            if(data.error) {
+                toast.error(data.error);
+            }
         });
         return () => {
-            console.log("Cleanup: Disconnecting socket");
+            socket?.off('connect');
+            socket?.off('friendRequest');
+            socket?.off('friendAcceptRequest');
+            socket?.off('RequestError');
             socket.disconnect();
         };
     }, []);
@@ -44,7 +50,8 @@ const Notification = () => {
             <Bell color="#ffff" className="color-red-500" size={30}  />
             <span className="text-white bg-red-500 flex items-center justify-center font-bold text-[12px] rounded-full  w-[16px] h-[16px]  absolute top-0 left-4">{notification.length}</span>
         </div>
-        <div className="z-10 right-0 absolute bg-search rounded-b-lg w-[500px]">
+        <OutsideClickHandler onOutsideClick={() => setOpen(false)}>
+        <div className={`z-10 right-0 border absolute bg-search rounded-b-lg w-[500px] ${open === false ? "hidden" : ""} `}>
             {
                 open && notification.map((item :any, index:any) => (
                     <div key={index} className="flex items-center justify-between p-2 hover:bg-purple-300/50">
@@ -53,6 +60,7 @@ const Notification = () => {
                 ))
             }
         </div>
+        </OutsideClickHandler>
         </div>
     );
 };

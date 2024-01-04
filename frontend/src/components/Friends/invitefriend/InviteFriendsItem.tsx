@@ -18,11 +18,11 @@ const InviteFriendsItem = ({ friend } : { friend: Friendship }) => {
     const handleAcceptFriend = (status:boolean) => {
         if(status){
             socket?.emit('friendAcceptRequest', friend.senderId);
-            getFriends(profile?.id);
+            //getFriends(profile?.id);
         } 
         else {
             socket?.emit('removeFriend', friend.senderId);
-            setFriends((prev:any) => prev.filter((item:any) => item.senderId !== friend.senderId));
+            //setFriends((prev:any) => prev.filter((item:any) => item.senderId !== friend.senderId));
         }
     }
     return (

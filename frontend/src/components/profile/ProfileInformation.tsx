@@ -32,13 +32,19 @@ const ProfileInformation = ({ profile, BtnFriend }: { profile: User, BtnFriend: 
                 setFriend(false);
             setFriendship(res.data);
             socket.on('friendRequest', (data: any) => {
-                setFriend(false);
+                if (data.notification) {
+                    setFriend(false);
+                }
             });
             socket.on('friendAcceptRequest', (data: any) => {
-                setFriend(true);
+                if (data.notification) {
+                    setFriend(true);
+                }
             });
             socket.on('removeFriend', (data: any) => {
-                setFriend(null);
+                if (data.status === true) {
+                    setFriend(null);
+                }
             });
 
         }).catch((err) => { console.log(err) });
