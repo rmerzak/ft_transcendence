@@ -1,7 +1,5 @@
 import { Server } from 'socket.io';
 import {
-  // ConnectedSocket,
-  // MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
   SubscribeMessage,
@@ -10,7 +8,6 @@ import {
 } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
 import { ChatService } from '../chat.service';
-import { ChatRoom } from '@prisma/client';
 import { SocketAuthMiddleware } from 'src/auth/middleware/ws.mw';
 import { PrismaService } from 'src/prisma/prisma.service';
 
@@ -40,16 +37,12 @@ export class GatewayGateway
     console.log('connected: ' + _client.id);
   }
 
-  @SubscribeMessage('createRoom')
-  async createChatRoom(socket: Socket, room: ChatRoom) {
+  @SubscribeMessage('message')
+  async message(socket: Socket, message: string) {
     console.log(socket);
     console.log("inside the chat gateway");
     socket.emit('roomCreated', socket['user']);
-    try {
-      await this.chatService.createChatRoom(room);
-    } catch (error) {
-      console.log(error);
-    }
+   
   }
 
   handleDisconnect(_client: Socket) {

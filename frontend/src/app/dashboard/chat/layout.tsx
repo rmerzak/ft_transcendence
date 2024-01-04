@@ -3,34 +3,27 @@
 import Channels from '@/components/chat/channels'
 import UserOnline from '@/components/chat/userOnline'
 import Message from "@/components/chat/msg";
-import {  BookUser,  Gamepad2, Home, Link, MessageCircle, User } from 'lucide-react'
+
 import { useEffect } from 'react';
 import { io } from 'socket.io-client';
 const Layout = ({children} : any) => {
     useEffect(() => {
         const socket = io("http://localhost:3000", {
           autoConnect: false,
+          transports: ["websocket"],
+          withCredentials: true,
         });
-      
+    
         socket.connect();
-        // Listen for the 'connect' event
         socket.on('connect', () => {
           console.log('Connected to the server');
           
-          // Now you can perform operations after the connection is established
-          console.log(socket);
           socket.emit('message', 'Hello World');
           socket.on('message', (data) => {
             console.log(data);
           });
         });
       
-        // Listen for the 'disconnect' event
-        socket.on('disconnect', () => {
-          console.log("Disconnected from the server");
-        });
-      
-        // Cleanup function
         return () => {
           console.log("Cleanup: Disconnecting socket");
           socket.disconnect();
