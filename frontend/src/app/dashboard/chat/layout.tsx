@@ -26,9 +26,9 @@ const Layout = ({children} : any) => {
         });
       
         // Listen for the 'disconnect' event
-        // socket.on('disconnect', () => {
-        //   console.log("Disconnected from the server");
-        // });
+        socket.on('disconnect', () => {
+          console.log("Disconnected from the server");
+        });
       
         // Cleanup function
         return () => {

@@ -1,15 +1,36 @@
-'user client'
-import React from 'react'
+'user client';
+import { ContextGlobal } from '@/context/contex';
+import { ChatRoomUsers } from '@/interfaces';
+import React, { useContext, useEffect, useState } from 'react';
 
-const Chatheader = () => {
+interface ChatheaderProps {
+    chatRoomMembers?: ChatRoomUsers[];
+}
+
+const Chatheader: React.FC<ChatheaderProps> = ({ chatRoomMembers }) => {
+    const { profile }: any = useContext(ContextGlobal);
+    const [username, setUsername] = useState<string>('');
+    const [status, setStatus] = useState<string>('');
+    useEffect(() => {
+        // console.log(chatRoomMembers);
+        const targetMessage = chatRoomMembers?.find((member) => member.user.id !== profile?.id);
+        // console.log(targetMessage);
+        if (targetMessage) {
+            setUsername(targetMessage.user.username);
+            setStatus(targetMessage.user.status);
+        }
+    });
+
     return (
         <>
             <div>
                 <div className="flex">
-                    <div className="w-full flex justify-center items-center space-x-2">
-                        <span className="bg-orange-300 rounded-full h-3 w-3"></span>
-                        <h1 className="text-xl font-thin">User here</h1>
-                    </div>
+                    {status ?
+                        <div className="w-full flex justify-center items-center space-x-2">
+                            <span className={`${status === 'ONLINE' ? 'bg-custom-green' : status === 'IN_GAME' ? 'bg-orange-400' : 'bg-gray-400'} rounded-full h-3 w-3`}></span>
+                            <h1 className="text-xl font-thin">{username}</h1>
+                        </div>: <div className="w-full flex justify-center items-center space-x-2"></div>
+                    }
                     <div className="">
                         {/* image messages parrametres */}
                         <button>

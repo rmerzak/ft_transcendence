@@ -27,7 +27,7 @@ const UserItem = ({ friend } : { friend: Friendship }) => {
     };
     makeConversation((profile?.id === friend.sender.id ? friend.receiver.id : friend.sender.id), chatRoomData).then((res) => {
       // console.log(res.data);
-      router.push(`/dashboard/chat/user/${res.data.id}`);
+      router.push(`/dashboard/chat/user/${res.data.id}` );
     }).catch((err) => {
       console.log(err);
     });

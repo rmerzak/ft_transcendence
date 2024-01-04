@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { ChatRoom, Message, ChatRoomMember } from '@prisma/client';
+import { ChatRoom, Message, ChatRoomMember, User } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
-
+import { ChatRoomUsers } from './interfaces/interfaces';
 // Chat service class
 @Injectable()
 export class ChatService {
   constructor(private readonly prisma: PrismaService) {}
 
+
+  
   // start chat room
   // get chat room for user
   async getChatRoomsForUser(userId: number): Promise<ChatRoom[]> {
@@ -105,6 +107,24 @@ export class ChatService {
       where: { userId_chatRoomId: { userId, chatRoomId } },
     });
   }
+  async getChatRoomMembers(
+    chatRoomId: number,
+  ): Promise<ChatRoomUsers[] | null> {
+    return await this.prisma.chatRoomMember.findMany({
+      where: { chatRoomId: chatRoomId },
+      select: {
+        user: {
+          select: {
+            id: true,
+            username: true,
+            image: true,
+            status: true,
+          },
+        },
+      },
+    }) as ChatRoomUsers[];
+  }
+  
 
   // create user chat room
   async addUserToChatRoom(
@@ -199,6 +219,7 @@ export class ChatService {
             id: true,
             username: true,
             image: true,
+            status: true,
           }
         }
       }

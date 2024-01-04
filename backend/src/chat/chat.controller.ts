@@ -17,6 +17,7 @@ import { $Enums, ChatRoom, ChatRoomMember, Message, User } from '@prisma/client'
 import { isAlpha } from 'class-validator';
 import { Request } from 'express';
 import { JwtGuard } from 'src/auth/guard';
+import { ChatRoomUsers } from './interfaces/interfaces';
 
 @Controller('chat')
 @UseGuards(JwtGuard)
@@ -182,6 +183,11 @@ export class ChatController {
     checkIfNumber(id.toString(), 'User id must be a number');
     return await this.chatService.getChatRoomsForUser(Number(id));
   }
+  @Get('user')
+  async getChatRoomMembers(@Query('chatRoomId') chatRoomId: number): Promise<ChatRoomUsers[] | null> {
+    checkIfNumber(chatRoomId.toString(), 'Chat room id must be a number');
+    return await this.chatService.getChatRoomMembers(Number(chatRoomId));
+  }
   // create chat room
   // @Post()
   async createChatRoomMember(@Body() chatRoomMemberData: ChatRoomMember) {
@@ -229,6 +235,7 @@ export class ChatController {
   }
 
   // add message
+  @Post('user')
   async addMessage(@Body() messageData: Message): Promise<Message> {
     if (isEmpty(messageData)) {
       throw new HttpException(
@@ -281,32 +288,4 @@ const checkIfNumber = (id: string, str: string) => {
       HttpStatus.BAD_REQUEST,
     );
 };
-
-// handle http post request
-// @Post()
-// async handlePostRequest(@Body() data: any): Promise<any> {
-//   if (isEmpty(data)) {
-//     throw new HttpException(
-//       {
-//         statusCode: HttpStatus.BAD_REQUEST,
-//         message: 'Data not provided',
-//       },
-//       HttpStatus.BAD_REQUEST,
-//     );
-//   }
-//   if (data.hasOwnProperty('chatRoomData')) {
-//     return await this.createChatRoom(data.chatRoomData);
-//   } else if (data.hasOwnProperty('chatRoomMemberData')) {
-//     return await this.createChatRoomMember(data.chatRoomMemberData);
-//   }else if (data.hasOwnProperty('messageData')) {
-//     return await this.addMessage(data.messageData);
-//   } else {
-//     throw new HttpException(
-//       {
-//         statusCode: HttpStatus.BAD_REQUEST,
-//         message: 'Data not provided',
-//       },
-//       HttpStatus.BAD_REQUEST,
-//     );
-//   }
-// }
+// end helper functions

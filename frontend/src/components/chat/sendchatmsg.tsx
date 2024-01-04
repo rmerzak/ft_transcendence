@@ -1,8 +1,28 @@
 'user client'
-import React from 'react'
+import React, { useContext, useState } from 'react'
 import Image from 'next/image';
+import { addMessage } from '@/api/chat/chat.api';
+import { ContextGlobal } from '@/context/contex';
+import { Message } from '@/interfaces';
 
-const Sendchatmsg = () => {
+interface SendchatmsgProps {
+    chatRoomId: number;
+}
+
+const Sendchatmsg: React.FC<SendchatmsgProps> = ({ chatRoomId }) => {
+    const {  profile  }:any = useContext(ContextGlobal);
+    const [message, setMessage] = useState<string>('');
+    function addMsg() {
+        const messageData:Message = {
+            senderId: Number(profile.id),
+            chatRoomId: chatRoomId,
+            text: message,
+        };
+        addMessage(messageData).then((res) => {
+            setMessage('');
+        }
+        );
+    }
     return (
         <>
             {/* end message here */}
@@ -34,15 +54,17 @@ const Sendchatmsg = () => {
                         type="text"
                         placeholder="Please Be nice in the chat"
                         className="w-4/5 h-full bg-transparent border-none focus:ring-0"
+                        onChange={(e) => setMessage(e.target.value)}
+                        value={message}
                     />
-                    <button>
+                    <button onClick={()=>{addMsg()}}>
                         <Image
                             src="/send-1.svg"
                             alt="send"
                             width={30}
                             height={30}
-
                             className="cursor-pointer"
+                            draggable={false}
                         />
                     </button>
                 </div>

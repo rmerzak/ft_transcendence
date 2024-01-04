@@ -71,13 +71,25 @@ export interface ChatRoomMember {
   joinedAt: string;
   is_admin: boolean;
   leftAt: string;
+  user: User;
+  chatRoom: chatRoom;
 }
 
 export interface Message {
-  id: number;
+  id?: number;
   text: string;
-  createdAt: string;
+  createdAt?: string;
   senderId: number;
   chatRoomId: number;
-  sender: User;
+  sender?: User;
+}
+
+// helper interface
+export interface ChatRoomUsers {
+  user: {
+      id: number;
+      username: string;
+      image: string;
+      status: string;
+  };
 }
