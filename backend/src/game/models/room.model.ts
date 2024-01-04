@@ -19,7 +19,7 @@ export class Room {
   private height = 1146;
   id: number;
   state: State;
-  players: Array<Player> = [];
+  players: Array<Player> = new Array<Player>();
   ball: Ball;
   winner: number;
   constructor(id: number) {
@@ -126,19 +126,19 @@ export class Room {
                   this.players[0].score++;
                   this.resetBall(this);
               }
-              if (this.players[0].score === 500) {
-                  this.winner = 1;
-                  // this.rooms = this.rooms.filter(r => r.id !== room.id);
-                  // // io.to(room.id).emit('gameOver', room);
-                  // this.server.to(room.id).emit('gameOver', room);
-                  clearInterval(gameLoopInterval);
-              }
-              else if (this.players[1].score === 500) {
-                  this.winner = 2;
-                  // this.rooms = this.rooms.filter(r => r.id !== room.id);
-                  // // io.to(room.id).emit('gameOver', room);
-                  // server.to(room.id).emit('gameOver', room);
-                  clearInterval(gameLoopInterval);
+
+              if (this.players[0].score === 5 || this.players[1].score === 5) {
+                if (this.players[0].score === 5) {
+                    this.winner = 1;
+                    server.to(this.players[0].socketId).emit('gameOver', { winner: true });
+                    server.to(this.players[1].socketId).emit('gameOver', { winner: false });
+                } else if (this.players[1].score === 5) {
+                    this.winner = 2;
+                    server.to(this.players[1].socketId).emit('gameOver', { winner: true });
+                    server.to(this.players[0].socketId).emit('gameOver', { winner: false });
+                }
+                this.state = State.FINISHED;
+                clearInterval(gameLoopInterval);
               }
               // io.to(room.id).emit('updateGame', room);
               server.to(this.id.toString()).emit('updateGame', this);

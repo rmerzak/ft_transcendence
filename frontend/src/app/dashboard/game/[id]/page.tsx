@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import ProfileComp from '@/components/game/ProfileComp';
 import { Socket, io } from 'socket.io-client';
+import Swal from 'sweetalert2';
 
 // use props to pass socket
 // do that copilot
@@ -22,6 +23,7 @@ const Game = () => {
                 <ProfileComp className="mr-5" />
               </div> */}
               <div className={styles.pong_container}>
+                
                 <Pong />
               </div>
             </div>

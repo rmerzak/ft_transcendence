@@ -1,11 +1,16 @@
 'use client'
 import styles from '@/app/dashboard/game/page.module.css'
-import { Socket } from 'dgram';
 import { useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
+import Swal from 'sweetalert2';
+import { useRouter } from 'next/navigation';
 
 function Pong()
 {
+    // router
+    const router = useRouter();
+
+    // canvas    
     const gameRef = useRef<HTMLCanvasElement>(null);
 
     //  socket.io
@@ -19,25 +24,35 @@ function Pong()
         {
             socket.emit('join');
         }
-        return () => {
-            // off event listener
-            socket.off('playerNo');
-            socket.off('roomIsFull');
-            socket.off('startedGame');
-            socket.off('updateGame');
-            socket.off('gameOver');
-            socket.disconnect();
-            };
+        // return () => {
+        //      // Remove event listeners
+        //     window.removeEventListener('keydown', handleKeyDown);
+        //     window.removeEventListener('keyup', handleKeyUp);
+
+        //     // Clear interval
+        //     clearInterval(mouseInterval);
+        //     // off event listener
+        //     socket.off('playerNo');
+        //     socket.off('roomIsFull');
+        //     socket.off('startedGame');
+        //     socket.off('updateGame');
+        //     socket.off('redirect');
+        //     socket.off('gameOver');
+        //     socket.disconnect();
+        //     };
     }, []);
 
     useEffect(() => {
         const canvas = gameRef.current;
         if (!canvas) return;
-
+        
         const ctx = canvas?.getContext('2d');
         if (!ctx) return;
 
         let isGameStarted = false;
+        let mouseInterval: NodeJS.Timeout;
+        let handleKeyDown: (e: KeyboardEvent) => void;
+        let handleKeyUp: (e: KeyboardEvent) => void;
         let playerNo = 0;
         let roomID = 0;
 
@@ -290,7 +305,7 @@ function Pong()
 
             let movement = { up: false, down: false };
 
-            window.addEventListener('keydown', (e) => {
+            handleKeyDown = (e: KeyboardEvent) => {
                 if (isGameStarted) {
                     if (e.key === 'ArrowUp') {
                         movement.up = true;
@@ -298,9 +313,8 @@ function Pong()
                         movement.down = true;
                     }
                 }
-            });
-
-            window.addEventListener('keyup', (e) => {
+            }
+            handleKeyUp = (e: KeyboardEvent) => {
                 if (isGameStarted) {
                     if (e.key === 'ArrowUp') {
                         movement.up = false;
@@ -308,10 +322,12 @@ function Pong()
                         movement.down = false;
                     }
                 }
-            });
+            }
+            window.addEventListener('keydown', handleKeyDown);
+            window.addEventListener('keyup', handleKeyUp);
 
             // Periodically send movement updates
-            setInterval(() => {
+            mouseInterval = setInterval(() => {
                 if (movement.up || movement.down) {
                     socket.emit("move", {
                         roomId: roomID,
@@ -343,16 +359,81 @@ function Pong()
             render();
         });
 
-        // game over
-        socket.on('gameOver', (room) => {
-            isGameStarted = false;
-            socket.emit('leave', roomID);
+        // redirect
+        socket.on('redirect', (flag) => {
+            if (flag) {
+                router.push('/dashboard/game');
+            }
+        });
 
+        // game over
+        socket.on('gameOver', ({ winner }) => {
+            isGameStarted = false;
+            
+            if (winner) {
+                Swal.fire({
+                    title: 'You Win!',
+                    text: 'Congratulations! You win the game!',
+                    imageUrl: "/winner.gif",
+                    imageWidth: 400,
+                    imageHeight: 200,
+                    confirmButtonText: 'Ok',
+                    customClass: {
+                        popup: 'bg-gradient-to-r from-[#510546]/40 to-[#6958be]/40'
+                    }
+                }).then(() => {
+                    // redirect to game page
+                    router.push('/dashboard/game');
+                });
+            } else {
+                Swal.fire({
+                    title: 'You Lose!',
+                    text: 'You lose the game!',
+                    imageUrl: "/loser.gif",
+                    imageWidth: 400,
+                    imageHeight: 200,
+                    confirmButtonText: 'Ok',
+                    customClass: {
+                        popup: 'bg-gradient-to-r from-[#510546]/40 to-[#6958be]/40'
+                    }
+                }).then(() => {
+                    // redirect to game page
+                    router.push('/dashboard/game');
+                });
+            }
+            
+            socket.emit('leave', {
+                roomId: roomID,
+                playerNo: playerNo
+            });
             setTimeout(() => {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-            }, 4000);
+            }, 400);
         });
+
+        return () => {
+            // Remove event listeners
+           window.removeEventListener('keydown', handleKeyDown);
+           window.removeEventListener('keyup', handleKeyUp);
+
+           // Clear interval
+           clearInterval(mouseInterval);
+           // off event listener
+           socket.off('playerNo');
+           socket.off('roomIsFull');
+           socket.off('startedGame');
+           socket.off('updateGame');
+           socket.off('redirect');
+           socket.off('gameOver');
+           socket.off('connect');
+
+           socket.disconnect();
+           };
+
     }, [socket]);
+    
+    // show Swal alert for the winner and lose
+
     return (
         <>
             <div className= {styles.canvas_container}>

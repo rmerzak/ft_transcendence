@@ -21,43 +21,37 @@ export class GameService {
     return user;
   }
 
-  static rooms: Map<number, Room> = new Map();
-  static roomIdCounter: number = 1;
+  rooms: Map<number, Room> = new Map();
+  roomIdCounter: number = 1;
   private width = 1908;
   private height = 1146;
 
   // this method is creating a new room
   // the id of the room is returned
-  createRoom(): number {
-    const roomId = GameService.roomIdCounter++;
+  createRoom(): Room {
+    const roomId = this.roomIdCounter++;
     const room = new Room(roomId);
-    GameService.rooms.set(roomId, room);
-    return roomId;
+    this.rooms.set(roomId, room);
+    return room;
   }
 
   // this method is checking if there is a room with an available slot
   // if there is a room with an available slot, the id of that room is returned
   // if there is no room with an available slot, 0 is returned
-  roomWithAvailableSlots(): number {
-    for (const [id, room] of GameService.rooms) {
+  roomWithAvailableSlots(): Room | null {
+    for (const [id, room] of this.rooms) {
       if (room.players.length < 2) {
-        return id;
+        return room;
       }
     }
-    return 0;
+    return null;
   }
 
   // this method is called when a player joins a room
   // if there is a room with an available slot, the player is added to that room
   // if there is no room with an available slot, a new room is created and the player is added to that room
   joinRoom(player: Player, client: Socket, server: Server): number {
-    let roomId = this.roomWithAvailableSlots();
-
-    if (roomId === 0) {
-      roomId = this.createRoom();
-    }
-
-    const room = GameService.rooms.get(roomId);
+    const room = this.roomWithAvailableSlots() || this.createRoom();
 
     if (room && room.state === State.WAITING) {
       if (room.players.length === 0) {
@@ -73,13 +67,13 @@ export class GameService {
         room.state = State.PLAYING;
       }
       room.addPlayer(player);
-      client.join(roomId.toString());
+      client.join(room.id.toString());
       if (room.players.length === 2) {
         room.ball.color = 'white';
-        server.to(roomId.toString()).emit('roomIsFull', true);
+        server.to(room.id.toString()).emit('roomIsFull', true);
         // set time out to start game
         setTimeout(() => {
-          server.to(roomId.toString()).emit('startedGame', room);
+          server.to(room.id.toString()).emit('startedGame', room);
           // start game
           // this.startGame(room, roomId.toString(), server);
           // loop for game 
@@ -89,39 +83,36 @@ export class GameService {
 
       }
     }
-    return roomId;
+    return room.id;
   }
 
   // this method is called when a player moves
   // the position of the player is updated
-  move(payload: any, roomId: number, server: Server) {
+  move(payload: any, server: Server) {
     // loop for game
-    for (const [id, room] of GameService.rooms) {
+    for (const [id, room] of this.rooms) {
       if (id === payload.roomId) {
         room.movePlayer(payload, server);
       }
     }
-    // const room = GameService.rooms.get(roomId);
-    // if (room) {
-    //   room.movePlayer(payload, server);
-    // }
   }
     
   // this method is called when a player leaves a room
-  leaveRoom(roomId: number, playerId: string): boolean {
-    const room = GameService.rooms.get(roomId);
+  leaveRoom(roomId: number, playerId: string): void {
+
+    // if just one player in room, delete room
+    const room = this.rooms.get(roomId);
     if (room) {
       room.removePlayer(playerId);
-      if (room.players.length === 0) {
-        GameService.rooms.delete(roomId);
-        roomId = 0;
+      if (room.players.length === 1) {
+          this.rooms.delete(roomId); 
+          roomId = 0;
+        }
       }
-      return true;
-    }
-    return false;
   }
 
+  // this method for get room
   getRoom(roomId: number): Room {
-    return GameService.rooms.get(roomId);
+    return this.rooms.get(roomId);
   }
 }
