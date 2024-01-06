@@ -6,7 +6,7 @@ import { io } from 'socket.io-client';
 import Swal from 'sweetalert2';
 import { setInterval, clearInterval } from 'timers';
 
-function Pong()
+function Pong( {theme}: {theme: string} )
 {
     // canvas    
     const gameRef = useRef<HTMLCanvasElement>(null);
@@ -20,6 +20,9 @@ function Pong()
         // autoConnect: false,
     });
     useEffect(() => {
+
+        if (parseInt(theme) < 0 || parseInt(theme) > 5) theme = '1';
+
         const canvas = gameRef.current;
         if (!canvas) return;
         
@@ -67,24 +70,33 @@ function Pong()
                 this.velocityY = velocityY
             }
         }
-        
-        let player1: Player = new Player(20, 1146 / 2 - 100 / 2, 15, 180, "white");
-        let player2: Player = new Player(1908 - 35, 1146 / 2 - 100 / 2, 15, 180, "white");
-        let ball : Ball = new Ball(1908 / 2, 1908 / 2, 20, 10, 5, 5, "white");
+        const colors = ["#ffffff", "#111111", "#FFF6E5", "#a6492c", "#c13f2d", "#1a5b7e"]
+
+        let player1: Player = new Player(20, 1146 / 2 - 100 / 2, 15, 180, colors[parseInt(theme)]);
+        let player2: Player = new Player(1908 - 35, 1146 / 2 - 100 / 2, 15, 180, colors[parseInt(theme)]);
+        let ball : Ball = new Ball(1908 / 2, 1908 / 2, 20, 10, 5, 5, colors[parseInt(theme)]);
 
         // effect components here
         // *****************************************************************************************
 
         let balls: Balls[] = [];
+        const rgbs: string[][] = [
+            ["rgb(255, 255, 255)", "rgb(238, 238, 238)", "rgb(221, 221, 221)", "rgb(204, 204, 204)", "rgb(187, 187, 187)", "rgb(170, 170, 170)", "rgb(153, 153, 153)"],
+            ["rgb(17, 17, 17)", "rgb(34, 34, 34)", "rgb(51, 51, 51)", "rgb(68, 68, 68)", "rgb(85, 85, 85)", "rgb(102, 102, 102)", "rgb(119, 119, 119)"],
+            ["rgb(255, 246, 229)", "rgb(251, 241, 219)", "rgb(246, 236, 208)", "rgb(241, 231, 197)", "rgb(236, 226, 186)", "rgb(231, 221, 175)", "rgb(226, 216, 164)"],
+            ["rgb(139, 69, 19)", "rgb(160, 82, 45)", "rgb(205, 133, 63)", "rgb(244, 164, 96)", "rgb(210, 105, 30)", "rgb(139, 69, 19)", "rgb(165, 42, 42)"],
+            ["rgb(193, 63, 45)", "rgb(199, 74, 58)", "rgb(205, 85, 71)", "rgb(211, 96, 84)", "rgb(217, 107, 97)", "rgb(223, 118, 110)", "rgb(229, 129, 123)"],
+            ["rgb(0, 0, 255)", "rgb(30, 144, 255)", "rgb(70, 130, 180)", "rgb(0, 191, 255)", "rgb(135, 206, 250)", "rgb(70, 130, 180)", "rgb(100, 149, 237)"]
+          ];
 
         // let rgb = [
-        // 	"rgb(20, 20, 20)",
-        // 	"rgb(50, 50, 50)",
-        // 	"rgb(100, 100, 100)",
-        // 	"rgb(125, 125, 125)",
-        // 	"rgb(160, 160, 160)",
-        // 	"rgb(200, 200, 200)",
-        // 	"rgb(230, 230, 230)"
+        	// "rgb(20, 20, 20)",
+        	// "rgb(50, 50, 50)",
+        	// "rgb(100, 100, 100)",
+        	// "rgb(125, 125, 125)",
+        	// "rgb(160, 160, 160)",
+        	// "rgb(200, 200, 200)",
+        	// "rgb(230, 230, 230)"
         // ]
 
         // let rgb = [
@@ -108,15 +120,15 @@ function Pong()
         // ];
 
 
-        let rgb = [
-            "rgb(0, 0, 255)",
-            "rgb(30, 144, 255)",
-            "rgb(70, 130, 180)",
-            "rgb(0, 191, 255)",
-            "rgb(135, 206, 250)",
-            "rgb(70, 130, 180)",
-            "rgb(100, 149, 237)"
-        ];
+        // // let rgb = [
+        //     "rgb(0, 0, 255)",
+        //     "rgb(30, 144, 255)",
+        //     "rgb(70, 130, 180)",
+        //     "rgb(0, 191, 255)",
+        //     "rgb(135, 206, 250)",
+        //     "rgb(70, 130, 180)",
+        //     "rgb(100, 149, 237)"
+        // ];
 
         function getRandomInt(min: number, max: number) {
             return Math.round(Math.random() * (max - min)) + min;
@@ -157,7 +169,7 @@ function Pong()
                 this.y = this.start.y;
                 this.size = this.start.size;
 
-                this.style = rgb[getRandomInt(0, rgb.length - 1)];
+                this.style = rgbs[parseInt(theme)][getRandomInt(0, rgbs[parseInt(theme)].length - 1)];
 
                 this.time = 0;
                 this.ttl = 120;
@@ -211,12 +223,12 @@ function Pong()
             ctx.clearRect(0, 0, canvas.width, canvas.height);
            
             // draw the side line
-            drawRect(0, 0, 10, canvas.height, "white");
-            drawRect(canvas.width - 10, 0, 10, canvas.height, "white");
+            drawRect(0, 0, 10, canvas.height, colors[parseInt(theme)]);
+            drawRect(canvas.width - 10, 0, 10, canvas.height, colors[parseInt(theme)]);
             
             // draw the top and bottom line
-            drawRect(0, 0, canvas.width, 10, "white");
-            drawRect(0, canvas.height - 10, canvas.width, 10, "white");
+            drawRect(0, 0, canvas.width, 10, colors[parseInt(theme)]);
+            drawRect(0, canvas.height - 10, canvas.width, 10, colors[parseInt(theme)]);
         
             // draw the user and com paddle
             drawRect(player1.x, player1.y, player1.width, player1.height, player1.color);
@@ -243,8 +255,6 @@ function Pong()
             playerNo = newPlayerNo;
             render();
         });
-
-        // use Swal for loading until the game is started
         
         // starting game
         socket.on('roomIsFull', (flag) => {
@@ -271,31 +281,6 @@ function Pong()
         // start game
         socket.on('startedGame', (room) => {
             roomID = room.id;
-            // player1 = new Player(
-            //     room.players[0].position.x,
-            //     room.players[0].position.y,
-            //     room.players[0].width,
-            //     room.players[0].height,
-            //     room.players[0].color
-            // );
-
-            // player2 = new Player(
-            //     room.players[1].position.x,
-            //     room.players[1].position.y,
-            //     room.players[1].width,
-            //     room.players[1].height,
-            //     room.players[1].color
-            // );
-
-            // ball = new Ball(
-            //     room.ball.position.x,
-            //     room.ball.position.y,
-            //     room.ball.radius,
-            //     room.ball.speed,
-            //     room.ball.velocity.x,
-            //     room.ball.velocity.y,
-            //     room.ball.color
-            // );
 
             // player1.score = room.players[0].score;
             // player2.score = room.players[1].score;
@@ -450,7 +435,7 @@ function Pong()
 
     }, [socket]);
     
-    // show Swal alert for the winner and lose
+    const themes = ['A1', 'B1', 'C1', 'D1', 'E1', 'F1'];
 
     return (
         <>
@@ -458,7 +443,7 @@ function Pong()
                 <canvas
                     ref={gameRef}
                     className={styles.game_canvas}
-                    style={ { backgroundImage: `url('/A1.png')` } }
+                    style={ { backgroundImage: `url(/${themes[parseInt(theme)]}.png)` } }
                     >
                 </canvas>
             </div>

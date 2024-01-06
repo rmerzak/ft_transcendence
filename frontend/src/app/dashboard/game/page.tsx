@@ -1,7 +1,4 @@
-'use client'
-import styles from './page.module.css';
 import Play from '@/components/game/Play';
-
 
 const Game = () => {
   return (

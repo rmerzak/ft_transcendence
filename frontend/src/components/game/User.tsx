@@ -25,7 +25,7 @@ function User({ className = ''}) {
                         <div className="card-actions justify-center">
                             <div className="stat place-items-center">
                                 <div className="stat-title">Score</div>
-                                <div className="stat-value">0</div>
+                                <div className="stat-value text-[#ffffff]/70">0</div>
                             </div>
                         </div>
                     </div>

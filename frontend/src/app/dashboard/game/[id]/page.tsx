@@ -1,17 +1,15 @@
-'use client'
-import styles from '../page.module.css';
 import React, { useState } from 'react';
 import Pong from '@/components/game/Pong';
-import Link from 'next/link';
-import Image from 'next/image';
 import User from '@/components/game/User';
-import { Socket, io } from 'socket.io-client';
 
-// use props to pass socket
-// do that copilot
 
-const Game = () => {
-  return (
+const Game = ({ searchParams } : {
+    searchParams: {
+        theme: string;
+    };
+  }) => {
+    console.log(searchParams.theme);
+    return (
       <div className='w-[95%] mx-auto text-center p-[1%] shadow-md rounded-3xl bg-[#311251]/80'>
           <div className='text-3xl font-black text-white m-4'>
             <h1>Game</h1>
@@ -23,7 +21,7 @@ const Game = () => {
               </div>
 
               <div className="flex-grow flex items-center justify-center">
-                  <Pong />
+                  <Pong theme={searchParams.theme}/>
               </div>
 
               <div className="flex-none">

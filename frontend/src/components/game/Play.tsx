@@ -63,7 +63,11 @@ function Play()
                             <button
                                 onMouseOver={createRoom}
                                 className="btn btn-active btn-neutral border-0 bg-[#811B77] text-[#ffffff]/70">
-                                <Link href={`/dashboard/game/${room}`}>
+                                <Link href={{
+                                    pathname: `/dashboard/game/${room}`,
+                                    query: { theme: imgIndex },
+                                
+                                }}>
                                     Play Online
                                 </Link>
                             </button>
