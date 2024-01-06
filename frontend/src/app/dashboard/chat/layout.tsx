@@ -1,34 +1,63 @@
-
 'use client';
 import Channels from '@/components/chat/channels'
 import UserOnline from '@/components/chat/userOnline'
 import Message from "@/components/chat/msg";
+import { useEffect, useState } from 'react';
+import { io, Socket } from 'socket.io-client';
+import { ChatRoom, ChatRoomUsers, Friendship, Messages } from '@/interfaces';
+// import { createContext } from 'react';
+// import {ChatContext} from '@/interfaces';
 
-import { useEffect } from 'react';
-import { io } from 'socket.io-client';
+// export const ChatGlobalContext = createContext<ChatContext>({
+//   socket: null,
+//   setSocket: (socket: Socket | null) => { },
+//   friends: [],
+//   setFriends: (friends: Friendship[] | []) => { },
+//   messages: [],
+//   setMessages: (messages: Messages[] | []) => { },
+//   chatRoom: null,
+//   setChatRoom: (chatRoom: ChatRoom | null) => { },
+//   chatRoomMembers: [],
+//   setChatRoomMembers: (chatRoomMembers: ChatRoomUsers[] | []) => { },
+// });
+
 const Layout = ({children} : any) => {
-    useEffect(() => {
-        const socket = io("http://localhost:3000", {
-          autoConnect: false,
-          transports: ["websocket"],
-          withCredentials: true,
-        });
-    
-        socket.connect();
-        socket.on('connect', () => {
-          console.log('Connected to the server');
-          
-          socket.emit('message', 'Hello World');
-          socket.on('message', (data) => {
-            console.log(data);
-          });
-        });
-      
-        return () => {
-          console.log("Cleanup: Disconnecting socket");
-          socket.disconnect();
-        };
-      }, []);
+  // const [socket, setSocket] = useState<Socket | null>(null);
+  // const [messages, setMessages] = useState<Messages[] | []>([]);
+  // const [chatRoom, setChatRoom] = useState<ChatRoom | null>(null);
+  // const [chatRoomMembers, setChatRoomMembers] = useState<ChatRoomUsers[] | []>([]);
+
+  // const provider = {
+  //   socket,
+  //   setSocket,
+  //   friends: friends,
+  //   setFriends,
+  //   messages: messages,
+  //   setMessages,
+  //   chatRoom: chatRoom,
+  //   setChatRoom,
+  //   chatRoomMembers: chatRoomMembers,
+  //   setChatRoomMembers,
+  // };
+
+  useEffect(() => {
+    // const sock = io("http://localhost:3000", {
+    //   autoConnect: false,
+    //   transports: ["websocket"],
+    //   withCredentials: true,
+    // });
+    // sock.connect();
+    // sock.on('connect', () => {
+    //   setSocket(sock);
+    //   console.log('Connected to the server');
+    // });
+
+    // return () => {
+    //   console.log("Cleanup: Disconnecting socket");
+    //   sock.disconnect();
+    // };
+  }, []);
+
     return (
         <div className="w-full bg-[#311251]/80 md:rounded-3xl rounded-t-md md:w-[95%] md:h-[90%] md:mt-6 md:overflow-auto md:mx-auto md:shadow-lg">
         <h1 className="text-white md:text-2xl text-lg md:font-bold text-center m-2 p-1 md:m-4 md:p-2 font-inter w-auto">

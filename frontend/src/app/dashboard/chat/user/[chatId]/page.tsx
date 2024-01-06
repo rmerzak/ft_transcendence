@@ -1,14 +1,13 @@
 'use client'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { useParams } from 'next/navigation'
 import MsgShow from '@/components/chat/msgshow';
 import { getChatRoomMembers, getChatRoomMessages } from '@/api/chat/chat.api';
-import { ChatRoomUsers,  Message} from '@/interfaces';
 
 const Chat = () => {
   const { chatId } = useParams();
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [chatRoomMembers, setChatRoomMembers] = useState<ChatRoomUsers[]>([]);
+  const [messages, setMessages] = useState([]);
+  const [chatRoomMembers, setChatRoomMembers] = useState([]);
 
   useEffect(() => {
     getChatRoomMessages(Number(chatId)).then((res) => {

@@ -1,5 +1,5 @@
 "use client";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 
 // Import Swiper styles
@@ -11,25 +11,30 @@ import "./userOnline.css";
 // import Swiper core and required modules
 import { FreeMode, Pagination } from "swiper/modules";
 import { getFriendList } from "@/api/friendship/friendship.api";
-import { Friendship } from "@/interfaces";
 import { ContextGlobal } from "@/context/contex";
 import UserItem from "./UserItem";
 
 const UserOnline = () => {
   const { profile }: any = useContext(ContextGlobal);
-  const [users, setUsers] = useState<Friendship[]>([]);
+  const [friends, setFriends] = useState([]);
 
   function getFriends(number: number) {
-    getFriendList(number).then((res) => {
-      if (res.data)
-        setUsers(res.data);
-    }).catch((err) => { console.log(err) });
+    getFriendList(number)
+      .then((res) => {
+        if (res.data) {
+          setFriends(res.data);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
-  useEffect(() => {
-    getFriends(profile?.id);
-  }, [profile]);
 
-//some test here 
+  useEffect(() => {
+    if (profile?.id) {
+      getFriends(profile.id);
+    }
+  }, [profile?.id]); 
 
   return (
     <>
@@ -56,7 +61,7 @@ const UserOnline = () => {
         modules={[FreeMode, Pagination]}
         className="mySwiper"
       >
-        {users.length > 0 ? users.map((user, index) => (
+        {friends.length > 0 ? friends.map((user, index) => (
           <SwiperSlide key={index} className="swiper-slide">
               <UserItem friend={user} />
           </SwiperSlide>

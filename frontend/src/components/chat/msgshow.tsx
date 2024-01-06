@@ -3,10 +3,10 @@
 import Chat from './chat';
 import Chatheader from './chatHeader';
 import Sendchatmsg from './sendchatmsg';
-import { ChatRoomUsers, Message} from '@/interfaces';
+import { ChatRoomUsers, Messages} from '@/interfaces';
 
 interface MsgShowProps {
-  messages?: Message[];
+  messages?: Messages[];
   chatRoomMembers?: ChatRoomUsers[];
   chatId: number;
 }

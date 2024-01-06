@@ -37,14 +37,6 @@ export class GatewayGateway
     console.log('connected: ' + _client.id);
   }
 
-  @SubscribeMessage('message')
-  async message(socket: Socket, message: string) {
-    console.log(socket);
-    console.log("inside the chat gateway");
-    socket.emit('roomCreated', socket['user']);
-   
-  }
-
   handleDisconnect(_client: Socket) {
     console.log('disconnected: ' + _client.id);
     // check jwt token

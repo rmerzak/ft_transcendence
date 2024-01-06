@@ -1,6 +1,6 @@
 'use client'
 import React, { useContext, useEffect, useState } from 'react';
-import { Friendship, chatRoom,RoomVisibility } from '@/interfaces';
+import { Friendship, ChatRoom, RoomVisibility } from '@/interfaces';
 import { ContextGlobal } from '@/context/contex';
 import Image from 'next/image';
 import { makeConversation } from '@/api/chat/chat.api';
@@ -20,7 +20,7 @@ const UserItem = ({ friend } : { friend: Friendship }) => {
   }, []);
 
   function makeMessage() {
-    const chatRoomData: chatRoom = {
+    const chatRoomData: ChatRoom = {
       visibility: RoomVisibility.PRIVATE,
       passwordHash: '',
       name: profile.id + '_' + (profile?.id === friend.sender.id ? friend.receiver.id : friend.sender.id),

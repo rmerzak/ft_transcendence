@@ -1,3 +1,5 @@
+import { Socket } from "socket.io-client";
+
 export interface MatchHistoryItemInterface {
   PlayerOne: string;
   PlayerTwo: string;
@@ -55,7 +57,7 @@ export enum RoomVisibility {
   PROTECTED = 'PROTECTED'
 }
 
-export interface chatRoom {
+export interface ChatRoom {
   id?: number;
   name?: string;
   visibility?: RoomVisibility;
@@ -72,10 +74,10 @@ export interface ChatRoomMember {
   is_admin: boolean;
   leftAt: string;
   user: User;
-  chatRoom: chatRoom;
+  chatRoom: ChatRoom;
 }
 
-export interface Message {
+export interface Messages {
   id?: number;
   text: string;
   createdAt?: string;
@@ -92,4 +94,17 @@ export interface ChatRoomUsers {
       image: string;
       status: string;
   };
+}
+
+export interface ChatContext {
+  socket: Socket | null;
+  setSocket(socket: Socket | null): void;
+  friends: Friendship[] | [];
+  setFriends(friends: Friendship[] | []): void;
+  messages: Messages[] | [];
+  setMessages(messages: Messages[] | []): void;
+  chatRoom: ChatRoom | null;
+  setChatRoom(chatRoom: ChatRoom | null): void;
+  chatRoomMembers: ChatRoomUsers[] | [];
+  setChatRoomMembers(chatRoomMembers: ChatRoomUsers[] | []): void;
 }
