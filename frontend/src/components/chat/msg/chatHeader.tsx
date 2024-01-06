@@ -1,25 +1,38 @@
 'user client';
+import { getChatRoomMembers } from '@/api/chat/chat.api';
 import { ContextGlobal } from '@/context/contex';
 import { ChatRoomUsers } from '@/interfaces';
 import React, { useContext, useEffect, useState } from 'react';
 
 interface ChatheaderProps {
-    chatRoomMembers?: ChatRoomUsers[];
+    // chatRoomMembers?: ChatRoomUsers[];
+    chatId?: number;
 }
 
-const Chatheader: React.FC<ChatheaderProps> = ({ chatRoomMembers }) => {
+const Chatheader: React.FC<ChatheaderProps> = ({ chatId }) => {
     const { profile }: any = useContext(ContextGlobal);
     const [username, setUsername] = useState<string>('');
     const [status, setStatus] = useState<string>('');
+    const [chatRoomMembers, setChatRoomMembers] = useState<ChatRoomUsers[]>([]);
+
     useEffect(() => {
-        // console.log(chatRoomMembers);
-        const targetMessage = chatRoomMembers?.find((member) => member.user.id !== profile?.id);
-        // console.log(targetMessage);
+        if (chatId) {
+            getChatRoomMembers(chatId).then((res) => {
+                setChatRoomMembers(res.data);
+            }).catch((err) => {
+               console.log(err);
+            });
+        }
+    }, [chatId]);
+    
+    useEffect(() => {
+        const targetMessage = chatRoomMembers.find((member) => member.user.id !== profile?.id);
+    
         if (targetMessage) {
             setUsername(targetMessage.user.username);
             setStatus(targetMessage.user.status);
         }
-    });
+    }, [chatRoomMembers, profile]);
 
     return (
         <>

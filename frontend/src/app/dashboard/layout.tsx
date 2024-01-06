@@ -11,14 +11,16 @@ import { ToastContainer } from 'react-toastify';
 
 
 const Layout = ({children} : any) => {
-  const {  profile  ,setProfile  } = useContext(ContextGlobal);
+  const {  profile  ,setProfile, setFriends  } = useContext(ContextGlobal);
   useEffect(() => {
     //const user = axios.get(`http://localhost:3000/users/me`, {withCredentials:true}).then((res) => {setProfile(res.data);}).catch((err) => { console.log(err)});
     getUserInfo().then((res) => {
       if (res.data)
         setProfile(res.data);
+
     }).catch((err) => { console.log(err) });
-  }, []);
+  }, [profile]);
+
     return (
       <div className="flex login-gradient">
         <ContextProvider>

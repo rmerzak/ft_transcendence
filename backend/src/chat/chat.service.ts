@@ -2,13 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { ChatRoom, Message, ChatRoomMember, User } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { ChatRoomUsers } from './interfaces/interfaces';
+import { Socket } from 'socket.io';
 // Chat service class
 @Injectable()
 export class ChatService {
   constructor(private readonly prisma: PrismaService) {}
 
 
+  // chat room socket
   
+  public readonly chatRoomSocket = new Map<number, Map<number,Socket[]>>();
   // start chat room
   // get chat room for user
   async getChatRoomsForUser(userId: number): Promise<ChatRoom[]> {
@@ -20,6 +23,22 @@ export class ChatService {
       where: {
         users: {
           some: {
+            userId: userId,
+          },
+        },
+      },
+    });
+  }
+  // get chat room Not for user
+  async getChatRoomsNotForUser(userId: number): Promise<ChatRoom[]> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+    if (!user) throw new Error('User not found');
+    return await this.prisma.chatRoom.findMany({
+      where: {
+        users: {
+          none: {
             userId: userId,
           },
         },
@@ -200,7 +219,20 @@ export class ChatService {
   // get all messages of room
   async getChatRoomMessages(
     chatRoomId: number,
+    userId: number,
   ): Promise<Message[]> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+    if (!user) throw new Error('User not found');
+    const chatRoom = await this.prisma.chatRoom.findUnique({
+      where: { id: chatRoomId },
+    });
+    if (!chatRoom) throw new Error('Chat room not found');
+    const chatRoomMember = await this.prisma.chatRoomMember.findUnique({
+      where: { userId_chatRoomId: { userId: user.id, chatRoomId: chatRoom.id } },
+    });
+    if (!chatRoomMember) throw new Error('User not in chat room');
     return await this.prisma.message.findMany({
       where: {
         chatRoomId: chatRoomId,
@@ -226,13 +258,37 @@ export class ChatService {
     });
   }
   // add user message
-  async addMessage(messageData: Message): Promise<Message> {
+  async addMessage(messageData: Message, userId: number): Promise<Message> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+    if (!user) throw new Error('User not found');
+    const chatRoom = await this.prisma.chatRoom.findUnique({
+      where: { id: messageData.chatRoomId },
+    });
+    if (!chatRoom) throw new Error('Chat room not found');
+    const chatRoomMember = await this.prisma.chatRoomMember.findUnique({
+      where: { userId_chatRoomId: { userId: user.id, chatRoomId: chatRoom.id } },
+    });
+    if (!chatRoomMember) throw new Error('User not in chat room');
     return await this.prisma.message.create({
       data: messageData,
     });
   }
   // update user message
-  async updateMessage(messageData: Message): Promise<Message> {
+  async updateMessage(messageData: Message, userId: number): Promise<Message> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+    if (!user) throw new Error('User not found');
+    const chatRoom = await this.prisma.chatRoom.findUnique({
+      where: { id: messageData.chatRoomId },
+    });
+    if (!chatRoom) throw new Error('Chat room not found');
+    const chatRoomMember = await this.prisma.chatRoomMember.findUnique({
+      where: { userId_chatRoomId: { userId: user.id, chatRoomId: chatRoom.id } },
+    });
+    if (!chatRoomMember) throw new Error('User not in chat room');
     return await this.prisma.message.update({
       where: { id: messageData.id },
       data: messageData,

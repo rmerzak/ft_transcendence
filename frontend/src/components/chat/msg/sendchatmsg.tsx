@@ -3,25 +3,30 @@ import React, { useContext, useState } from 'react'
 import Image from 'next/image';
 import { addMessage } from '@/api/chat/chat.api';
 import { ContextGlobal } from '@/context/contex';
-import { Message } from '@/interfaces';
+import { Messages } from '@/interfaces';
 
 interface SendchatmsgProps {
     chatRoomId: number;
 }
 
 const Sendchatmsg: React.FC<SendchatmsgProps> = ({ chatRoomId }) => {
-    const {  profile  }:any = useContext(ContextGlobal);
+    const {  profile,  chatSocket } = useContext(ContextGlobal);
     const [message, setMessage] = useState<string>('');
     function addMsg() {
-        const messageData:Message = {
-            senderId: Number(profile.id),
+        const messageData:Messages = {
+            senderId: Number(profile?.id),
             chatRoomId: chatRoomId,
             text: message,
         };
-        addMessage(messageData).then((res) => {
-            setMessage('');
-        }
-        );
+        console.log(chatSocket);
+        chatSocket?.emit('send-message', messageData);
+        // addMessage(messageData).then((res) => {
+        //     console.log(res);
+        //     if (res.status === 201)
+        //         setMessage('');
+        // }).catch((err) => {
+        //     console.log(err);
+        // });
     }
     return (
         <>

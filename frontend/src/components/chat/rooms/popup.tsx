@@ -1,5 +1,5 @@
 import React from "react";
-import './userOnline.css';
+// import './userOnline.css';
 
 interface PopupProps {
   setChannel: () => void;

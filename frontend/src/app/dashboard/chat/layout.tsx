@@ -1,61 +1,33 @@
 'use client';
-import Channels from '@/components/chat/channels'
-import UserOnline from '@/components/chat/userOnline'
-import Message from "@/components/chat/msg";
-import { useEffect, useState } from 'react';
+import Channels from '@/components/chat/rooms/channels'
+import UserOnline from '@/components/chat/user/userOnline'
+import Message from "@/components/chat/recent/msg";
+import { useContext, useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { ChatRoom, ChatRoomUsers, Friendship, Messages } from '@/interfaces';
-// import { createContext } from 'react';
-// import {ChatContext} from '@/interfaces';
+import { ContextGlobal } from '@/context/contex';
 
-// export const ChatGlobalContext = createContext<ChatContext>({
-//   socket: null,
-//   setSocket: (socket: Socket | null) => { },
-//   friends: [],
-//   setFriends: (friends: Friendship[] | []) => { },
-//   messages: [],
-//   setMessages: (messages: Messages[] | []) => { },
-//   chatRoom: null,
-//   setChatRoom: (chatRoom: ChatRoom | null) => { },
-//   chatRoomMembers: [],
-//   setChatRoomMembers: (chatRoomMembers: ChatRoomUsers[] | []) => { },
-// });
 
 const Layout = ({children} : any) => {
-  // const [socket, setSocket] = useState<Socket | null>(null);
-  // const [messages, setMessages] = useState<Messages[] | []>([]);
-  // const [chatRoom, setChatRoom] = useState<ChatRoom | null>(null);
-  // const [chatRoomMembers, setChatRoomMembers] = useState<ChatRoomUsers[] | []>([]);
-
-  // const provider = {
-  //   socket,
-  //   setSocket,
-  //   friends: friends,
-  //   setFriends,
-  //   messages: messages,
-  //   setMessages,
-  //   chatRoom: chatRoom,
-  //   setChatRoom,
-  //   chatRoomMembers: chatRoomMembers,
-  //   setChatRoomMembers,
-  // };
+  const { chatSocket, setChatSocket} = useContext(ContextGlobal);
 
   useEffect(() => {
-    // const sock = io("http://localhost:3000", {
-    //   autoConnect: false,
-    //   transports: ["websocket"],
-    //   withCredentials: true,
-    // });
-    // sock.connect();
-    // sock.on('connect', () => {
-    //   setSocket(sock);
-    //   console.log('Connected to the server');
-    // });
+    const sock = io("http://localhost:3000", {
+      autoConnect: false,
+      transports: ["websocket"],
+      withCredentials: true,
+    });
+    sock.connect();
+    sock.on('connect', () => {
+      setChatSocket(sock);
+      console.log('Connected to the server');
+    });
 
-    // return () => {
-    //   console.log("Cleanup: Disconnecting socket");
-    //   sock.disconnect();
-    // };
+    return () => {
+      console.log("Cleanup: Disconnecting socket");
+      sock.off('connect');
+      sock.disconnect();
+    };
   }, []);
 
     return (

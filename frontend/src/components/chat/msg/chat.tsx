@@ -1,13 +1,14 @@
 "use client"
 import { ContextGlobal } from '@/context/contex';
 import React, { useContext } from 'react'
-import { Message } from '@/interfaces';
+import { Messages } from '@/interfaces';
 
 interface ChatProps {
-  messages?: Message[];
+  messages?: Messages[];
 }
 
 const formatDate = (timestamp: string) => {
+  if (!timestamp || timestamp.length === 0) return "";
   const originalDate = new Date(timestamp);
   const month = originalDate.toLocaleString('default', { month: 'short' });
   const day = originalDate.getDate();
@@ -24,18 +25,18 @@ const Chat: React.FC<ChatProps> = ({ messages }) => {
     <div className='max-w-[80%] mx-auto'>
       {messages?.map((message) => {
         const isOwnMessage = message.senderId === profile?.id;
-        const senderName = isOwnMessage ? "You" : message.sender.username;
+        const senderName = isOwnMessage ? "You" : message.sender?.username;
 
         return (
           <div key={message.id} className={`chat ${!isOwnMessage ? "chat-start" : "chat-end"}`}>
             <div className="chat-image avatar">
               <div className="w-10 rounded-full">
-                <img alt="Tailwind CSS chat bubble component" src={message.sender.image} />
+                <img alt="Tailwind CSS chat bubble component" src={message.sender?.image} />
               </div>
             </div>
             <div className={`chat-header ${isOwnMessage ? "ml-2" : "mr-2"} flex gap-2 items-center mb-1`}>
               {senderName}
-              <time className="text-xs opacity-50">{formatDate(message.createdAt)}</time>
+              <time className="text-xs opacity-50">{formatDate(message.createdAt ? message.createdAt : "")}</time>
             </div>
             <div className="chat-bubble bg-purplee text-white">{message.text}</div>
             {/* <div className="chat-footer opacity-50">

@@ -1,7 +1,7 @@
 'use client'
 import React from 'react'
 import { useParams } from 'next/navigation'
-import MsgShow from '@/components/chat/msgshow';
+import MsgShow from '@/components/chat/msg/msgshow';
 
 const Room = () => {
   const {roomId} = useParams()

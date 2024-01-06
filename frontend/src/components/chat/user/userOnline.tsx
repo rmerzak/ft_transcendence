@@ -15,8 +15,7 @@ import { ContextGlobal } from "@/context/contex";
 import UserItem from "./UserItem";
 
 const UserOnline = () => {
-  const { profile }: any = useContext(ContextGlobal);
-  const [friends, setFriends] = useState([]);
+  const { profile, friends, setFriends, socket } = useContext(ContextGlobal);
 
   function getFriends(number: number) {
     getFriendList(number)
@@ -31,10 +30,9 @@ const UserOnline = () => {
   }
 
   useEffect(() => {
-    if (profile?.id) {
-      getFriends(profile.id);
-    }
-  }, [profile?.id]); 
+    console.log("friendsinside1", friends);
+    
+  }, [profile?.id, friends,socket]); 
 
   return (
     <>
