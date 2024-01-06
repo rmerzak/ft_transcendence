@@ -1,47 +1,24 @@
 'use client'
 import styles from '@/app/dashboard/game/page.module.css'
+import { useRouter } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 import Swal from 'sweetalert2';
-import { useRouter } from 'next/navigation';
+import { setInterval, clearInterval } from 'timers';
 
 function Pong()
 {
-    // router
-    const router = useRouter();
-
     // canvas    
     const gameRef = useRef<HTMLCanvasElement>(null);
+    
+    // route
+    const router = useRouter();
 
     //  socket.io
     const socket = io('http://localhost:3000', {
         withCredentials: true,
-        autoConnect: false,
+        // autoConnect: false,
     });
-
-    useEffect(() => {
-        if (socket.connect())
-        {
-            socket.emit('join');
-        }
-        // return () => {
-        //      // Remove event listeners
-        //     window.removeEventListener('keydown', handleKeyDown);
-        //     window.removeEventListener('keyup', handleKeyUp);
-
-        //     // Clear interval
-        //     clearInterval(mouseInterval);
-        //     // off event listener
-        //     socket.off('playerNo');
-        //     socket.off('roomIsFull');
-        //     socket.off('startedGame');
-        //     socket.off('updateGame');
-        //     socket.off('redirect');
-        //     socket.off('gameOver');
-        //     socket.disconnect();
-        //     };
-    }, []);
-
     useEffect(() => {
         const canvas = gameRef.current;
         if (!canvas) return;
@@ -49,12 +26,12 @@ function Pong()
         const ctx = canvas?.getContext('2d');
         if (!ctx) return;
 
-        let isGameStarted = false;
-        let mouseInterval: NodeJS.Timeout;
+        let isGameStarted: boolean = false;
+        let intervalId: NodeJS.Timeout;
+        let playerNo: number = 0;
+        let roomID: number = 0;
         let handleKeyDown: (e: KeyboardEvent) => void;
         let handleKeyUp: (e: KeyboardEvent) => void;
-        let playerNo = 0;
-        let roomID = 0;
 
         class Player {
             x: number;
@@ -85,15 +62,15 @@ function Pong()
                 this.y = y
                 this.radius = radius
                 this.color = color
-                this.speed = 5
-                this.velocityX = 5
-                this.velocityY = 5
+                this.speed = speed
+                this.velocityX = velocityX
+                this.velocityY = velocityY
             }
         }
         
-        let player1: Player;
-        let player2: Player
-        let ball : Ball;
+        let player1: Player = new Player(20, 1146 / 2 - 100 / 2, 15, 180, "white");
+        let player2: Player = new Player(1908 - 35, 1146 / 2 - 100 / 2, 15, 180, "white");
+        let ball : Ball = new Ball(1908 / 2, 1908 / 2, 20, 10, 5, 5, "white");
 
         // effect components here
         // *****************************************************************************************
@@ -259,49 +236,85 @@ function Pong()
             balls = temp;
         }
 
+        socket.emit('join');
 
         // get player no
         socket.on('playerNo', (newPlayerNo) => {
             playerNo = newPlayerNo;
+            render();
         });
 
+        // use Swal for loading until the game is started
+        
         // starting game
         socket.on('roomIsFull', (flag) => {
             isGameStarted = flag;
         });
 
+        // if (!isGameStarted) 
+        // {
+        //     Swal.fire({
+        //         title: 'Loading...',
+        //         text: 'Please wait until the game is started!',
+        //         imageUrl: "/loading.gif",
+        //         imageWidth: 400,
+        //         imageHeight: 200,
+        //         showConfirmButton: false,
+        //         allowOutsideClick: false,
+        //         customClass: {
+        //             popup: 'bg-gradient-to-r from-[#510546]/40 to-[#6958be]/40'
+        //         }
+        //     });
+        // }
+
 
         // start game
         socket.on('startedGame', (room) => {
             roomID = room.id;
-            player1 = new Player(
-                room.players[0].position.x,
-                room.players[0].position.y,
-                room.players[0].width,
-                room.players[0].height,
-                room.players[0].color
-            );
+            // player1 = new Player(
+            //     room.players[0].position.x,
+            //     room.players[0].position.y,
+            //     room.players[0].width,
+            //     room.players[0].height,
+            //     room.players[0].color
+            // );
 
-            player2 = new Player(
-                room.players[1].position.x,
-                room.players[1].position.y,
-                room.players[1].width,
-                room.players[1].height,
-                room.players[1].color
-            );
+            // player2 = new Player(
+            //     room.players[1].position.x,
+            //     room.players[1].position.y,
+            //     room.players[1].width,
+            //     room.players[1].height,
+            //     room.players[1].color
+            // );
 
-            ball = new Ball(
-                room.ball.position.x,
-                room.ball.position.y,
-                room.ball.radius,
-                room.ball.speed,
-                room.ball.velocity.x,
-                room.ball.velocity.y,
-                room.ball.color
-            );
+            // ball = new Ball(
+            //     room.ball.position.x,
+            //     room.ball.position.y,
+            //     room.ball.radius,
+            //     room.ball.speed,
+            //     room.ball.velocity.x,
+            //     room.ball.velocity.y,
+            //     room.ball.color
+            // );
 
-            player1.score = room.players[0].score;
-            player2.score = room.players[1].score;
+            // player1.score = room.players[0].score;
+            // player2.score = room.players[1].score;
+
+            // addEventListener('keydown', (event) => {
+            //     if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+            //       // Prevent the default arrow key behavior (scrolling the page)
+            //       event.preventDefault();
+              
+            //       // Emit the 'movePlayer' event with the payload
+            //       const payload = {
+            //         roomId: roomID,  // replace with actual room ID
+            //         playerNo: playerNo,  // replace with actual player number
+            //         direction: event.key === 'ArrowUp' ? 'up' : 'down',
+            //       };
+            //       socket.emit('move', payload);
+            //     }
+            //   });
+              
 
             let movement = { up: false, down: false };
 
@@ -325,9 +338,9 @@ function Pong()
             }
             window.addEventListener('keydown', handleKeyDown);
             window.addEventListener('keyup', handleKeyUp);
-
+            
             // Periodically send movement updates
-            mouseInterval = setInterval(() => {
+            intervalId = setInterval(() => {
                 if (movement.up || movement.down) {
                     socket.emit("move", {
                         roomId: roomID,
@@ -339,30 +352,32 @@ function Pong()
         },);
 
         // update game
-        socket.on("updateGame", (room) => {
+        socket.on("updateGame", (update) => {
             if (!ball || !player1 || !player2) return;
-            ball.x = room.ball.position.x;
-            ball.y = room.ball.position.y;
+            ball.x = update.ball.position.x;
+            ball.y = update.ball.position.y;
 
             for (let i = 0; i < 3; i++) {
                 balls.push(new Balls(ball));
             }
 
-            player1.x = room.players[0].position.x;
-            player1.y = room.players[0].position.y;
+            // fix type error
+            if (!update.players[0] || !update.players[1]) return;
+            player1.x = update.players[0].position.x;
+            player1.y = update.players[0].position.y;
 
-            player2.x = room.players[1].position.x;
-            player2.y = room.players[1].position.y;
+            player2.x = update.players[1].position.x;
+            player2.y = update.players[1].position.y;
 
-            player1.score = room.players[0].score;
-            player2.score = room.players[1].score;
+            player1.score = update.players[0].score;
+            player2.score = update.players[1].score;
             render();
         });
 
         // redirect
         socket.on('redirect', (flag) => {
             if (flag) {
-                router.push('/dashboard/game');
+                window.location.href = '/dashboard/game';
             }
         });
 
@@ -383,6 +398,7 @@ function Pong()
                     }
                 }).then(() => {
                     // redirect to game page
+                    // window.location.href = '/dashboard/game';
                     router.push('/dashboard/game');
                 });
             } else {
@@ -398,6 +414,7 @@ function Pong()
                     }
                 }).then(() => {
                     // redirect to game page
+                    // window.location.href = '/dashboard/game';
                     router.push('/dashboard/game');
                 });
             }
@@ -411,13 +428,14 @@ function Pong()
             }, 400);
         });
 
+
         return () => {
             // Remove event listeners
            window.removeEventListener('keydown', handleKeyDown);
            window.removeEventListener('keyup', handleKeyUp);
 
            // Clear interval
-           clearInterval(mouseInterval);
+           clearInterval(intervalId);
            // off event listener
            socket.off('playerNo');
            socket.off('roomIsFull');
@@ -436,7 +454,7 @@ function Pong()
 
     return (
         <>
-            <div className= {styles.canvas_container}>
+            <div className='flex justify-center items-center w-[80%] shadow-md'>
                 <canvas
                     ref={gameRef}
                     className={styles.game_canvas}

@@ -3,7 +3,6 @@
 
 .game_container {
     width: 95%;
-    /* height: 90%; */
     margin-left: auto;
     margin-right: auto;
     text-align: center;
@@ -282,14 +281,11 @@
 }
 
 .canvas_container {
-    margin-top: 3rem;
     display: flex;
     justify-content: center;
     align-items: center;
-    /* border: #fff solid 1px;
-    border-radius: 25px; */
-    padding: 2.5%;
-    width:65%;
+    width:80%;
+    box-shadow: 4px 8px 16px rgba(0, 0, 0, 0.2);
 }
 
 .game_canvas {

@@ -12,6 +12,7 @@ import { Socket, Server } from 'socket.io';
 import { GameService } from '../services/game.service';
 import { SocketAuthMiddleware } from 'src/auth/middleware/ws.mw';
 import { Player } from '../models/player.model';
+import { State } from '../models/state.model';
 
 @WebSocketGateway({
   cors: {
@@ -24,9 +25,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     private readonly game: GameService,
   ) {}
-  private width = 1908;
-  private height = 1146;
-  private roomId = 0;
+
+  private roomId: string = '';
 
   @WebSocketServer()
   server: Server;
@@ -50,50 +50,54 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // this.getUser(socket);
   }
 
-  handleDisconnect(client: Socket): any {
-    console.log("disconnected");
+  handleDisconnect(client: Socket): void {
+    console.log("Player disconnected");
+    console.log("Room ID:", this.roomId);
+  
+    // Leave the room for the disconnected player
     this.game.leaveRoom(this.roomId, client.id);
+  
+    // Find the room where the disconnection occurred
+    const targetRoom = this.game.rooms.find((room) => room.id === this.roomId);
+  
+    // If the room is found, update the scores of other players
+    if (targetRoom) {
+      targetRoom.players.forEach((player) => {
+        // Check if the player is not the disconnected player
+        if (player.socketId !== client.id) {
+          // Set the score to 5 for other players
+          this.server.to(player.socketId).emit('gameOver', { winner: true });
+        }
+      });
+    }
   }
 
   // this method is called when a player joins a room
   // if the room is full, the game is started immediately
   @SubscribeMessage('join')
   joinRoom(client: Socket): void {
-    
-  const player: Player = {
-    socketId: client.id,
-    playerNo: 0,
-    score: 0,
-    position: {
-      x: 0,
-      y: 0,
-    },
-    width: 15,
-    height: 180,
-    color: 'white',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-  }
-
-  this.roomId = this.game.joinRoom(player, client, this.server);
+    try {
+      const player: Player = new Player(client.id);
+      this.roomId = this.game.joinRoom(player, client, this.server);
+    } catch {}
   }
 
   // this mothod is for moving the player
   // the payload contains the direction the player is moving
   @SubscribeMessage('move')
   move(client: Socket, payload: any): any {
-    this.game.move(payload, this.server);
+    try {
+      this.game.move(payload, this.server);
+    } catch {}
   }
 
   // this method is called when a player leaves a room
   @SubscribeMessage('leave')
   leave(client: Socket, payload: any): any {
-    
-    const playerId = client.id;
-    this.game.leaveRoom(payload.roomId, playerId);
-    console.log("leave");
-    // console.log(GameService.rooms);
+    try {
+      const playerId = client.id;
+      this.game.leaveRoom(payload.roomId, playerId);
+      console.log("leave");
+    } catch {}
   }
 }

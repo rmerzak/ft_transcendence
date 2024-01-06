@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
-import { Ball, Room } from '../models/room.model';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Room } from '../models/room.model';
 import { Player } from '../models/player.model';
 import { State } from '../models/state.model';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Socket, Server } from 'socket.io';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class GameService {
@@ -21,17 +22,15 @@ export class GameService {
     return user;
   }
 
-  rooms: Map<number, Room> = new Map();
-  roomIdCounter: number = 1;
+  rooms: Array<Room> = [];
   private width = 1908;
   private height = 1146;
 
   // this method is creating a new room
   // the id of the room is returned
   createRoom(): Room {
-    const roomId = this.roomIdCounter++;
-    const room = new Room(roomId);
-    this.rooms.set(roomId, room);
+    const room = new Room(uuidv4());
+    this.rooms.push(room);
     return room;
   }
 
@@ -39,10 +38,9 @@ export class GameService {
   // if there is a room with an available slot, the id of that room is returned
   // if there is no room with an available slot, 0 is returned
   roomWithAvailableSlots(): Room | null {
-    for (const [id, room] of this.rooms) {
-      if (room.players.length < 2) {
-        return room;
-      }
+    const room = this.rooms.find((room) => room.players.length < 2);
+    if (room) {
+      return room;
     }
     return null;
   }
@@ -50,8 +48,8 @@ export class GameService {
   // this method is called when a player joins a room
   // if there is a room with an available slot, the player is added to that room
   // if there is no room with an available slot, a new room is created and the player is added to that room
-  joinRoom(player: Player, client: Socket, server: Server): number {
-    const room = this.roomWithAvailableSlots() || this.createRoom();
+  joinRoom(player: Player, client: Socket, server: Server): string {
+    const room = this.roomWithAvailableSlots();
 
     if (room && room.state === State.WAITING) {
       if (room.players.length === 0) {
@@ -67,20 +65,15 @@ export class GameService {
         room.state = State.PLAYING;
       }
       room.addPlayer(player);
-      client.join(room.id.toString());
+      client.join(room.id);
       if (room.players.length === 2) {
         room.ball.color = 'white';
         server.to(room.id.toString()).emit('roomIsFull', true);
-        // set time out to start game
         setTimeout(() => {
           server.to(room.id.toString()).emit('startedGame', room);
           // start game
-          // this.startGame(room, roomId.toString(), server);
-          // loop for game 
           room.startGame(server);
-
         }, 3000);
-
       }
     }
     return room.id;
@@ -89,30 +82,41 @@ export class GameService {
   // this method is called when a player moves
   // the position of the player is updated
   move(payload: any, server: Server) {
-    // loop for game
-    for (const [id, room] of this.rooms) {
-      if (id === payload.roomId) {
-        room.movePlayer(payload, server);
-      }
+    const room = this.rooms.find((room) => room.id === payload.roomId);
+    if (room) {
+      room.movePlayer(payload, server);
     }
   }
-    
-  // this method is called when a player leaves a room
-  leaveRoom(roomId: number, playerId: string): void {
 
-    // if just one player in room, delete room
-    const room = this.rooms.get(roomId);
+  // this method is called when a player leaves a room
+  leaveRoom(roomId: string, playerId: string): void {
+    const room = this.rooms.find((room) => room.id === roomId);
+    console.log(this.rooms);
     if (room) {
-      room.removePlayer(playerId);
-      if (room.players.length === 1) {
-          this.rooms.delete(roomId); 
-          roomId = 0;
-        }
+      room.endGame();
+      const player = room.players.find(
+        (player) => player.socketId === playerId,
+      );
+      room.removePlayer(player);
+      if (room.players.length === 0) {
+        this.rooms.splice(this.rooms.indexOf(room), 1);
+        roomId = '';
       }
+    }
+    console.log(this.rooms);
   }
 
   // this method for get room
-  getRoom(roomId: number): Room {
-    return this.rooms.get(roomId);
+  getRoom(roomId: string): Room {
+    return this.rooms.find((room) => room.id === roomId);
+  }
+
+  //
+  getGame(roomId: string): string {
+    const room = this.getRoom(roomId);
+    if (!room) {
+      throw new HttpException('Room not found', HttpStatus.NOT_FOUND);
+    }
+    return room.id.toString();
   }
 }
