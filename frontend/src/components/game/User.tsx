@@ -1,7 +1,9 @@
 import React from 'react';
 import Image from 'next/image';
+import { useGame } from '@/app/dashboard/game/gameContex';
 
-function User({ className = ''}) {
+function User({ className = '', id = 1}: { className?: string; id?: number }) {
+    const { player1Score, player2Score } = useGame();
     return (
         <div className={`${className}`}>
             <div className="bg-neutral card card-side bg-base-100 shadow-xl inline-block ">
@@ -25,7 +27,7 @@ function User({ className = ''}) {
                         <div className="card-actions justify-center">
                             <div className="stat place-items-center">
                                 <div className="stat-title">Score</div>
-                                <div className="stat-value text-[#ffffff]/70">0</div>
+                                <div className="stat-value text-[#ffffff]/70"> {id === 1 ? player1Score : player2Score} </div>
                             </div>
                         </div>
                     </div>

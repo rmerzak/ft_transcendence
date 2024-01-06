@@ -117,7 +117,7 @@ export class Room {
         this.resetBall(this);
       }
 
-      if (this.players[0].score === 500 || this.players[1].score === 500) {
+      if (this.players[0].score === 5 || this.players[1].score === 5) {
         if (this.players[0].score === 5) {
           this.winner = 1;
           server

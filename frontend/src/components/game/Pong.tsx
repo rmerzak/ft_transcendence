@@ -1,13 +1,22 @@
 'use client'
 import styles from '@/app/dashboard/game/page.module.css'
 import { useRouter } from 'next/navigation';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
 import Swal from 'sweetalert2';
 import { setInterval, clearInterval } from 'timers';
+import { useGame } from '@/app/dashboard/game/gameContex';
 
-function Pong( {theme}: {theme: string} )
+interface PongProps {
+    theme: string;
+  }
+
+function Pong( { theme }: PongProps )
 {
+    if (parseInt(theme) < 0 || parseInt(theme) > 5) theme = '1';
+
+    const { updateScores } = useGame();
+
     // canvas    
     const gameRef = useRef<HTMLCanvasElement>(null);
     
@@ -20,8 +29,6 @@ function Pong( {theme}: {theme: string} )
         // autoConnect: false,
     });
     useEffect(() => {
-
-        if (parseInt(theme) < 0 || parseInt(theme) > 5) theme = '1';
 
         const canvas = gameRef.current;
         if (!canvas) return;
@@ -261,47 +268,25 @@ function Pong( {theme}: {theme: string} )
             isGameStarted = flag;
         });
 
-        // if (!isGameStarted) 
-        // {
-        //     Swal.fire({
-        //         title: 'Loading...',
-        //         text: 'Please wait until the game is started!',
-        //         imageUrl: "/loading.gif",
-        //         imageWidth: 400,
-        //         imageHeight: 200,
-        //         showConfirmButton: false,
-        //         allowOutsideClick: false,
-        //         customClass: {
-        //             popup: 'bg-gradient-to-r from-[#510546]/40 to-[#6958be]/40'
-        //         }
-        //     });
-        // }
-
+       
+        // for loading
+        // Swal.fire({
+        //     imageUrl: "/loading.gif",
+        //     imageWidth: 500,
+        //     imageHeight: 500,
+        //     showConfirmButton: false,
+        //     allowOutsideClick: false,
+        //     customClass: {
+        //         popup: 'bg-transparent',
+        //     }
+        // });
 
         // start game
         socket.on('startedGame', (room) => {
             roomID = room.id;
+        },);
 
-            // player1.score = room.players[0].score;
-            // player2.score = room.players[1].score;
-
-            // addEventListener('keydown', (event) => {
-            //     if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
-            //       // Prevent the default arrow key behavior (scrolling the page)
-            //       event.preventDefault();
-              
-            //       // Emit the 'movePlayer' event with the payload
-            //       const payload = {
-            //         roomId: roomID,  // replace with actual room ID
-            //         playerNo: playerNo,  // replace with actual player number
-            //         direction: event.key === 'ArrowUp' ? 'up' : 'down',
-            //       };
-            //       socket.emit('move', payload);
-            //     }
-            //   });
-              
-
-            let movement = { up: false, down: false };
+        let movement = { up: false, down: false };
 
             handleKeyDown = (e: KeyboardEvent) => {
                 if (isGameStarted) {
@@ -334,7 +319,6 @@ function Pong( {theme}: {theme: string} )
                     });
                 }
             }, 1000 / 60); // Adjust the interval as needed
-        },);
 
         // update game
         socket.on("updateGame", (update) => {
@@ -356,6 +340,9 @@ function Pong( {theme}: {theme: string} )
 
             player1.score = update.players[0].score;
             player2.score = update.players[1].score;
+
+            updateScores(player1.score, player2.score);
+
             render();
         });
 
@@ -433,7 +420,7 @@ function Pong( {theme}: {theme: string} )
            socket.disconnect();
            };
 
-    }, [socket]);
+    }, []);
     
     const themes = ['A1', 'B1', 'C1', 'D1', 'E1', 'F1'];
 
