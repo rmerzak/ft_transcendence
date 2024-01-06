@@ -12,7 +12,7 @@ import { User } from "@/interfaces"
 import { useParams } from "next/navigation"
 
 const Profile = () => {
-  const { profile } : User = useContext(ContextGlobal);
+  const { profile } : any = useContext(ContextGlobal);
   const BtnFriend = false;
   return (
     <>

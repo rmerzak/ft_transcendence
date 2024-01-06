@@ -1,6 +1,6 @@
 'use client'
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import io from 'socket.io-client';
+import io, { Socket } from 'socket.io-client';
 import { Friendship, User } from '@/interfaces';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -8,14 +8,15 @@ import { getUnreadNotification } from '@/api/notifications/notifications.api';
 import { getFriendList } from '@/api/friendship/friendship.api';
 import { getUserInfo } from '@/api/user/user';
 import Profile from '@/app/dashboard/profile/page';
+
 export const ContextGlobal = createContext({
   setProfile(user: User) { },
-  profile: null,
+  profile:  null as User | null,
   socket: null,
   setSocket(socket: any) { },
-  notification: [],
+  notification: [] as Notification[],
   setNotification(notification: Notification[]) { },
-  friends: [],
+  friends: [] as Friendship[],
   setFriends(friends: Friendship[]) { },
 });
 
@@ -31,6 +32,7 @@ export const ContextProvider = ({ children }: { children: any }) => {
     isVerified: false,
     twoFactorSecret: '',
     twoFactorEnabled: false,
+    status: '', // Add the status property and provide a valid value
   });
   const [socket, setSocket] = useState<any>(null);
   const [notification, setNotification] = useState<Notification[]>([]);
@@ -39,18 +41,15 @@ export const ContextProvider = ({ children }: { children: any }) => {
     getUnreadNotification().then((res) => {
       if (res.data)
         setNotification(res.data);
-      console.log("notification ", notification);
     }).catch((err) => { console.log(err) });
     getUserInfo().then((res) => {
       if (res.data)
         setProfile(res.data);
-      console.log("profile ", profile);
     }).catch((err) => { console.log(err) });
     if (profile.id !== -1) {
       getFriendList(profile.id).then((res) => {
         if (res.data)
           setFriends(res.data);
-        console.log("friends ", friends);
       }).catch((err) => { console.log(err) });
     }
   }, []);

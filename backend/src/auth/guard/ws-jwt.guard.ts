@@ -21,7 +21,6 @@ export class WsJwtGuard implements CanActivate {
         // const authorization = socket.handshake.headers.cookie;
         // if (authorization) {
         //     const tokenArray = authorization.split(';').map(pair => pair.trim().split('='));
-        //     console.log("cookie = ",cookei.accesstoken);
         //     const accessTokenPair = tokenArray.find(([key]) => key === 'accesstoken');
         //     if (accessTokenPair) {
         //         const [, value] = accessTokenPair;

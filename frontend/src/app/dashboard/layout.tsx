@@ -17,7 +17,6 @@ const Layout = ({children} : any) => {
     getUserInfo().then((res) => {
       if (res.data)
         setProfile(res.data);
-      console.log("profile ", profile);
     }).catch((err) => { console.log(err) });
   }, []);
     return (

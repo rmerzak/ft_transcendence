@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Blocker, FriendshipStatus, RequestType, User, UserStatus } from '@prisma/client';
+import { stat } from 'fs';
 import { Socket } from 'socket.io';
 import { PrismaService } from 'src/prisma/prisma.service';
 
@@ -100,22 +101,24 @@ export class FriendshipService {
 
     }
 
-    async RefuseFriendRequest(socket: Socket, userId: number) {
-        const user = await this.prisma.user.findUnique({ where: { id: userId } });
-        if (!user) throw new Error('user not found');
-        const friendRequest = await this.prisma.friendship.findFirst({ where: { senderId: userId, receiverId: socket['payload']['sub'] } });
-        if (!friendRequest) throw new Error('friend request not found');
-        if (friendRequest.status === FriendshipStatus.DECLINED || friendRequest.status === FriendshipStatus.ACCEPTED) throw new Error('friend request already accepted or rejected');
-        const friendRequestRefused = await this.prisma.friendship.update({
-            where: { id: friendRequest.id }, data: {
-                status: FriendshipStatus.DECLINED,
-            }
-        });
-        return friendRequestRefused.id;
-    }
+    // async RefuseFriendRequest(socket: Socket, userId: number) {
+    //     const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    //     if (!user) throw new Error('user not found');
+    //     const friendRequest = await this.prisma.friendship.findFirst({ where: { senderId: userId, receiverId: socket['payload']['sub'] } });
+    //     if (!friendRequest) throw new Error('friend request not found');
+    //     if (friendRequest.status === FriendshipStatus.DECLINED || friendRequest.status === FriendshipStatus.ACCEPTED) throw new Error('friend request already accepted or rejected');
+    //     const friendRequestRefused = await this.prisma.friendship.update({
+    //         where: { id: friendRequest.id }, data: {
+    //             status: FriendshipStatus.DECLINED,
+    //         }
+    //     });
+    //     return friendRequestRefused.id;
+    // }
 
     async RemoveFriend(socket: Socket, userId: number) {
         const user = await this.prisma.user.findUnique({ where: { id: userId } });
+        console.log('user', user);
+        console.log('socket', socket['payload']['sub']);
         if (!user) throw new Error('user not found');
         const friendRequest = await this.prisma.friendship.findFirst({
             where: {
@@ -126,17 +129,15 @@ export class FriendshipService {
             }
         });
         if (!friendRequest) throw new Error('friend request not found');
-        if (friendRequest.status !== FriendshipStatus.ACCEPTED) throw new Error('friend request not accepted');
+        console.log('i m herre 2');
         const friendRequestRemoved = await this.prisma.friendship.delete({
             where: { id: friendRequest.id }
         });
-        console.log(friendRequestRemoved);
         return friendRequestRemoved;
     }
 
     async BlockFriend(socket: Socket, userId: number) {
         const user = await this.prisma.user.findUnique({ where: { id: userId } });
-        console.log(userId,socket['payload']['sub']);
         if (!user) throw new Error('user not found');
         const friendRequest = await this.prisma.friendship.findFirst({
             where: {
@@ -146,14 +147,14 @@ export class FriendshipService {
               ]
             }
           });
-          console.log(friendRequest);
         if (!friendRequest) throw new Error('friend request not found 1');
         if(friendRequest.block === true) throw new Error('friend request already blocked');
         const friendRequestBlocked = await this.prisma.friendship.update({
             where: { id: friendRequest.id },
             data: {
                 block: true,
-                blockBy: user.id !== friendRequest.senderId ? Blocker.SENDER : Blocker.RECEIVER
+                blockBy: user.id !== friendRequest.senderId ? Blocker.SENDER : Blocker.RECEIVER,
+                status: FriendshipStatus.BLOCKED,
             }
         });
     }
@@ -176,7 +177,8 @@ export class FriendshipService {
             where: { id: friendRequest.id },
             data: {
                 block: false,
-                blockBy: null
+                blockBy: null,
+                status: FriendshipStatus.ACCEPTED,
             }
         });
         return friendRequestUnblocked;
@@ -225,19 +227,19 @@ export class FriendshipService {
                 block:true,
                 blockBy:true,
                 sender:{
-                    select:{
+                    select:
+                    {
                         id:true,
                         username:true,
-                        email:true,
                         image:true,
                         status:true,
                     }
                 },
                 receiver:{
-                    select:{
+                    select:
+                    {
                         id:true,
                         username:true,
-                        email:true,
                         image:true,
                         status:true,
                     }
