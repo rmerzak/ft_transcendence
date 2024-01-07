@@ -113,6 +113,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     try {
       const playerId = client.id;
       this.game.leaveRoom(payload.roomId, playerId);
+      client.leave(payload.roomId);
       console.log('leave');
     } catch {}
   }
