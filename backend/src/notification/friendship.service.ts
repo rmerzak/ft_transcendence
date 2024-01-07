@@ -20,7 +20,8 @@ export class FriendshipService {
         }
 
         this.connectedClients.get(userId).push(socket);
-        console.log('connected client', this.connectedClients.size);
+        // print socket id
+        console.log('connected notification id : ' + clientId);
     }
 
     async handleDisconnect(socket: Socket): Promise<void> {
@@ -50,7 +51,7 @@ export class FriendshipService {
                 content: content,
                 RequestId: RequestId,
                 Receiver: { connect: { id: Receiver?.id } },
-                sender: { connect: { id: Sender?.id } },
+        sender: { connect: { id: Sender?.id } },
                 RequestType: RequestType.FRIENDSHIP, 
                 vue: false,
                 senderName: Sender?.username,

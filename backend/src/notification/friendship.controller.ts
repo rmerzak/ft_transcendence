@@ -7,6 +7,11 @@ import { Request } from "express";
 @UseGuards(JwtGuard)
 export class FriendshipController {
     constructor(private friendship:FriendshipService) {}
+    @Get()
+    test() {
+        // console.log("i m here")
+        return "hello";
+    }
     @Get('status/:id')
     async getFriendshipStatus(@Req() req: Request) {
         try {
@@ -18,6 +23,7 @@ export class FriendshipController {
     }
     @Get('friendlist/:id')
     async getFriendList(@Req() req : Request) {
+        // console.log("i m here")
         try {
             const friendlist = await this.friendship.getFriendListByUserId(req.user['id']);
             return friendlist;

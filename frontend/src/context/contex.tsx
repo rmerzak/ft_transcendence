@@ -1,24 +1,50 @@
 'use client'
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import io, { Socket } from 'socket.io-client';
-import { Friendship, User } from '@/interfaces';
+import { ChatRoom, Friendship, User } from '@/interfaces';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { getUnreadNotification } from '@/api/notifications/notifications.api';
 import { getFriendList } from '@/api/friendship/friendship.api';
 import { getUserInfo } from '@/api/user/user';
 import Profile from '@/app/dashboard/profile/page';
+import { get } from 'http';
+import { getChatRoomsJoined, getChatRoomsNotJoined } from '@/api/chat/chat.api';
 
-export const ContextGlobal = createContext({
-  setProfile(user: User) { },
-  profile:  null as User | null,
+interface contextProps {
+  profile: User | null;
+  setProfile: (user: User) => void;
+  socket: Socket | null;
+  setSocket: (socket: Socket) => void;
+  chatSocket: Socket | null;
+  setChatSocket: (socket: Socket) => void;
+  notification: Notification[];
+  setNotification: (notification: Notification[]) => void;
+  friends: Friendship[];
+  setFriends: (friends: Friendship[]) => void;
+  chatRoomsJoined: ChatRoom[];
+  setChatRoomsJoined: (chatRooms: ChatRoom[]) => void;
+  chatRoomsToJoin: ChatRoom[];
+  setChatRoomsToJoin: (chatRooms: ChatRoom[]) => void;
+}
+
+export const ContextGlobal = createContext<contextProps>({
+  profile: null,
+  setProfile: (user: User) => { },
   socket: null,
-  setSocket(socket: any) { },
-  notification: [] as Notification[],
-  setNotification(notification: Notification[]) { },
-  friends: [] as Friendship[],
-  setFriends(friends: Friendship[]) { },
+  setSocket: (socket: Socket) => { },
+  chatSocket: null,
+  setChatSocket: (socket: Socket) => { },
+  notification: [],
+  setNotification: (notification: Notification[]) => { },
+  friends: [],
+  setFriends: (friends: Friendship[]) => { },
+  chatRoomsJoined: [],
+  setChatRoomsJoined: (chatRooms: ChatRoom[]) => { },
+  chatRoomsToJoin: [],
+  setChatRoomsToJoin: (chatRooms: ChatRoom[]) => { },
 });
+
 
 export const ContextProvider = ({ children }: { children: any }) => {
 
@@ -35,32 +61,71 @@ export const ContextProvider = ({ children }: { children: any }) => {
     status: '', // Add the status property and provide a valid value
   });
   const [socket, setSocket] = useState<any>(null);
+  const [chatSocket, setChatSocket] = useState<any>(null);
   const [notification, setNotification] = useState<Notification[]>([]);
   const [friends, setFriends] = useState<Friendship[]>([]);
+  const [chatRoomsJoined, setChatRoomsJoined] = useState<ChatRoom[]>([]);
+  const [chatRoomsToJoin, setChatRoomsToJoin] = useState<ChatRoom[]>([]);
   useEffect(() => {
     getUnreadNotification().then((res) => {
       if (res.data)
         setNotification(res.data);
     }).catch((err) => { console.log(err) });
+
     getUserInfo().then((res) => {
       if (res.data)
         setProfile(res.data);
     }).catch((err) => { console.log(err) });
+
     if (profile.id !== -1) {
       getFriendList(profile.id).then((res) => {
         if (res.data)
           setFriends(res.data);
       }).catch((err) => { console.log(err) });
+
+      getChatRoomsJoined().then((res) => {
+        if (res.data)
+          setChatRoomsJoined(res.data);
+        // console.log(res.data);
+      }).catch((err) => { console.log(err) });
+
+      getChatRoomsNotJoined().then((res) => {
+        if (res.data)
+          setChatRoomsToJoin(res.data);
+        // console.log(res.data);
+      }).catch((err) => { console.log(err) });
     }
-  }, []);
-  return <ContextGlobal.Provider value={{
+  }, [socket]);
+
+  const providerValue = {
     profile,
     setProfile,
     socket,
     setSocket,
+    chatSocket,
+    setChatSocket,
     notification,
     setNotification,
     friends,
     setFriends,
-  }} > {children} </ContextGlobal.Provider>;
+    chatRoomsJoined,
+    setChatRoomsJoined,
+    chatRoomsToJoin,
+    setChatRoomsToJoin,
+  };
+
+  return <ContextGlobal.Provider value={providerValue} > {children} </ContextGlobal.Provider>;
 };
+
+// export const ContextGlobal = createContext({
+//   setProfile(user: User) { },
+//   profile:  null as User | null,
+//   socket: null,
+//   setSocket(socket: any) { },
+//   chatSocket: null,
+//   setChatSocket(socket: any) { },
+//   notification: [] as Notification[],
+//   setNotification(notification: Notification[]) { },
+//   friends: [] as Friendship[],
+//   setFriends(friends: Friendship[]) { },
+// });

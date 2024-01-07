@@ -1,3 +1,5 @@
+import { Socket } from "socket.io-client";
+
 export interface MatchHistoryItemInterface {
   PlayerOne: string;
   PlayerTwo: string;
@@ -47,4 +49,62 @@ export interface Friendship {
   blockBy: Blocker | null;
   sender: User;
   receiver: User;
+}
+
+export enum RoomVisibility {
+  PUBLIC = 'PUBLIC',
+  PRIVATE = 'PRIVATE',
+  PROTECTED = 'PROTECTED'
+}
+
+export interface ChatRoom {
+  id?: number;
+  name?: string;
+  visibility?: RoomVisibility;
+  createdAt?: string;
+  updatedAt?: string;
+  passwordHash?: string;
+  ownerId?: number;
+}
+
+export interface ChatRoomMember {
+  userId: number;
+  chatRoomId: number;
+  joinedAt: string;
+  is_admin: boolean;
+  leftAt: string;
+  user: User;
+  chatRoom: ChatRoom;
+}
+
+export interface Messages {
+  id?: number;
+  text: string;
+  createdAt?: string;
+  senderId: number;
+  chatRoomId: number;
+  sender?: User;
+}
+
+// helper interface
+export interface ChatRoomUsers {
+  user: {
+      id: number;
+      username: string;
+      image: string;
+      status: string;
+  };
+}
+
+export interface ChatContext {
+  socket: Socket | null;
+  setSocket(socket: Socket | null): void;
+  friends: Friendship[] | [];
+  setFriends(friends: Friendship[] | []): void;
+  messages: Messages[] | [];
+  setMessages(messages: Messages[] | []): void;
+  chatRoom: ChatRoom | null;
+  setChatRoom(chatRoom: ChatRoom | null): void;
+  chatRoomMembers: ChatRoomUsers[] | [];
+  setChatRoomMembers(chatRoomMembers: ChatRoomUsers[] | []): void;
 }

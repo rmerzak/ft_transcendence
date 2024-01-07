@@ -1,10 +1,13 @@
+'use client';
+
+import { ContextGlobal } from "@/context/contex";
+import { useContext } from "react";
 
 const Chat = () => {
-    return (
-      <div>
-        Chat
-      </div>
-    )
-  }
-  
-  export default Chat
+
+  return (
+     <>
+     </>
+  );
+};
+export default Chat;

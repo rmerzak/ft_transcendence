@@ -9,6 +9,13 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+// room visibility
+enum RoomVisibility {
+  PUBLIC
+  PRIVATE
+  PROTECTED
+}
 enum UserStatus {
   ONLINE
   OFFLINE
@@ -43,6 +50,10 @@ model User {
   gamepoints Int @default(0)
   
   games Game[]
+
+  // Chat user data
+  chatRooms ChatRoomMember[]
+  sentMessages Message[] @relation(name: "SentMessages")
   sentFriendRequests Friendship[] @relation("Sender")
   receivedFriendRequests Friendship[] @relation("Receiver")
   receivedNotification Notification[] @relation("Receiver")
@@ -60,6 +71,7 @@ model Game {
   user User @relation(fields: [userPlayerId], references: [id])
 
 }
+
 
 enum FriendshipStatus {
   PENDING
@@ -84,7 +96,6 @@ model Friendship {
 
   block Boolean @default(false)
   blockBy Blocker?
-  @@unique([senderId, receiverId])
 }
 
 enum RequestType {
@@ -106,3 +117,48 @@ model Notification {
   Receiver User @relation( "Receiver",fields: [userId], references: [id])
   sender User @relation( "Sender",fields: [senderId], references: [id])
 }
+
+// begin chat models
+model ChatRoom {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name String? @unique
+  passwordHash String?
+  owner Int?
+  visibility RoomVisibility? @default(PUBLIC)
+  users ChatRoomMember[]
+  messages Message[]
+}
+
+model ChatRoomMember {
+  // Foreign keys
+  userId Int
+  chatRoomId Int
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  chatRoom ChatRoom @relation(fields: [chatRoomId], references: [id], onDelete: Cascade)
+  joinedAt DateTime @default(now())
+  is_admin Boolean @default(false)
+  leftAt DateTime?
+  @@id([userId, chatRoomId])
+}
+
+model Message {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  senderId Int
+  chatRoomId Int 
+  sender User @relation(name: "SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  chatRoom ChatRoom @relation(fields: [chatRoomId], references: [id], onDelete: Cascade)
+  text String
+}
+
+// model userMessage {
+//   id Int @id @default(autoincrement())
+//   createdAt DateTime @default(now())
+//   senderId Int
+//   receiverId Int
+//   sender User @relation(fields: [senderId], references: [id], onDelete: Cascade)
+//   receiver User @relation(fields: [receiverId], references: [id], onDelete: Cascade)
+//   text String
+// }

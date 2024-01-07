@@ -2,104 +2,128 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  .scroll-y-auto {
+    overflow-y: auto;
+  }
+  ::-webkit-scrollbar {
+    width: 0px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: #c0e00e;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #c0e00e;
+    border-radius: 20px;
+    border: 3px solid #c0e00e;
+}
+}
 
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: "Eudoxus Sans", sans-serif;
-    scroll-behavior: smooth;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Eudoxus Sans", sans-serif;
+  scroll-behavior: smooth;
 }
 
 .gradient-01 {
-    background-image: linear-gradient(270deg,
-            hsl(295deg 76% 51%) 0%,
-            hsl(284deg 70% 73%) 26%,
-            hsl(257deg 70% 86%) 39%,
-            hsl(202deg 92% 90%) 50%,
-            hsl(215deg 77% 81%) 61%,
-            hsl(221deg 73% 70%) 74%,
-            hsl(220deg 76% 51%) 100%);
-    filter: blur(125px);
+  background-image: linear-gradient(
+    270deg,
+    hsl(295deg 76% 51%) 0%,
+    hsl(284deg 70% 73%) 26%,
+    hsl(257deg 70% 86%) 39%,
+    hsl(202deg 92% 90%) 50%,
+    hsl(215deg 77% 81%) 61%,
+    hsl(221deg 73% 70%) 74%,
+    hsl(220deg 76% 51%) 100%
+  );
+  filter: blur(125px);
 }
 
 .hero-gradient {
-background-image:
-radial-gradient(at 21% 40%, hsla(199,63%,31%,1) 0px, transparent 50%),
-radial-gradient(at 40% 20%, hsla(197,95%,28%,1) 0px, transparent 50%),
-radial-gradient(at 80% 0%, hsla(191,96%,22%,1) 0px, transparent 50%),
-radial-gradient(at 0% 50%, hsla(186,18%,21%,1) 0px, transparent 50%),
-radial-gradient(at 80% 50%, hsla(39,29%,50%,1) 0px, transparent 50%),
-radial-gradient(at 0% 100%, hsla(5,88%,55%,1) 0px, transparent 50%);
+  background-image: radial-gradient(
+      at 21% 40%,
+      hsla(199, 63%, 31%, 1) 0px,
+      transparent 50%
+    ),
+    radial-gradient(at 40% 20%, hsla(197, 95%, 28%, 1) 0px, transparent 50%),
+    radial-gradient(at 80% 0%, hsla(191, 96%, 22%, 1) 0px, transparent 50%),
+    radial-gradient(at 0% 50%, hsla(186, 18%, 21%, 1) 0px, transparent 50%),
+    radial-gradient(at 80% 50%, hsla(39, 29%, 50%, 1) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, hsla(5, 88%, 55%, 1) 0px, transparent 50%);
 }
 
 .login-gradient {
-    background: 
-        url('/background.jpg'); /* Replace 'your-image.jpg' with the path to your image file */
-    
-    background-blend-mode: overlay, color-burn, multiply, difference, difference, normal;
-    background-size: cover; /* Adjust the size to cover the entire element */
+  background: url("/background.jpg"); /* Replace 'your-image.jpg' with the path to your image file */
+
+  background-blend-mode: overlay, color-burn, multiply, difference, difference,
+    normal;
+  background-size: cover; /* Adjust the size to cover the entire element */
 }
 
-
 .gradient-02 {
-    position: absolute;
-    width: 200px;
-    height: 438px;
-    top: 0px;
-    right: 0px;
+  position: absolute;
+  width: 200px;
+  height: 438px;
+  top: 0px;
+  right: 0px;
 
-    background: #7aebfb;
-    filter: blur(190px);
+  background: #7aebfb;
+  filter: blur(190px);
 }
 
 .glassmorphism {
-    background: rgba(255, 255, 255, 0.25);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
 }
 
 .gradient-03 {
-    position: absolute;
-    width: 404px;
-    height: 800px;
-    left: 20%;
-    top: 5%;
+  position: absolute;
+  width: 404px;
+  height: 800px;
+  left: 20%;
+  top: 5%;
 
-    background: rgba(149, 66, 232, 0.35);
-    filter: blur(175px);
-    transform: rotate(-114.2deg);
+  background: rgba(149, 66, 232, 0.35);
+  filter: blur(175px);
+  transform: rotate(-114.2deg);
 }
 
 .gradient-04 {
-    position: absolute;
-    width: 304px;
-    height: 100vh;
-    left: 30%;
-    top: 10%;
+  position: absolute;
+  width: 304px;
+  height: 100vh;
+  left: 30%;
+  top: 10%;
 
-    background: rgba(45, 72, 152, 0.75);
-    filter: blur(200px);
-    transform: rotate(-53.13deg);
+  background: rgba(45, 72, 152, 0.75);
+  filter: blur(200px);
+  transform: rotate(-53.13deg);
 }
 
 .gradient-05 {
-    background: linear-gradient(180deg,
-            rgba(255, 255, 255, 0.04) 0%,
-            rgba(255, 255, 255, 0) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.04) 0%,
+    rgba(255, 255, 255, 0) 100%
+  );
 }
 
 .feedback-gradient {
-    position: absolute;
-    width: 200px;
-    height: 316px;
-    left: 0px;
-    top: 0px;
+  position: absolute;
+  width: 200px;
+  height: 316px;
+  left: 0px;
+  top: 0px;
 
-    background: #8d39a3;
-    filter: blur(175px);
+  background: #8d39a3;
+  filter: blur(175px);
 }
 
 .footer-gradient {

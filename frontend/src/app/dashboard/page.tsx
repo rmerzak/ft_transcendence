@@ -3,10 +3,11 @@ import { ContextGlobal } from '@/context/contex';
 import React, { useContext } from 'react'
 
 const Dashboard = () => {
-  const { socket, setSocket }: any = useContext(ContextGlobal);
+  const { socket, setSocket, chatSocket }: any = useContext(ContextGlobal);
   return (
     <div>
-      socket {socket?.id}
+      socket {socket?.id}******
+      chatSocket {chatSocket?.id}
     </div>
   )
 }

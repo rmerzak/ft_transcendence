@@ -8,7 +8,7 @@ import { User } from '@prisma/client';
 import { UserDto } from '../Dto';
 /// dont forget to add the userin the socket using the methode socket.data = user
 
-@WebSocketGateway({ cors: { origin: 'http://localhost:8080', credentials: true } })
+@WebSocketGateway({ cors: { origin: 'http://localhost:8080', credentials: true, namespace:'/profile'} })
 export class FriendshipGateway {
   constructor(private readonly friendship: FriendshipService) { }
   @WebSocketServer()
@@ -17,7 +17,7 @@ export class FriendshipGateway {
   afterInit(socket: Socket) {
     console.log('init');
     socket.use(SocketAuthMiddleware() as any);
-    console.log("socket",socket.data)
+    console.log("socket",socket.data) 
   }
 
   handleConnection(socket: Socket) {
@@ -25,7 +25,7 @@ export class FriendshipGateway {
   }
 
   handleDisconnect(socket: Socket) {
-    console.log('disconnected');
+    // console.log('disconnected');
     this.friendship.handleDisconnect(socket);
   }
   @SubscribeMessage('friendRequest')
