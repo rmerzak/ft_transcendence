@@ -1,7 +1,7 @@
 'use client'
 import styles from '@/app/dashboard/game/page.module.css'
 import { useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 import Swal from 'sweetalert2';
 import { setInterval, clearInterval } from 'timers';
@@ -23,13 +23,14 @@ function Pong( { theme }: PongProps )
     // route
     const router = useRouter();
 
-    //  socket.io
-    const socket = io('http://localhost:3000/game', {
-        transports: ['websocket'],
-        withCredentials: true,
-        // autoConnect: false,
-    });
     useEffect(() => {
+        
+        //  socket.io
+        const socket = io('http://localhost:3000/game', {
+            transports: ['websocket'],
+            withCredentials: true,
+            autoConnect: false,
+        });
 
         const canvas = gameRef.current;
         if (!canvas) return;
@@ -256,7 +257,9 @@ function Pong( { theme }: PongProps )
             balls = temp;
         }
 
-        socket.emit('join');
+        if (socket.connect()) {
+            socket.emit('join');
+        }
 
         // get player no
         socket.on('playerNo', (newPlayerNo) => {
@@ -371,7 +374,6 @@ function Pong( { theme }: PongProps )
                     }
                 }).then(() => {
                     // redirect to game page
-                    // window.location.href = '/dashboard/game';
                     router.push('/dashboard/game');
                 });
             } else {
@@ -387,7 +389,6 @@ function Pong( { theme }: PongProps )
                     }
                 }).then(() => {
                     // redirect to game page
-                    // window.location.href = '/dashboard/game';
                     router.push('/dashboard/game');
                 });
             }
@@ -404,21 +405,20 @@ function Pong( { theme }: PongProps )
 
         return () => {
             // Remove event listeners
-           window.removeEventListener('keydown', handleKeyDown);
-           window.removeEventListener('keyup', handleKeyUp);
+        window.removeEventListener('keydown', handleKeyDown);
+        window.removeEventListener('keyup', handleKeyUp);
 
-           // Clear interval
-           clearInterval(intervalId);
-           // off event listener
-           socket.off('playerNo');
-           socket.off('roomIsFull');
-           socket.off('startedGame');
-           socket.off('updateGame');
-           socket.off('redirect');
-           socket.off('gameOver');
-           socket.off('connect');
-
-           socket.disconnect();
+        // Clear interval
+        clearInterval(intervalId);
+        // off event listener
+        socket.off('playerNo');
+        socket.off('roomIsFull');
+        socket.off('startedGame');
+        socket.off('updateGame');
+        socket.off('redirect');
+        socket.off('gameOver');
+        socket.off('connect');
+        socket.disconnect();
            };
 
     }, []);

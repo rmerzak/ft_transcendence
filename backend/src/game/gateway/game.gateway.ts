@@ -10,7 +10,9 @@ import { Socket, Server } from 'socket.io';
 import { GameService } from '../services/game.service';
 import { SocketAuthMiddleware } from 'src/auth/middleware/ws.mw';
 import { Player } from '../models/player.model';
-import { State } from '../models/state.model';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { UserStatus } from '@prisma/client';
+
 
 @WebSocketGateway({
   cors: {
@@ -22,25 +24,30 @@ import { State } from '../models/state.model';
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     private readonly game: GameService,
+    private prisma:PrismaService
   ) {}
 
   private roomId: string = '';
 
   @WebSocketServer()
   server: Server;
-  // afterInit(socket: Socket) {
-  //   socket.use(SocketAuthMiddleware() as any);
-  // }
-
-  async getUser(socket: any) {
-
-    const user = await this.game.findUserByEmail(socket['payload']['email']);
-
-    console.log(user);
+  afterInit(socket: Socket) {
+    socket.use(SocketAuthMiddleware() as any);
   }
 
-    handleConnection(socket: Socket, request: Request) {
+    async handleConnection(socket: Socket) {
     console.log("i'm connected");
+
+      const user = await this.prisma.user.findUnique({where:{id:socket['payload']['sub']}});
+      const userId = socket['payload']['sub'];
+      let updatedUser = await this.prisma.user.update({where:{id:userId},data:{status:UserStatus.INGAME}});
+      if(user){
+        socket['user'] = user;
+        // console.log(socket['user']);
+      }else{
+        socket.disconnect();
+      } 
+    console.log('connected chat id1: ' + socket.id);
     // console.log(socket['payload']['email']);
     // this.getUser(socket.request);
     // socket["user"] = await this.getUser(socket.request);
@@ -48,13 +55,15 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // this.getUser(socket);
   }
 
-  handleDisconnect(client: Socket): void {
+  async handleDisconnect(client: Socket) {
     console.log("Player disconnected");
     console.log("Room ID:", this.roomId);
   
     // Leave the room for the disconnected player
     this.game.leaveRoom(this.roomId, client.id);
-  
+    const userId = client['payload']['sub'];
+    let updatedUser = await this.prisma.user.update({where:{id:userId},data:{status:UserStatus.ONLINE}});
+
     // Find the room where the disconnection occurred
     const targetRoom = this.game.rooms.find((room) => room.id === this.roomId);
   
@@ -73,7 +82,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   // this method is called when a player joins a room
   // if the room is full, the game is started immediately
   @SubscribeMessage('join')
-  joinRoom(client: Socket): void {
+  async joinRoom(client: Socket) {
+    console.log(client.id);
+    const user = await this.prisma.user.findUnique({where:{id:client['payload']['sub']}});
+    console.log('user = ',user)
     try {
       const player: Player = new Player(client.id);
       this.roomId = this.game.joinRoom(player, client, this.server);
