@@ -65,7 +65,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     console.log('Room ID:', this.roomId);
 
     // Leave the room for the disconnected player
-    this.game.leaveRoom(this.roomId, client.id);
+    this.game.leaveRoom(this.roomId, client.id, client);
     // const userId = client['payload']['sub'];
     // let updatedUser = await this.prisma.user.update({
     //   where: { id: userId },
@@ -112,8 +112,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   leave(client: Socket, payload: any): any {
     try {
       const playerId = client.id;
-      this.game.leaveRoom(payload.roomId, playerId);
-      client.leave(payload.roomId);
+      this.game.leaveRoom(payload.roomId, playerId, client);
       console.log('leave');
     } catch {}
   }

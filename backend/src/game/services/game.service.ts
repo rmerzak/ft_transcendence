@@ -103,8 +103,9 @@ export class GameService {
   }
 
   // this method is called when a player leaves a room
-  leaveRoom(roomId: string, playerId: string): void {
+  leaveRoom(roomId: string, playerId: string, client: Socket): void {
     const room = this.rooms.find((room) => room.id === roomId);
+    client.leave(roomId);
     console.log(this.rooms);
     if (room) {
       room.endGame();
