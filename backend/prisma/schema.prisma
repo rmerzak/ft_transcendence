@@ -9,6 +9,11 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+enum UserStatus {
+  ONLINE
+  OFFLINE
+  INGAME
+}
 model User {
   // initial user data
   id Int @id @default(autoincrement())
@@ -25,6 +30,8 @@ model User {
   // verification user authentification
   isVerified Boolean @default(false)
 
+  // user status online , offline ,in game
+  status UserStatus @default(OFFLINE)
   // user 2fa
   twoFactorSecret String
   twoFactorEnabled Boolean @default(false)
@@ -57,7 +64,7 @@ model Game {
 enum FriendshipStatus {
   PENDING
   ACCEPTED
-  DECLINED
+  BLOCKED
 }
 enum Blocker {
   SENDER
@@ -94,6 +101,8 @@ model Notification {
   vue Boolean @default(false)
   userId Int
   senderId Int
+  senderName String
+  senderImage String
   Receiver User @relation( "Receiver",fields: [userId], references: [id])
   sender User @relation( "Sender",fields: [senderId], references: [id])
 }

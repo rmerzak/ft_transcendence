@@ -25,7 +25,6 @@ export class AuthController {
     @UseGuards(LeetGuard)
     @Get('42-redirect')
     async ftAuthCallback(@Req() req: Request, @Res() res: Response) {
-        console.log("req.user :", req.user['id'])
         res.cookie('userId', req.user['id']);
         if (req.user['twoFactorEnabled'] === true) {
             return res.redirect('http://localhost:8080/auth/twofa');
@@ -49,7 +48,6 @@ export class AuthController {
     @UseGuards(JwtGuard)
     @Post('finish-auth')
     async FinishAuth(@Req() req: Request, @Body() body: any) {
-        console.log("body :", body)
         return await this.authService.finishAuth(body, req.user['email']);
     }
 
@@ -57,21 +55,18 @@ export class AuthController {
     @UseInterceptors(FileInterceptor('image'))
     async uploadFile(@UploadedFile() file: Express.Multer.File) {
         try {
-            console.log("file :", file)
             if (!file) {
                 throw new BadRequestException('Missing required parameter - file');
             }
             const result = await this.authService.uploadImage(file);
             return result;
         } catch (error) {
-            console.log("zzerror upload file", error);
             throw new Error(error);
         }
     }
     @UseGuards(JwtGuard)
     @Get('logout')
     async logout(@Req() req: Request, @Res() res: Response) {
-        console.log("req.user :", req.user)
         try {
             res.clearCookie('accesstoken', { httpOnly: true });
             res.clearCookie('userId', { httpOnly: true });
@@ -109,7 +104,6 @@ export class AuthController {
     async verifyTwoFactorToken(@Req() req: Request, @Body() body: any) {
         const isTokenValid = this.twoFactorService.verifyTwoFactorToken(body.code, body.secret);
         if (isTokenValid) {
-            console.log("isTokenValid :", isTokenValid)
             await this.twoFactorService.enableTwoFactorAuth(req.user['email'], body.secret);
             return true;
         } else {
@@ -119,13 +113,10 @@ export class AuthController {
 
     @Get('2fa/check/:code')
     async checkTwoFactorAuth(@Req() req: Request, @Param('code') code: string, @Res() res: Response) {
-        console.log("body :", code)
         const userId = req.cookies.userId;
         const user = await this.authService.findUserById(Number(userId));
         const isTokenValid = this.twoFactorService.verifyTwoFactorToken(code, user['twoFactorSecret']);
-        console.log("isTokenValid :", isTokenValid)
         if (isTokenValid) {
-            console.log("i m herre")
             const { accessToken } = await this.authService.signToken(user['id'], user['email']);
             res.cookie('accesstoken', accessToken, { httpOnly: true, });
             res.status(200).json({ success: true });
@@ -133,12 +124,9 @@ export class AuthController {
     }
     @Get('2fa/disable/:code')
     async disableTwoFactorToken(@Req() req: Request, @Param('code') code: string) {
-        console.log("body :", code)
         const userId = req.cookies.userId;
         const user = await this.authService.findUserById(Number(userId));
         const isTokenValid = this.twoFactorService.verifyTwoFactorToken(code, user['twoFactorSecret']);
-        console.log("isTokenValid :", isTokenValid)
-        console.log( user)
         if (isTokenValid) {
             await this.twoFactorService.disableTwoFactorAuth(user['email']);
             return true;

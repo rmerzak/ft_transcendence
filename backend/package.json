@@ -56,7 +56,8 @@
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
     "streamifier": "^0.1.1",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "swiper": "^11.0.5"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",

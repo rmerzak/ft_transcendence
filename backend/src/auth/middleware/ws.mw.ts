@@ -7,7 +7,6 @@ export type SocketIOMiddleware = {
 };
 
 export const SocketAuthMiddleware = (): SocketIOMiddleware => {
-    //console.log("middleware");
         return (socket,next) => {
             try {
                 WsJwtGuard.validateToken(socket);

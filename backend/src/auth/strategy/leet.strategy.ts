@@ -23,7 +23,7 @@ export class LeetStrategy extends PassportStrategy(Strategy, '42') {
         firstname: profile._json.first_name,
         lastname: profile._json.last_name,
         username: profile._json.login,
-      });
+      }); 
       return user;
     } catch (error) {
       throw error;

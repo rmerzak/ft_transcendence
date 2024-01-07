@@ -1,5 +1,4 @@
-import { NextResponse } from 'next/server';
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 async function isValidAccessToken(accessToken: any,userId :any): Promise<boolean> {
   try {
     const response = await fetch('http://localhost:3000/auth/validateToken', {

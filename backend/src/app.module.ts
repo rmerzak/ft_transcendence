@@ -4,16 +4,18 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { MulterModule } from '@nestjs/platform-express';
-import { FriendshipGateway } from './friendship/gateway/friendship.gateway';
-import { FriendshipService } from './friendship/friendship.service';
-import { FriendshipController } from './friendship/friendship.controller';
+import { FriendshipGateway } from './notification/gateway/friendship.gateway';
+import { FriendshipService } from './notification/friendship.service';
+import { NotificationController } from './notification/notification.controller';
 import { GameModule } from './game/game.module';
+import { NotificationService } from './notification/notification.service';
+import { FriendshipController } from './notification/friendship.controller';
 
 
 
 @Module({
   imports: [ AuthModule, UserModule, PrismaModule, ConfigModule.forRoot({isGlobal:true,}), MulterModule.register({dest : './uploads'}),GameModule],
-  controllers: [FriendshipController],
-  providers: [FriendshipGateway, FriendshipService],
+  controllers: [NotificationController, FriendshipController],
+  providers: [FriendshipGateway, FriendshipService, NotificationService],
 })
 export class AppModule {}

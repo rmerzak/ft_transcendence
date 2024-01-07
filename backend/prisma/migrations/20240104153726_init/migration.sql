@@ -1,5 +1,8 @@
 -- CreateEnum
-CREATE TYPE "FriendshipStatus" AS ENUM ('PENDING', 'ACCEPTED', 'DECLINED');
+CREATE TYPE "UserStatus" AS ENUM ('ONLINE', 'OFFLINE', 'INGAME');
+
+-- CreateEnum
+CREATE TYPE "FriendshipStatus" AS ENUM ('PENDING', 'ACCEPTED', 'BLOCKED');
 
 -- CreateEnum
 CREATE TYPE "Blocker" AS ENUM ('SENDER', 'RECEIVER');
@@ -18,6 +21,7 @@ CREATE TABLE "User" (
     "username" TEXT NOT NULL,
     "image" TEXT NOT NULL,
     "isVerified" BOOLEAN NOT NULL DEFAULT false,
+    "status" "UserStatus" NOT NULL DEFAULT 'OFFLINE',
     "twoFactorSecret" TEXT NOT NULL,
     "twoFactorEnabled" BOOLEAN NOT NULL DEFAULT false,
     "gamewins" INTEGER NOT NULL DEFAULT 0,
@@ -66,6 +70,8 @@ CREATE TABLE "Notification" (
     "vue" BOOLEAN NOT NULL DEFAULT false,
     "userId" INTEGER NOT NULL,
     "senderId" INTEGER NOT NULL,
+    "senderName" TEXT NOT NULL,
+    "senderImage" TEXT NOT NULL,
 
     CONSTRAINT "Notification_pkey" PRIMARY KEY ("id")
 );

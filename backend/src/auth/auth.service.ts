@@ -33,7 +33,6 @@ export class AuthService {
                 twoFactorSecret: "null",
             },
         })
-        console.log("dto :", user)
             return user;
         } catch (error) {
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -89,7 +88,6 @@ export class AuthService {
                 }
             });
         } catch (error) {
-            console.log(error);
             throw new InternalServerErrorException('Error during user Update');
         }
     }
@@ -112,7 +110,6 @@ export class AuthService {
     }
     async validateAccessToken(accessToken: string): Promise<boolean> {
         try {
-            console.log("accessToken", accessToken) 
           const decoded = await this.jwt.verify(accessToken, this.config.get('JWT_SERCRET'));
           return !!decoded;
         } catch (error) {

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -7,7 +7,7 @@ export class UserService {
         
     }
 
-    async searchUser(username: string) {
+    async searchUser(username: string, name:string) {
         const users = await this.prismaService.user.findMany({
             where: {
                 OR: [
@@ -20,13 +20,13 @@ export class UserService {
                 username: true,
             },
         });
-
-        return users;
+        const filteredUsers = users.filter(user => user.username !== name);
+        return filteredUsers;
     }
-    async getUserProfile(username: string) {
+    async getUserProfile(username: string, name: string) {
         const user = await this.prismaService.user.findUnique({
             where: {
-                username: username,
+                username: username , 
             },
             select: {
                 id: true,
@@ -38,9 +38,33 @@ export class UserService {
                 updatedAt: true,
                 firstname: true,
                 lastname: true,
+                status: true,
             },
         });
-        console.log("user :", user) 
+        if (!user)
+            throw new BadRequestException('User not found');
+        return user;
+    }
+    async getUserProfileById(id: number) {
+        const user = await this.prismaService.user.findUnique({
+            where: {
+                id: id,
+            },
+            select: {
+                id: true,
+                username: true,
+                image: true,
+                email: true,
+                isVerified: true,
+                createdAt: true,
+                updatedAt: true,
+                firstname: true,
+                lastname: true,
+                status: true,
+            },
+        });
+        if (!user)
+            throw new BadRequestException('User not found');
         return user;
     }
 }
