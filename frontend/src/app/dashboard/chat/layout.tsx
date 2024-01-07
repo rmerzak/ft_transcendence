@@ -9,11 +9,11 @@ import { ContextGlobal } from '@/context/contex';
 
 
 const Layout = ({children} : any) => {
-  const { chatSocket, setChatSocket} = useContext(ContextGlobal);
+  const { chatSocket, setChatSocket, socket} = useContext(ContextGlobal);
 
   useEffect(() => {
-    const sock = io("http://localhost:3000", {
-      autoConnect: false,
+    const sock = io("http://localhost:3000/chat", {
+      autoConnect: false, 
       transports: ["websocket"],
       withCredentials: true,
     });
@@ -24,8 +24,7 @@ const Layout = ({children} : any) => {
     });
 
     return () => {
-      console.log("Cleanup: Disconnecting socket");
-      sock.off('connect');
+      console.log("Cleanup: Disconnecting socket cc");
       sock.disconnect();
     };
   }, []);

@@ -20,7 +20,8 @@ export class FriendshipService {
         }
 
         this.connectedClients.get(userId).push(socket);
-        console.log('connected client', this.connectedClients.size);
+        // print socket id
+        console.log('connected notification id : ' + clientId);
     }
 
     async handleDisconnect(socket: Socket): Promise<void> {

@@ -15,7 +15,7 @@ import { get } from 'http';
 @WebSocketGateway({
   cors :{
     origin:"http://localhost:8080",
-    // namespace: "/game",
+    namespace: "/dashboard/game",
     credentials: true
   }
 })
@@ -47,6 +47,7 @@ export class GameGateway implements OnGatewayConnection , OnGatewayDisconnect{
     // socket["user"] = await this.getUser(socket.request);
     // console.log(this.getUser(socket));
     this.getUser(socket);
+    console.log('connected game id: ' + socket.id);
 
   }
   handleDisconnect(client: Socket): any

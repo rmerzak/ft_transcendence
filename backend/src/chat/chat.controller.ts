@@ -12,7 +12,8 @@ import {
   Param,
   UseGuards,
 } from '@nestjs/common';
-import { ChatService } from './chat.service';
+import { MsgService } from './services/room/msg.service';
+import { RoomService } from './services/room/room.service';
 import { $Enums, ChatRoom, ChatRoomMember, Message, User } from '@prisma/client';
 import { isAlpha } from 'class-validator';
 import { Request } from 'express';
@@ -22,19 +23,19 @@ import { ChatRoomUsers } from './interfaces/interfaces';
 @Controller('chat')
 @UseGuards(JwtGuard)
 export class ChatController {
-  constructor(private readonly chatService: ChatService) { }
+  constructor(private readonly chatService: MsgService, private readonly roomService: RoomService) {}
 
   // get chat rooms for user
   @Get('rooms')
   async getChatRooms(@Req() req: Request): Promise<ChatRoom[]> {
     const user = req.user as User;
-    return await this.chatService.getChatRoomsForUser(user.id);
+    return await this.roomService.getChatRoomsForUser(user.id);
   }
   // get chat rooms that user not in
   @Get('rooms/not')
   async getChatRoomsNotJoined(@Req() req: Request): Promise<ChatRoom[]> {
     const user = req.user as User;
-    return await this.chatService.getChatRoomsNotForUser(user.id);
+    return await this.roomService.getChatRoomsNotForUser(user.id);
   }
 
   // create chat room
@@ -62,7 +63,7 @@ export class ChatController {
       );
     }
     try {
-      return await this.chatService.createChatRoom(chatRoomData);
+      return await this.roomService.createChatRoom(chatRoomData);
     } catch (error) {
       throw new HttpException(
         {
@@ -78,7 +79,7 @@ export class ChatController {
   @Post('user/:id')
   async createConversationRoom(@Body() chatRoomData: ChatRoom, @Req() req: Request): Promise<ChatRoom> {
     const user = req.user as User;
-    // console.log(user);
+    // console.log(user); 
     const targetUserId = Number(req.params.id);
     if (isNaN(targetUserId) || !Number.isInteger(targetUserId) || targetUserId <= 0) {
       throw new HttpException(
@@ -100,21 +101,21 @@ export class ChatController {
     }
 
     try {
-      let existingChatRoom = await this.chatService.getChatRoomByName(user.id + '_' + targetUserId);
+      let existingChatRoom = await this.roomService.getChatRoomByName(user.id + '_' + targetUserId);
       if (existingChatRoom) {
         return existingChatRoom;
       }else if (existingChatRoom === null) {
-        existingChatRoom = await this.chatService.getChatRoomByName(targetUserId + '_' + user.id);
+        existingChatRoom = await this.roomService.getChatRoomByName(targetUserId + '_' + user.id);
         if (existingChatRoom) {
           return existingChatRoom;
         }
       }
 
-      const newChatRoom = await this.chatService.makeConversation(chatRoomData);
+      const newChatRoom = await this.roomService.makeConversation(user.id, chatRoomData);
       if (!newChatRoom) {
         throw new Error('Error creating chat room');
       }
-      await this.chatService.addUserToChatRoom({
+      await this.roomService.addUserToChatRoom({
         userId: user.id,
         chatRoomId: newChatRoom.id,
         joinedAt: undefined,
@@ -122,7 +123,7 @@ export class ChatController {
         leftAt: undefined,
       });
 
-      await this.chatService.addUserToChatRoom({
+      await this.roomService.addUserToChatRoom({
         userId: targetUserId,
         chatRoomId: newChatRoom.id,
         joinedAt: undefined,
@@ -169,7 +170,7 @@ export class ChatController {
         HttpStatus.BAD_REQUEST,
       );
     }
-    return await this.chatService.updateChatRoom(chatRoomData.id, chatRoomData);
+    return await this.roomService.updateChatRoom(chatRoomData.id, chatRoomData);
   }
 
   // delete chat room
@@ -185,7 +186,7 @@ export class ChatController {
       );
     }
     // checkIfNumber(body.id.toString(), 'Chat room id must be a number');
-    return await this.chatService.deleteChatRoom(body.id);
+    return await this.roomService.deleteChatRoom(body.id);
   }
   // end chat room
 
@@ -194,12 +195,12 @@ export class ChatController {
   @Get()
   async getChatRoomsForUser(@Query('id') id: number): Promise<ChatRoom[]> {
     checkIfNumber(id.toString(), 'User id must be a number');
-    return await this.chatService.getChatRoomsForUser(Number(id));
+    return await this.roomService.getChatRoomsForUser(Number(id));
   }
   @Get('user')
   async getChatRoomMembers(@Query('chatRoomId') chatRoomId: number): Promise<ChatRoomUsers[] | null> {
     checkIfNumber(chatRoomId.toString(), 'Chat room id must be a number');
-    return await this.chatService.getChatRoomMembers(Number(chatRoomId));
+    return await this.roomService.getChatRoomMembers(Number(chatRoomId));
   }
   // create chat room
   // @Post()
@@ -216,7 +217,7 @@ export class ChatController {
     checkIfNumber(chatRoomMemberData.userId.toString(), 'User id must be a number');
     checkIfNumber(chatRoomMemberData.chatRoomId.toString(), 'Chat room id must be a number');
     try {
-      return await this.chatService.addUserToChatRoom(chatRoomMemberData);
+      return await this.roomService.addUserToChatRoom(chatRoomMemberData);
     } catch (error) {
       throw new HttpException(
         {
@@ -227,16 +228,6 @@ export class ChatController {
       );
     }
   }
-
-  // end user chat room
-  // get all messages of specific users
-  // @Get()
-  // async getMessages(
-  //   @Query('sdId') sdId: number,
-  // ): Promise<Message[]> {
-  //   checkIfNumber(sdId.toString(), 'Sender id must be a number');
-  //   return await this.chatService.getUserMessages(Number(sdId));
-  // }
 
   // get all messages of specific private user conversation
   @Get('user/:id')
