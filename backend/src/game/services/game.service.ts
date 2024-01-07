@@ -9,9 +9,9 @@ import { v4 as uuidv4 } from 'uuid';
 @Injectable()
 export class GameService {
   constructor(private prisma: PrismaService) {}
-  async findUserByEmail(email: string) {
+  async findUserById(id: number) {
     const user = await this.prisma.user.findUnique({
-      where: { email },
+      where: { id },
       select: {
         id: true,
         username: true,
@@ -52,20 +52,34 @@ export class GameService {
     const room = this.roomWithAvailableSlots();
 
     if (room && room.state === State.WAITING) {
+      client.join(room.id);
       if (room.players.length === 0) {
         player.playerNo = 1;
         player.position.x = 20;
         player.position.y = this.height / 2 - 100 / 2;
-        client.emit('playerNo', 1);
+        room.addPlayer(player);
+
+        client.emit('playerNo', {
+          playerNo: 1,
+          user: room.players[0].user,
+        });
       } else {
         player.playerNo = 2;
         player.position.x = this.width - 35;
         player.position.y = this.height / 2 - 100 / 2;
-        client.emit('playerNo', 2);
+        room.addPlayer(player);
+
+        server.to(room.id).emit('playerNo', {
+          playerNo: 2,
+          user: room.players[1].user,
+        });
+
+        client.emit('playerNo', {
+          playerNo: 1,
+          user: room.players[0].user,
+        });
         room.state = State.PLAYING;
       }
-      room.addPlayer(player);
-      client.join(room.id);
       if (room.players.length === 2) {
         room.ball.color = 'white';
         server.to(room.id.toString()).emit('roomIsFull', true);
@@ -111,12 +125,12 @@ export class GameService {
     return this.rooms.find((room) => room.id === roomId);
   }
 
-  //
+  // this method for get game
   getGame(roomId: string): string {
     const room = this.getRoom(roomId);
     if (!room) {
       throw new HttpException('Room not found', HttpStatus.NOT_FOUND);
     }
-    return room.id.toString();
+    return room.id;
   }
 }

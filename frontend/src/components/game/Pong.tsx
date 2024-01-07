@@ -15,7 +15,7 @@ function Pong( { theme }: PongProps )
 {
     if (parseInt(theme) < 0 || parseInt(theme) > 5) theme = '1';
 
-    const { updateScores } = useGame();
+    const { updateScores, setUserInfo, setOpponentInfo } = useGame();
 
     // canvas    
     const gameRef = useRef<HTMLCanvasElement>(null);
@@ -27,7 +27,7 @@ function Pong( { theme }: PongProps )
         
         //  socket.io
         const socket = io('http://localhost:3000/game', {
-            transports: ['websocket'],
+            // transports: ['websocket'],
             withCredentials: true,
             autoConnect: false,
         });
@@ -258,12 +258,20 @@ function Pong( { theme }: PongProps )
         }
 
         if (socket.connect()) {
-            socket.emit('join');
         }
 
+        socket.on('user', (payload) => {
+            socket.emit('join');
+        });
         // get player no
-        socket.on('playerNo', (newPlayerNo) => {
-            playerNo = newPlayerNo;
+        socket.on('playerNo', (payload) => {
+            playerNo = payload.playerNo;
+            if (playerNo === 1) {
+                setUserInfo(payload.playerNo, payload.user?.username, payload.user?.image);
+            } else if (playerNo === 2) {
+                setOpponentInfo(payload.playerNo, payload.user?.username, payload.user?.image);
+            }
+            // console.log(payload.user.username)
             render();
         });
         
@@ -284,6 +292,10 @@ function Pong( { theme }: PongProps )
         //         popup: 'bg-transparent',
         //     }
         // });
+
+        socket.on('test', (payload) => {
+            console.log(payload);
+        })
 
         // start game
         socket.on('startedGame', (room) => {

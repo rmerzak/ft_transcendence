@@ -10,22 +10,18 @@ import { Socket, Server } from 'socket.io';
 import { GameService } from '../services/game.service';
 import { SocketAuthMiddleware } from 'src/auth/middleware/ws.mw';
 import { Player } from '../models/player.model';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { UserStatus } from '@prisma/client';
-
+// import { UserStatus } from '@prisma/client';
 
 @WebSocketGateway({
   cors: {
     origin: 'http://localhost:8080',
     credentials: true,
   },
-  namespace: '/game'
+  namespace: '/game',
 })
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
-  constructor(
-    private readonly game: GameService,
-    private prisma:PrismaService
-  ) {}
+  prisma: any;
+  constructor(private readonly game: GameService) {}
 
   private roomId: string = '';
 
@@ -35,18 +31,27 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     socket.use(SocketAuthMiddleware() as any);
   }
 
-    async handleConnection(socket: Socket) {
+  async handleConnection(socket: Socket) {
     console.log("i'm connected");
 
-      const user = await this.prisma.user.findUnique({where:{id:socket['payload']['sub']}});
-      const userId = socket['payload']['sub'];
-      let updatedUser = await this.prisma.user.update({where:{id:userId},data:{status:UserStatus.INGAME}});
-      if(user){
-        socket['user'] = user;
-        // console.log(socket['user']);
-      }else{
-        socket.disconnect();
-      } 
+    // const user = await this.prisma.user.findUnique({
+    //   where: { id: socket['payload']['sub'] },
+    // });
+
+    const user = await this.game.findUserById(socket['payload']['sub']);
+    // console.log('user = ', user);
+    socket['user'] = user;
+    socket.emit('user', user);
+    // const userId = socket['payload']['sub'];
+    // const updatedUser = await this.prisma.user.update({
+    //   where: { id: userId },
+    //   data: { status: UserStatus.INGAME },
+    // });
+    // if (user) {
+    // console.log(socket['user']);
+    // } else {
+    //   socket.disconnect();
+    // }
     console.log('connected chat id1: ' + socket.id);
     // console.log(socket['payload']['email']);
     // this.getUser(socket.request);
@@ -56,17 +61,20 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   async handleDisconnect(client: Socket) {
-    console.log("Player disconnected");
-    console.log("Room ID:", this.roomId);
-  
+    console.log('Player disconnected');
+    console.log('Room ID:', this.roomId);
+
     // Leave the room for the disconnected player
     this.game.leaveRoom(this.roomId, client.id);
-    const userId = client['payload']['sub'];
-    let updatedUser = await this.prisma.user.update({where:{id:userId},data:{status:UserStatus.ONLINE}});
+    // const userId = client['payload']['sub'];
+    // let updatedUser = await this.prisma.user.update({
+    //   where: { id: userId },
+    //   data: { status: UserStatus.ONLINE },
+    // });
 
     // Find the room where the disconnection occurred
     const targetRoom = this.game.rooms.find((room) => room.id === this.roomId);
-  
+
     // If the room is found, update the scores of other players
     if (targetRoom) {
       targetRoom.players.forEach((player) => {
@@ -81,13 +89,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   // this method is called when a player joins a room
   // if the room is full, the game is started immediately
+
   @SubscribeMessage('join')
   async joinRoom(client: Socket) {
-    console.log(client.id);
-    const user = await this.prisma.user.findUnique({where:{id:client['payload']['sub']}});
-    console.log('user = ',user)
     try {
-      const player: Player = new Player(client.id);
+      const player: Player = new Player(client.id, client['user']);
       this.roomId = this.game.joinRoom(player, client, this.server);
     } catch {}
   }
@@ -107,7 +113,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     try {
       const playerId = client.id;
       this.game.leaveRoom(payload.roomId, playerId);
-      console.log("leave");
+      console.log('leave');
     } catch {}
   }
 }
