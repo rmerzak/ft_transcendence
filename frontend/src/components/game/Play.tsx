@@ -73,7 +73,10 @@ function Play()
                             </button>
                             <button
                                 className="btn btn-active btn-ghost border-0 text-[#ffffff]/70">
-                                <Link href='#'>
+                                <Link href={{
+                                    pathname: `/dashboard/game/bot`,
+                                    query: { theme: imgIndex },
+                                }}>
                                     Play Bot
                                 </Link>
                             </button>

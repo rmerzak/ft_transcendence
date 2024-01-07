@@ -18,7 +18,7 @@ const Game = ({ searchParams } : {
               <h1>Game</h1>
             </div>
 
-            <div className="flex justify-around items-center bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-900/70 to-gray-600/70 bg-gradient-to-r rounded-3xl shadow-md p-[1%]">
+            <div className="flex justify-around items-center bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-900/70 to-gray-600/70 rounded-3xl shadow-md p-[1%]">
                 <div className="flex-none">
                     <User id={1}/>
                 </div>

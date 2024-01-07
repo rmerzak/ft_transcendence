@@ -1,17 +1,19 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import Image from 'next/image';
 import { useGame } from '@/app/dashboard/game/gameContex';
+import { ContextGlobal } from '@/context/contex';
 
 function User({ className = '', id = 1}: { className?: string; id?: number }) {
+    const { profile }:any = useContext(ContextGlobal);
     const { player1Score, player2Score } = useGame();
     return (
         <div className={`${className}`}>
-            <div className="bg-neutral card card-side bg-base-100 shadow-xl inline-block ">
+            <div className="bg-neutral card card-side shadow-xl inline-block ">
                 <figure>
                     <div className="avatar justify-center p-[6%]">
                         <div className="w-[8.5rem] rounded-xl">
                             <Image
-                                 src="/avatar.jpeg"
+                                 src={id === 1? profile?.image : id=== 3 ? '/bot.gif' : '/avatar.jpeg'}
                                     alt="User Profile"
                                     width={200}
                                     height={200}
@@ -23,7 +25,7 @@ function User({ className = '', id = 1}: { className?: string; id?: number }) {
 
                 </figure>
                     <div className="card-body ">
-                        <h2 className="card-title font-sans border-b-[1px] pb-[1rem] text-[#ffffff]/70">User Name</h2>
+                        <h2 className="card-title font-sans border-b-[1px] pb-[1rem] justify-center text-[#ffffff]/70">{id === 1 ? profile?.username : id=== 3 ? 'Bot' : 'Loading...'}</h2>
                         <div className="card-actions justify-center">
                             <div className="stat place-items-center">
                                 <div className="stat-title">Score</div>

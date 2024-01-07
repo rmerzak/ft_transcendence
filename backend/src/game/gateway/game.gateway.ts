@@ -1,5 +1,3 @@
-/* eslint-disable prettier/prettier */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -16,10 +14,10 @@ import { State } from '../models/state.model';
 
 @WebSocketGateway({
   cors: {
-    origin: 'http://localhost:8080/game',
-    namespace: 'game',
+    origin: 'http://localhost:8080',
     credentials: true,
-  }
+  },
+  namespace: '/game'
 })
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
@@ -30,9 +28,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @WebSocketServer()
   server: Server;
-  afterInit(socket: Socket) {
-    socket.use(SocketAuthMiddleware() as any);
-  }
+  // afterInit(socket: Socket) {
+  //   socket.use(SocketAuthMiddleware() as any);
+  // }
 
   async getUser(socket: any) {
 
@@ -42,7 +40,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
     handleConnection(socket: Socket, request: Request) {
-    console.log("connected");
+    console.log("i'm connected");
     // console.log(socket['payload']['email']);
     // this.getUser(socket.request);
     // socket["user"] = await this.getUser(socket.request);

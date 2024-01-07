@@ -24,7 +24,8 @@ function Pong( { theme }: PongProps )
     const router = useRouter();
 
     //  socket.io
-    const socket = io('http://localhost:3000', {
+    const socket = io('http://localhost:3000/game', {
+        transports: ['websocket'],
         withCredentials: true,
         // autoConnect: false,
     });
