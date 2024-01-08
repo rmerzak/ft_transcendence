@@ -50,7 +50,7 @@ export class GatewayGateway
   @SubscribeMessage('send-message')
   async handleMessage(client: Socket, payload: Message) {
     console.log("send-message");
-    console.log(payload);
+    console.log(client);
     // const user = await this.prisma.user.findUnique({where:{id:client['payload']['sub']}});
     this.chatService.addMessage(payload, client['user'].id);
   }
@@ -69,7 +69,7 @@ export class GatewayGateway
     // check jwt token
     // remove user from map
     // users.delete(_client.id);
-  }
+  } 
 
 
 }

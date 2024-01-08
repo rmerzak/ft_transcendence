@@ -26,6 +26,8 @@ interface contextProps {
   setChatRoomsJoined: (chatRooms: ChatRoom[]) => void;
   chatRoomsToJoin: ChatRoom[];
   setChatRoomsToJoin: (chatRooms: ChatRoom[]) => void;
+  gameSocket: Socket | null;
+  setGameSocket: (socket: Socket) => void;
 }
 
 export const ContextGlobal = createContext<contextProps>({
@@ -43,6 +45,8 @@ export const ContextGlobal = createContext<contextProps>({
   setChatRoomsJoined: (chatRooms: ChatRoom[]) => { },
   chatRoomsToJoin: [],
   setChatRoomsToJoin: (chatRooms: ChatRoom[]) => { },
+  gameSocket: null,
+  setGameSocket: (socket: Socket) => { },
 });
 
 
@@ -60,8 +64,9 @@ export const ContextProvider = ({ children }: { children: any }) => {
     twoFactorEnabled: false,
     status: '', // Add the status property and provide a valid value
   });
-  const [socket, setSocket] = useState();
-  const [chatSocket, setChatSocket] = useState();
+  const [socket, setSocket] = useState<any>(null);
+  const [gameSocket, setGameSocket] = useState<any>(null); // [1
+  const [chatSocket, setChatSocket] = useState<any>(null);
   const [notification, setNotification] = useState<Notification[]>([]);
   const [friends, setFriends] = useState<Friendship[]>([]);
   const [chatRoomsJoined, setChatRoomsJoined] = useState<ChatRoom[]>([]);
@@ -112,6 +117,8 @@ export const ContextProvider = ({ children }: { children: any }) => {
     setChatRoomsJoined,
     chatRoomsToJoin,
     setChatRoomsToJoin,
+    gameSocket,
+    setGameSocket,
   };
 
   return <ContextGlobal.Provider value={providerValue} > {children} </ContextGlobal.Provider>;

@@ -3,8 +3,7 @@ import React, { useContext, useState } from 'react';
 import Bot from '@/components/game/Bot';
 import User from '@/components/game/User';
 import { GameProvider } from '../gameContex';
-
-
+import { UserEnum } from '../gameContex';
 
 const Game = ({ searchParams } : {
     searchParams: {
@@ -21,7 +20,7 @@ const Game = ({ searchParams } : {
 
             <div className="flex justify-around items-center bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-900/70 to-gray-600/70 rounded-3xl shadow-md p-[1%]">
                 <div className="flex-none">
-                    <User id={1}/>
+                    <User id={UserEnum.PLAYER}/>
                 </div>
 
                 <div className="flex-grow flex items-center justify-center">
@@ -31,7 +30,7 @@ const Game = ({ searchParams } : {
                 </div>
 
                 <div className="flex-none">
-                    <User id={3}/>
+                    <User id={UserEnum.BOT}/>
                 </div>
             </div>
 

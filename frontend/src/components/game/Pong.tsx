@@ -1,11 +1,12 @@
 'use client'
 import styles from '@/app/dashboard/game/page.module.css'
 import { useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 import Swal from 'sweetalert2';
 import { setInterval, clearInterval } from 'timers';
 import { useGame } from '@/app/dashboard/game/gameContex';
+import { Palanquin } from 'next/font/google';
 
 interface PongProps {
     theme: string;
@@ -15,7 +16,7 @@ function Pong( { theme }: PongProps )
 {
     if (parseInt(theme) < 0 || parseInt(theme) > 5) theme = '1';
 
-    const { updateScores } = useGame();
+    const { updateScores, setUserInfo, setOpponentInfo } = useGame();
 
     // canvas    
     const gameRef = useRef<HTMLCanvasElement>(null);
@@ -23,13 +24,14 @@ function Pong( { theme }: PongProps )
     // route
     const router = useRouter();
 
-    //  socket.io
-    const socket = io('http://localhost:3000/game', {
-        transports: ['websocket'],
-        withCredentials: true,
-        // autoConnect: false,
-    });
     useEffect(() => {
+        
+        //  socket.io
+        const socket = io('http://localhost:3000/game', {
+            // transports: ['websocket'],
+            withCredentials: true,
+            autoConnect: false,
+        });
 
         const canvas = gameRef.current;
         if (!canvas) return;
@@ -256,11 +258,36 @@ function Pong( { theme }: PongProps )
             balls = temp;
         }
 
-        socket.emit('join');
+        if (socket.connect()) {
+            socket.on('userInfo', () => {
+                socket.emit('join');
+            });
+        }
 
         // get player no
-        socket.on('playerNo', (newPlayerNo) => {
-            playerNo = newPlayerNo;
+        socket.on('playerNo', (payload) => {
+            console.log(payload.playerNo);
+            playerNo = payload.playerNo;
+            if (playerNo === 1) {
+                setUserInfo(payload.playerNo, payload.user?.username, payload.user?.image);
+                if (payload.showLoading) {
+                    Swal.fire({
+                        imageUrl: "/loading.gif",
+                        imageWidth: 500,
+                        imageHeight: 500,
+                        showConfirmButton: false,
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        customClass: {
+                            popup: 'bg-transparent',
+                            image: 'opacity-50 bg-transparent',
+                        },
+                    });
+                }
+            } else if (playerNo === 2) {
+                setOpponentInfo(payload.playerNo, payload.user?.username, payload.user?.image);
+                Swal.close();
+            }
             render();
         });
         
@@ -269,22 +296,9 @@ function Pong( { theme }: PongProps )
             isGameStarted = flag;
         });
 
-       
-        // for loading
-        // Swal.fire({
-        //     imageUrl: "/loading.gif",
-        //     imageWidth: 500,
-        //     imageHeight: 500,
-        //     showConfirmButton: false,
-        //     allowOutsideClick: false,
-        //     customClass: {
-        //         popup: 'bg-transparent',
-        //     }
-        // });
-
         // start game
-        socket.on('startedGame', (room) => {
-            roomID = room.id;
+        socket.on('startedGame', ( id ) => {
+            roomID = id;
         },);
 
         let movement = { up: false, down: false };
@@ -315,7 +329,7 @@ function Pong( { theme }: PongProps )
                 if (movement.up || movement.down) {
                     socket.emit("move", {
                         roomId: roomID,
-                        playerNo: playerNo,
+                        playerNo: playerNo === 1 ? 2 : 1,
                         direction: movement.up ? 'up' : 'down'
                     });
                 }
@@ -371,7 +385,6 @@ function Pong( { theme }: PongProps )
                     }
                 }).then(() => {
                     // redirect to game page
-                    // window.location.href = '/dashboard/game';
                     router.push('/dashboard/game');
                 });
             } else {
@@ -387,7 +400,6 @@ function Pong( { theme }: PongProps )
                     }
                 }).then(() => {
                     // redirect to game page
-                    // window.location.href = '/dashboard/game';
                     router.push('/dashboard/game');
                 });
             }
@@ -403,22 +415,27 @@ function Pong( { theme }: PongProps )
 
 
         return () => {
-            // Remove event listeners
-           window.removeEventListener('keydown', handleKeyDown);
-           window.removeEventListener('keyup', handleKeyUp);
+        // remove canvas
+        canvas.remove();
 
-           // Clear interval
-           clearInterval(intervalId);
-           // off event listener
-           socket.off('playerNo');
-           socket.off('roomIsFull');
-           socket.off('startedGame');
-           socket.off('updateGame');
-           socket.off('redirect');
-           socket.off('gameOver');
-           socket.off('connect');
+        // close swal
+        Swal.close();
 
-           socket.disconnect();
+        // Remove event listeners
+        removeEventListener('keydown', handleKeyDown);
+        removeEventListener('keyup', handleKeyUp);
+
+        // Clear interval
+        clearInterval(intervalId);
+        // off event listener
+        socket.off('playerNo');
+        socket.off('roomIsFull');
+        socket.off('startedGame');
+        socket.off('updateGame');
+        socket.off('redirect');
+        socket.off('gameOver');
+        socket.off('connect');
+        socket.disconnect();
            };
 
     }, []);
