@@ -1,5 +1,12 @@
 import { useContext, createContext, useState } from "react";
 
+export enum UserEnum {
+  USER = 1,
+  OPPONENT = 2,
+  PLAYER = 3,
+  BOT = 4,
+}
+
 interface GameContextProps {
     uid: number;
     oid: number;

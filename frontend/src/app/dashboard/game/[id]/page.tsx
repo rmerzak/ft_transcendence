@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import Pong from '@/components/game/Pong';
 import User from '@/components/game/User';
 import { GameProvider } from '../gameContex';
+import { UserEnum } from '../gameContex';
 
 
 const Game = ({ searchParams } : {
@@ -20,7 +21,7 @@ const Game = ({ searchParams } : {
 
             <div className="flex justify-around items-center bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-900/70 to-gray-600/70 rounded-3xl shadow-md p-[1%]">
                 <div className="flex-none">
-                    <User id={1}/>
+                    <User id={UserEnum.USER}/>
                 </div>
 
                 <div className="flex-grow flex items-center justify-center">
@@ -30,7 +31,7 @@ const Game = ({ searchParams } : {
                 </div>
 
                 <div className="flex-none">
-                    <User id={2}/>
+                    <User id={UserEnum.OPPONENT}/>
                 </div>
             </div>
 

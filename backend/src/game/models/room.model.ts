@@ -43,7 +43,16 @@ export class Room {
     room.ball.position.y = this.height / 2;
 
     room.ball.speed = 10;
-    room.ball.velocity.x = -room.ball.velocity.x;
+    if (room.ball.velocity.x < 0) {
+      room.ball.velocity.x = 5;
+    } else {
+      room.ball.velocity.x = -5;
+    }
+    if (room.ball.velocity.y < 0) {
+      room.ball.velocity.y = 5;
+    } else {
+      room.ball.velocity.y = -5;
+    }
   }
 
   // this method is for checking if there is a collision between the ball and the player

@@ -6,6 +6,7 @@ import { io } from 'socket.io-client';
 import Swal from 'sweetalert2';
 import { setInterval, clearInterval } from 'timers';
 import { useGame } from '@/app/dashboard/game/gameContex';
+import { Palanquin } from 'next/font/google';
 
 interface PongProps {
     theme: string;
@@ -258,20 +259,35 @@ function Pong( { theme }: PongProps )
         }
 
         if (socket.connect()) {
+            socket.on('userInfo', () => {
+                socket.emit('join');
+            });
         }
 
-        socket.on('user', (payload) => {
-            socket.emit('join');
-        });
         // get player no
         socket.on('playerNo', (payload) => {
+            console.log(payload.playerNo);
             playerNo = payload.playerNo;
             if (playerNo === 1) {
                 setUserInfo(payload.playerNo, payload.user?.username, payload.user?.image);
+                if (payload.showLoading) {
+                    Swal.fire({
+                        imageUrl: "/loading.gif",
+                        imageWidth: 500,
+                        imageHeight: 500,
+                        showConfirmButton: false,
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        customClass: {
+                            popup: 'bg-transparent',
+                            image: 'opacity-50 bg-transparent',
+                        },
+                    });
+                }
             } else if (playerNo === 2) {
                 setOpponentInfo(payload.playerNo, payload.user?.username, payload.user?.image);
+                Swal.close();
             }
-            // console.log(payload.user.username)
             render();
         });
         
@@ -280,26 +296,9 @@ function Pong( { theme }: PongProps )
             isGameStarted = flag;
         });
 
-       
-        // for loading
-        // Swal.fire({
-        //     imageUrl: "/loading.gif",
-        //     imageWidth: 500,
-        //     imageHeight: 500,
-        //     showConfirmButton: false,
-        //     allowOutsideClick: false,
-        //     customClass: {
-        //         popup: 'bg-transparent',
-        //     }
-        // });
-
-        socket.on('test', (payload) => {
-            console.log(payload);
-        })
-
         // start game
-        socket.on('startedGame', (room) => {
-            roomID = room.id;
+        socket.on('startedGame', ( id ) => {
+            roomID = id;
         },);
 
         let movement = { up: false, down: false };
@@ -330,7 +329,7 @@ function Pong( { theme }: PongProps )
                 if (movement.up || movement.down) {
                     socket.emit("move", {
                         roomId: roomID,
-                        playerNo: playerNo,
+                        playerNo: playerNo === 1 ? 2 : 1,
                         direction: movement.up ? 'up' : 'down'
                     });
                 }
@@ -416,9 +415,15 @@ function Pong( { theme }: PongProps )
 
 
         return () => {
-            // Remove event listeners
-        window.removeEventListener('keydown', handleKeyDown);
-        window.removeEventListener('keyup', handleKeyUp);
+        // remove canvas
+        canvas.remove();
+
+        // close swal
+        Swal.close();
+
+        // Remove event listeners
+        removeEventListener('keydown', handleKeyDown);
+        removeEventListener('keyup', handleKeyUp);
 
         // Clear interval
         clearInterval(intervalId);

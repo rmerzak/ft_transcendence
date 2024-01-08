@@ -41,7 +41,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const user = await this.game.findUserById(socket['payload']['sub']);
     // console.log('user = ', user);
     socket['user'] = user;
-    socket.emit('user', user);
+    socket.emit('userInfo');
     // const userId = socket['payload']['sub'];
     // const updatedUser = await this.prisma.user.update({
     //   where: { id: userId },

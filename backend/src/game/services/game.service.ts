@@ -62,6 +62,7 @@ export class GameService {
         client.emit('playerNo', {
           playerNo: 1,
           user: room.players[0].user,
+          showLoading: true,
         });
       } else {
         player.playerNo = 2;
@@ -73,21 +74,21 @@ export class GameService {
           playerNo: 2,
           user: room.players[1].user,
         });
-
         client.emit('playerNo', {
           playerNo: 1,
           user: room.players[0].user,
+          showLoading: false,
         });
         room.state = State.PLAYING;
       }
       if (room.players.length === 2) {
         room.ball.color = 'white';
-        server.to(room.id.toString()).emit('roomIsFull', true);
+        server.to(room.id).emit('roomIsFull', true);
         setTimeout(() => {
-          server.to(room.id.toString()).emit('startedGame', room);
+          server.to(room.id).emit('startedGame', room.id);
           // start game
           room.startGame(server);
-        }, 3000);
+        }, 50);
       }
     }
     return room.id;

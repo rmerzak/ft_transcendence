@@ -301,8 +301,18 @@ function Bot( { theme }: PongProps )
             ball.y = canvas.height / 2;
             
             ball.speed = 10;
-            ball.velocityX = 5; // Set the initial ball velocity in the X direction
-            ball.velocityY = 5; // Set the initial ball velocity in the Y direction
+            // ball.velocityX = -ball.velocityX;
+            if (ball.velocityX < 0) {
+                ball.velocityX = 5;
+            } else {
+                ball.velocityX = -5;
+            }
+            if (ball.velocityY < 0) {
+                ball.velocityY = 5;
+            }
+            else {
+                ball.velocityY = -5;
+            }
         }
 
         // update function, include some logic
