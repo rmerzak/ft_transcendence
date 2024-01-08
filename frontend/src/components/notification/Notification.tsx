@@ -15,23 +15,23 @@ const Notification = () => {
             autoConnect: false,
             withCredentials: true,
         });
-        socket.connect();
-        socket.on('connect', () => {
+        socket?.connect();
+        socket?.on('connect', () => {
             setSocket(socket);
         });
-        socket.on('friendRequest', (data: any) => {
+        socket?.on('friendRequest', (data: any) => {
             if(data.notification){
                 setNotification((prev: Notification[]) => [data.notification, ...prev]);
                 toast.success('You have a new friend request');
             }
         });
-        socket.on('friendAcceptRequest', (data: any) => {
+        socket?.on('friendAcceptRequest', (data: any) => {
             if(data.notification){
                 setNotification((prev: Notification[]) => [data.notification, ...prev]);
                 toast.success('Your friend accepted your request');
             }
         });
-        socket.on('RequestError', (data) => {
+        socket?.on('RequestError', (data) => {
             if(data.error) {
                 toast.error(data.error);
             }

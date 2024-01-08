@@ -42,6 +42,11 @@ const PreAuthForm = ({ exit }: { exit: boolean }) => {
     const file = event.target.files?.[0];
     setFile(file);
     if (file) {
+      const maxAllowedSize = 1024 * 1024 * 2;
+      if (file.size > maxAllowedSize) {
+        toast.error("File is too big");
+        return;
+      }
       setImage(URL.createObjectURL(file));
     }
   };

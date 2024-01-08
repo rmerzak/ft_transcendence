@@ -79,12 +79,8 @@ export class AuthController {
     @UseGuards(JwtGuard)
     @Get('validateToken')
     async validateToken(@Req() req: Request, @Body() body: any): Promise<any> {
-        if (req.headers['body'] === req.user['id'].toString()) {
+        console.log(req.user);
             return { status: true, user: req.user };
-        }
-        else {
-            return { status: false, user: req.user };
-        }
     }
     @UseGuards(JwtGuard)
     @Get('2fa/generate')

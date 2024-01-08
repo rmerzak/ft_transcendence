@@ -60,8 +60,8 @@ export const ContextProvider = ({ children }: { children: any }) => {
     twoFactorEnabled: false,
     status: '', // Add the status property and provide a valid value
   });
-  const [socket, setSocket] = useState<any>(null);
-  const [chatSocket, setChatSocket] = useState<any>(null);
+  const [socket, setSocket] = useState();
+  const [chatSocket, setChatSocket] = useState();
   const [notification, setNotification] = useState<Notification[]>([]);
   const [friends, setFriends] = useState<Friendship[]>([]);
   const [chatRoomsJoined, setChatRoomsJoined] = useState<ChatRoom[]>([]);

@@ -1,9 +1,4 @@
-import axios from "axios";
-
-const apiInstance = axios.create({
-    baseURL: process.env.API_BASE_URL,
-    withCredentials: true,
-});
+import { apiInstance } from "../axios/axios.api";
 
 export const getUserInfo = () => apiInstance.get("/users/me");
 
