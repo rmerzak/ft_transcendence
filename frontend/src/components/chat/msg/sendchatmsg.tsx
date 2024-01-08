@@ -1,5 +1,5 @@
 'user client'
-import React, { useContext, useState } from 'react'
+import React, { use, useContext, useEffect, useState } from 'react'
 import Image from 'next/image';
 import { addMessage } from '@/api/chat/chat.api';
 import { ContextGlobal } from '@/context/contex';
@@ -12,7 +12,11 @@ interface SendchatmsgProps {
 const Sendchatmsg: React.FC<SendchatmsgProps> = ({ chatRoomId }) => {
     const {  profile,  chatSocket } = useContext(ContextGlobal);
     const [message, setMessage] = useState<string>('');
+    const [isjoined, setIsjoined] = useState<boolean>(false);
     function addMsg() {
+        if (isjoined === false)
+            chatSocket?.emit('join-room', { roomId: chatRoomId });
+        if (!message || message.length === 0) return;    
         const messageData:Messages = {
             senderId: Number(profile?.id),
             chatRoomId: chatRoomId,
@@ -20,14 +24,26 @@ const Sendchatmsg: React.FC<SendchatmsgProps> = ({ chatRoomId }) => {
         };
         console.log(chatSocket);
         chatSocket?.emit('send-message', messageData);
-        // addMessage(messageData).then((res) => {
-        //     console.log(res);
-        //     if (res.status === 201)
-        //         setMessage('');
-        // }).catch((err) => {
-        //     console.log(err);
-        // });
+        addMessage(messageData).then((res) => {
+            console.log(res);
+            if (res.status === 201)
+                setMessage('');
+        }).catch((err) => {
+            console.log(err);
+        });
     }
+    useEffect(() => {
+       if (chatSocket) {
+            chatSocket.on('joined-room', () => {
+                setIsjoined(true);
+            });
+        }
+    }, [chatSocket]);
+
+    useEffect(() => {
+        console.log("isjoined", isjoined);
+    }, [isjoined]);
+
     return (
         <>
             {/* end message here */}

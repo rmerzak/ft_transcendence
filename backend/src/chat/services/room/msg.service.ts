@@ -84,8 +84,26 @@ export class MsgService {
       where: { userId_chatRoomId: { userId: user.id, chatRoomId: chatRoom.id } },
     });
     if (!chatRoomMember) throw new Error('User not in chat room');
-    return await this.prisma.message.create({
+    const msg = await this.prisma.message.create({
       data: messageData,
+    });
+    return await this.prisma.message.findUnique({
+      where: { id: msg.id },
+      select: {
+        id: true,
+        text: true,
+        createdAt: true,
+        senderId: true,
+        chatRoomId: true,
+        sender: {
+          select: {
+            id: true,
+            username: true,
+            image: true,
+            status: true,
+          }
+        }
+      }
     });
   }
   // update user message

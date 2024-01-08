@@ -3,13 +3,12 @@ import Channels from '@/components/chat/rooms/channels'
 import UserOnline from '@/components/chat/user/userOnline'
 import Message from "@/components/chat/recent/msg";
 import { useContext, useEffect, useState } from 'react';
-import { io, Socket } from 'socket.io-client';
-import { ChatRoom, ChatRoomUsers, Friendship, Messages } from '@/interfaces';
+import { io } from 'socket.io-client';
 import { ContextGlobal } from '@/context/contex';
 
 
 const Layout = ({children} : any) => {
-  const { chatSocket, setChatSocket, socket} = useContext(ContextGlobal);
+  const { setChatSocket } = useContext(ContextGlobal);
 
   useEffect(() => {
     const sock = io("http://localhost:3000/chat", {
@@ -23,8 +22,13 @@ const Layout = ({children} : any) => {
       console.log('Connected to the server');
     });
 
+    sock.on('disconnect', () => {
+      console.log('Disconnected from the server');
+    });
     return () => {
       console.log("Cleanup: Disconnecting socket cc");
+      sock.off('connect');
+      sock.off('disconnect');
       sock.disconnect();
     };
   }, []);

@@ -1,5 +1,5 @@
 'use client';
-import { useContext } from 'react';
+import { use, useContext, useEffect } from 'react';
 // import { Message, ChatRoomUsers } from 'postcss';
 import Chat from './chat';
 import Chatheader from './chatHeader';
@@ -8,7 +8,6 @@ import { ChatRoomUsers, Messages} from '@/interfaces';
 
 interface MsgShowProps {
   messages?: Messages[];
-  // chatRoomMembers?: ChatRoomUsers[];
   chatId: number;
 }
 
