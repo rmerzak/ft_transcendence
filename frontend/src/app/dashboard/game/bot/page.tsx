@@ -1,16 +1,11 @@
 'use client';
-import React, { useContext, useState } from 'react';
 import Bot from '@/components/game/Bot';
 import User from '@/components/game/User';
 import { GameProvider } from '../gameContex';
 import { UserEnum } from '../gameContex';
 
-const Game = ({ searchParams } : {
-    searchParams: {
-        theme: string;
-    };
-  }) => {
-
+const Game = () => {
+    
     return (
       <GameProvider>
         <div className='w-[95%] mx-auto text-center p-[1%] shadow-md rounded-3xl bg-[#311251]/80'>
@@ -25,7 +20,7 @@ const Game = ({ searchParams } : {
 
                 <div className="flex-grow flex items-center justify-center">
                     <Bot 
-                      theme={searchParams.theme}
+                      // theme={searchParams.theme}
                       />
                 </div>
 

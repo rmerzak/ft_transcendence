@@ -26,6 +26,20 @@ export class GameService {
   private width = 1908;
   private height = 1146;
 
+  // check if player already exists in a room or rooms
+  // if player already exists, return true
+  // if player does not exist, return false
+  playerExists(player: Player): boolean {
+    for (const room of this.rooms) {
+      for (const p of room.players) {
+        if (p.user.id === player.user.id) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   // this method is creating a new room
   // the id of the room is returned
   createRoom(): Room {
@@ -53,33 +67,38 @@ export class GameService {
 
     if (room && room.state === State.WAITING) {
       client.join(room.id);
-      if (room.players.length === 0) {
-        player.playerNo = 1;
-        player.position.x = 20;
-        player.position.y = this.height / 2 - 100 / 2;
-        room.addPlayer(player);
-
-        client.emit('playerNo', {
-          playerNo: 1,
-          user: room.players[0].user,
-          showLoading: true,
-        });
+      if (!this.playerExists(player)) {
+        if (room.players.length === 0) {
+          player.playerNo = 1;
+          player.position.x = 20;
+          player.position.y = this.height / 2 - 100 / 2;
+          room.addPlayer(player);
+  
+          client.emit('playerNo', {
+            playerNo: 1,
+            user: room.players[0].user,
+            showLoading: true,
+          });
+        } else {
+          player.playerNo = 2;
+          player.position.x = this.width - 35;
+          player.position.y = this.height / 2 - 100 / 2;
+          room.addPlayer(player);
+  
+          server.to(room.id).emit('playerNo', {
+            playerNo: 2,
+            user: room.players[1].user,
+          });
+          client.emit('playerNo', {
+            playerNo: 1,
+            user: room.players[0].user,
+            showLoading: false,
+          });
+          room.state = State.PLAYING;
+        }
       } else {
-        player.playerNo = 2;
-        player.position.x = this.width - 35;
-        player.position.y = this.height / 2 - 100 / 2;
-        room.addPlayer(player);
-
-        server.to(room.id).emit('playerNo', {
-          playerNo: 2,
-          user: room.players[1].user,
-        });
-        client.emit('playerNo', {
-          playerNo: 1,
-          user: room.players[0].user,
-          showLoading: false,
-        });
-        room.state = State.PLAYING;
+        // client.emit('redirect', true);
+        // don't allow player to join
       }
       if (room.players.length === 2) {
         room.ball.color = 'white';

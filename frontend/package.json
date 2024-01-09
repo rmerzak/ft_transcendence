@@ -24,6 +24,7 @@
     "flowbite-react": "^0.7.0",
     "framer-motion": "^10.16.5",
     "fs": "^0.0.1-security",
+    "jotai": "^2.6.1",
     "js-cookie": "^3.0.5",
     "lucide-react": "^0.292.0",
     "next": "14.0.3",

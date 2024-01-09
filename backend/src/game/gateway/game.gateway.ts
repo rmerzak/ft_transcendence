@@ -10,6 +10,8 @@ import { Socket, Server } from 'socket.io';
 import { GameService } from '../services/game.service';
 import { SocketAuthMiddleware } from 'src/auth/middleware/ws.mw';
 import { Player } from '../models/player.model';
+import { UserStatus } from '@prisma/client';
+import { PrismaService } from 'src/prisma/prisma.service';
 // import { UserStatus } from '@prisma/client';
 
 @WebSocketGateway({
@@ -20,8 +22,12 @@ import { Player } from '../models/player.model';
   namespace: '/game',
 })
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
-  prisma: any;
-  constructor(private readonly game: GameService) {}
+  // prisma: any;
+  constructor
+  (
+    private readonly game: GameService, 
+    private readonly prisma: PrismaService
+  ) {}
 
   private roomId: string = '';
 
@@ -42,11 +48,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // console.log('user = ', user);
     socket['user'] = user;
     socket.emit('userInfo');
-    // const userId = socket['payload']['sub'];
-    // const updatedUser = await this.prisma.user.update({
-    //   where: { id: userId },
-    //   data: { status: UserStatus.INGAME },
-    // });
+    const userId = socket['payload']['sub'];
+    const updatedUser = await this.prisma.user.update({
+      where: { id: userId },
+      data: { status: UserStatus.INGAME },
+    });
     // if (user) {
     // console.log(socket['user']);
     // } else {
@@ -66,11 +72,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     // Leave the room for the disconnected player
     this.game.leaveRoom(this.roomId, client.id, client);
-    // const userId = client['payload']['sub'];
-    // let updatedUser = await this.prisma.user.update({
-    //   where: { id: userId },
-    //   data: { status: UserStatus.ONLINE },
-    // });
+    const userId = client['payload']['sub'];
+    let updatedUser = await this.prisma.user.update({
+      where: { id: userId },
+      data: { status: UserStatus.ONLINE },
+    });
 
     // Find the room where the disconnection occurred
     const targetRoom = this.game.rooms.find((room) => room.id === this.roomId);

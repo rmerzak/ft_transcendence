@@ -1,22 +1,22 @@
 'use client'
 import Image from 'next/image'
 import Link from 'next/link';
-import React, { useState } from 'react';
+import React from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
+import { EffectCoverflow, Pagination } from 'swiper/modules';
+import { useRouter } from 'next/navigation';
+import { themeAtom } from './theme';
+import { useSetAtom } from 'jotai';
 import 'swiper/css';
 import 'swiper/css/effect-coverflow';
 import 'swiper/css/pagination';
 import './styles.css';
-import { EffectCoverflow, Pagination } from 'swiper/modules';
-
-export const userContext = React.createContext(0);
-
 
 const img = ['A2', 'B2', 'C2', 'D2', 'E2', 'F2'];
 
 function Play()
 {
-    const [room, setRoom] = useState<string>('');
+    const router = useRouter();
     const createRoom = async () => {
         try {
             const res = await fetch('http://localhost:3000/api/rooms', {
@@ -26,15 +26,17 @@ function Play()
                 },
             });
             const data = await res.json();
-            setRoom(data.roomId);
+
+            if (data.roomId)
+                router.push(`/dashboard/game/${data.roomId}`, { scroll: false });
         } catch {}
     }
 
-    const [imgIndex, setImgIndex] = useState<number>(1);
-    const handleSlideChange = (swiper : any) => {
-        setImgIndex(swiper.realIndex);
-      };
-      
+    const setTheme = useSetAtom(themeAtom);
+    const handleTheme = (index: number) => {
+        setTheme(index);
+    }
+
     return (
         <>
             <div className='flex justify-between'>
@@ -61,25 +63,18 @@ function Play()
                         </p>
                         <div className="card-actions justify-between">
                             <button
-                                onMouseOver={createRoom}
-                                className="btn btn-active btn-neutral border-0 bg-[#811B77] text-[#ffffff]/70">
-                                <Link href={{
-                                    pathname: `/dashboard/game/${room}`,
-                                    query: { theme: imgIndex },
-                                
-                                }}>
+                                onClick={createRoom}
+                                className="btn btn-active btn-neutral border-0 bg-[#811B77] text-[#ffffff]/70"
+                            >
                                     Play Online
-                                </Link>
                             </button>
-                            <button
-                                className="btn btn-active btn-ghost border-0 text-[#ffffff]/70">
-                                <Link href={{
-                                    pathname: `/dashboard/game/bot`,
-                                    query: { theme: imgIndex },
-                                }}>
-                                    Play Bot
-                                </Link>
-                            </button>
+
+                            <Link
+                                href='/dashboard/game/bot'
+                                className="btn btn-active btn-ghost border-0 text-[#ffffff]/70"
+                            >
+                                Play Bot
+                            </Link>
                         </div>
                         
                     </div>
@@ -95,7 +90,7 @@ function Play()
                     </h1>
 
                     <Swiper
-                        onSlideChange={handleSlideChange}
+                        onSlideChange={ (swiper) => { handleTheme(swiper.realIndex); } }
                         effect={'coverflow'}
                         grabCursor={true}
                         centeredSlides={true}

@@ -6,23 +6,27 @@ import { io } from 'socket.io-client';
 import Swal from 'sweetalert2';
 import { setInterval, clearInterval } from 'timers';
 import { useGame } from '@/app/dashboard/game/gameContex';
-import { Palanquin } from 'next/font/google';
+import { themeAtom } from './theme';
+import { useAtomValue } from 'jotai';
 
-interface PongProps {
-    theme: string;
-  }
 
-function Pong( { theme }: PongProps )
+function Pong()
 {
-    if (parseInt(theme) < 0 || parseInt(theme) > 5) theme = '1';
 
+    // game context
     const { updateScores, setUserInfo, setOpponentInfo } = useGame();
-
+    
     // canvas    
     const gameRef = useRef<HTMLCanvasElement>(null);
     
     // route
     const router = useRouter();
+    
+    // theme
+    const theme = useAtomValue(themeAtom);
+    if (theme == -1) {
+        router.push('/dashboard/game', { scroll: false });
+    }
 
     useEffect(() => {
         
@@ -82,9 +86,9 @@ function Pong( { theme }: PongProps )
         }
         const colors = ["#ffffff", "#111111", "#FFF6E5", "#a6492c", "#c13f2d", "#1a5b7e"]
 
-        let player1: Player = new Player(20, 1146 / 2 - 100 / 2, 15, 180, colors[parseInt(theme)]);
-        let player2: Player = new Player(1908 - 35, 1146 / 2 - 100 / 2, 15, 180, colors[parseInt(theme)]);
-        let ball : Ball = new Ball(1908 / 2, 1908 / 2, 20, 10, 5, 5, colors[parseInt(theme)]);
+        let player1: Player = new Player(20, 1146 / 2 - 100 / 2, 15, 180, colors[theme]);
+        let player2: Player = new Player(1908 - 35, 1146 / 2 - 100 / 2, 15, 180, colors[theme]);
+        let ball : Ball = new Ball(1908 / 2, 1908 / 2, 20, 10, 5, 5, colors[theme]);
 
         // effect components here
         // *****************************************************************************************
@@ -179,7 +183,7 @@ function Pong( { theme }: PongProps )
                 this.y = this.start.y;
                 this.size = this.start.size;
 
-                this.style = rgbs[parseInt(theme)][getRandomInt(0, rgbs[parseInt(theme)].length - 1)];
+                this.style = rgbs[theme][getRandomInt(0, rgbs[theme].length - 1)];
 
                 this.time = 0;
                 this.ttl = 120;
@@ -233,12 +237,12 @@ function Pong( { theme }: PongProps )
             ctx.clearRect(0, 0, canvas.width, canvas.height);
            
             // draw the side line
-            drawRect(0, 0, 10, canvas.height, colors[parseInt(theme)]);
-            drawRect(canvas.width - 10, 0, 10, canvas.height, colors[parseInt(theme)]);
+            drawRect(0, 0, 10, canvas.height, colors[theme]);
+            drawRect(canvas.width - 10, 0, 10, canvas.height, colors[theme]);
             
             // draw the top and bottom line
-            drawRect(0, 0, canvas.width, 10, colors[parseInt(theme)]);
-            drawRect(0, canvas.height - 10, canvas.width, 10, colors[parseInt(theme)]);
+            drawRect(0, 0, canvas.width, 10, colors[theme]);
+            drawRect(0, canvas.height - 10, canvas.width, 10, colors[theme]);
         
             // draw the user and com paddle
             drawRect(player1.x, player1.y, player1.width, player1.height, player1.color);
@@ -266,7 +270,6 @@ function Pong( { theme }: PongProps )
 
         // get player no
         socket.on('playerNo', (payload) => {
-            console.log(payload.playerNo);
             playerNo = payload.playerNo;
             if (playerNo === 1) {
                 setUserInfo(payload.playerNo, payload.user?.username, payload.user?.image);
@@ -364,7 +367,7 @@ function Pong( { theme }: PongProps )
         // redirect
         socket.on('redirect', (flag) => {
             if (flag) {
-                window.location.href = '/dashboard/game';
+                router.push('/dashboard/game');
             }
         });
 
@@ -448,7 +451,7 @@ function Pong( { theme }: PongProps )
                 <canvas
                     ref={gameRef}
                     className={styles.game_canvas}
-                    style={ { backgroundImage: `url(/${themes[parseInt(theme)]}.png)` } }
+                    style={ { backgroundImage: `url(/${themes[theme]}.png)` } }
                     >
                 </canvas>
             </div>

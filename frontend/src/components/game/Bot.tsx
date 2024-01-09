@@ -3,16 +3,16 @@ import styles from '@/app/dashboard/game/page.module.css'
 import { useRouter } from 'next/navigation';
 import { useGame } from '@/app/dashboard/game/gameContex';
 import Swal from 'sweetalert2';
+import { themeAtom } from './theme';
+import { useAtomValue } from 'jotai';
 
 
-interface PongProps {
-    theme: string;
-  }
-
-function Bot( { theme }: PongProps )
+function Bot()
 {
-    if (parseInt(theme) < 0 || parseInt(theme) > 5) theme = '1';
+    // theme
+    const theme = useAtomValue(themeAtom);
 
+    // game contex
     const { updateScores } = useGame();
 
     // canvas    
@@ -47,7 +47,7 @@ function Bot( { theme }: PongProps )
             y: canvas.height / 2 - 100 / 2,
             width: 10,
             height: 130,
-            color: colors[parseInt(theme)],
+            color: colors[theme],
             score: 0
         }
 
@@ -64,7 +64,7 @@ function Bot( { theme }: PongProps )
             y: canvas.height / 2 - 100 / 2,
             width: 10,
             height: 130,
-            color: colors[parseInt(theme)],
+            color: colors[theme],
             score: 0
         }
 
@@ -81,7 +81,7 @@ function Bot( { theme }: PongProps )
             x: canvas.width / 2,
             y: canvas.height / 2,
             radius: 15,
-            color: colors[parseInt(theme)],
+            color: colors[theme],
             speed: 10,
             velocityX: 5,
             velocityY: 5
@@ -138,7 +138,7 @@ function Bot( { theme }: PongProps )
                 this.y = this.start.y;
                 this.size = this.start.size;
 
-                this.style = rgbs[parseInt(theme)][getRandomInt(0, rgbs[parseInt(theme)].length - 1)];
+                this.style = rgbs[theme][getRandomInt(0, rgbs[theme].length - 1)];
 
                 this.time = 0;
                 this.ttl = 120;
@@ -192,12 +192,12 @@ function Bot( { theme }: PongProps )
 
 
         // draw the side line
-        drawRect(0, 0, 10, canvas.height, colors[parseInt(theme)]);
-        drawRect(canvas.width - 10, 0, 10, canvas.height, colors[parseInt(theme)]);
+        drawRect(0, 0, 10, canvas.height, colors[theme]);
+        drawRect(canvas.width - 10, 0, 10, canvas.height, colors[theme]);
 
         // drae the top and bottom line
-        drawRect(0, 0, canvas.width, 10,  colors[parseInt(theme)]);
-        drawRect(0, canvas.height - 10, canvas.width, 10,  colors[parseInt(theme)]);
+        drawRect(0, 0, canvas.width, 10,  colors[theme]);
+        drawRect(0, canvas.height - 10, canvas.width, 10,  colors[theme]);
 
         // draw the user and com paddle
         drawRect(user.x, user.y, user.width, user.height, user.color);
@@ -429,7 +429,7 @@ return (
             <canvas
                 ref={gameRef}
                 className={styles.game_canvas}
-                style={ { backgroundImage: `url(/${themes[parseInt(theme)]}.png)` } }
+                style={ { backgroundImage: `url(/${themes[theme]}.png)` } }
                 >
             </canvas>
         </div>
