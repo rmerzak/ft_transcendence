@@ -73,7 +73,7 @@ export class GameService {
           player.position.x = 20;
           player.position.y = this.height / 2 - 100 / 2;
           room.addPlayer(player);
-  
+
           client.emit('playerNo', {
             playerNo: 1,
             user: room.players[0].user,
@@ -84,7 +84,7 @@ export class GameService {
           player.position.x = this.width - 35;
           player.position.y = this.height / 2 - 100 / 2;
           room.addPlayer(player);
-  
+
           server.to(room.id).emit('playerNo', {
             playerNo: 2,
             user: room.players[1].user,

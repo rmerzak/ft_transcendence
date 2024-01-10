@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client'
 import styles from '@/app/dashboard/game/page.module.css'
 import { useRouter } from 'next/navigation';
@@ -23,11 +24,21 @@ function Pong()
     
     // theme
     const theme = useAtomValue(themeAtom);
-    if (theme == -1) {
-        router.push('/dashboard/game', { scroll: false });
-    }
-
+    
     useEffect(() => {
+
+        if (theme == -1) {
+            Swal.fire({
+                title: 'You not allowed to play this game!',
+                icon: 'error',
+                confirmButtonText: 'Ok',
+                customClass: {
+                    popup: 'bg-gradient-to-r from-[#510546]/40 to-[#6958be]/40'
+                }
+            }).then(() => {
+                router.push('/dashboard/game', { scroll: false });
+            });
+        }
         
         //  socket.io
         const socket = io('http://localhost:3000/game', {
@@ -95,53 +106,12 @@ function Pong()
         let balls: Balls[] = [];
         const rgbs: string[][] = [
             ["rgb(255, 255, 255)", "rgb(238, 238, 238)", "rgb(221, 221, 221)", "rgb(204, 204, 204)", "rgb(187, 187, 187)", "rgb(170, 170, 170)", "rgb(153, 153, 153)"],
-            ["rgb(17, 17, 17)", "rgb(34, 34, 34)", "rgb(51, 51, 51)", "rgb(68, 68, 68)", "rgb(85, 85, 85)", "rgb(102, 102, 102)", "rgb(119, 119, 119)"],
+            ["rgb(255, 223, 186)","rgb(255, 182, 193)", "rgb(144, 238, 144)", "rgb(173, 216, 230)", "rgb(255, 228, 196)", "rgb(221, 160, 221)", "rgb(173, 216, 230)"],
             ["rgb(255, 246, 229)", "rgb(251, 241, 219)", "rgb(246, 236, 208)", "rgb(241, 231, 197)", "rgb(236, 226, 186)", "rgb(231, 221, 175)", "rgb(226, 216, 164)"],
             ["rgb(139, 69, 19)", "rgb(160, 82, 45)", "rgb(205, 133, 63)", "rgb(244, 164, 96)", "rgb(210, 105, 30)", "rgb(139, 69, 19)", "rgb(165, 42, 42)"],
             ["rgb(193, 63, 45)", "rgb(199, 74, 58)", "rgb(205, 85, 71)", "rgb(211, 96, 84)", "rgb(217, 107, 97)", "rgb(223, 118, 110)", "rgb(229, 129, 123)"],
             ["rgb(0, 0, 255)", "rgb(30, 144, 255)", "rgb(70, 130, 180)", "rgb(0, 191, 255)", "rgb(135, 206, 250)", "rgb(70, 130, 180)", "rgb(100, 149, 237)"]
           ];
-
-        // let rgb = [
-        	// "rgb(20, 20, 20)",
-        	// "rgb(50, 50, 50)",
-        	// "rgb(100, 100, 100)",
-        	// "rgb(125, 125, 125)",
-        	// "rgb(160, 160, 160)",
-        	// "rgb(200, 200, 200)",
-        	// "rgb(230, 230, 230)"
-        // ]
-
-        // let rgb = [
-        //     "rgb(139, 69, 19)",
-        //     "rgb(160, 82, 45)",
-        //     "rgb(205, 133, 63)",
-        //     "rgb(244, 164, 96)",
-        //     "rgb(210, 105, 30)",
-        //     "rgb(139, 69, 19)",
-        //     "rgb(165, 42, 42)"
-        // ];
-
-        // let rgb = [
-        //     "rgb(255, 223, 186)",
-        //     "rgb(255, 182, 193)",
-        //     "rgb(144, 238, 144)",
-        //     "rgb(173, 216, 230)",
-        //     "rgb(255, 228, 196)",
-        //     "rgb(221, 160, 221)",
-        //     "rgb(173, 216, 230)"
-        // ];
-
-
-        // // let rgb = [
-        //     "rgb(0, 0, 255)",
-        //     "rgb(30, 144, 255)",
-        //     "rgb(70, 130, 180)",
-        //     "rgb(0, 191, 255)",
-        //     "rgb(135, 206, 250)",
-        //     "rgb(70, 130, 180)",
-        //     "rgb(100, 149, 237)"
-        // ];
 
         function getRandomInt(min: number, max: number) {
             return Math.round(Math.random() * (max - min)) + min;
@@ -429,6 +399,7 @@ function Pong()
 
         // Clear interval
         clearInterval(intervalId);
+        
         // off event listener
         socket.off('playerNo');
         socket.off('roomIsFull');
