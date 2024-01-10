@@ -12,7 +12,6 @@ import { useAtomValue } from 'jotai';
 
 function Pong()
 {
-
     // game context
     const { updateScores, setUserInfo, setOpponentInfo } = useGame();
     
