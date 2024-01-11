@@ -23,5 +23,21 @@ export class JwtGuard extends AuthGuard('jwt') {
         
         return super.canActivate(context) as boolean;
       }
+    //  async canActivate(context: ExecutionContext): Promise<boolean>{
+    //      const request = context.switchToHttp().getRequest();
+    //      const response = context.switchToHttp().getResponse();
+    //      const token = request.cookies['accesstoken'];
+    //      if (token) {
+    //         try {
+    //             const payload = verify(token, process.env.JWT_SERCRET);
+    //             return super.canActivate(context) as boolean;
+    //         } catch (error) {
+    //             response.clearCookie('accesstoken');
+    //             response.clearCookie('userId');
+    //             throw new UnauthorizedException('Invalid or expired token');
+    //         }
+    //     }
+    //     return false;
+    //   }
       
 }
