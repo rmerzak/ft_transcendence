@@ -56,5 +56,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard', '/dashboard/:path*', '/auth/twofa', '/auth/verify'],
+  matcher: ['/dashboard', '/dashboard/:path*', '/auth/verify'],
 };
