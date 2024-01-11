@@ -5,18 +5,15 @@ import MatchHistory from '@/components/profile/MatchHistory'
 import ProfileInformation from '@/components/profile/ProfileInformation'
 import Statistics from '@/components/profile/Statistics'
 import { data } from '@/data/MatchHistory'
-import { User } from '@/interfaces'
 import axios from 'axios'
 import { useParams } from 'next/navigation'
 import React, { useContext, useEffect, useRef, useState } from 'react'
 
-import UserNotFound from '@/components/profile/UserNotFound'
 import Loading from '@/components/Loading/Loading'
 import { ContextGlobal } from '@/context/contex'
 
-import Profile from '../page'
 
-function page() {
+function Page() {
 
   const { username } = useParams();
   const [user, setUser] = useState<any>();
@@ -62,4 +59,4 @@ function page() {
     )
 }
 
-export default page;
+export default Page;

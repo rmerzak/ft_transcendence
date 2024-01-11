@@ -24,21 +24,15 @@ async function isValidAccessToken(accessToken: string | undefined): Promise<bool
 }
 
 export async function middleware(req: NextRequest) {
-  const cookies = req.cookies.get('accesstoken');
+  try {
+    const cookies = req.cookies.get('accesstoken');
   const userId = req.cookies.get('userId');
   const valid : any  = await isValidAccessToken(cookies?.value);
-
   if (!cookies && !userId) {
     return NextResponse.redirect(new URL('/', process.env.SERVER_FRONTEND));
   }
 
-  if (userId && !cookies) {
-    if (req.nextUrl.pathname !== '/auth/twofa') {
-      return NextResponse.redirect(new URL('/', process.env.SERVER_FRONTEND));
-    }
-  }
-
-  if (valid?.error === 'Unauthorized' && cookies) {
+  if (valid?.error === 'Unauthorized') {
     return NextResponse.redirect(new URL('/auth/login', process.env.SERVER_FRONTEND));
   }
 
@@ -47,14 +41,13 @@ export async function middleware(req: NextRequest) {
       return NextResponse.redirect(new URL('/auth/verify', process.env.SERVER_FRONTEND));
     }
   }
-
-  if (req.nextUrl.pathname === '/auth/verify' && !cookies) {
-    return NextResponse.redirect(new URL('/', process.env.SERVER_FRONTEND));
-  }
-
   return NextResponse.next();
+  } catch (error) {
+    return NextResponse.redirect(new URL('/auth/login', process.env.SERVER_FRONTEND));
+  }
+  
 }
 
 export const config = {
-  matcher: ['/dashboard', '/dashboard/:path*', '/auth/verify'],
+  matcher: ['/dashboard/:path*', '/auth/verify'],
 };
