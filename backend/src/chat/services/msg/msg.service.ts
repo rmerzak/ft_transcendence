@@ -100,7 +100,6 @@ export class MsgService {
             id: true,
             username: true,
             image: true,
-            status: true,
           }
         }
       }

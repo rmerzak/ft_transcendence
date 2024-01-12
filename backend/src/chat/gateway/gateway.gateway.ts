@@ -7,7 +7,7 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
-import { MsgService } from '../services/room/msg.service';
+import { MsgService } from '../services/msg/msg.service';
 import { SocketAuthMiddleware } from 'src/auth/middleware/ws.mw';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Message } from '@prisma/client';
@@ -46,36 +46,32 @@ export class GatewayGateway
 
   @SubscribeMessage('send-message')
   async handleMessage(_client: Socket, payload: Message) {
-    // console.log("send-message");
-    // console.log(payload);
     const msg = await this.chatService.addMessage(payload, _client['user'].id);
     console.log("mesage: ", msg );
     this.server.to(payload.chatRoomId.toString()).emit('receive-message', msg);
   }
+
   @SubscribeMessage('join-room')
   handleJoinRoom(_client: Socket, payload: { roomId: number }) {
     console.log("roomId: ", payload.roomId);
+    if (_client.rooms.has(payload.roomId.toString())) {
+      return;
+    }
     _client.join(payload.roomId.toString());
-    _client.emit('joined-room');
-    console.log("rooms: ", _client['rooms']);
-    // if (_client.rooms)
-    // _client.rooms.forEach((room) => {
-    //   console.log("roomeeees: ", room);
-    // });
+    this.server.to(payload.roomId.toString()).emit('joined-room');
+    console.log("rooms: ", _client.rooms);
+    _client.rooms.forEach((room) => {
+      console.log("room: ", room);
+    });
   }
+  
+  
 
   handleDisconnect(_client: Socket) {
-    console.log('disconnected chat id: ' , _client);
-    console.log("rooms: ", _client['rooms']);
-    // _client.rooms.forEach((room) => {
-    //   console.log("room: ", room);
-    //   _client.leave(room);
-    // });
-    // this.userChatRoomSocket.removeSocket(_client['user'].id,-1,_client);
-    // check jwt token
-    // remove user from map
-    // users.delete(_client.id);
+    console.log('disconnected chat id: ' + _client.id);
   }
+
+
 
   /////////////////////////////////////////////
   public addSocket(roomId: number, socket: Socket): Map<number, Map<number, Socket[]>> | -1 {

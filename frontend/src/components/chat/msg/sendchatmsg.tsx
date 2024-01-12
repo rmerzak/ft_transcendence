@@ -1,7 +1,6 @@
 'user client'
-import React, { use, useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState, KeyboardEvent } from 'react'
 import Image from 'next/image';
-import { addMessage } from '@/api/chat/chat.api';
 import { ContextGlobal } from '@/context/contex';
 import { Messages } from '@/interfaces';
 
@@ -13,6 +12,14 @@ const Sendchatmsg: React.FC<SendchatmsgProps> = ({ chatRoomId }) => {
     const {  profile,  chatSocket } = useContext(ContextGlobal);
     const [message, setMessage] = useState<string>('');
     const [isjoined, setIsjoined] = useState<boolean>(false);
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Enter') {
+          e.preventDefault(); 
+            addMsg();
+        }
+      };
+
     function addMsg() {
         if (isjoined === false)
             chatSocket?.emit('join-room', { roomId: chatRoomId });
@@ -22,26 +29,23 @@ const Sendchatmsg: React.FC<SendchatmsgProps> = ({ chatRoomId }) => {
             chatRoomId: chatRoomId,
             text: message,
         };
-        console.log(chatSocket);
         chatSocket?.emit('send-message', messageData);
-        addMessage(messageData).then((res) => {
-            console.log(res);
-            if (res.status === 201)
-                setMessage('');
-        }).catch((err) => {
-            console.log(err);
-        });
     }
     useEffect(() => {
        if (chatSocket) {
             chatSocket.on('joined-room', () => {
                 setIsjoined(true);
             });
+            chatSocket.on('receive-message', () => {
+                setMessage('');
+            }
+            );
+        }else{
+            setIsjoined(false);
         }
     }, [chatSocket]);
 
     useEffect(() => {
-        console.log("isjoined", isjoined);
     }, [isjoined]);
 
     return (
@@ -77,6 +81,7 @@ const Sendchatmsg: React.FC<SendchatmsgProps> = ({ chatRoomId }) => {
                         className="w-4/5 h-full bg-transparent border-none focus:ring-0"
                         onChange={(e) => setMessage(e.target.value)}
                         value={message}
+                        onKeyDown={(e) => handleKeyDown(e)}
                     />
                     <button onClick={()=>{addMsg()}}>
                         <Image

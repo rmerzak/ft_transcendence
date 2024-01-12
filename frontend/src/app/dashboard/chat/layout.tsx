@@ -16,7 +16,10 @@ const Layout = ({children} : any) => {
       transports: ["websocket"],
       withCredentials: true,
     });
-    sock.connect();
+
+    if (!sock.connected)
+      sock.connect();
+    
     sock.on('connect', () => {
       setChatSocket(sock);
       console.log('Connected to the server');

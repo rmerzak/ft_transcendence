@@ -12,7 +12,7 @@ import {
   Param,
   UseGuards,
 } from '@nestjs/common';
-import { MsgService } from './services/room/msg.service';
+import { MsgService } from './services/msg/msg.service';
 import { RoomService } from './services/room/room.service';
 import { $Enums, ChatRoom, ChatRoomMember, Message, User } from '@prisma/client';
 import { isAlpha } from 'class-validator';

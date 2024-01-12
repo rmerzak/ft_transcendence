@@ -26,7 +26,7 @@ const Chat = () => {
       // Emit join-room event
       chatSocket.emit('join-room', { roomId: chatId });
       chatSocket.on('receive-message', (message) => {
-        console.log("messge", message);
+        console.log("messge12", message);
         setMessages((messages) => [...messages, message]);
       });
     }
