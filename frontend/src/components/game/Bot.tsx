@@ -5,12 +5,13 @@ import { useGame } from '@/app/dashboard/game/gameContex';
 import Swal from 'sweetalert2';
 import { themeAtom } from './theme';
 import { useAtomValue } from 'jotai';
-
+import { useSetAtom } from 'jotai';
 
 function Bot()
 {
     // theme
     const theme = useAtomValue(themeAtom);
+    const setTheme = useSetAtom(themeAtom);
 
     // game contex
     const { updateScores } = useGame();
@@ -220,22 +221,6 @@ function Bot()
 
         }
 
-        // add event listener to control the paddle
-        // addEventListener("mousemove", movePaddle);
-        // function movePaddle(evt: MouseEvent) {
-        //     if (!canvas) return;
-        
-        //     let rect = canvas.getBoundingClientRect();
-        //     user.y = evt.clientY - rect.top - user.height / 2;
-        
-        //     // Ensure the paddle stays within the canvas boundaries
-        //     if (user.y < 0) {
-        //         user.y = 0;
-        //     } else if (user.y > canvas.height - user.height) {
-        //         user.y = canvas.height - user.height;
-        //     }
-        // }
-
         addEventListener("wheel", scrollPaddle);
 
         function scrollPaddle(evt: WheelEvent) {
@@ -255,22 +240,6 @@ function Bot()
             }
         }
 
-
-        // collision detection
-        // function collision(b: any, p: any) {
-        //     p.top = p.y;
-        //     p.bottom = p.y + p.height;
-        //     p.left = p.x;
-        //     p.right = p.x + p.width;
-            
-        //     b.top = b.y - b.radius;
-        //     b.bottom = b.y + b.radius;
-        //     b.left = b.x - b.radius;
-        //     b.right = b.x + b.radius;
-            
-        //     return p.left < b.right && p.top < b.bottom && p.right > b.left && p.bottom > b.top;
-        // }
-
         function collision(b: any, p: any) {
             const ballCenterX = b.x;
             const ballCenterY = b.y;
@@ -282,17 +251,6 @@ function Bot()
         
             return (deltaX ** 2 + deltaY ** 2) < (b.radius ** 2);
         }
-
-        // reset the ball
-        // function resetBall() {
-        //     if (!canvas) return;
-            
-        //     ball.x = canvas.width / 2;
-        //     ball.y = canvas.height / 2;
-            
-        //     ball.speed = 10;
-        //     ball.velocityX = -ball.velocityX;
-        // }
 
         function resetBall() {
             if (!canvas) return;
@@ -376,13 +334,13 @@ function Bot()
                 resetBall();
             }
             updateScores(user.score, com.score);
-            if (user.score == 50 || com.score == 50) {
+            if (user.score == 5 || com.score == 5) {
                 updateScores(user.score, com.score);
                 clearInterval(intervalId);
                 Swal.fire({
                     title: 'Game Over',
                     text: `You ${user.score > com.score ? 'Win' : 'Lose'}!`,
-                    imageUrl: user.score > com.score ? '/winner.gif' : '/loser.gif',
+                    imageUrl: user.score > com.score ? '/game/winner.gif' : '/game/loser.gif',
                     imageWidth: 400,
                     imageHeight: 200,
                     confirmButtonText: 'OK',
@@ -407,6 +365,8 @@ function Bot()
         const intervalId = setInterval(game, 1000 / framePerSecond);
 
         return () => {
+            // reset theme
+            setTheme(1);
             // remove interval
             clearInterval(intervalId);
             // remove event listener
@@ -420,7 +380,7 @@ function Bot()
 
     }, [theme]);
 
-    const themes = ['A1', 'B1', 'C1', 'D1', 'E1', 'F1'];
+    const themes = ['b0', 'b1', 'b2', 'b3', 'b4', 'b5']
 
 return (
     <>
@@ -428,7 +388,7 @@ return (
             <canvas
                 ref={gameRef}
                 className={styles.game_canvas}
-                style={ { backgroundImage: `url(/${themes[theme]}.png)` } }
+                style={ { backgroundImage: `url(/game/${themes[theme]}.png)` } }
                 >
             </canvas>
         </div>

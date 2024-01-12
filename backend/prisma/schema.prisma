@@ -16,11 +16,13 @@ enum RoomVisibility {
   PRIVATE
   PROTECTED
 }
+
 enum UserStatus {
   ONLINE
   OFFLINE
   INGAME
 }
+
 model User {
   // initial user data
   id Int @id @default(autoincrement())
@@ -44,12 +46,13 @@ model User {
   twoFactorEnabled Boolean @default(false)
 
   // Game user data
-  gamewins Int @default(0)
-  gameplays Int @default(0)
-  gamefails Int @default(0)
-  gamepoints Int @default(0)
+  gameWins Int @default(0)
+  gameMatches Int @default(0)
+  gameLoses Int @default(0)
+  gameElo Int @default(800)
   
-  games Game[]
+  uGames Game[] @relation(name: "userGame")
+  oGames Game[] @relation(name: "oppGame")
 
   // Chat user data
   chatRooms ChatRoomMember[]
@@ -61,14 +64,13 @@ model User {
 }
 
 model Game {
-  gameId String @id @map("game-id")
+  gameId Int @id @default(autoincrement())
   userPlayerId Int
   userOpponnentId Int
-  createdAt DateTime @default(now())
-  score Int
-  status String
-  dateStart DateTime
-  user User @relation(fields: [userPlayerId], references: [id])
+  useScore Int
+  oppScore Int
+  user User @relation(name:"userGame", fields: [userPlayerId], references: [id])
+  oppennent User @relation(name: "oppGame", fields: [userOpponnentId], references: [id])
 }
 
 enum FriendshipStatus {

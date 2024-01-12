@@ -2,6 +2,7 @@ import { Server } from 'socket.io';
 import { Player } from './player.model';
 import { State } from './state.model';
 import { Ball } from './ball.model';
+import { GameService } from '../services/game.service';
 
 export class Room {
   private playersSet: WeakSet<Player> = new WeakSet<Player>();
@@ -96,7 +97,7 @@ export class Room {
 
   // this method is the logic of the game
   // it is called when the game starts
-  startGame(server: Server): void {
+  startGame(game: GameService, server: Server): void {
     const update = () => {
       if (this.state === State.FINISHED) {
         clearInterval(gameLoopInterval);
@@ -126,7 +127,7 @@ export class Room {
         this.resetBall(this);
       }
 
-      if (this.players[0].score === 500 || this.players[1].score === 500) {
+      if (this.players[0].score === 5 || this.players[1].score === 5) {
         if (this.players[0].score === 5) {
           this.winner = 1;
           server
@@ -144,6 +145,24 @@ export class Room {
             .to(this.players[0].socketId)
             .emit('gameOver', { winner: false });
         }
+
+        // update match history and statistics
+        game.createMatchHistory(
+          this.players[0].user.id,
+          this.players[1].user.id,
+          this.players[0].score,
+          this.players[1].score,
+        );
+        game.updateStatistics(
+          this.players[0].user.id,
+          this.players[0].score,
+          this.players[1].score,
+        );
+        game.updateStatistics(
+          this.players[1].user.id,
+          this.players[1].score,
+          this.players[0].score,
+        );
         this.state = State.FINISHED;
         clearInterval(gameLoopInterval);
         return;

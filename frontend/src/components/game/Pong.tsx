@@ -10,11 +10,10 @@ import { themeAtom } from './theme';
 import { useAtomValue } from 'jotai';
 import { useSetAtom } from 'jotai';
 
-
 function Pong()
 {
     // game context
-    const { updateScores, setUserInfo, setOpponentInfo } = useGame();
+    const { updateScores, setPlayer1Elo, setPlayer2Elo, setUserInfo, setOpponentInfo } = useGame();
     
     // canvas    
     const gameRef = useRef<HTMLCanvasElement>(null);
@@ -94,7 +93,7 @@ function Pong()
         let balls: Balls[] = [];
         const rgbs: string[][] = [
             ["rgb(255, 255, 255)", "rgb(238, 238, 238)", "rgb(221, 221, 221)", "rgb(204, 204, 204)", "rgb(187, 187, 187)", "rgb(170, 170, 170)", "rgb(153, 153, 153)"],
-            ["rgb(255, 223, 186)","rgb(255, 182, 193)", "rgb(144, 238, 144)", "rgb(173, 216, 230)", "rgb(255, 228, 196)", "rgb(221, 160, 221)", "rgb(173, 216, 230)"],
+            ["rgb(17, 17, 17)", "rgb(34, 34, 34)", "rgb(51, 51, 51)", "rgb(68, 68, 68)", "rgb(85, 85, 85)", "rgb(102, 102, 102)", "rgb(119, 119, 119)"],
             ["rgb(255, 246, 229)", "rgb(251, 241, 219)", "rgb(246, 236, 208)", "rgb(241, 231, 197)", "rgb(236, 226, 186)", "rgb(231, 221, 175)", "rgb(226, 216, 164)"],
             ["rgb(139, 69, 19)", "rgb(160, 82, 45)", "rgb(205, 133, 63)", "rgb(244, 164, 96)", "rgb(210, 105, 30)", "rgb(139, 69, 19)", "rgb(165, 42, 42)"],
             ["rgb(193, 63, 45)", "rgb(199, 74, 58)", "rgb(205, 85, 71)", "rgb(211, 96, 84)", "rgb(217, 107, 97)", "rgb(223, 118, 110)", "rgb(229, 129, 123)"],
@@ -230,6 +229,7 @@ function Pong()
             playerNo = payload.playerNo;
             if (playerNo === 1) {
                 setUserInfo(payload.playerNo, payload.user?.username, payload.user?.image);
+                setPlayer1Elo(payload.user?.gameElo);
                 if (payload.showLoading) {
                     Swal.fire({
                         imageUrl: "/loading.gif",
@@ -246,6 +246,7 @@ function Pong()
                 }
             } else if (playerNo === 2) {
                 setOpponentInfo(payload.playerNo, payload.user?.username, payload.user?.image);
+                setPlayer2Elo(payload.user?.gameElo);
                 Swal.close();
             }
             render();
@@ -263,38 +264,38 @@ function Pong()
 
         let movement = { up: false, down: false };
 
-            handleKeyDown = (e: KeyboardEvent) => {
-                if (isGameStarted) {
-                    if (e.key === 'ArrowUp') {
-                        movement.up = true;
-                    } else if (e.key === 'ArrowDown') {
-                        movement.down = true;
-                    }
+        handleKeyDown = (e: KeyboardEvent) => {
+            if (isGameStarted) {
+                if (e.key === 'ArrowUp') {
+                    movement.up = true;
+                } else if (e.key === 'ArrowDown') {
+                    movement.down = true;
                 }
             }
-            handleKeyUp = (e: KeyboardEvent) => {
-                if (isGameStarted) {
-                    if (e.key === 'ArrowUp') {
-                        movement.up = false;
-                    } else if (e.key === 'ArrowDown') {
-                        movement.down = false;
-                    }
+        }
+        handleKeyUp = (e: KeyboardEvent) => {
+            if (isGameStarted) {
+                if (e.key === 'ArrowUp') {
+                    movement.up = false;
+                } else if (e.key === 'ArrowDown') {
+                    movement.down = false;
                 }
             }
-            window.addEventListener('keydown', handleKeyDown);
-            window.addEventListener('keyup', handleKeyUp);
+        }
+        window.addEventListener('keydown', handleKeyDown);
+        window.addEventListener('keyup', handleKeyUp);
+        
+        // Periodically send movement updates
+        intervalId = setInterval(() => {
+            if (movement.up || movement.down) {
+                socket.emit("move", {
+                    roomId: roomID,
+                    playerNo: playerNo === 1 ? 2 : 1,
+                    direction: movement.up ? 'up' : 'down'
+                });
+            }
+        }, 1000 / 60); // Adjust the interval as needed
             
-            // Periodically send movement updates
-            intervalId = setInterval(() => {
-                if (movement.up || movement.down) {
-                    socket.emit("move", {
-                        roomId: roomID,
-                        playerNo: playerNo === 1 ? 2 : 1,
-                        direction: movement.up ? 'up' : 'down'
-                    });
-                }
-            }, 1000 / 60); // Adjust the interval as needed
-
         // update game
         socket.on("updateGame", (update) => {
             if (!ball || !player1 || !player2) return;
@@ -306,17 +307,16 @@ function Pong()
             }
 
             // fix type error
-            if (!update.players[0] || !update.players[1]) return;
             player1.x = update.players[0].position.x;
             player1.y = update.players[0].position.y;
 
             player2.x = update.players[1].position.x;
             player2.y = update.players[1].position.y;
 
-            player1.score = update.players[0].score;
-            player2.score = update.players[1].score;
+            // player1.score = update.players[0].score;
+            // player2.score = update.players[1].score;
+            updateScores(update.players[0].score, update.players[1].score);
 
-            updateScores(player1.score, player2.score);
 
             render();
         });
@@ -336,7 +336,7 @@ function Pong()
                 Swal.fire({
                     title: 'You Win!',
                     text: 'Congratulations! You win the game!',
-                    imageUrl: "/winner.gif",
+                    imageUrl: "/game/winner.gif",
                     imageWidth: 400,
                     imageHeight: 200,
                     confirmButtonText: 'Ok',
@@ -351,7 +351,7 @@ function Pong()
                 Swal.fire({
                     title: 'You Lose!',
                     text: 'You lose the game!',
-                    imageUrl: "/loser.gif",
+                    imageUrl: "/game/loser.gif",
                     imageWidth: 400,
                     imageHeight: 200,
                     confirmButtonText: 'Ok',
@@ -375,8 +375,7 @@ function Pong()
 
 
         return () => {
-
-        // reset theme to -1
+        // reset theme
         setTheme(-1);
 
         // remove canvas
@@ -405,7 +404,7 @@ function Pong()
 
     }, []);
     
-    const themes = ['A1', 'B1', 'C1', 'D1', 'E1', 'F1'];
+    const themes = ['b0', 'b1', 'b2', 'b3', 'b4', 'b5']
 
     return (
         <>
@@ -413,7 +412,7 @@ function Pong()
                 <canvas
                     ref={gameRef}
                     className={styles.game_canvas}
-                    style={ { backgroundImage: `url(/${themes[theme]}.png)` } }
+                    style={ { backgroundImage: `url(/game/${themes[theme]}.png)` } }
                     >
                 </canvas>
             </div>

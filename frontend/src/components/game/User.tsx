@@ -6,7 +6,18 @@ import { ContextGlobal } from '@/context/contex';
 
 function User({ className = '', id = UserEnum.USER}: { className?: string; id?: number }) {
     const { profile }:any = useContext(ContextGlobal);
-    const { oid, userName, userImage, uid, opponentName, opponentImage, player1Score, player2Score } = useGame();
+    const { 
+            oid,
+            userName,
+            userImage,
+            uid,
+            opponentName,
+            opponentImage,
+            player1Score,
+            player2Score,
+            player1Elo,
+            player2Elo,
+    } = useGame();
     return (
         <div className={`${className}`}>
             <div className="bg-neutral card card-side shadow-xl inline-block ">
@@ -18,8 +29,8 @@ function User({ className = '', id = UserEnum.USER}: { className?: string; id?: 
                                         id === uid ? userImage :
                                         id === oid ? opponentImage :
                                         id === UserEnum.PLAYER ? profile.image :
-                                        id === UserEnum.BOT ? '/bot1.gif' :
-                                        '/avatar.jpeg'
+                                        id === UserEnum.BOT ? '/game/bot1.gif' :
+                                        '/game/avatar.jpeg'
                                     }
                                     alt="User Profile"
                                     width={200}
@@ -50,6 +61,14 @@ function User({ className = '', id = UserEnum.USER}: { className?: string; id?: 
                                         id === oid ? player2Score :
                                         id === UserEnum.PLAYER ? player1Score :
                                         id === UserEnum.BOT ? player2Score : 0
+                                    }
+                                </div>
+                                <div className="stat-desc">
+                                    {
+                                        id === uid ? player1Elo :
+                                        id === oid ? player2Elo :
+                                        id === UserEnum.PLAYER ? '' :
+                                        id === UserEnum.BOT ? '' : '?'
                                     }
                                 </div>
                             </div>

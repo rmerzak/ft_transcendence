@@ -6,7 +6,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { EffectCoverflow, Pagination } from 'swiper/modules';
 import { useRouter } from 'next/navigation';
 import { themeAtom } from './theme';
-import { useSetAtom } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 import 'swiper/css';
 import 'swiper/css/effect-coverflow';
 import 'swiper/css/pagination';
@@ -49,10 +49,13 @@ function Play()
         } catch {}
         return false as boolean;
     }
-
+    
     const setTheme = useSetAtom(themeAtom);
+    const theme = useAtomValue(themeAtom);
     const handleTheme = (index: number) => {
+        console.log(index)
         setTheme(index);
+        console.log(theme)
     }
 
     useEffect(() => {
@@ -72,7 +75,7 @@ function Play()
                     <figure>
                         <Image
                             className="bg-[#ffffff]"
-                            src="/pong.gif"
+                            src="/game/pong.gif"
                             alt="car!"
                             width={500}
                             height={300}
@@ -90,7 +93,12 @@ function Play()
                         <div className="card-actions justify-between">
                             <button
                                 disabled={isPlaying}
-                                onClick={createRoom}
+                                onClick={ () => {
+                                    createRoom();
+                                    if (theme === -1)
+                                        setTheme(1);
+                                    }
+                                }
                                 className="btn btn-active btn-neutral border-0 bg-[#811B77] text-[#ffffff]/70"
                             >
                                     Play Online
@@ -98,6 +106,7 @@ function Play()
 
                             <Link
                                 href='/dashboard/game/bot'
+                                onClick={theme === -1 ? () => setTheme(1) : () => {}}
                                 className="btn btn-active btn-ghost border-0 text-[#ffffff]/70"
                             >
                                 Play Bot
@@ -133,12 +142,11 @@ function Play()
                         modules={[EffectCoverflow, Pagination]}
                         className="mySwiper"
                         initialSlide={1}
-                        lazyPreloaderClass='lazy-preloader'
                     >
                         {img.map((item, index) => (
                             <SwiperSlide key={index}>
                                 <Image
-                                    src={`/game/${item}.gif`}
+                                    src={`/game/${item}.png`}
                                     alt={item}
                                     width={300}
                                     height={300}

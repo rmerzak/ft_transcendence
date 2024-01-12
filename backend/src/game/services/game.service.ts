@@ -17,6 +17,7 @@ export class GameService {
         username: true,
         email: true,
         image: true,
+        gameElo: true,
       },
     });
     return user;
@@ -105,7 +106,7 @@ export class GameService {
         setTimeout(() => {
           server.to(room.id).emit('startedGame', room.id);
           // start game
-          room.startGame(server);
+          room.startGame(this, server);
         }, 50);
       }
     }
@@ -153,5 +154,68 @@ export class GameService {
     );
 
     return isPlaying;
+  }
+
+  // Create match History
+  async createMatchHistory(
+    player1Id: number,
+    player2Id: number,
+    player1Score: number,
+    player2Score: number,
+  ) {
+    const matchHistory = await this.prisma.game.create({
+      data: {
+        userPlayerId: player1Id,
+        userOpponnentId: player2Id,
+        useScore: player1Score,
+        oppScore: player2Score,
+      },
+    });
+    return matchHistory;
+  }
+
+  // Update Statistics
+  async updateStatistics(
+    playerId: number,
+    playerScore: number,
+    oppScore: number,
+  ) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: playerId },
+    });
+    if (!user) {
+      return;
+    }
+    const state = playerScore > oppScore ? 1 : 0;
+    const gameWins = user.gameWins + state;
+    const gameLoses = user.gameLoses + (1 - state);
+    const gameMatches = user.gameMatches + 1;
+    const gameElo =
+      user.gameElo +
+      10 * (state - 1 / (1 + 10 ** ((oppScore - playerScore) / 400)));
+
+    await this.prisma.user.update({
+      where: { id: playerId },
+      data: {
+        gameWins,
+        gameLoses,
+        gameMatches,
+        gameElo,
+      },
+    });
+  }
+
+  // get Statistics
+  async getStatistics(playerId: number) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: playerId },
+      select: {
+        gameMatches: true,
+        gameWins: true,
+        gameLoses: true,
+        gameElo: true,
+      },
+    });
+    return user;
   }
 }

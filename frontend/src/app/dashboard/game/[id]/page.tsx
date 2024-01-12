@@ -28,6 +28,9 @@ const Game = () => {
                 router.push('/dashboard/game', { scroll: false });
             });
         }
+        return () => {
+            // cleanup
+        }
     }, [router, theme]);
 
     return (
