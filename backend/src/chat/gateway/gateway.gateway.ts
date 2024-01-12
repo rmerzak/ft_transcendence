@@ -11,9 +11,6 @@ import { MsgService } from '../services/msg/msg.service';
 import { SocketAuthMiddleware } from 'src/auth/middleware/ws.mw';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Message } from '@prisma/client';
-// import { SocketContainer } from '../classes/socket_container';
-
-// let users = new Map<string, string[]>();
 
 @WebSocketGateway({
   cors: { origin: 'http://localhost:8080', credentials: true },
@@ -21,8 +18,6 @@ import { Message } from '@prisma/client';
 })
 export class GatewayGateway
   implements OnGatewayConnection, OnGatewayDisconnect {
-  //atruibute socket
-  private userChatRoomSocket: Map<number, Map<number, Socket[]>> = new Map<number, Map<number, Socket[]>>();
 
   // add a map to store users
   @WebSocketServer()
@@ -48,94 +43,24 @@ export class GatewayGateway
   async handleMessage(_client: Socket, payload: Message) {
     const msg = await this.chatService.addMessage(payload, _client['user'].id);
     console.log("mesage: ", msg );
+    const msgData = {
+      msg: msg,
+      SocketId: _client.id
+    }
     this.server.to(payload.chatRoomId.toString()).emit('receive-message', msg);
+    console.log("rooms: ", _client.rooms);
   }
 
   @SubscribeMessage('join-room')
   handleJoinRoom(_client: Socket, payload: { roomId: number }) {
     console.log("roomId: ", payload.roomId);
-    if (_client.rooms.has(payload.roomId.toString())) {
-      return;
-    }
+    if (_client.rooms.has(payload.roomId.toString())) return;
     _client.join(payload.roomId.toString());
-    this.server.to(payload.roomId.toString()).emit('joined-room');
     console.log("rooms: ", _client.rooms);
-    _client.rooms.forEach((room) => {
-      console.log("room: ", room);
-    });
   }
-  
-  
 
   handleDisconnect(_client: Socket) {
     console.log('disconnected chat id: ' + _client.id);
-  }
-
-
-
-  /////////////////////////////////////////////
-  public addSocket(roomId: number, socket: Socket): Map<number, Map<number, Socket[]>> | -1 {
-    // console.log("addSocket", roomId, socket['user']);
-    if (!this.userChatRoomSocket.has(socket['user'].id)) {
-      this.userChatRoomSocket.set(socket['user'].id, new Map<number, Socket[]>());
-    }
-    if (roomId == -1 || socket == null) return -1;
-    if (!this.userChatRoomSocket.get(socket['user'].id).has(roomId)) {
-      this.userChatRoomSocket.get(socket['user'].id).set(roomId, []);
-    }
-    this.userChatRoomSocket.get(socket['user'].id).get(roomId).push(socket);
-    console.log("addSocket", this.userChatRoomSocket);
-    return this.userChatRoomSocket;
-  }
-
-  public removeSocket(userId: number, roomId: number, socket: Socket): Map<number, Socket[]> {
-    if (this.userChatRoomSocket.has(userId)) {
-      if (this.userChatRoomSocket.get(userId).has(roomId)) {
-        const index = this.userChatRoomSocket.get(userId).get(roomId).indexOf(socket);
-        if (index > -1) {
-          this.userChatRoomSocket.get(userId).get(roomId).splice(index, 1);
-        }
-      }
-    }
-    return this.userChatRoomSocket.get(userId);
-  }
-
-  public getSocketsByRoomId(userId: number, roomId: number): Socket[] {
-    if (this.userChatRoomSocket.has(userId)) {
-      console.log("getSocketsByRoomId 222", this.userChatRoomSocket.get(userId));
-      if (this.userChatRoomSocket.get(userId).has(roomId)) {
-        console.log("getSocketsByRoomId", this.userChatRoomSocket.get(userId).get(roomId));
-        return this.userChatRoomSocket.get(userId).get(roomId);
-      }
-    }
-    return [];
-  }
-
-  public getSocketsByUserId(userId: number): Map<number, Socket[]> {
-    if (this.userChatRoomSocket.has(userId)) {
-      return this.userChatRoomSocket.get(userId);
-    }
-    return new Map<number, Socket[]>();
-  }
-
-  public removeSocketFromRoom(userId: number, roomId: number, socket: Socket): Map<number, Socket[]> {
-    if (this.userChatRoomSocket.has(userId)) {
-      if (this.userChatRoomSocket.get(userId).has(roomId)) {
-        const index = this.userChatRoomSocket.get(userId).get(roomId).indexOf(socket);
-        if (index > -1) {
-          this.userChatRoomSocket.get(userId).get(roomId).splice(index, 1);
-        }
-      }
-    }
-    return this.userChatRoomSocket.get(userId);
-  }
-
-  public sendToRoom(userId: number, roomId: number, payload: Message): void {
-    const sockets = this.getSocketsByRoomId(userId, roomId);
-    console.log("",sockets);
-    sockets.forEach((socket) => {
-      socket.emit('receive-message', payload);
-    });
   }
 
 }

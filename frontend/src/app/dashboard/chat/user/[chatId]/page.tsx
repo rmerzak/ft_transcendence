@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useState, useContext, use } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { useParams } from 'next/navigation'
 import MsgShow from '@/components/chat/msg/msgshow';
 import { getChatRoomMembers, getChatRoomMessages } from '@/api/chat/chat.api';
@@ -14,7 +14,8 @@ const Chat = () => {
 
   useEffect(() => {
     if (chatSocket && chatId) {
-      getChatRoomMessages(Number(chatId))
+      if (messages.length === 0) {
+        getChatRoomMessages(Number(chatId))
         .then((res) => {
           setMessages(res.data);
           setChatRoomId(Number(chatId));
@@ -22,7 +23,7 @@ const Chat = () => {
         .catch((err) => {
           console.log(err);
         });
-  
+      }
       // Emit join-room event
       chatSocket.emit('join-room', { roomId: chatId });
       chatSocket.on('receive-message', (message) => {
@@ -30,9 +31,10 @@ const Chat = () => {
         setMessages((messages) => [...messages, message]);
       });
     }
-  }, [chatId, chatSocket?.id]);
-  
-  // emit disconnect event when component unmounts
+    return () => {
+      chatSocket?.off('receive-message');
+    };
+  }, [chatId, chatSocket]);
 
   return (
     <>

@@ -1,17 +1,17 @@
 'user client'
-import React, { useContext, useEffect, useState, KeyboardEvent } from 'react'
+import React, { useContext, useEffect, useState, KeyboardEvent, use } from 'react'
 import Image from 'next/image';
 import { ContextGlobal } from '@/context/contex';
 import { Messages } from '@/interfaces';
 
 interface SendchatmsgProps {
     chatRoomId: number;
+    isblocked?: boolean;
 }
 
-const Sendchatmsg: React.FC<SendchatmsgProps> = ({ chatRoomId }) => {
+const Sendchatmsg: React.FC<SendchatmsgProps> = ({ chatRoomId, isblocked }) => {
     const {  profile,  chatSocket } = useContext(ContextGlobal);
     const [message, setMessage] = useState<string>('');
-    const [isjoined, setIsjoined] = useState<boolean>(false);
 
     const handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === 'Enter') {
@@ -21,33 +21,21 @@ const Sendchatmsg: React.FC<SendchatmsgProps> = ({ chatRoomId }) => {
       };
 
     function addMsg() {
-        if (isjoined === false)
-            chatSocket?.emit('join-room', { roomId: chatRoomId });
+        chatSocket?.emit('join-room', { roomId: chatRoomId });
         if (!message || message.length === 0) return;    
         const messageData:Messages = {
             senderId: Number(profile?.id),
             chatRoomId: chatRoomId,
             text: message,
         };
+        console.log("messageData", messageData);
         chatSocket?.emit('send-message', messageData);
+        setMessage('');
     }
     useEffect(() => {
-       if (chatSocket) {
-            chatSocket.on('joined-room', () => {
-                setIsjoined(true);
-            });
-            chatSocket.on('receive-message', () => {
-                setMessage('');
-            }
-            );
-        }else{
-            setIsjoined(false);
-        }
-    }, [chatSocket]);
-
-    useEffect(() => {
-    }, [isjoined]);
-
+        console.log("isblocked", isblocked);
+    }, [isblocked]);
+    
     return (
         <>
             {/* end message here */}
@@ -55,7 +43,7 @@ const Sendchatmsg: React.FC<SendchatmsgProps> = ({ chatRoomId }) => {
                 <hr className="w-1/5" />
             </div>
             {/* input for send derict messages */}
-            <div className="flex justify-center items-center space-x-2 my-3">
+            <div className={`flex justify-center items-center space-x-2 my-3 ${isblocked ? 'hidden' : ''}`}>
                 <div className="bg-gray-300 w-[6%] h-10 rounded-3xl flex justify-center items-center space-x-4">
                     <Image
                         src="/folder.svg"
