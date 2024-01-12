@@ -14,6 +14,7 @@ export class Player {
   playerNo: number;
   position: Position;
   user: User;
+  status: string;
   width: number;
   height: number;
   color: string;
@@ -38,5 +39,6 @@ export class Player {
     this.left = 0;
     this.right = 0;
     this.user = user;
+    this.status = 'ONLINE';
   }
 }

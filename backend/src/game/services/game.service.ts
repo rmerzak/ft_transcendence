@@ -1,4 +1,4 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Room } from '../models/room.model';
 import { Player } from '../models/player.model';
 import { State } from '../models/state.model';
@@ -30,14 +30,11 @@ export class GameService {
   // if player already exists, return true
   // if player does not exist, return false
   playerExists(player: Player): boolean {
-    for (const room of this.rooms) {
-      for (const p of room.players) {
-        if (p.user.id === player.user.id) {
-          return true;
-        }
-      }
-    }
-    return false;
+    const isInRoom = this.rooms.some((room) =>
+      room.players.some(({ user: { id } }) => id === player.user.id),
+    );
+
+    return isInRoom;
   }
 
   // this method is creating a new room
@@ -72,6 +69,7 @@ export class GameService {
           player.playerNo = 1;
           player.position.x = 20;
           player.position.y = this.height / 2 - 100 / 2;
+          player.status = 'PLAYING';
           room.addPlayer(player);
 
           client.emit('playerNo', {
@@ -83,6 +81,7 @@ export class GameService {
           player.playerNo = 2;
           player.position.x = this.width - 35;
           player.position.y = this.height / 2 - 100 / 2;
+          player.status = 'PLAYING';
           room.addPlayer(player);
 
           server.to(room.id).emit('playerNo', {
@@ -146,12 +145,13 @@ export class GameService {
     return this.rooms.find((room) => room.id === roomId);
   }
 
-  // this method for get game
-  getGame(roomId: string): string {
-    const room = this.getRoom(roomId);
-    if (!room) {
-      throw new HttpException('Room not found', HttpStatus.NOT_FOUND);
-    }
-    return room.id;
+  isPlayerPlaying(playerId: number): boolean {
+    const isPlaying = this.rooms.some((room) =>
+      room.players.some(
+        ({ user: { id }, status }) => id === playerId && status === 'PLAYING',
+      ),
+    );
+
+    return isPlaying;
   }
 }

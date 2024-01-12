@@ -301,7 +301,6 @@ function Bot()
             ball.y = canvas.height / 2;
             
             ball.speed = 10;
-            // ball.velocityX = -ball.velocityX;
             if (ball.velocityX < 0) {
                 ball.velocityX = 5;
             } else {
@@ -377,7 +376,7 @@ function Bot()
                 resetBall();
             }
             updateScores(user.score, com.score);
-            if (user.score == 5 || com.score == 5) {
+            if (user.score == 50 || com.score == 50) {
                 updateScores(user.score, com.score);
                 clearInterval(intervalId);
                 Swal.fire({
@@ -419,7 +418,7 @@ function Bot()
             // remove frame
         }
 
-    }, []);
+    }, [theme]);
 
     const themes = ['A1', 'B1', 'C1', 'D1', 'E1', 'F1'];
 

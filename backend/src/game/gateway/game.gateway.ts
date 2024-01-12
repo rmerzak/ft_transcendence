@@ -12,7 +12,6 @@ import { SocketAuthMiddleware } from 'src/auth/middleware/ws.mw';
 import { Player } from '../models/player.model';
 import { UserStatus } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
-// import { UserStatus } from '@prisma/client';
 
 @WebSocketGateway({
   cors: {
@@ -23,10 +22,9 @@ import { PrismaService } from 'src/prisma/prisma.service';
 })
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   // prisma: any;
-  constructor
-  (
-    private readonly game: GameService, 
-    private readonly prisma: PrismaService
+  constructor(
+    private readonly game: GameService,
+    private readonly prisma: PrismaService,
   ) {}
 
   private roomId: string = '';
@@ -49,7 +47,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     socket['user'] = user;
     socket.emit('userInfo');
     const userId = socket['payload']['sub'];
-    const updatedUser = await this.prisma.user.update({
+    await this.prisma.user.update({
       where: { id: userId },
       data: { status: UserStatus.INGAME },
     });
@@ -73,7 +71,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // Leave the room for the disconnected player
     this.game.leaveRoom(this.roomId, client.id, client);
     const userId = client['payload']['sub'];
-    let updatedUser = await this.prisma.user.update({
+    await this.prisma.user.update({
       where: { id: userId },
       data: { status: UserStatus.ONLINE },
     });

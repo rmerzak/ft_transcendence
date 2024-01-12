@@ -1,7 +1,11 @@
 import { Provider } from 'jotai';
-import React from 'react';
+import { ReactNode } from 'react';
 
-const JotaiProvider = ({ children } : any) => {
+interface IJotaiProvider {
+    children: ReactNode;
+}
+
+const JotaiProvider = ({ children }: IJotaiProvider) => {
   return (
     <Provider>
       {children}

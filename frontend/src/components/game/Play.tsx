@@ -1,7 +1,7 @@
 'use client'
 import Image from 'next/image'
 import Link from 'next/link';
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { EffectCoverflow, Pagination } from 'swiper/modules';
 import { useRouter } from 'next/navigation';
@@ -11,11 +11,14 @@ import 'swiper/css';
 import 'swiper/css/effect-coverflow';
 import 'swiper/css/pagination';
 import './styles.css';
+import { ContextGlobal } from '@/context/contex';
 
-const img = ['A2', 'B2', 'C2', 'D2', 'E2', 'F2'];
+const img = ['t0', 't1', 't2', 't3', 't4', 't5'];
 
 function Play()
 {
+    const { profile }: any = useContext(ContextGlobal);
+    const [isPlaying, setIsPlaying] = useState(false);
     const router = useRouter();
     const createRoom = async () => {
         try {
@@ -32,10 +35,33 @@ function Play()
         } catch {}
     }
 
+    const checkIfUserPlaying = async (id: number): Promise<boolean> => {
+        try {
+            const res = await fetch('http://localhost:3000/api/players', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ playerId: id }),
+            });
+            const data = await res.json();
+            return data.isPlaying as boolean ;
+        } catch {}
+        return false as boolean;
+    }
+
     const setTheme = useSetAtom(themeAtom);
     const handleTheme = (index: number) => {
         setTheme(index);
     }
+
+    useEffect(() => {
+        if (profile.id !== -1) {
+            checkIfUserPlaying(profile.id).then((res) => {
+                setIsPlaying(res);
+            });
+        }
+    }, [profile.id])
 
     return (
         <>
@@ -49,7 +75,7 @@ function Play()
                             src="/pong.gif"
                             alt="car!"
                             width={500}
-                            height={500}
+                            height={300}
                             draggable={false}
                             priority={true}
                         />
@@ -63,6 +89,7 @@ function Play()
                         </p>
                         <div className="card-actions justify-between">
                             <button
+                                disabled={isPlaying}
                                 onClick={createRoom}
                                 className="btn btn-active btn-neutral border-0 bg-[#811B77] text-[#ffffff]/70"
                             >
@@ -106,14 +133,15 @@ function Play()
                         modules={[EffectCoverflow, Pagination]}
                         className="mySwiper"
                         initialSlide={1}
+                        lazyPreloaderClass='lazy-preloader'
                     >
                         {img.map((item, index) => (
                             <SwiperSlide key={index}>
                                 <Image
-                                    src={`/${item}.png`}
+                                    src={`/game/${item}.gif`}
                                     alt={item}
-                                    width={500}
-                                    height={500}
+                                    width={300}
+                                    height={300}
                                     priority={true}
                                     draggable={false}
                                 />

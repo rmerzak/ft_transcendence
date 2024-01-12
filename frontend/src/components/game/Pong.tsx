@@ -1,5 +1,4 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-'use client'
 import styles from '@/app/dashboard/game/page.module.css'
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef } from 'react';
@@ -9,6 +8,7 @@ import { setInterval, clearInterval } from 'timers';
 import { useGame } from '@/app/dashboard/game/gameContex';
 import { themeAtom } from './theme';
 import { useAtomValue } from 'jotai';
+import { useSetAtom } from 'jotai';
 
 
 function Pong()
@@ -24,21 +24,9 @@ function Pong()
     
     // theme
     const theme = useAtomValue(themeAtom);
+    const setTheme = useSetAtom(themeAtom);
     
     useEffect(() => {
-
-        if (theme == -1) {
-            Swal.fire({
-                title: 'You not allowed to play this game!',
-                icon: 'error',
-                confirmButtonText: 'Ok',
-                customClass: {
-                    popup: 'bg-gradient-to-r from-[#510546]/40 to-[#6958be]/40'
-                }
-            }).then(() => {
-                router.push('/dashboard/game', { scroll: false });
-            });
-        }
         
         //  socket.io
         const socket = io('http://localhost:3000/game', {
@@ -387,6 +375,10 @@ function Pong()
 
 
         return () => {
+
+        // reset theme to -1
+        setTheme(-1);
+
         // remove canvas
         canvas.remove();
 
