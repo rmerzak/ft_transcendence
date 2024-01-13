@@ -34,7 +34,7 @@ export interface Notification {
   senderName: string;
   senderImage: string;
 }
-enum Blocker {
+export enum Blocker {
   'SENDER',
   'RECEIVER'
 }

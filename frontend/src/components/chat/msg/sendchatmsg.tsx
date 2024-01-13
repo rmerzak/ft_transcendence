@@ -28,13 +28,9 @@ const Sendchatmsg: React.FC<SendchatmsgProps> = ({ chatRoomId, isblocked }) => {
             chatRoomId: chatRoomId,
             text: message,
         };
-        console.log("messageData", messageData);
         chatSocket?.emit('send-message', messageData);
         setMessage('');
     }
-    useEffect(() => {
-        console.log("isblocked", isblocked);
-    }, [isblocked]);
     
     return (
         <>
@@ -42,7 +38,7 @@ const Sendchatmsg: React.FC<SendchatmsgProps> = ({ chatRoomId, isblocked }) => {
             <div className="flex justify-center">
                 <hr className="w-1/5" />
             </div>
-            {/* input for send derict messages */}
+            {/* input for send derict messages pointer-events-none opacity-50 */}
             <div className={`flex justify-center items-center space-x-2 my-3 ${isblocked ? 'hidden' : ''}`}>
                 <div className="bg-gray-300 w-[6%] h-10 rounded-3xl flex justify-center items-center space-x-4">
                     <Image

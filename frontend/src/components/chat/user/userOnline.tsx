@@ -33,7 +33,7 @@ const UserOnline = () => {
     if (profile?.id) {
       getFriends(profile.id);
     }
-  }, [profile?.id]); 
+  }, [profile?.id]);
 
   return (
     <>

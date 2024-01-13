@@ -4,7 +4,7 @@ import { use, useContext, useEffect, useState } from 'react';
 import Chat from './chat';
 import Chatheader from './chatHeader';
 import Sendchatmsg from './sendchatmsg';
-import { ChatRoomUsers, Messages } from '@/interfaces';
+import { Blocker, ChatRoomUsers, Messages } from '@/interfaces';
 import { ContextGlobal } from '@/context/contex';
 import { getChatRoomMembers } from '@/api/chat/chat.api';
 
@@ -16,6 +16,7 @@ interface MsgShowProps {
 const MsgShow: React.FC<MsgShowProps> = ({ messages, chatId }) => {
   const { profile, friends } = useContext(ContextGlobal);
   const [username, setUsername] = useState<string>('');
+  const [friendId, setFriendId] = useState<number>(0);
   const [status, setStatus] = useState<string>('');
   const [isblock, setIsblock] = useState<boolean>(false);
   const [chatRoomMembers, setChatRoomMembers] = useState<ChatRoomUsers[]>([]);
@@ -35,12 +36,11 @@ const MsgShow: React.FC<MsgShowProps> = ({ messages, chatId }) => {
     if (targetMembers) {
       setUsername(targetMembers.user.username);
       setStatus(targetMembers.user.status);
-      console.log("friends", friends);
+      setFriendId(targetMembers.user.id);
       friends?.forEach((friend) => {
-        if (friend.id === targetMembers.user.id) {
-          console.log("friend", friend);
-          setIsblock(friend.block);
-        }
+          if (friend.receiver.id === targetMembers.user.id || friend.sender.id === targetMembers.user.id) {
+            setIsblock(friend.block);
+          }
       });
     }
   }, [chatRoomMembers, profile, friends]);
@@ -48,7 +48,7 @@ const MsgShow: React.FC<MsgShowProps> = ({ messages, chatId }) => {
   return (
     <>
       <div className="bg-[#5D5959]/40 w-[66%] text-white h-[1090px] rounded-3xl p-4 hidden md:block">
-        <Chatheader username={username} status={status} />
+        <Chatheader username={username} status={status} userId={friendId} />
         <div className='mt-6 h-[88%]'>
           <Chat messages={messages} />
         </div>
