@@ -11,18 +11,19 @@ const Chat = () => {
   const { chatId } = useParams();
   const [messages, setMessages] = useState<Messages[]>([]);
   const [chatRoomId, setChatRoomId] = useState<number>(0);
+  const [error, setError] = useState<string>('');
 
   useEffect(() => {
     if (chatSocket && chatId) {
       if (messages.length === 0) {
         getChatRoomMessages(Number(chatId))
-        .then((res) => {
-          setMessages(res.data);
-          setChatRoomId(Number(chatId));
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+          .then((res) => {
+            setMessages(res.data);
+            setChatRoomId(Number(chatId));
+          })
+          .catch((err) => {
+            setError("Can't get messages");
+          });
       }
       // Emit join-room event
       chatSocket.emit('join-room', { roomId: chatId });
@@ -38,7 +39,7 @@ const Chat = () => {
 
   return (
     <>
-      <MsgShow messages={messages} chatId={Number(chatRoomId)} />
+      <MsgShow messages={messages} chatId={Number(chatRoomId)} error={error} />
     </>
   );
 };

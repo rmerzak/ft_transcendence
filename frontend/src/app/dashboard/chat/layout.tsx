@@ -1,7 +1,7 @@
 'use client';
 import Channels from '@/components/chat/rooms/channels'
 import UserOnline from '@/components/chat/user/userOnline'
-import Message from "@/components/chat/recent/msg";
+import Recent from "@/components/chat/recent/recent";
 import { useContext, useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import { ContextGlobal } from '@/context/contex';
@@ -45,7 +45,7 @@ const Layout = ({children} : any) => {
           <div className="bg-[#5D5959]/40 w-full md:w-[32%] md:rounded-3xl rounded-t-3xl p-2 shadow-lg h-full font-light">
             <UserOnline />
             <Channels />
-            <Message />
+            <Recent />
           </div>
           {children}
         </div>

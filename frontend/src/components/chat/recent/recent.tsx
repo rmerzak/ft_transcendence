@@ -22,7 +22,7 @@ const msg = [
   { name: "user18", avatar: "https://i.pravatar.cc/305", msg: "slam alikom" },
 ];
 
-const Msg = () => {
+const Recent = () => {
   return (
     <>
       <div className="md:mt-6">
@@ -70,4 +70,4 @@ const Msg = () => {
     </>
   );
 };
-export default Msg;
+export default Recent;

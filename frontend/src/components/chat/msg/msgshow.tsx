@@ -11,9 +11,10 @@ import { getChatRoomMembers } from '@/api/chat/chat.api';
 interface MsgShowProps {
   messages?: Messages[];
   chatId: number;
+  error?: string;
 }
 
-const MsgShow: React.FC<MsgShowProps> = ({ messages, chatId }) => {
+const MsgShow: React.FC<MsgShowProps> = ({ messages, chatId, error }) => {
   const { profile, friends } = useContext(ContextGlobal);
   const [username, setUsername] = useState<string>('');
   const [friendId, setFriendId] = useState<number>(0);
@@ -38,21 +39,30 @@ const MsgShow: React.FC<MsgShowProps> = ({ messages, chatId }) => {
       setStatus(targetMembers.user.status);
       setFriendId(targetMembers.user.id);
       friends?.forEach((friend) => {
-          if (friend.receiver.id === targetMembers.user.id || friend.sender.id === targetMembers.user.id) {
-            setIsblock(friend.block);
-          }
+        if (friend.receiver.id === targetMembers.user.id || friend.sender.id === targetMembers.user.id) {
+          setIsblock(friend.block);
+        }
       });
     }
   }, [chatRoomMembers, profile, friends]);
-
   return (
     <>
       <div className="bg-[#5D5959]/40 w-[66%] text-white h-[1090px] rounded-3xl p-4 hidden md:block">
-        <Chatheader username={username} status={status} userId={friendId} />
-        <div className='mt-6 h-[88%]'>
-          <Chat messages={messages} />
-        </div>
-        <Sendchatmsg chatRoomId={chatId} isblocked={isblock} />
+        {error === '' ? (
+          <>
+            <Chatheader username={username} status={status} userId={friendId} />
+            <div className='mt-6 h-[88%]'>
+              <Chat messages={messages} />
+            </div>
+            <Sendchatmsg chatRoomId={chatId} isblocked={isblock} />
+          </>
+        ) : (
+          <div className="flex justify-center items-center h-full text-2xl">
+            <p>
+              {error}
+            </p>
+          </div>
+        )}
       </div>
     </>
   )

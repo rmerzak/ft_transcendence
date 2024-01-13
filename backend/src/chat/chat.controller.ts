@@ -413,8 +413,9 @@ export class ChatController {
     checkIfNumber(id.toString(), 'Message id must be a number');
     return await this.chatService.deleteMessage(Number(id));
   }
-
-  //end handle http post request
+  // end user message
+  // start recent message
+  // get recent messages for user
 }
 
 // helper functions
