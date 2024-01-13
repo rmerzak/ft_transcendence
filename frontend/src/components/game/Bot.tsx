@@ -3,15 +3,15 @@ import styles from '@/app/dashboard/game/page.module.css'
 import { useRouter } from 'next/navigation';
 import { useGame } from '@/app/dashboard/game/gameContex';
 import Swal from 'sweetalert2';
-import { themeAtom } from './theme';
+import { botThemeAtom } from './theme';
 import { useAtomValue } from 'jotai';
 import { useSetAtom } from 'jotai';
 
 function Bot()
 {
     // theme
-    const theme = useAtomValue(themeAtom);
-    const setTheme = useSetAtom(themeAtom);
+    const theme = useAtomValue(botThemeAtom);
+    const setTheme = useSetAtom(botThemeAtom);
 
     // game contex
     const { updateScores } = useGame();
@@ -328,14 +328,14 @@ function Bot()
             // update the score
             if (ball.x - ball.radius < 0) {
                 com.score++;
+                updateScores(user.score, com.score);
                 resetBall();
             } else if (ball.x + ball.radius > canvas.width) {
                 user.score++;
+                updateScores(user.score, com.score);
                 resetBall();
             }
-            updateScores(user.score, com.score);
-            if (user.score == 5 || com.score == 5) {
-                updateScores(user.score, com.score);
+            if (user.score == 5000 || com.score == 5000) {
                 clearInterval(intervalId);
                 Swal.fire({
                     title: 'Game Over',
@@ -365,8 +365,8 @@ function Bot()
         const intervalId = setInterval(game, 1000 / framePerSecond);
 
         return () => {
-            // reset theme
-            setTheme(1);
+            // set theme
+            setTheme(theme);
             // remove interval
             clearInterval(intervalId);
             // remove event listener

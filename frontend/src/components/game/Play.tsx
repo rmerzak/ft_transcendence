@@ -6,12 +6,13 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { EffectCoverflow, Pagination } from 'swiper/modules';
 import { useRouter } from 'next/navigation';
 import { themeAtom } from './theme';
+import { botThemeAtom } from './theme';
 import { useAtomValue, useSetAtom } from 'jotai';
+import { ContextGlobal } from '@/context/contex';
 import 'swiper/css';
 import 'swiper/css/effect-coverflow';
 import 'swiper/css/pagination';
 import './styles.css';
-import { ContextGlobal } from '@/context/contex';
 
 const img = ['t0', 't1', 't2', 't3', 't4', 't5'];
 
@@ -51,12 +52,8 @@ function Play()
     }
     
     const setTheme = useSetAtom(themeAtom);
+    const setBotTheme = useSetAtom(botThemeAtom);
     const theme = useAtomValue(themeAtom);
-    const handleTheme = (index: number) => {
-        console.log(index)
-        setTheme(index);
-        console.log(theme)
-    }
 
     useEffect(() => {
         if (profile.id !== -1) {
@@ -68,65 +65,63 @@ function Play()
 
     return (
         <>
-            <div className='flex justify-between'>
+            <div className='flex flex-col-reverse items-center gap-5 min-[2560px]:flex-row justify-between'>
 
-                <div className='w-1/4 shadow-2xl'>
-                <div className="card w-96 glass">
-                    <figure>
-                        <Image
-                            className="bg-[#ffffff]"
-                            src="/game/pong.gif"
-                            alt="car!"
-                            width={500}
-                            height={300}
-                            draggable={false}
-                            priority={true}
-                        />
-                    </figure>
-                    <div className="card-body">
-                        <h2 className="inline-block card-title font-sans text-3xl pb-4 border-b-[1px] text-[#ffffff]/70">
-                            PingPong
-                        </h2>
-                        <p className='font-sans text-lg pt-10 pb-10 text-[#ffffff]/70'>
-                            Play PingPong online on the #1 site
-                        </p>
-                        <div className="card-actions justify-between">
-                            <button
-                                disabled={isPlaying}
-                                onClick={ () => {
-                                    createRoom();
-                                    if (theme === -1)
-                                        setTheme(1);
-                                    }
-                                }
-                                className="btn btn-active btn-neutral border-0 bg-[#811B77] text-[#ffffff]/70"
-                            >
-                                    Play Online
-                            </button>
+                {/* <div className='w-1/4 shadow-2xl bg-red-500'> */}
+                    <div className="card min-[2560px]:w-96 w-3/4 glass flex items-center overflow-hidden">
+                        <div className=' w-full max-w-96'>
+                            <figure>
+                                <Image
+                                    className="bg-[#ffffff] hidden min-[2560px]:block"
+                                    src="/game/pong.gif"
+                                    alt="car!"
+                                    width={500}
+                                    height={300}
+                                    draggable={false}
+                                    priority={true}
+                                />
+                            </figure>
+                            <div className="card-body max-sm:p-5">
+                                <h2 className="inline-block card-title font-sans text-xl sm:text-3xl pb-4 border-b-[1px] text-[#ffffff]/70">
+                                    PingPong
+                                </h2>
+                                <p className='font-sans text-[15px] sm:text-lg p-4 sm:py-10 sm:px-4 text-[#ffffff]/70'>
+                                    Play PingPong online on the #1 site
+                                </p>
+                                <div className="card-actions sm:justify-between justify-center flex flex-wrap items-center">
+                                    <button
+                                        disabled={isPlaying}
+                                        onClick={ () => {
+                                            createRoom();
+                                            if (theme === -1)
+                                                setTheme(1);
+                                            }
+                                        }
+                                        className="btn btn-active text-[12px] w-[120px] sm:text-[15px] btn-neutral border-0 bg-[#811B77] text-[#ffffff]/70"
+                                    >
+                                            Play Online
+                                    </button>
 
-                            <Link
-                                href='/dashboard/game/bot'
-                                onClick={theme === -1 ? () => setTheme(1) : () => {}}
-                                className="btn btn-active btn-ghost border-0 text-[#ffffff]/70"
-                            >
-                                Play Bot
-                            </Link>
+                                    <Link
+                                        href='/dashboard/game/bot'
+                                        // onClick={theme === -1 ? () => setTheme(1) : () => {}}
+                                        className="btn btn-active text-[12px] btn-ghost border-0 text-[#ffffff]/70 w-[120px] sm:text-[15px]"
+                                    >
+                                        Play Bot
+                                    </Link>
+                                </div>
+                            </div>
                         </div>
-                        
                     </div>
-                </div>
-     
-                    
-                </div>
+                {/* </div> */}
 
-                <div  className='w-3/4 bg-gradient-to-r from-slate-500/40 to-yellow-100/30 rounded-3xl shadow-2xl flex flex-col items-center'>
-                    
-                    <h1 className='inline-block font-sans text-xl p-4 border-b-[1px] text-[#ffffff]/80'>
+                <div  className='w-3/4 bg-gradient-to-r from-slate-500/40 to-yellow-100/30 rounded-3xl shadow-2xl flex flex-col min-[2560px]:justify-around min-[2560px]:h-[596px]  items-center pb-6 bg-red-500'>
+                    <h1 className='inline-block font-sans text-sm sm:text-xl p-4 border-b-[1px] text-[#ffffff]/80'>
                         Maps
                     </h1>
 
                     <Swiper
-                        onSlideChange={ (swiper) => { handleTheme(swiper.realIndex); } }
+                        onSlideChange={ (swiper) => { setTheme(swiper.realIndex); setBotTheme(swiper.realIndex) } }
                         effect={'coverflow'}
                         grabCursor={true}
                         centeredSlides={true}

@@ -166,7 +166,7 @@ export class GameService {
     const matchHistory = await this.prisma.game.create({
       data: {
         userPlayerId: player1Id,
-        userOpponnentId: player2Id,
+        userOpponentId: player2Id,
         useScore: player1Score,
         oppScore: player2Score,
       },

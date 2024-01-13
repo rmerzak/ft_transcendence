@@ -66,11 +66,11 @@ model User {
 model Game {
   gameId Int @id @default(autoincrement())
   userPlayerId Int
-  userOpponnentId Int
+  userOpponentId Int
   useScore Int
   oppScore Int
   user User @relation(name:"userGame", fields: [userPlayerId], references: [id])
-  oppennent User @relation(name: "oppGame", fields: [userOpponnentId], references: [id])
+  opponent User @relation(name: "oppGame", fields: [userOpponentId], references: [id])
 }
 
 enum FriendshipStatus {

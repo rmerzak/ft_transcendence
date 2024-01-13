@@ -313,12 +313,12 @@ function Pong()
             player2.x = update.players[1].position.x;
             player2.y = update.players[1].position.y;
 
-            // player1.score = update.players[0].score;
-            // player2.score = update.players[1].score;
-            updateScores(update.players[0].score, update.players[1].score);
-
-
             render();
+        });
+
+        // update scores
+        socket.on('updateScore', (scores) => {
+            updateScores(scores.player1, scores.player2);
         });
 
         // redirect

@@ -121,9 +121,17 @@ export class Room {
       // update score
       if (this.ball.position.x - this.ball.radius < 0) {
         this.players[1].score++;
+        server.to(this.id).emit('updateScore', {
+          player1: this.players[0].score,
+          player2: this.players[1].score,
+        });
         this.resetBall(this);
       } else if (this.ball.position.x + this.ball.radius > this.width) {
         this.players[0].score++;
+        server.to(this.id).emit('updateScore', {
+          player1: this.players[0].score,
+          player2: this.players[1].score,
+        });
         this.resetBall(this);
       }
 
@@ -167,8 +175,10 @@ export class Room {
         clearInterval(gameLoopInterval);
         return;
       }
-      // io.to(room.id).emit('updateGame', room);
-      server.to(this.id).emit('updateGame', this);
+      server.to(this.id).emit('updateGame', {
+        players: this.players,
+        ball: this.ball,
+      });
     };
 
     // Start the game loop with setInterval

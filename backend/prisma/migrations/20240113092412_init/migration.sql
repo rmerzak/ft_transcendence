@@ -39,7 +39,7 @@ CREATE TABLE "User" (
 CREATE TABLE "Game" (
     "gameId" SERIAL NOT NULL,
     "userPlayerId" INTEGER NOT NULL,
-    "userOpponnentId" INTEGER NOT NULL,
+    "userOpponentId" INTEGER NOT NULL,
     "useScore" INTEGER NOT NULL,
     "oppScore" INTEGER NOT NULL,
 
@@ -125,7 +125,7 @@ CREATE UNIQUE INDEX "ChatRoom_name_key" ON "ChatRoom"("name");
 ALTER TABLE "Game" ADD CONSTRAINT "Game_userPlayerId_fkey" FOREIGN KEY ("userPlayerId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Game" ADD CONSTRAINT "Game_userOpponnentId_fkey" FOREIGN KEY ("userOpponnentId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Game" ADD CONSTRAINT "Game_userOpponentId_fkey" FOREIGN KEY ("userOpponentId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Friendship" ADD CONSTRAINT "Friendship_senderId_fkey" FOREIGN KEY ("senderId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

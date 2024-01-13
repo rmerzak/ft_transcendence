@@ -18,12 +18,14 @@ function User({ className = '', id = UserEnum.USER}: { className?: string; id?: 
             player1Elo,
             player2Elo,
     } = useGame();
+
+    // aspect-[156px/365px] 
     return (
         <div className={`${className}`}>
-            <div className="bg-neutral card card-side shadow-xl inline-block ">
+            <div className="bg-neutral card card-side shadow-xl inline-block max-h-[365px]">
                 <figure>
-                    <div className="avatar justify-center p-[6%]">
-                        <div className="w-[8.5rem] rounded-xl">
+                    <div className="avatar justify-center p-[6%] hidden min-[822px]:block">
+                        <div className="w-[8.5rem] rounded-xl max-[1342px]:h-[80px] max-[1342px]:w-auto">
                             <Image
                                  src={
                                         id === uid ? userImage :
@@ -37,13 +39,14 @@ function User({ className = '', id = UserEnum.USER}: { className?: string; id?: 
                                     height={200}
                                     draggable={false}
                                     priority={true}
+                                    
                                   />
                         </div>
                     </div>
 
                 </figure>
-                    <div className="card-body ">
-                        <h2 className="card-title font-sans border-b-[1px] pb-[1rem] justify-center text-[#ffffff]/70">
+                    <div className="card-body max-[1342px]:p-2">
+                        <h2 className="card-title font-sans border-b-[1px] max-[1342px]:text-sm pb-2 min-[1342px]:pb-[1rem] justify-center text-[#ffffff]/70">
                                 {
                                     id === uid ? userName :
                                     id === oid ? opponentName :
@@ -54,7 +57,7 @@ function User({ className = '', id = UserEnum.USER}: { className?: string; id?: 
                         </h2>
                         <div className="card-actions justify-center">
                             <div className="stat place-items-center">
-                                <div className="stat-title">Score</div>
+                                <div className="stat-title max-[1342px]:text-sm">Score</div>
                                 <div className="stat-value text-[#ffffff]/70"> 
                                     {
                                         id === uid ? player1Score :

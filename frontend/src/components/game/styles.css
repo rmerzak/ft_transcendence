@@ -36,3 +36,10 @@ body {
   display: block;
   width: 100%;
 }
+
+@media screen and (min-width: 2560px) {
+  .swiper {
+     padding: 40px
+  }
+  
+}

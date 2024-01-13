@@ -37,13 +37,13 @@ const Game = () => {
       <GameProvider>
         {
           theme !== -1 &&
-          <div className='w-[95%] mx-auto text-center p-[1%] shadow-md rounded-3xl bg-[#311251]/80'>
+          <div className='w-[88%] mx-auto text-center p-[1%] shadow-md rounded-3xl bg-[#311251]/80 top-[50%]  -translate-y-[50%] absolute'>
 
                 <div className='text-3xl font-black text-white m-4'>
                   <h1>Game</h1>
                 </div>
 
-                <div className="flex justify-around items-center bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-900/70 to-gray-600/70 rounded-3xl shadow-md p-[1%]">
+                <div className="flex justify-around items-center bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-900/70 to-gray-600/70 rounded-3xl shadow-md p-[1%] rotate-[90deg] min-[1280px]:rotate-0">
                     <div className="flex-none">
                         <User id={UserEnum.USER}/>
                     </div>
