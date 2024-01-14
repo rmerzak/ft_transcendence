@@ -6,9 +6,8 @@ import Image from 'next/image';
 import { makeConversation } from '@/api/chat/chat.api';
 import { useRouter } from 'next/navigation';
 
-
 const UserItem = ({ friend } : { friend: Friendship }) => {
-  const {  profile,chatSocket  }:any = useContext(ContextGlobal);
+  const { profile }:any = useContext(ContextGlobal);
   const [status, setStatus] = useState<string>('');
   const router = useRouter();
   useEffect(() => {
@@ -28,13 +27,13 @@ const UserItem = ({ friend } : { friend: Friendship }) => {
     makeConversation((profile?.id === friend.sender.id ? friend.receiver.id : friend.sender.id), chatRoomData).then((res) => {
       // console.log("sss ",res.data);
       // chatSocket?.emit('join-room', {roomId:res.data.id});
-      router.push(`/dashboard/chat/user/${res.data.id}` );
+      router.push(`/dashboard/chat/user/${res.data.id}`);
     }).catch((err) => {
       console.log(err);
     });
   }
   return (
-    (friend.status === 'ACCEPTED' && !friend.blocked) ? (
+    (friend.status === 'ACCEPTED' && !friend.block) ? (
         <div onClick={makeMessage}>
         <Image
           src={profile?.id === friend.sender.id ? friend.receiver.image : friend.sender.image }

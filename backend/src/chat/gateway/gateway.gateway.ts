@@ -49,6 +49,7 @@ export class GatewayGateway
   handleJoinRoom(_client: Socket, payload: { roomId: number }) {
     if (_client.rooms.has(payload.roomId.toString())) return;
     _client.join(payload.roomId.toString());
+    this.server.to(payload.roomId.toString()).emit('has-joined');
     // console.log("rooms: ", _client.rooms);
   }
 

@@ -96,15 +96,13 @@ export interface ChatRoomUsers {
   };
 }
 
-export interface ChatContext {
-  socket: Socket | null;
-  setSocket(socket: Socket | null): void;
-  friends: Friendship[] | [];
-  setFriends(friends: Friendship[] | []): void;
-  messages: Messages[] | [];
-  setMessages(messages: Messages[] | []): void;
-  chatRoom: ChatRoom | null;
-  setChatRoom(chatRoom: ChatRoom | null): void;
-  chatRoomMembers: ChatRoomUsers[] | [];
-  setChatRoomMembers(chatRoomMembers: ChatRoomUsers[] | []): void;
+export interface Recent {
+  id? : number;
+  createdAt? : string;
+  updatedAt? : string;
+  userId? : number;
+  chatRoomId? : number;
+  link: String;
+  showMessage? : boolean;
+  lastMessage : string;
 }

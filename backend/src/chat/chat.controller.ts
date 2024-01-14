@@ -14,7 +14,7 @@ import {
 } from '@nestjs/common';
 import { MsgService } from './services/msg/msg.service';
 import { RoomService } from './services/room/room.service';
-import { $Enums, ChatRoom, ChatRoomMember, Message, User } from '@prisma/client';
+import { $Enums, ChatRoom, ChatRoomMember, Message, Recent, User } from '@prisma/client';
 import { isAlpha } from 'class-validator';
 import { Request } from 'express';
 import { JwtGuard } from 'src/auth/guard';
@@ -415,7 +415,85 @@ export class ChatController {
   }
   // end user message
   // start recent message
-  // get recent messages for user
+
+  // add recent 
+  @Post('recent')
+  async addRecent(@Body() recentData: Recent, @Req() req: Request): Promise<Recent> {
+    if (isEmpty(recentData)) {
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: 'Recent data not provided',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const user = req.user as User;
+    if (recentData.userId !== user.id) {
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: 'Recent user id not match',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    try {
+      return await this.chatService.addRecentMessage(recentData, user.id);
+    }catch (error) {
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: error.message,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+  // delete recent
+  @Delete('recent')
+  async deleteRecent(@Query('id') id: number): Promise<Recent | null> {
+    if (id !== undefined)
+      checkIfNumber(id.toString(), 'Recent id must be a number');
+    else
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: 'Recent id not provided',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    return await this.chatService.deleteRecentMessage(Number(id));
+  }
+  // get recent for user
+  @Get('recent')
+  async getRecentMessages(@Req() req: Request): Promise<Recent[]> {
+    const user = req.user as User;
+    const Id = Number(user.id);
+    if (isNaN(Id) || !Number.isInteger(Id) || Id <= 0) {
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: 'Invalid user ID',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    try {
+      return await this.chatService.getRecentMessages(Id);
+    }
+    catch (error) {
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: error.message,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  // end recent message
 }
 
 // helper functions

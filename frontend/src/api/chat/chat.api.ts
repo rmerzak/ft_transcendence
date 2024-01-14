@@ -1,4 +1,4 @@
-import { Messages, ChatRoom } from "@/interfaces";
+import { Messages, ChatRoom, Recent } from "@/interfaces";
 import axios from "axios";
 
 const apiInstance = axios.create({
@@ -14,3 +14,7 @@ export const getChatRoomMessages = (id: number) => apiInstance.get(`/chat/user/$
 export const addMessage = (messageData: Messages) => apiInstance.post(`/chat/user`, messageData);
 export const updateMessage = (messageData: any) => apiInstance.put(`/chat`, messageData);
 export const deleteMessage = (id: number) => apiInstance.delete(`/chat?id=${id}`);
+// recent messages
+export const getRecentMessages = () => apiInstance.get(`/chat/recent`);
+export const addRecentMessage = (messageData: Recent) => apiInstance.post(`/chat/recent`, messageData);
+export const deleteRecentMessage = (id: number) => apiInstance.delete(`/chat/recent?id=${id}`);

@@ -1,5 +1,8 @@
 "use client";
+import { getRecentMessages } from "@/api/chat/chat.api";
+import { ContextGlobal } from "@/context/contex";
 import Image from "next/image";
+import { useContext, useEffect } from "react";
 
 const msg = [
   { name: "user1", avatar: "https://i.pravatar.cc/300", msg: "slam alikom" },
@@ -23,6 +26,19 @@ const msg = [
 ];
 
 const Recent = () => {
+  const {profile, chatSocket } = useContext(ContextGlobal);
+
+  useEffect(() => {
+    if (chatSocket) {
+      chatSocket.on('has-joined', () => {
+        getRecentMessages().then((res) => {
+          console.log("res recent", res.data);
+      }).catch((err) => {
+        console.log("err", err);
+      });
+      });
+    }
+}, [chatSocket]);
   return (
     <>
       <div className="md:mt-6">

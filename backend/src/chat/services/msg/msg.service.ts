@@ -5,7 +5,7 @@ import { PrismaService } from '../../../prisma/prisma.service';
 // Chat service class
 @Injectable()
 export class MsgService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   // get all messages of room
   async getChatRoomMessages(
@@ -130,6 +130,8 @@ export class MsgService {
         showMessage: true,
         chatRoomId: true,
         createdAt: true,
+        lastMessage: true,
+        link: true,
         recentUser: {
           select: {
             id: true,
@@ -154,14 +156,16 @@ export class MsgService {
       where: { userId_chatRoomId: { userId: user.id, chatRoomId: chatRoom.id } },
     });
     if (!chatRoomMember) throw new Error('User not in chat room');
-    const recent = await this.prisma.recent.findUnique({
-      where: { id: recentData.id },
-    });
-    if (recent) {
-      return await this.prisma.recent.update({
+    if (recentData.hasOwnProperty('id')) {
+      const recent = await this.prisma.recent.findUnique({
         where: { id: recentData.id },
-        data: recentData,
       });
+      if (recent) {
+        return await this.prisma.recent.update({
+          where: { id: recentData.id },
+          data: recentData,
+        });
+      }
     }
     return await this.prisma.recent.create({
       data: recentData,

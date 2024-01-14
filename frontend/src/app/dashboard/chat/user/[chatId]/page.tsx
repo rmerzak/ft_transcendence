@@ -2,12 +2,12 @@
 import React, { useEffect, useState, useContext } from 'react'
 import { useParams } from 'next/navigation'
 import MsgShow from '@/components/chat/msg/msgshow';
-import { getChatRoomMembers, getChatRoomMessages } from '@/api/chat/chat.api';
+import { addRecentMessage, getChatRoomMessages } from '@/api/chat/chat.api';
 import { ContextGlobal } from '@/context/contex';
-import { Messages } from '@/interfaces';
+import { Messages, Recent } from '@/interfaces';
 
 const Chat = () => {
-  const { chatSocket } = useContext(ContextGlobal);
+  const { chatSocket, profile } = useContext(ContextGlobal);
   const { chatId } = useParams();
   const [messages, setMessages] = useState<Messages[]>([]);
   const [chatRoomId, setChatRoomId] = useState<number>(0);
@@ -26,9 +26,16 @@ const Chat = () => {
           });
       }
       // Emit join-room event
+      const RecentData: Recent = {
+        chatRoomId: Number(chatId),
+        userId: profile?.id,
+        lastMessage: messages[messages.length - 1]?.text,
+        link: `/dashboard/chat/user/${chatId}`,
+      };
+      console.log("chatId", chatId);
+      // addRecentMessage(Number(chatId));
       chatSocket.emit('join-room', { roomId: chatId });
       chatSocket.on('receive-message', (message) => {
-        // console.log("messge12", message);
         setMessages((messages) => [...messages, message]);
       });
     }
