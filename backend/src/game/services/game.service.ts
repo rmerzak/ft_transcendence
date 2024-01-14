@@ -139,6 +139,31 @@ export class GameService {
       }
     }
     console.log(this.rooms);
+
+    // leaveRoom(roomId: string, playerId: string, client: Socket): void {
+    //   const roomIndex = this.rooms.findIndex((room) => room.id === roomId);
+  
+    //   if (roomIndex !== -1) {
+    //       const room = this.rooms[roomIndex];
+    //       client.leave(roomId);
+    //       console.log(this.rooms);
+  
+    //       // Find and remove the player from the room
+    //       const playerIndex = room.players.findIndex((player) => player.socketId === playerId);
+          
+    //       if (playerIndex !== -1) {
+    //           const player = room.players[playerIndex];
+    //           room.removePlayer(player);
+  
+    //           if (room.players.length === 0) {
+    //               // If no players left, remove the room
+    //               this.rooms.splice(roomIndex, 1);
+    //           }
+    //       }
+  
+    //       console.log(this.rooms);
+    //   }
+    // }
   }
 
   // this method for get room

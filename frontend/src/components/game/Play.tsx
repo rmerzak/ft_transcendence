@@ -23,11 +23,12 @@ function Play()
     const router = useRouter();
     const createRoom = async () => {
         try {
-            const res = await fetch('http://localhost:3000/api/rooms', {
+            const res = await fetch(`${process.env.API_BASE_URL}/api/rooms`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                credentials: 'include',
             });
             const data = await res.json();
 
@@ -38,11 +39,12 @@ function Play()
 
     const checkIfUserPlaying = async (id: number): Promise<boolean> => {
         try {
-            const res = await fetch('http://localhost:3000/api/players', {
+            const res = await fetch(`${process.env.API_BASE_URL}/api/players`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                credentials: 'include',
                 body: JSON.stringify({ playerId: id }),
             });
             const data = await res.json();
@@ -50,18 +52,30 @@ function Play()
         } catch {}
         return false as boolean;
     }
+
+    const fetchIsPlaying = async () => {
+        if (profile.id !== -1) {
+            const res = await checkIfUserPlaying(profile.id);
+            setIsPlaying(res);
+        }
+    };
     
     const setTheme = useSetAtom(themeAtom);
     const setBotTheme = useSetAtom(botThemeAtom);
     const theme = useAtomValue(themeAtom);
 
     useEffect(() => {
-        if (profile.id !== -1) {
-            checkIfUserPlaying(profile.id).then((res) => {
-                setIsPlaying(res);
-            });
-        }
-    }, [profile.id])
+        // Initial check
+        fetchIsPlaying();
+
+        // Periodically check every 1 seconds (adjust as needed)
+        const intervalId = setInterval(fetchIsPlaying, 1000);
+
+        return () => {
+            // Clear the interval when the component is unmounted
+            clearInterval(intervalId);
+        };
+    }, [profile.id]);
 
     return (
         <>
@@ -104,7 +118,6 @@ function Play()
 
                                     <Link
                                         href='/dashboard/game/bot'
-                                        // onClick={theme === -1 ? () => setTheme(1) : () => {}}
                                         className="btn btn-active text-[12px] btn-ghost border-0 text-[#ffffff]/70 w-[120px] sm:text-[15px]"
                                     >
                                         Play Bot

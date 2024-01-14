@@ -15,7 +15,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 @WebSocketGateway({
   cors: {
-    origin: 'http://localhost:8080',
+    origin: process.env.CLIENT_URL,
     credentials: true,
   },
   namespace: '/game',
@@ -38,30 +38,17 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async handleConnection(socket: Socket) {
     console.log("i'm connected");
 
-    // const user = await this.prisma.user.findUnique({
-    //   where: { id: socket['payload']['sub'] },
-    // });
-
+    // get user info from db and add it to the socket
     const user = await this.game.findUserById(socket['payload']['sub']);
-    // console.log('user = ', user);
     socket['user'] = user;
     socket.emit('userInfo');
+
+    // change user status to INGAME
     const userId = socket['payload']['sub'];
     await this.prisma.user.update({
       where: { id: userId },
       data: { status: UserStatus.INGAME },
     });
-    // if (user) {
-    // console.log(socket['user']);
-    // } else {
-    //   socket.disconnect();
-    // }
-    console.log('connected chat id1: ' + socket.id);
-    // console.log(socket['payload']['email']);
-    // this.getUser(socket.request);
-    // socket["user"] = await this.getUser(socket.request);
-    // console.log(this.getUser(socket));
-    // this.getUser(socket);
   }
 
   async handleDisconnect(client: Socket) {
@@ -70,6 +57,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     // Leave the room for the disconnected player
     this.game.leaveRoom(this.roomId, client.id, client);
+
+    // Change user status to ONLINE
     const userId = client['payload']['sub'];
     await this.prisma.user.update({
       where: { id: userId },

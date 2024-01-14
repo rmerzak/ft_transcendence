@@ -28,8 +28,7 @@ function Pong()
     useEffect(() => {
         
         //  socket.io
-        const socket = io('http://localhost:3000/game', {
-            // transports: ['websocket'],
+        const socket = io(`${process.env.API_BASE_URL}/game`, {
             withCredentials: true,
             autoConnect: false,
         });

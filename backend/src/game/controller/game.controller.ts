@@ -1,6 +1,7 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { GameService } from '../services/game.service';
 import { PlayerDto } from '../dto/player.dto';
+import { JwtGuard } from 'src/auth/guard';
 
 type Statistics = {
   gameMatches: number;
@@ -29,6 +30,7 @@ type MatchHistory = {
 };
 
 @Controller()
+@UseGuards(JwtGuard)
 export class GameController {
   constructor(private readonly game: GameService) {}
 
@@ -39,26 +41,26 @@ export class GameController {
   }
 
   @Post('api/players')
-  isPlayerPlaying(@Body() playerDto: PlayerDto): { isPlaying: boolean } {
-    const { playerId } = playerDto;
+  isPlayerPlaying(@Body() id: PlayerDto): { isPlaying: boolean } {
+    const { playerId } = id;
     const isPlaying = this.game.isPlayerPlaying(playerId);
     return { isPlaying };
   }
 
   @Post('api/statistics')
   async getStatistics(
-    @Body() playerDto: PlayerDto,
+    @Body() id: PlayerDto,
   ): Promise<{ statistics: Statistics }> {
-    const { playerId } = playerDto;
+    const { playerId } = id;
     const statistics = await this.game.getStatistics(playerId);
     return { statistics };
   }
 
   @Post('api/match-history')
   async getMatchHistory(
-    @Body() playerDto: PlayerDto,
+    @Body() id: PlayerDto,
   ): Promise<{ matchHistory: MatchHistory[] }> {
-    const { playerId } = playerDto;
+    const { playerId } = id;
     const matchHistory = await this.game.getMatchHistory(playerId);
     return { matchHistory };
   }
