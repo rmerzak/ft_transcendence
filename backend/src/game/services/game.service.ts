@@ -167,7 +167,7 @@ export class GameService {
       data: {
         userPlayerId: player1Id,
         userOpponentId: player2Id,
-        useScore: player1Score,
+        userScore: player1Score,
         oppScore: player2Score,
       },
     });
@@ -217,5 +217,37 @@ export class GameService {
       },
     });
     return user;
+  }
+
+  // get Match History
+  async getMatchHistory(playerId: number) {
+    const matchHistory = await this.prisma.game.findMany({
+      where: {
+        OR: [{ userPlayerId: playerId }, { userOpponentId: playerId }],
+      },
+      select: {
+        userPlayerId: true,
+        userOpponentId: true,
+        userScore: true,
+        oppScore: true,
+        user: {
+          select: {
+            id: true,
+            username: true,
+            email: true,
+            image: true,
+          },
+        },
+        opponent: {
+          select: {
+            id: true,
+            username: true,
+            email: true,
+            image: true,
+          },
+        },
+      },
+    });
+    return matchHistory;
   }
 }

@@ -67,7 +67,7 @@ model Game {
   gameId Int @id @default(autoincrement())
   userPlayerId Int
   userOpponentId Int
-  useScore Int
+  userScore Int
   oppScore Int
   user User @relation(name:"userGame", fields: [userPlayerId], references: [id])
   opponent User @relation(name: "oppGame", fields: [userOpponentId], references: [id])

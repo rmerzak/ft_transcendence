@@ -9,6 +9,25 @@ type Statistics = {
   gameElo: number;
 };
 
+type MatchHistory = {
+  userPlayerId: number;
+  userOpponentId: number;
+  userScore: number;
+  oppScore: number;
+  user: {
+    id: number;
+    username: string;
+    email: string;
+    image: string;
+  };
+  opponent: {
+    id: number;
+    username: string;
+    email: string;
+    image: string;
+  };
+};
+
 @Controller()
 export class GameController {
   constructor(private readonly game: GameService) {}
@@ -33,5 +52,14 @@ export class GameController {
     const { playerId } = playerDto;
     const statistics = await this.game.getStatistics(playerId);
     return { statistics };
+  }
+
+  @Post('api/match-history')
+  async getMatchHistory(
+    @Body() playerDto: PlayerDto,
+  ): Promise<{ matchHistory: MatchHistory[] }> {
+    const { playerId } = playerDto;
+    const matchHistory = await this.game.getMatchHistory(playerId);
+    return { matchHistory };
   }
 }

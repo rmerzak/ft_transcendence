@@ -40,7 +40,7 @@ CREATE TABLE "Game" (
     "gameId" SERIAL NOT NULL,
     "userPlayerId" INTEGER NOT NULL,
     "userOpponentId" INTEGER NOT NULL,
-    "useScore" INTEGER NOT NULL,
+    "userScore" INTEGER NOT NULL,
     "oppScore" INTEGER NOT NULL,
 
     CONSTRAINT "Game_pkey" PRIMARY KEY ("gameId")
