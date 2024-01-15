@@ -2,8 +2,7 @@
 import React, { useEffect } from 'react';
 import Pong from '@/components/game/Pong';
 import User from '@/components/game/User';
-import { GameProvider } from '../context/gameContex';
-import { UserEnum } from '../context/gameContex';
+import { GameProvider, UserEnum } from '../context/gameContext';
 import { useAtomValue } from 'jotai';
 import { themeAtom } from '@/components/game/theme';
 import Swal from 'sweetalert2';
@@ -14,7 +13,7 @@ const Game = () => {
 
     const theme = useAtomValue(themeAtom);
     const router = useRouter();
-    
+
     useEffect(() => {
         if (theme == -1) {
             Swal.fire({

@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import Image from 'next/image';
-import { useGame } from '@/app/dashboard/game/context/gameContex';
-import { UserEnum } from '@/app/dashboard/game/context/gameContex';
+import { GameContext, GameContextProps } from '@/app/dashboard/game/context/gameContext';
+import { UserEnum } from '@/app/dashboard/game/context/gameContext';
 import { ContextGlobal } from '@/context/contex';
 
 function User({ className = '', id = UserEnum.USER}: { className?: string; id?: number }) {
@@ -17,7 +17,25 @@ function User({ className = '', id = UserEnum.USER}: { className?: string; id?: 
             player2Score,
             player1Elo,
             player2Elo,
-    } = useGame();
+    }: GameContextProps = useContext(GameContext);
+
+    // show the win swal for the winner
+    // show the lose swal for the loser
+    // if (player1Score === 5 || player2Score === 5) {
+    //     if (player1Score === 5) {
+    //         if (id === UserEnum.USER) {
+    //             // show win swal
+    //         } else if (id === UserEnum.OPPONENT) {
+    //             // show lose swal
+    //         }
+    //     } else if (player2Score === 5) {
+    //         if (id === UserEnum.USER) {
+    //             // show lose swal
+    //         } else if (id === UserEnum.OPPONENT) {
+    //             // show win swal
+    //         }
+    //     }
+    // }
 
     // aspect-[156px/365px] 
     return (

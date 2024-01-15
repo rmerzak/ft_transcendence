@@ -1,11 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import styles from '@/app/dashboard/game/page.module.css'
 import { useRouter } from 'next/navigation';
-import { useEffect, useRef } from 'react';
+import { useContext, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 import Swal from 'sweetalert2';
 import { setInterval, clearInterval } from 'timers';
-import { useGame } from '@/app/dashboard/game/context/gameContex';
+import { GameContext, GameContextProps } from '@/app/dashboard/game/context/gameContext';
 import { themeAtom } from './theme';
 import { useAtomValue } from 'jotai';
 import { useSetAtom } from 'jotai';
@@ -13,10 +13,16 @@ import { useSetAtom } from 'jotai';
 function Pong()
 {
     // game context
-    const { updateScores, setPlayer1Elo, setPlayer2Elo, setUserInfo, setOpponentInfo } = useGame();
+    const { 
+        updateScores,
+        setPlayer1Elo,
+        setPlayer2Elo,
+        setUserInfo,
+        setOpponentInfo,
+    }: GameContextProps  =  useContext(GameContext);
     
     // canvas    
-    const gameRef = useRef<HTMLCanvasElement>(null);
+    const gameRef = useRef<HTMLCanvasElement | null>(null);
     
     // route
     const router = useRouter();
@@ -330,6 +336,7 @@ function Pong()
         // game over
         socket.on('gameOver', ({ winner }) => {
             isGameStarted = false;
+            console.log("winner value: ", winner);
             
             if (winner) {
                 Swal.fire({
@@ -339,12 +346,16 @@ function Pong()
                     imageWidth: 400,
                     imageHeight: 200,
                     confirmButtonText: 'Ok',
+                    allowEscapeKey: false,
+                    allowOutsideClick: false,
                     customClass: {
                         popup: 'bg-gradient-to-r from-[#510546]/40 to-[#6958be]/40'
                     }
-                }).then(() => {
-                    // redirect to game page
+                }).then((res) => {
+
+                    if (res.isConfirmed)
                     router.push('/dashboard/game');
+                    // redirect to game page
                 });
             } else {
                 Swal.fire({
@@ -354,12 +365,16 @@ function Pong()
                     imageWidth: 400,
                     imageHeight: 200,
                     confirmButtonText: 'Ok',
+                    allowEscapeKey: false,
+                    allowOutsideClick: false,
                     customClass: {
                         popup: 'bg-gradient-to-r from-[#510546]/40 to-[#6958be]/40'
                     }
-                }).then(() => {
-                    // redirect to game page
+                }).then((res) => {
+                    if (res.isConfirmed)
                     router.push('/dashboard/game');
+                    // redirect to game page
+                    // router.push('/dashboard/game');
                 });
             }
             
@@ -372,6 +387,10 @@ function Pong()
             }, 400);
         });
 
+        // gameSocket.on('disconnect', () => {
+        //     console.log('disconnected');
+        //     gameSocket.emit('playerDisconnected');
+        // });
 
         return () => {
             // reset theme
@@ -399,16 +418,16 @@ function Pong()
             socket.off('gameOver');
             socket.off('connect');
 
-            socket.emit('playerDisconnected');
+            updateScores(0, 0);
+            setUserInfo(0, 'Loading...', '/game/avatar.jpeg');
+            setOpponentInfo(0, 'Loading...', '/game/avatar.jpeg');
 
-            setTimeout(() => {
-                socket.disconnect();
-            }, 1000);
+            socket.disconnect();
         };
 
     }, []);
     
-    const themes = ['b0', 'b1', 'b2', 'b3', 'b4', 'b5']
+    const themes: string[] = ['b0', 'b1', 'b2', 'b3', 'b4', 'b5']
 
     return (
         <>

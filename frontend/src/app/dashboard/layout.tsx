@@ -8,6 +8,7 @@ import { ContextGlobal, ContextProvider } from '@/context/contex';
 import axios from 'axios';
 import { useContext, useEffect } from 'react';
 import { ToastContainer } from 'react-toastify';
+import JotaiProvider from '@/app/dashboard/game/context/jotai';
 
 
 const Layout = ({children} : any) => {

@@ -1,13 +1,13 @@
 'use client';
 import Bot from '@/components/game/Bot';
 import User from '@/components/game/User';
-import { GameProvider } from '../context/gameContex';
-import { UserEnum } from '../context/gameContex';
+import { UserEnum } from '../context/gameContext';
+import { GameProvider } from '../context/gameContext';
 
 const Game = () => {
     
     return (
-      <GameProvider>
+      <>
         {/* <div className='w-[88%] absolute top-[50%] -translate-y-[50%] flex flex-col mx-auto text-center p-[1%] shadow-md rounded-3xl bg-[#311251]/80 duration-300 ease-in-out rotate-[90deg] md:rotate-0'> */}
         <div className='w-[88%] absolute top-[50%] -translate-y-[50%] flex flex-col items-center mx-auto text-center p-[1%] shadow-md rounded-3xl bg-[#311251]/80 duration-300 ease-in-out max-md:h-[88%] max-md:mt-6'>
             {/* <div className='text-3xl font-black text-white m-4 bg-red-500'>
@@ -32,7 +32,7 @@ const Game = () => {
             </div>
 
         </div>
-      </GameProvider>
+      </>
   );
 };
 

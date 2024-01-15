@@ -159,9 +159,11 @@ export class GameService {
         const player = room.players[playerIndex];
         room.removePlayer(player);
 
-        if (room.players.length === 0) {
-          // If no players left, remove the room
-          this.rooms.splice(roomIndex, 1);
+        if (room.players.length === 1) {
+          // rmove the other player and delete the room
+          // const otherPlayer = room.players[0];
+
+          this.rooms.splice(roomIndex, 2);
         }
       }
 

@@ -1,7 +1,11 @@
 'use client'
-import { Socket } from "dgram";
-import { useContext, createContext, useState, useEffect } from "react";
-import io from 'socket.io-client';
+import React,
+{
+    createContext,
+    useState,
+    useMemo,
+    useCallback,
+} from "react";
 
 export enum UserEnum {
   USER = 1,
@@ -10,7 +14,7 @@ export enum UserEnum {
   BOT = 4,
 }
 
-interface GameContextProps {
+export interface GameContextProps {
     uid: number;
     oid: number;
     userName: string;
@@ -21,16 +25,14 @@ interface GameContextProps {
     player2Score: number;
     player1Elo: number;
     player2Elo: number;
-    gameSocket:  Socket;
     updateScores: (newPlayer1Score: number, newPlayer2Score: number) => void;
     setPlayer1Elo: (newPlayer1Elo: number) => void;
     setPlayer2Elo: (newPlayer2Elo: number) => void;
     setUserInfo: (uid: number, userName: string, userImage: string) => void;
     setOpponentInfo: (oid:number, opponentName: string, opponentImage: string) => void;
-    setGameSocket: (socket: Socket) => void;
   }
 
-const GameContext = createContext<GameContextProps>({
+export const GameContext = createContext<GameContextProps>({
     uid: 0,
     oid: 0,
     userName: 'Loading...',
@@ -41,13 +43,11 @@ const GameContext = createContext<GameContextProps>({
     player2Score: 0,
     player1Elo: 800,
     player2Elo: 800,
-    gameSocket: {} as Socket,
     updateScores: () => {},
     setPlayer1Elo: () => {},
     setPlayer2Elo: () => {},
     setUserInfo: () => {},
     setOpponentInfo: () => {},
-    setGameSocket: () => {},
   });
 
 export const GameProvider = ({ children } : any) => {
@@ -55,70 +55,66 @@ export const GameProvider = ({ children } : any) => {
     const [player2Score, setPlayer2Score] = useState(0);
     const [player1Elo, setPlayer1Elo] = useState(800);
     const [player2Elo, setPlayer2Elo] = useState(800);
-
     const [uid, setId] = useState(0);
     const [oid, setOid] = useState(0);
     const [userName, setUserName] = useState('Loading...');
     const [opponentName, setOpponentName] = useState('Loading...');
     const [userImage, setUserImage] = useState('/avatar.jpeg');
     const [opponentImage, setOpponentImage] = useState('/avatar.jpeg');
-    const [gameSocket, setGameSocket] = useState({} as Socket);
 
   
-    const updateScores = (newPlayer1Score: number, newPlayer2Score: number) => {
+    const updateScores = useCallback((newPlayer1Score: number, newPlayer2Score: number) => {
       setPlayer1Score(newPlayer1Score);
       setPlayer2Score(newPlayer2Score);
-    };
+    }, []);
 
-    const setUserInfo = (pid: number, userName: string, userImage: string) => {
+    const setUserInfo = useCallback((pid: number, userName: string, userImage: string) => {
         setId(pid);
         setUserName(userName);
         setUserImage(userImage);
-    };
+    }, []);
 
-    const setOpponentInfo = (oid: number, opponentName: string, opponentImage: string) => {
+    const setOpponentInfo = useCallback((oid: number, opponentName: string, opponentImage: string) => {
         setOid(oid);
         setOpponentName(opponentName);
         setOpponentImage(opponentImage);
-    };
-
-    useEffect(() => {
-      const socket = io(`${process.env.API_BASE_URL}/game`, {
-        withCredentials: true,
-        autoConnect: false,
-      });
-      socket.connect();
-      setGameSocket(socket);
-      return () => {
-        socket.close();
-      };
     }, []);
+
+    const contextValue = useMemo(() => ({
+        player1Score,
+        player2Score,
+        updateScores,
+        player1Elo,
+        player2Elo,
+        setPlayer1Elo,
+        setPlayer2Elo,
+        uid,
+        userName,
+        userImage,
+        setUserInfo,
+        oid,
+        opponentName,
+        opponentImage,
+        setOpponentInfo,
+    }), [
+        player1Score,
+        player2Score,
+        player1Elo,
+        player2Elo,
+        uid,
+        userName,
+        userImage,
+        oid,
+        opponentName,
+        opponentImage,
+    ]);
   
     return (
-      <GameContext.Provider value={
-        { 
-          player1Score,
-          player2Score,
-          updateScores,
-          player1Elo,
-          player2Elo,
-          setPlayer1Elo,
-          setPlayer2Elo,
-          uid,
-          userName,
-          userImage,
-          setUserInfo,
-          oid,
-          opponentName,
-          opponentImage,
-          setOpponentInfo,
-          gameSocket,
-          setGameSocket,
-        }}>
+      <GameContext.Provider value={contextValue}>
         {children}
       </GameContext.Provider>
     );
+    
   };
-  
-  export const useGame = () => useContext(GameContext);
+
 

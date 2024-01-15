@@ -15,7 +15,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 @WebSocketGateway({
   cors: {
-    origin: process.env.CLIENT_URL,
+    origin: process.env.CLIENT_URL as string,
     credentials: true,
   },
   namespace: '/game',
@@ -36,7 +36,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   async handleConnection(socket: Socket) {
-    console.log("i'm connected");
+    console.log("hi i'm connected");
 
     // get user info from db and add it to the socket
     const user = await this.game.findUserById(socket['payload']['sub']);
@@ -52,32 +52,31 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   async handleDisconnect(client: Socket) {
-    console.log('Player disconnected');
-    console.log('Room ID:', this.roomId);
+    console.log('disconnected');
 
-    // Leave the room for the disconnected player
-    // this.game.leaveRoom(this.roomId, client.id, client);
-
+    
     // Change user status to ONLINE
     const userId = client['payload']['sub'];
     await this.prisma.user.update({
       where: { id: userId },
       data: { status: UserStatus.ONLINE },
     });
+    // Leave the room for the disconnected player
+    this.game.leaveRoom(this.roomId, client.id, client);
 
     // Find the room where the disconnection occurred
-    // const targetRoom = this.game.rooms.find((room) => room.id === this.roomId);
+    const targetRoom = this.game.rooms.find((room) => room.id === this.roomId);
 
-    // // If the room is found, update the scores of other players
-    // if (targetRoom) {
-    //   targetRoom.players.forEach((player) => {
-    //     // Check if the player is not the disconnected player
-    //     if (player.socketId !== client.id) {
-    //       // Set the score to 5 for other players
-    //       this.server.to(player.socketId).emit('gameOver', { winner: true });
-    //     }
-    //   });
-    // }
+    // If the room is found, update the scores of other players
+    if (targetRoom) {
+      targetRoom.players.forEach((player) => {
+        // Check if the player is not the disconnected player
+        if (player.socketId !== client.id) {
+          // Set the score to 5 for other players
+          this.server.to(player.socketId).emit('gameOver', { winner: true });
+        }
+      });
+    }
   }
 
   // this method is called when a player joins a room
@@ -104,6 +103,16 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   playerDisconnected(client: Socket): void {
     try {
       this.game.leaveRoom(this.roomId, client.id, client);
+      const targetRoom = this.game.rooms.find((room) => room.id === this.roomId);
+      if (targetRoom) {
+          targetRoom.players.forEach((player) => {
+            // Check if the player is not the disconnected player
+            if (player.socketId !== client.id) {
+              // Set the score to 5 for other players
+              this.server.to(player.socketId).emit('gameOver', { winner: true });
+            }
+          });
+        }
     } catch {}
   }
 

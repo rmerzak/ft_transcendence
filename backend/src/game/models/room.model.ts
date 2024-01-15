@@ -12,11 +12,9 @@ export class Room {
   state: State;
   players: Array<Player> = new Array<Player>();
   ball: Ball = new Ball(this.width);
-  winner: number;
   constructor(id: string) {
     this.id = id;
     this.state = State.WAITING;
-    this.winner = 0;
   }
 
   addPlayer(player: Player): void {
@@ -137,7 +135,6 @@ export class Room {
 
       if (this.players[0].score === 5 || this.players[1].score === 5) {
         if (this.players[0].score === 5) {
-          this.winner = 1;
           server
             .to(this.players[0].socketId)
             .emit('gameOver', { winner: true });
@@ -145,7 +142,6 @@ export class Room {
             .to(this.players[1].socketId)
             .emit('gameOver', { winner: false });
         } else if (this.players[1].score === 5) {
-          this.winner = 2;
           server
             .to(this.players[1].socketId)
             .emit('gameOver', { winner: true });
