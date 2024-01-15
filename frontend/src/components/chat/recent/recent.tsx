@@ -1,44 +1,36 @@
 "use client";
 import { getRecentMessages } from "@/api/chat/chat.api";
 import { ContextGlobal } from "@/context/contex";
+import { Recent } from "@/interfaces";
 import Image from "next/image";
-import { useContext, useEffect } from "react";
-
-const msg = [
-  { name: "user1", avatar: "https://i.pravatar.cc/300", msg: "slam alikom" },
-  { name: "user2", avatar: "https://i.pravatar.cc/301", msg: "slam alikom" },
-  { name: "user3", avatar: "https://i.pravatar.cc/302", msg: "slam alikom" },
-  { name: "user4", avatar: "https://i.pravatar.cc/303", msg: "slam alikom" },
-  { name: "user5", avatar: "https://i.pravatar.cc/304", msg: "slam alikom" },
-  { name: "user6", avatar: "https://i.pravatar.cc/305", msg: "slam alikom" },
-  { name: "user7", avatar: "https://i.pravatar.cc/300", msg: "slam alikom" },
-  { name: "user8", avatar: "https://i.pravatar.cc/301", msg: "slam alikom" },
-  { name: "user9", avatar: "https://i.pravatar.cc/302", msg: "slam alikom" },
-  { name: "user10", avatar: "https://i.pravatar.cc/303", msg: "slam alikom" },
-  { name: "user11", avatar: "https://i.pravatar.cc/304", msg: "slam alikom" },
-  { name: "user12", avatar: "https://i.pravatar.cc/305", msg: "slam alikom" },
-  { name: "user13", avatar: "https://i.pravatar.cc/300", msg: "slam alikom" },
-  { name: "user14", avatar: "https://i.pravatar.cc/301", msg: "slam alikom" },
-  { name: "user15", avatar: "https://i.pravatar.cc/302", msg: "slam alikom" },
-  { name: "user16", avatar: "https://i.pravatar.cc/303", msg: "slam alikom" },
-  { name: "user17", avatar: "https://i.pravatar.cc/304", msg: "slam alikom" },
-  { name: "user18", avatar: "https://i.pravatar.cc/305", msg: "slam alikom" },
-];
+import { useRouter } from "next/navigation";
+import { useContext, useEffect, useState } from "react";
 
 const Recent = () => {
-  const {profile, chatSocket } = useContext(ContextGlobal);
+  const { chatSocket } = useContext(ContextGlobal);
+  const [recents, setRecent] = useState<Recent[]>([]);
+  const router = useRouter();
+
+  useEffect(() => {
+    getRecentMessages().then((res) => {
+      setRecent(res.data);
+    }).catch((err) => {
+      console.log("err", err);
+    });
+  }, []);
 
   useEffect(() => {
     if (chatSocket) {
-      chatSocket.on('has-joined', () => {
+      chatSocket.on('receive-recent', () => {
         getRecentMessages().then((res) => {
-          console.log("res recent", res.data);
-      }).catch((err) => {
-        console.log("err", err);
-      });
+          setRecent(res.data);
+        }).catch((err) => {
+          console.log("err", err);
+        });
       });
     }
-}, [chatSocket]);
+  }, [chatSocket]);
+
   return (
     <>
       <div className="md:mt-6">
@@ -49,30 +41,34 @@ const Recent = () => {
       </div>
 
       <div className="mx-auto md:w-3/4 md:scroll-y-auto md:max-h-[300px] my-2 text-white">
-        {msg.map((msg) => (
+        {recents.map((recent) => (
           <div
-            key={msg.name}
+            onClick={() => { router.push(recent.link.toString()) }}
+            key={recent.chatRoomId}
             className="flex justify-between items-center my-[6px] md:my-[10px] rounded-md font-inter bg-[#5D5959]/50 hover:bg-[#5D5959]/100"
           >
-            <div className="flex items-center space-x-3 p-3 hover:cursor-pointer w-[95%] h-full md:active:p-[10px]">
-              <Image
-                src={msg.avatar}
-                alt={msg.name}
-                width={25}
-                height={24}
-                priority={true}
-                draggable={false}
-                className="w-10 h-10 object-cover rounded-full"
-              />
+            <div className="flex items-center space-x-2 p-3 hover:cursor-pointer w-[95%] h-full md:active:p-[10px]">
               <div>
-                <p>{msg.name}</p>
-                <p className="text-xs">{msg.msg}</p>
+                <h2 className="pb-2 mb-1 text-sm font-inter font-medium opacity-50">@anas</h2>
+                <Image
+                  src={recent.recentUser.image}
+                  alt={recent.recentUser.username}
+                  width={25}
+                  height={24}
+                  priority={true}
+                  draggable={false}
+                  className="w-10 h-10 object-cover rounded-full"
+                />
+              </div>
+              <div className="">
+                <p>{recent.recentUser.username}</p>
+                <p className="text-xs">{recent.lastMessage}</p>
               </div>
             </div>
             <button className="w-[8%] md:w-[5%] h-full mx-1">
               <Image
                 src="/delete.svg"
-                alt={msg.name}
+                alt={recent.recentUser.username}
                 width={25}
                 height={24}
                 priority={true}

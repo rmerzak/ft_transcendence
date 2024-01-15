@@ -33,7 +33,7 @@ const UserItem = ({ friend } : { friend: Friendship }) => {
     });
   }
   return (
-    (friend.status === 'ACCEPTED' && !friend.block) ? (
+    (friend.status === 'ACCEPTED' && !friend.block && (status === 'ONLINE' || status === 'IN_GAME')) ? (
         <div onClick={makeMessage}>
         <Image
           src={profile?.id === friend.sender.id ? friend.receiver.image : friend.sender.image }

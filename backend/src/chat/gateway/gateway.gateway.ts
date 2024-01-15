@@ -10,7 +10,7 @@ import { Socket } from 'socket.io';
 import { MsgService } from '../services/msg/msg.service';
 import { SocketAuthMiddleware } from 'src/auth/middleware/ws.mw';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Message } from '@prisma/client';
+import { Message, Recent } from '@prisma/client';
 
 @WebSocketGateway({
   cors: { origin: 'http://localhost:8080', credentials: true },
@@ -49,7 +49,7 @@ export class GatewayGateway
   handleJoinRoom(_client: Socket, payload: { roomId: number }) {
     if (_client.rooms.has(payload.roomId.toString())) return;
     _client.join(payload.roomId.toString());
-    this.server.to(payload.roomId.toString()).emit('has-joined');
+    // this.server.to(payload.roomId.toString()).emit('has-joined');
     // console.log("rooms: ", _client.rooms);
   }
 

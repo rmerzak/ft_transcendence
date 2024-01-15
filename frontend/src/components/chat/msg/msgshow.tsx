@@ -47,7 +47,7 @@ const MsgShow: React.FC<MsgShowProps> = ({ messages, chatId, error }) => {
   }, [chatRoomMembers, profile, friends]);
   return (
     <>
-      <div className="bg-[#5D5959]/40 w-[66%] text-white h-[1090px] rounded-3xl p-4 hidden md:block">
+      <div className="bg-[#5D5959]/40 w-[66%] text-white h-[1030px] rounded-3xl p-4 hidden md:block">
         {error === '' ? (
           <>
             <Chatheader username={username} status={status} userId={friendId} />

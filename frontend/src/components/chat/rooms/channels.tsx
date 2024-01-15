@@ -1,56 +1,56 @@
 "use client";
 import Image from "next/image";
-import Link from "next/link";
 import Popup from "./popup";
-import { useState } from "react";
+import { use, useContext, useEffect, useState } from "react";
+import { ContextGlobal } from "@/context/contex";
+import { ChatRoom } from "@/interfaces";
 
-const channels = [
-  { name: "General", avatar: "/channelssetting" },
-  { name: "Random", avatar: "/channelssetting" },
-  { name: "Games", avatar: "/channelssetting" },
-  { name: "Music", avatar: "/channelssetting" },
-  { name: "Movies", avatar: "/channelssetting" },
-  { name: "Sports", avatar: "/channelssetting" },
-  { name: "News", avatar: "/channelssetting" },
-  { name: "Politics", avatar: "/channelssetting" },
-  { name: "Science", avatar: "/channelssetting" },
-  { name: "Technology", avatar: "/channelssetting" },
-];
-const Channels = () => {
+interface Channel {
+  header: string;
+}
+
+const Channels: React.FC<Channel> = ({ header }) => {
+  const [channels, setChannels] = useState<ChatRoom[]>([]);
+  const { chatRoomsJoined, chatRoomsToJoin } = useContext(ContextGlobal);
   const [newChannel, setNewChannel] = useState<boolean>(false);
+
   function handleNewChannel() {
     setNewChannel(!newChannel);
   }
+
+  useEffect(() => {
+    setChannels([...chatRoomsJoined, ...chatRoomsToJoin])
+  }, [chatRoomsJoined, chatRoomsToJoin]);
   return (
     <>
       <div className="mt-6">
-        <h1 className="text-white md:text-xl text-center">Channels</h1>
+        <h1 className="text-white md:text-xl text-center">{header}</h1>
         <div className="flex justify-center md:mt-2">
           <div className="md:mb-4 border-b border-white w-16"></div>
         </div>
       </div>
 
       <div className="rounded-md md:w-3/4 mx-auto mt-2 md:scroll-y-auto md:max-h-[300px]">
-        {channels.map((channel) => (
+        {channels.length > 0 ? channels.map((channel, index) => (
           <div
-            key={channel.name}
+            key={index}
             className="flex bg-[#811B77]/50 justify-between items-center text-xs md:text-base p-3 my-[6px] md:my-[10px] rounded-md text-white hover:bg-[#811B77]/100"
           >
             <p>#{channel.name}</p>
-            <Link href="#">
-              <Image
-                src="/link.svg"
-                alt={channel.name}
-                width={25}
-                height={24}
-                priority={true}
-                draggable={false}
-                className="w-5 h-5 object-cover"
-              />
-            </Link>
+            <Image
+              src={index <= chatRoomsJoined.length && chatRoomsJoined.length > 0 ? "/leave.svg" : "/link.svg"}
+              alt={"channel"}
+              width={25}
+              height={24}
+              priority={true}
+              draggable={false}
+              onClick={() => { alert("Link to channel") }}
+              className="w-5 h-5 object-cover"
+            />
           </div>
-        ))}
+        )): <p className="text-center text-white">No channels</p>}
       </div>
+      {
         <div className="my-2 md:my-4 flex justify-center items-center">
           <button onClick={handleNewChannel}>
             <Image
@@ -64,7 +64,8 @@ const Channels = () => {
             />
           </button>
         </div>
-      {newChannel && <Popup setChannel={handleNewChannel}/>}
+      }
+      {newChannel && <Popup setChannel={handleNewChannel} />}
     </>
   );
 };

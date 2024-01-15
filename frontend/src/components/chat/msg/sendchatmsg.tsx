@@ -28,6 +28,13 @@ const Sendchatmsg: React.FC<SendchatmsgProps> = ({ chatRoomId, isblocked }) => {
             chatRoomId: chatRoomId,
             text: message,
         };
+        const RecentData = {
+            chatRoomId: chatRoomId,
+            userId: Number(profile?.id),
+            link: `/dashboard/chat/user/${chatRoomId}`,
+            lastMessage: message,
+        };
+        chatSocket?.emit('add-recent', RecentData);
         chatSocket?.emit('send-message', messageData);
         setMessage('');
     }

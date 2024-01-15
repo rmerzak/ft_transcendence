@@ -58,7 +58,7 @@ model User {
   receivedFriendRequests Friendship[] @relation("Receiver")
   receivedNotification Notification[] @relation("Receiver")
   sendNotification Notification[] @relation("Sender")
-  recentUser Recent[] @relation("recentUser")
+  recent Recent[] @relation("recent")
 }
 
 model Game {
@@ -130,7 +130,7 @@ model ChatRoom {
   visibility RoomVisibility? @default(PUBLIC)
   users ChatRoomMember[]
   messages Message[]
-  recentChat Recent[]
+  recent Recent[] @relation("chatrecent")
 }
 
 model ChatRoomMember {
@@ -155,15 +155,15 @@ model Message {
   text String
 }
 
-model Recent{
-  id Int @id @default(autoincrement())
+model Recent {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   userId Int
-  recentUser User @relation(name:"recentUser", fields: [userId], references: [id], onDelete: Cascade)
   chatRoomId Int
-  chatRoom ChatRoom @relation(fields: [chatRoomId], references: [id], onDelete: Cascade)
-  link String
-  showMessage Boolean @default(true)
+  user User @relation(name: "recent", fields: [userId], references: [id], onDelete: Cascade)
+  chatRoom ChatRoom @relation(name: "chatrecent", fields: [chatRoomId], references: [id], onDelete: Cascade)
   lastMessage String
+  link String
+  show Boolean @default(true)
+  @@id([userId, chatRoomId])
 }

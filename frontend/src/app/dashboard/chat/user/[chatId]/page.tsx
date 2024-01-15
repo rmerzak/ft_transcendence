@@ -1,14 +1,20 @@
 'use client'
 import React, { useEffect, useState, useContext } from 'react'
-import { useParams } from 'next/navigation'
+import { useParams, usePathname } from 'next/navigation'
 import MsgShow from '@/components/chat/msg/msgshow';
 import { addRecentMessage, getChatRoomMessages } from '@/api/chat/chat.api';
 import { ContextGlobal } from '@/context/contex';
 import { Messages, Recent } from '@/interfaces';
 
+function splitPathname(pathname: string) {
+  const path = pathname.split('/');
+  return path[path.length - 2];
+}
+
 const Chat = () => {
   const { chatSocket, profile } = useContext(ContextGlobal);
   const { chatId } = useParams();
+  const pathname = usePathname();
   const [messages, setMessages] = useState<Messages[]>([]);
   const [chatRoomId, setChatRoomId] = useState<number>(0);
   const [error, setError] = useState<string>('');
@@ -25,15 +31,6 @@ const Chat = () => {
             setError("Can't get messages");
           });
       }
-      // Emit join-room event
-      const RecentData: Recent = {
-        chatRoomId: Number(chatId),
-        userId: profile?.id,
-        lastMessage: messages[messages.length - 1]?.text,
-        link: `/dashboard/chat/user/${chatId}`,
-      };
-      console.log("chatId", chatId);
-      // addRecentMessage(Number(chatId));
       chatSocket.emit('join-room', { roomId: chatId });
       chatSocket.on('receive-message', (message) => {
         setMessages((messages) => [...messages, message]);

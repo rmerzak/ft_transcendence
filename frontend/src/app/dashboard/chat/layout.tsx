@@ -42,10 +42,10 @@ const Layout = ({children} : any) => {
           Chat
         </h1>
         <div className="rounded-md mx-2 md:mx-8 flex justify-between items-center">
-          <div className="bg-[#5D5959]/40 w-full md:w-[32%] md:rounded-3xl rounded-t-3xl p-2 shadow-lg h-full font-light">
+          <div className="bg-[#5D5959]/40 w-full md:w-[32%] md:rounded-3xl rounded-t-3xl p-2 shadow-lg h-[1030px] font-light ">
             <UserOnline />
-            <Channels />
-            <Recent />
+            <Channels header="Channels" />
+            {/* <Channels header="Public" /> */}
           </div>
           {children}
         </div>

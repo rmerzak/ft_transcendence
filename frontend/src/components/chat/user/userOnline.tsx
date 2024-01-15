@@ -43,7 +43,7 @@ const UserOnline = () => {
         getFriends(profile.id);
       }
     }
-    console.log("userOnline");
+    // console.log("friends: ", friends);
     return () => {
       socket?.off("blockFriend");
       socket?.off("unblockFriend");

@@ -1,5 +1,3 @@
-import { Socket } from "socket.io-client";
-
 export interface MatchHistoryItemInterface {
   PlayerOne: string;
   PlayerTwo: string;
@@ -97,7 +95,6 @@ export interface ChatRoomUsers {
 }
 
 export interface Recent {
-  id? : number;
   createdAt? : string;
   updatedAt? : string;
   userId? : number;
@@ -105,4 +102,9 @@ export interface Recent {
   link: String;
   showMessage? : boolean;
   lastMessage : string;
+  recentUser : {
+    id : number;
+    username : string;
+    image : string;
+  }
 }
