@@ -5,7 +5,7 @@ import { useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 import Swal from 'sweetalert2';
 import { setInterval, clearInterval } from 'timers';
-import { useGame } from '@/app/dashboard/game/gameContex';
+import { useGame } from '@/app/dashboard/game/context/gameContex';
 import { themeAtom } from './theme';
 import { useAtomValue } from 'jotai';
 import { useSetAtom } from 'jotai';
@@ -374,32 +374,37 @@ function Pong()
 
 
         return () => {
-        // reset theme
-        setTheme(-1);
+            // reset theme
+            setTheme(-1);
 
-        // remove canvas
-        canvas.remove();
+            // remove canvas
+            canvas.remove();
 
-        // close swal
-        Swal.close();
+            // close swal
+            Swal.close();
 
-        // Remove event listeners
-        removeEventListener('keydown', handleKeyDown);
-        removeEventListener('keyup', handleKeyUp);
+            // Remove event listeners
+            removeEventListener('keydown', handleKeyDown);
+            removeEventListener('keyup', handleKeyUp);
 
-        // Clear interval
-        clearInterval(intervalId);
-        
-        // off event listener
-        socket.off('playerNo');
-        socket.off('roomIsFull');
-        socket.off('startedGame');
-        socket.off('updateGame');
-        socket.off('redirect');
-        socket.off('gameOver');
-        socket.off('connect');
-        socket.disconnect();
-           };
+            // Clear interval
+            clearInterval(intervalId);
+            
+            // off event listener
+            socket.off('playerNo');
+            socket.off('roomIsFull');
+            socket.off('startedGame');
+            socket.off('updateGame');
+            socket.off('redirect');
+            socket.off('gameOver');
+            socket.off('connect');
+
+            socket.emit('playerDisconnected');
+
+            setTimeout(() => {
+                socket.disconnect();
+            }, 1000);
+        };
 
     }, []);
     

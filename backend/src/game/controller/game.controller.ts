@@ -16,15 +16,11 @@ type MatchHistory = {
   userScore: number;
   oppScore: number;
   user: {
-    id: number;
     username: string;
-    email: string;
     image: string;
   };
   opponent: {
-    id: number;
     username: string;
-    email: string;
     image: string;
   };
 };

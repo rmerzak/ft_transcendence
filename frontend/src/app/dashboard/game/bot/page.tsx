@@ -1,8 +1,8 @@
 'use client';
 import Bot from '@/components/game/Bot';
 import User from '@/components/game/User';
-import { GameProvider } from '../gameContex';
-import { UserEnum } from '../gameContex';
+import { GameProvider } from '../context/gameContex';
+import { UserEnum } from '../context/gameContex';
 
 const Game = () => {
     

@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, use } from 'react';
 import styles from '@/app/dashboard/game/page.module.css'
 import { useRouter } from 'next/navigation';
-import { useGame } from '@/app/dashboard/game/gameContex';
+import { useGame } from '@/app/dashboard/game/context/gameContex';
 import Swal from 'sweetalert2';
 import { botThemeAtom } from './theme';
 import { useAtomValue } from 'jotai';

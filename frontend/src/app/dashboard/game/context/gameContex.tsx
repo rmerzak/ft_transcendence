@@ -1,4 +1,7 @@
-import { useContext, createContext, useState } from "react";
+'use client'
+import { Socket } from "dgram";
+import { useContext, createContext, useState, useEffect } from "react";
+import io from 'socket.io-client';
 
 export enum UserEnum {
   USER = 1,
@@ -18,11 +21,13 @@ interface GameContextProps {
     player2Score: number;
     player1Elo: number;
     player2Elo: number;
+    gameSocket:  Socket;
     updateScores: (newPlayer1Score: number, newPlayer2Score: number) => void;
     setPlayer1Elo: (newPlayer1Elo: number) => void;
     setPlayer2Elo: (newPlayer2Elo: number) => void;
     setUserInfo: (uid: number, userName: string, userImage: string) => void;
     setOpponentInfo: (oid:number, opponentName: string, opponentImage: string) => void;
+    setGameSocket: (socket: Socket) => void;
   }
 
 const GameContext = createContext<GameContextProps>({
@@ -36,11 +41,13 @@ const GameContext = createContext<GameContextProps>({
     player2Score: 0,
     player1Elo: 800,
     player2Elo: 800,
+    gameSocket: {} as Socket,
     updateScores: () => {},
     setPlayer1Elo: () => {},
     setPlayer2Elo: () => {},
     setUserInfo: () => {},
     setOpponentInfo: () => {},
+    setGameSocket: () => {},
   });
 
 export const GameProvider = ({ children } : any) => {
@@ -55,6 +62,7 @@ export const GameProvider = ({ children } : any) => {
     const [opponentName, setOpponentName] = useState('Loading...');
     const [userImage, setUserImage] = useState('/avatar.jpeg');
     const [opponentImage, setOpponentImage] = useState('/avatar.jpeg');
+    const [gameSocket, setGameSocket] = useState({} as Socket);
 
   
     const updateScores = (newPlayer1Score: number, newPlayer2Score: number) => {
@@ -73,6 +81,18 @@ export const GameProvider = ({ children } : any) => {
         setOpponentName(opponentName);
         setOpponentImage(opponentImage);
     };
+
+    useEffect(() => {
+      const socket = io(`${process.env.API_BASE_URL}/game`, {
+        withCredentials: true,
+        autoConnect: false,
+      });
+      socket.connect();
+      setGameSocket(socket);
+      return () => {
+        socket.close();
+      };
+    }, []);
   
     return (
       <GameContext.Provider value={
@@ -92,6 +112,8 @@ export const GameProvider = ({ children } : any) => {
           opponentName,
           opponentImage,
           setOpponentInfo,
+          gameSocket,
+          setGameSocket,
         }}>
         {children}
       </GameContext.Provider>

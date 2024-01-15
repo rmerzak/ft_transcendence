@@ -123,47 +123,50 @@ export class GameService {
   }
 
   // this method is called when a player leaves a room
+  // leaveRoom(roomId: string, playerId: string, client: Socket): void {
+  //   const room = this.rooms.find((room) => room.id === roomId);
+  //   client.leave(roomId);
+  //   console.log(this.rooms);
+  //   if (room) {
+  //     room.endGame();
+  //     const player = room.players.find(
+  //       (player) => player.socketId === playerId,
+  //     );
+  //     room.removePlayer(player);
+  //     if (room.players.length === 0) {
+  //       this.rooms.splice(this.rooms.indexOf(room), 1);
+  //       roomId = '';
+  //     }
+  //   }
+  //   console.log(this.rooms);
+  // }
+
   leaveRoom(roomId: string, playerId: string, client: Socket): void {
-    const room = this.rooms.find((room) => room.id === roomId);
-    client.leave(roomId);
-    console.log(this.rooms);
-    if (room) {
+    const roomIndex = this.rooms.findIndex((room) => room.id === roomId);
+
+    if (roomIndex !== -1) {
+      const room = this.rooms[roomIndex];
       room.endGame();
-      const player = room.players.find(
+      client.leave(roomId);
+      console.log(this.rooms);
+
+      // Find and remove the player from the room
+      const playerIndex = room.players.findIndex(
         (player) => player.socketId === playerId,
       );
-      room.removePlayer(player);
-      if (room.players.length === 0) {
-        this.rooms.splice(this.rooms.indexOf(room), 1);
-        roomId = '';
-      }
-    }
-    console.log(this.rooms);
 
-    // leaveRoom(roomId: string, playerId: string, client: Socket): void {
-    //   const roomIndex = this.rooms.findIndex((room) => room.id === roomId);
-  
-    //   if (roomIndex !== -1) {
-    //       const room = this.rooms[roomIndex];
-    //       client.leave(roomId);
-    //       console.log(this.rooms);
-  
-    //       // Find and remove the player from the room
-    //       const playerIndex = room.players.findIndex((player) => player.socketId === playerId);
-          
-    //       if (playerIndex !== -1) {
-    //           const player = room.players[playerIndex];
-    //           room.removePlayer(player);
-  
-    //           if (room.players.length === 0) {
-    //               // If no players left, remove the room
-    //               this.rooms.splice(roomIndex, 1);
-    //           }
-    //       }
-  
-    //       console.log(this.rooms);
-    //   }
-    // }
+      if (playerIndex !== -1) {
+        const player = room.players[playerIndex];
+        room.removePlayer(player);
+
+        if (room.players.length === 0) {
+          // If no players left, remove the room
+          this.rooms.splice(roomIndex, 1);
+        }
+      }
+
+      console.log(this.rooms);
+    }
   }
 
   // this method for get room
@@ -257,17 +260,13 @@ export class GameService {
         oppScore: true,
         user: {
           select: {
-            id: true,
             username: true,
-            email: true,
             image: true,
           },
         },
         opponent: {
           select: {
-            id: true,
             username: true,
-            email: true,
             image: true,
           },
         },

@@ -56,7 +56,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     console.log('Room ID:', this.roomId);
 
     // Leave the room for the disconnected player
-    this.game.leaveRoom(this.roomId, client.id, client);
+    // this.game.leaveRoom(this.roomId, client.id, client);
 
     // Change user status to ONLINE
     const userId = client['payload']['sub'];
@@ -66,18 +66,18 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     });
 
     // Find the room where the disconnection occurred
-    const targetRoom = this.game.rooms.find((room) => room.id === this.roomId);
+    // const targetRoom = this.game.rooms.find((room) => room.id === this.roomId);
 
-    // If the room is found, update the scores of other players
-    if (targetRoom) {
-      targetRoom.players.forEach((player) => {
-        // Check if the player is not the disconnected player
-        if (player.socketId !== client.id) {
-          // Set the score to 5 for other players
-          this.server.to(player.socketId).emit('gameOver', { winner: true });
-        }
-      });
-    }
+    // // If the room is found, update the scores of other players
+    // if (targetRoom) {
+    //   targetRoom.players.forEach((player) => {
+    //     // Check if the player is not the disconnected player
+    //     if (player.socketId !== client.id) {
+    //       // Set the score to 5 for other players
+    //       this.server.to(player.socketId).emit('gameOver', { winner: true });
+    //     }
+    //   });
+    // }
   }
 
   // this method is called when a player joins a room
@@ -100,12 +100,33 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     } catch {}
   }
 
+  @SubscribeMessage('playerDisconnected')
+  playerDisconnected(client: Socket): void {
+    try {
+      this.game.leaveRoom(this.roomId, client.id, client);
+    } catch {}
+  }
+
   // this method is called when a player leaves a room
   @SubscribeMessage('leave')
   leave(client: Socket, payload: any): any {
     try {
       const playerId = client.id;
       this.game.leaveRoom(payload.roomId, playerId, client);
+      const targetRoom = this.game.rooms.find(
+        (room) => room.id === this.roomId,
+      );
+
+      // If the room is found, update the scores of other players
+      if (targetRoom) {
+        targetRoom.players.forEach((player) => {
+          // Check if the player is not the disconnected player
+          if (player.socketId !== client.id) {
+            // Set the score to 5 for other players
+            this.server.to(player.socketId).emit('gameOver', { winner: true });
+          }
+        });
+      }
       console.log('leave');
     } catch {}
   }

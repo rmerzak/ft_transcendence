@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import Image from 'next/image';
-import { useGame } from '@/app/dashboard/game/gameContex';
-import { UserEnum } from '@/app/dashboard/game/gameContex';
+import { useGame } from '@/app/dashboard/game/context/gameContex';
+import { UserEnum } from '@/app/dashboard/game/context/gameContex';
 import { ContextGlobal } from '@/context/contex';
 
 function User({ className = '', id = UserEnum.USER}: { className?: string; id?: number }) {

@@ -2,8 +2,8 @@
 import React, { useEffect } from 'react';
 import Pong from '@/components/game/Pong';
 import User from '@/components/game/User';
-import { GameProvider } from '../gameContex';
-import { UserEnum } from '../gameContex';
+import { GameProvider } from '../context/gameContex';
+import { UserEnum } from '../context/gameContex';
 import { useAtomValue } from 'jotai';
 import { themeAtom } from '@/components/game/theme';
 import Swal from 'sweetalert2';
@@ -34,7 +34,7 @@ const Game = () => {
     }, [router, theme]);
 
     return (
-      <GameProvider>
+      <>
         {
           theme !== -1 &&
           <div className='w-[88%] mx-auto text-center p-[1%] shadow-md rounded-3xl bg-[#311251]/80 top-[50%]  -translate-y-[50%] absolute'>
@@ -58,7 +58,7 @@ const Game = () => {
                 </div>
           </div>
         }
-      </GameProvider>
+      </>
   );
 };
 
