@@ -134,22 +134,22 @@ export class Room {
       }
 
       if (this.players[0].score === 5 || this.players[1].score === 5) {
-        // if (this.players[0].score === 5) {
-        //   server
-        //     .to(this.players[0].socketId)
-        //     .emit('gameOver', { winner: true });
-        //   server
-        //     .to(this.players[1].socketId)
-        //     .emit('gameOver', { winner: false });
-        // } else if (this.players[1].score === 5) {
-        //   server
-        //     .to(this.players[1].socketId)
-        //     .emit('gameOver', { winner: true });
-        //   server
-        //     .to(this.players[0].socketId)
-        //     .emit('gameOver', { winner: false });
-        // }
-        server.to(this.id).emit('gameOver', { winner: true });
+        if (this.players[0].score === 5) {
+          server
+            .to(this.players[0].socketId)
+            .emit('youWin');
+          server
+            .to(this.players[1].socketId)
+            .emit('youLose');
+        }
+        if (this.players[1].score === 5) {
+          server
+            .to(this.players[1].socketId)
+            .emit('youWin');
+          server
+            .to(this.players[0].socketId)
+            .emit('youLose');
+        }
 
         // update match history and statistics
         game.createMatchHistory(

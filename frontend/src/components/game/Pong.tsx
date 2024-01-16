@@ -333,63 +333,59 @@ function Pong()
         });
 
         // game over
-        socket.on('gameOver', ({ winner }) => {
+        socket.on('youWin', () => {
             isGameStarted = false;
-            console.log("winner value: ", winner);
-            
-            // if (winner) {
-            //     Swal.fire({
-            //         title: 'You Win!',
-            //         text: 'Congratulations! You win the game!',
-            //         imageUrl: "/game/winner.gif",
-            //         imageWidth: 400,
-            //         imageHeight: 200,
-            //         confirmButtonText: 'Ok',
-            //         allowEscapeKey: false,
-            //         allowOutsideClick: false,
-            //         customClass: {
-            //             popup: 'bg-gradient-to-r from-[#510546]/40 to-[#6958be]/40'
-            //         }
-            //     }).then((res) => {
 
-            //         if (res.isConfirmed)
-            //         router.push('/dashboard/game');
-            //         // redirect to game page
-            //     });
-            // } else {
-            //     Swal.fire({
-            //         title: 'You Lose!',
-            //         text: 'You lose the game!',
-            //         imageUrl: "/game/loser.gif",
-            //         imageWidth: 400,
-            //         imageHeight: 200,
-            //         confirmButtonText: 'Ok',
-            //         allowEscapeKey: false,
-            //         allowOutsideClick: false,
-            //         customClass: {
-            //             popup: 'bg-gradient-to-r from-[#510546]/40 to-[#6958be]/40'
-            //         }
-            //     }).then((res) => {
-            //         if (res.isConfirmed)
-            //         router.push('/dashboard/game');
-            //         // redirect to game page
-            //         // router.push('/dashboard/game');
-            //     });
-            // }
-            
+            Swal.fire({
+                title: 'You Win!',
+                text: 'Congratulations! You win the game!',
+                imageUrl: "/game/winner.gif",
+                imageWidth: 400,
+                imageHeight: 200,
+                confirmButtonText: 'Ok',
+                allowEscapeKey: false,
+                allowOutsideClick: false,
+                customClass: {
+                    popup: 'bg-gradient-to-r from-[#510546]/40 to-[#6958be]/40'
+                }
+            }).then((res) => {
+
+                if (res.isConfirmed)
+                    // redirect to game page
+                    router.push('/dashboard/game');
+            });
+
             socket.emit('leave', {
                 roomId: roomID,
                 playerNo: playerNo
             });
-            setTimeout(() => {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-            }, 400);
         });
 
-        // gameSocket.on('disconnect', () => {
-        //     console.log('disconnected');
-        //     gameSocket.emit('playerDisconnected');
-        // });
+        socket.on('youLose', () => {
+            isGameStarted = false;
+            Swal.fire({
+                title: 'You Lose!',
+                text: 'You lose the game!',
+                imageUrl: "/game/loser.gif",
+                imageWidth: 400,
+                imageHeight: 200,
+                confirmButtonText: 'Ok',
+                allowEscapeKey: false,
+                allowOutsideClick: false,
+                customClass: {
+                    popup: 'bg-gradient-to-r from-[#510546]/40 to-[#6958be]/40'
+                }
+            }).then((res) => {
+                if (res.isConfirmed)
+                    // redirect to game page
+                    router.push('/dashboard/game');
+             });
+
+            socket.emit('leave', {
+                roomId: roomID,
+                playerNo: playerNo
+            });
+        });
 
         return () => {
             // reset theme

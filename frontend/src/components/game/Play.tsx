@@ -13,8 +13,7 @@ import 'swiper/css';
 import 'swiper/css/effect-coverflow';
 import 'swiper/css/pagination';
 import './styles.css';
-// import { GameContext } from '@/app/dashboard/game/context/gameContext';
-import { Socket } from 'socket.io-client';
+
 
 const img : string[] = ['t0', 't1', 't2', 't3', 't4', 't5'];
 

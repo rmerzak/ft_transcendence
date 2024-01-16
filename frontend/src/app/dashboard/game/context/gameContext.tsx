@@ -17,6 +17,7 @@ export enum UserEnum {
 }
 
 export interface GameContextProps {
+    isPlaying: boolean;
     uid: number;
     oid: number;
     userName: string;
@@ -32,9 +33,11 @@ export interface GameContextProps {
     setPlayer2Elo: (newPlayer2Elo: number) => void;
     setUserInfo: (uid: number, userName: string, userImage: string) => void;
     setOpponentInfo: (oid:number, opponentName: string, opponentImage: string) => void;
+    setIsPlaying: (isPlaying: boolean) => void;
   }
 
 export const GameContext = createContext<GameContextProps | null>({
+    isPlaying: false,
     uid: 0,
     oid: 0,
     userName: 'Loading...',
@@ -50,6 +53,7 @@ export const GameContext = createContext<GameContextProps | null>({
     setPlayer2Elo: () => {},
     setUserInfo: () => {},
     setOpponentInfo: () => {},
+    setIsPlaying: () => {},
   });
 
   interface GameProviderProps {
@@ -67,6 +71,7 @@ export const GameProvider = ({ children } : GameProviderProps) => {
     const [opponentName, setOpponentName] = useState('Loading...');
     const [userImage, setUserImage] = useState('/avatar.jpeg');
     const [opponentImage, setOpponentImage] = useState('/avatar.jpeg');
+    const [isPlaying, setIsPlaying] = useState(false);
 
   
     const updateScores = useCallback((newPlayer1Score: number, newPlayer2Score: number) => {
@@ -102,6 +107,8 @@ export const GameProvider = ({ children } : GameProviderProps) => {
         opponentName,
         opponentImage,
         setOpponentInfo,
+        isPlaying,
+        setIsPlaying,
     }), [
         player1Score,
         player2Score,
@@ -116,6 +123,8 @@ export const GameProvider = ({ children } : GameProviderProps) => {
         setUserInfo,
         setOpponentInfo,
         updateScores,
+        isPlaying,
+        setIsPlaying,
     ]);
   
     return (
