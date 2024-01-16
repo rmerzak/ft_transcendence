@@ -20,10 +20,9 @@ const img : string[] = ['t0', 't1', 't2', 't3', 't4', 't5'];
 
 function Play()
 {
-    // const {gameSocket} = useContext(GameContext);
     const { profile }: any = useContext(ContextGlobal);
     const [isPlaying, setIsPlaying] = useState(false);
-    // const { gameSocket }: Socket = useGame();
+
     const router = useRouter();
     const createRoom = async () => {
         try {

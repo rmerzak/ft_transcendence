@@ -5,6 +5,8 @@ import React,
     useState,
     useMemo,
     useCallback,
+    ReactNode,
+    useContext,
 } from "react";
 
 export enum UserEnum {
@@ -32,7 +34,7 @@ export interface GameContextProps {
     setOpponentInfo: (oid:number, opponentName: string, opponentImage: string) => void;
   }
 
-export const GameContext = createContext<GameContextProps>({
+export const GameContext = createContext<GameContextProps | null>({
     uid: 0,
     oid: 0,
     userName: 'Loading...',
@@ -50,7 +52,11 @@ export const GameContext = createContext<GameContextProps>({
     setOpponentInfo: () => {},
   });
 
-export const GameProvider = ({ children } : any) => {
+  interface GameProviderProps {
+    children: ReactNode;
+  }
+
+export const GameProvider = ({ children } : GameProviderProps) => {
     const [player1Score, setPlayer1Score] = useState(0);
     const [player2Score, setPlayer2Score] = useState(0);
     const [player1Elo, setPlayer1Elo] = useState(800);
@@ -107,14 +113,24 @@ export const GameProvider = ({ children } : any) => {
         oid,
         opponentName,
         opponentImage,
+        setUserInfo,
+        setOpponentInfo,
+        updateScores,
     ]);
   
     return (
       <GameContext.Provider value={contextValue}>
         {children}
       </GameContext.Provider>
-    );
-    
-  };
+    );  
+};
+
+export const useGame = () => {
+    const context = useContext(GameContext);
+    if (!context) {
+      throw new Error('useGame must be used within a GameProvider');
+    }
+    return context;
+  }
 
 

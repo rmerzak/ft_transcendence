@@ -1,10 +1,13 @@
 import React, { useContext } from 'react';
 import Image from 'next/image';
-import { GameContext, GameContextProps } from '@/app/dashboard/game/context/gameContext';
+import { useGame } from '@/app/dashboard/game/context/gameContext';
 import { UserEnum } from '@/app/dashboard/game/context/gameContext';
 import { ContextGlobal } from '@/context/contex';
+import Swal from 'sweetalert2';
+import { useRouter } from 'next/navigation';
 
 function User({ className = '', id = UserEnum.USER}: { className?: string; id?: number }) {
+    const router = useRouter();
     const { profile }:any = useContext(ContextGlobal);
     const { 
             oid,
@@ -17,7 +20,7 @@ function User({ className = '', id = UserEnum.USER}: { className?: string; id?: 
             player2Score,
             player1Elo,
             player2Elo,
-    }: GameContextProps = useContext(GameContext);
+    } = useGame();
 
     // show the win swal for the winner
     // show the lose swal for the loser
@@ -25,14 +28,86 @@ function User({ className = '', id = UserEnum.USER}: { className?: string; id?: 
     //     if (player1Score === 5) {
     //         if (id === UserEnum.USER) {
     //             // show win swal
+    //             Swal.fire({
+    //                 title: 'You Win!',
+    //                 text: 'Congratulations! You win the game!',
+    //                 imageUrl: "/game/winner.gif",
+    //                 imageWidth: 400,
+    //                 imageHeight: 200,
+    //                 confirmButtonText: 'Ok',
+    //                 allowEscapeKey: false,
+    //                 allowOutsideClick: false,
+    //                 customClass: {
+    //                     popup: 'bg-gradient-to-r from-[#510546]/40 to-[#6958be]/40'
+    //                 }
+    //             }).then((res) => {
+
+    //                 if (res.isConfirmed)
+    //                 // redirect to game page
+    //                     router.push('/dashboard/game');
+    //             });
     //         } else if (id === UserEnum.OPPONENT) {
     //             // show lose swal
+    //             Swal.fire({
+    //                 title: 'You Lose!',
+    //                 text: 'You lose the game!',
+    //                 imageUrl: "/game/loser.gif",
+    //                 imageWidth: 400,
+    //                 imageHeight: 200,
+    //                 confirmButtonText: 'Ok',
+    //                 allowEscapeKey: false,
+    //                 allowOutsideClick: false,
+    //                 customClass: {
+    //                     popup: 'bg-gradient-to-r from-[#510546]/40 to-[#6958be]/40'
+    //                 }
+    //             }).then((res) => {
+
+    //                 if (res.isConfirmed)
+    //                 // redirect to game page
+    //                     router.push('/dashboard/game');
+    //             });
     //         }
     //     } else if (player2Score === 5) {
     //         if (id === UserEnum.USER) {
     //             // show lose swal
+    //             Swal.fire({
+    //                 title: 'You Lose!',
+    //                 text: 'You lose the game!',
+    //                 imageUrl: "/game/loser.gif",
+    //                 imageWidth: 400,
+    //                 imageHeight: 200,
+    //                 confirmButtonText: 'Ok',
+    //                 allowEscapeKey: false,
+    //                 allowOutsideClick: false,
+    //                 customClass: {
+    //                     popup: 'bg-gradient-to-r from-[#510546]/40 to-[#6958be]/40'
+    //                 }
+    //             }).then((res) => {
+
+    //                 if (res.isConfirmed)
+    //                 // redirect to game page
+    //                     router.push('/dashboard/game');
+    //             });
     //         } else if (id === UserEnum.OPPONENT) {
     //             // show win swal
+    //             Swal.fire({
+    //                 title: 'You Win!',
+    //                 text: 'Congratulations! You win the game!',
+    //                 imageUrl: "/game/winner.gif",
+    //                 imageWidth: 400,
+    //                 imageHeight: 200,
+    //                 confirmButtonText: 'Ok',
+    //                 allowEscapeKey: false,
+    //                 allowOutsideClick: false,
+    //                 customClass: {
+    //                     popup: 'bg-gradient-to-r from-[#510546]/40 to-[#6958be]/40'
+    //                 }
+    //             }).then((res) => {
+
+    //                 if (res.isConfirmed)
+    //                 // redirect to game page
+    //                     router.push('/dashboard/game');
+    //             });
     //         }
     //     }
     // }

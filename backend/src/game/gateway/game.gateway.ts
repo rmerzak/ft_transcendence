@@ -54,7 +54,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async handleDisconnect(client: Socket) {
     console.log('disconnected');
 
-    
     // Change user status to ONLINE
     const userId = client['payload']['sub'];
     await this.prisma.user.update({
@@ -103,16 +102,18 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   playerDisconnected(client: Socket): void {
     try {
       this.game.leaveRoom(this.roomId, client.id, client);
-      const targetRoom = this.game.rooms.find((room) => room.id === this.roomId);
+      const targetRoom = this.game.rooms.find(
+        (room) => room.id === this.roomId,
+      );
       if (targetRoom) {
-          targetRoom.players.forEach((player) => {
-            // Check if the player is not the disconnected player
-            if (player.socketId !== client.id) {
-              // Set the score to 5 for other players
-              this.server.to(player.socketId).emit('gameOver', { winner: true });
-            }
-          });
-        }
+        targetRoom.players.forEach((player) => {
+          // Check if the player is not the disconnected player
+          if (player.socketId !== client.id) {
+            // Set the score to 5 for other players
+            this.server.to(player.socketId).emit('gameOver', { winner: true });
+          }
+        });
+      }
     } catch {}
   }
 

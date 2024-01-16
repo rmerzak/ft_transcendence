@@ -146,6 +146,7 @@ export class GameService {
 
     if (roomIndex !== -1) {
       const room = this.rooms[roomIndex];
+      room.state = State.WAITING;
       room.endGame();
       client.leave(roomId);
       console.log(this.rooms);
@@ -159,11 +160,11 @@ export class GameService {
         const player = room.players[playerIndex];
         room.removePlayer(player);
 
-        if (room.players.length === 1) {
+        if (room.players.length === 0) {
           // rmove the other player and delete the room
           // const otherPlayer = room.players[0];
 
-          this.rooms.splice(roomIndex, 2);
+          this.rooms.splice(roomIndex, 1);
         }
       }
 
