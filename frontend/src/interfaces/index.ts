@@ -87,24 +87,29 @@ export interface Messages {
 // helper interface
 export interface ChatRoomUsers {
   user: {
-      id: number;
-      username: string;
-      image: string;
-      status: string;
+    id: number;
+    username: string;
+    image: string;
+    status: string;
   };
 }
 
 export interface Recent {
-  createdAt? : string;
-  updatedAt? : string;
-  userId? : number;
-  chatRoomId? : number;
+  createdAt?: string;
+  updatedAt?: string;
+  userId?: number;
+  senderId?: number;
+  chatRoomId: number;
   link: String;
-  showMessage? : boolean;
-  lastMessage : string;
-  recentUser : {
-    id : number;
-    username : string;
-    image : string;
+  show?: boolean;
+  lastMessage: string;
+  chatRoom?: {
+    id?: number;
+    name: string;
+    users: {
+      id: number;
+      username: string;
+      image: string;
+    }[];
   }
-}
+};

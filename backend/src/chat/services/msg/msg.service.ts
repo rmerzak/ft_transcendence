@@ -109,4 +109,119 @@ export class MsgService {
     });
   }
   // end user message
+
+  // get recent for user
+  async getRecent(userId: number): Promise<Recent[]> {
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: { id: userId },
+      });
+  
+      if (!user) {
+        throw new Error('User not found');
+      }
+  
+      const recent = await this.prisma.recent.findMany({
+        where: {
+          userId: userId,
+        },
+        orderBy: {
+          updatedAt: 'desc',
+        },
+        select: {
+          userId: true,
+          chatRoomId: true,
+          createdAt: true,
+          updatedAt: true,
+          lastMessage: true,
+          link: true,
+          senderId: true,
+          chatRoom: {
+            select: {
+              id: true,
+              name: true,
+              users: {
+                select: {
+                  userId: true,
+                },
+              },
+            },
+          },
+        },
+      });
+  
+      const userDetails = await Promise.all(
+        recent.map((r) =>
+          this.prisma.user.findMany({
+            where: {
+              id: {
+                in: r.chatRoom.users.map((u) => u.userId),
+                not: userId,
+              },
+            },
+            select: {
+              id: true,
+              username: true,
+              image: true,
+            },
+          })
+        )
+      );
+  
+      // Merge userDetails with recent
+      const result = recent.map((r, i) => ({
+        ...r,
+        chatRoom: {
+          ...r.chatRoom,
+          users: userDetails[i],
+        },
+      }));
+  
+      return result;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+  
+  // add or update recent for user
+  async addRecent(recentData: Recent): Promise<Recent> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: recentData.userId },
+    });
+    if (!user) throw new Error('User not found');
+    const chatRoom = await this.prisma.chatRoom.findUnique({
+      where: { id: recentData.chatRoomId },
+    });
+    if (!chatRoom) throw new Error('Chat room not found');
+    const chatRoomMember = await this.prisma.chatRoomMember.findUnique({
+      where: { userId_chatRoomId: { userId: user.id, chatRoomId: chatRoom.id } },
+    });
+    if (!chatRoomMember) throw new Error('User not in chat room');
+    const recent = await this.prisma.recent.findUnique({
+      where: {
+          userId_chatRoomId: { userId: recentData.userId, chatRoomId: recentData.chatRoomId },
+      }
+    });
+    if (recent) {
+      return await this.prisma.recent.update({
+        where: {
+          userId_chatRoomId: { userId: recentData.userId, chatRoomId: recentData.chatRoomId },
+        },
+        data: recentData,
+      });
+    } else {
+      return await this.prisma.recent.create({
+        data: recentData,
+      });
+    }
+  }
+  // delete recent for user
+  async deleteRecent(userId: number, chatRoomId: number): Promise<Recent | null> {
+    return await this.prisma.recent.delete({
+      where: {
+        userId_chatRoomId: { userId: userId, chatRoomId: chatRoomId },
+      }
+    });
+  }
 }

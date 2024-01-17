@@ -54,7 +54,7 @@ const MsgShow: React.FC<MsgShowProps> = ({ messages, chatId, error }) => {
             <div className='mt-6 h-[88%]'>
               <Chat messages={messages} />
             </div>
-            <Sendchatmsg chatRoomId={chatId} isblocked={isblock} />
+            <Sendchatmsg chatRoomId={chatId} isblocked={isblock} friendId={friendId} />
           </>
         ) : (
           <div className="flex justify-center items-center h-full text-2xl">

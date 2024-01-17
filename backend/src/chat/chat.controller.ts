@@ -414,6 +414,75 @@ export class ChatController {
     return await this.chatService.deleteMessage(Number(id));
   }
   // end user message
+
+  // start recent
+  // get recent for user
+  @Get('recent')
+  async getRecentForUser(@Req() req: Request): Promise<Recent[]> {
+    const user = req.user as User;
+    return await this.chatService.getRecent(user.id);
+  }
+
+  // add recent
+  @Post('recent')
+  async addRecent(@Body() recentData: Recent, @Req() req: Request): Promise<Recent> {
+    if (isEmpty(recentData)) {
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: 'Recent data not provided',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const user = req.user as User;
+    if (recentData.userId !== user.id) {
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: 'Recent user id not match',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    try {
+      return await this.chatService.addRecent(recentData);
+    }catch (error) {
+      switch (error.message) {
+        case 'User not found':
+          throw new HttpException(
+            {
+              statusCode: HttpStatus.BAD_REQUEST,
+              message: 'User not found',
+            },
+            HttpStatus.BAD_REQUEST,
+          );
+        case 'Chat room not found':
+          throw new HttpException(
+            {
+              statusCode: HttpStatus.BAD_REQUEST,
+              message: 'Chat room not found',
+            },
+            HttpStatus.BAD_REQUEST,
+          );
+        default:
+          throw new HttpException(
+            {
+              statusCode: HttpStatus.BAD_REQUEST,
+              message: 'Error adding recent',
+            },
+            HttpStatus.BAD_REQUEST,
+          );
+      }
+    }
+  }
+  // delete recent for user
+  @Delete('recent')
+  async deleteRecent(@Query('roomId') roomId: number, @Req() req: Request): Promise<Recent | null> {
+    checkIfNumber(roomId.toString(), 'Chat room id must be a number');
+    const user = req.user as User;
+    return await this.chatService.deleteRecent(user.id, Number(roomId));
+  }
 }
 
 // helper functions

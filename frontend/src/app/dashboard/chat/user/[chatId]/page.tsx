@@ -24,10 +24,12 @@ const Chat = () => {
       if (messages.length === 0) {
         getChatRoomMessages(Number(chatId))
           .then((res) => {
+            console.log("message data", res.data);
             setMessages(res.data);
             setChatRoomId(Number(chatId));
           })
           .catch((err) => {
+            console.log("err", err);
             setError("Can't get messages");
           });
       }
