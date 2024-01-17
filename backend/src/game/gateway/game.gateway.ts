@@ -45,7 +45,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     // change user status to INGAME
     const userId = socket['payload']['sub'];
-    await this.prisma.user.update({
+    const usera = await this.prisma.user.update({
       where: { id: userId },
       data: { status: UserStatus.INGAME },
     });

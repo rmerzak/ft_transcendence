@@ -57,20 +57,43 @@ export class GameService {
     return null;
   }
 
+  private playerStatusListeners: { [playerId: number]: (newStatus: boolean) => void } = {};
+
+  // ... other game logic
+
+  onPlayerStatusChange(playerId: number, callback: (newStatus: boolean) => void) {
+    this.playerStatusListeners[playerId] = callback;
+
+  }
+
+  // Example of triggering callbacks when a player's status changes
+  startPlaying(playerId: number) {
+    // ... game logic to start the player
+    this.playerStatusListeners[playerId]?.(true); // Notify listeners
+    console.log('start playing', playerId);
+  }
+
+  stopPlaying(playerId: number) {
+    // ... game logic to stop the player
+    this.playerStatusListeners[playerId]?.(false); // Notify listeners
+    console.log('stop playing', playerId);
+  }
+
   // this method is called when a player joins a room
   // if there is a room with an available slot, the player is added to that room
   // if there is no room with an available slot, a new room is created and the player is added to that room
   joinRoom(player: Player, client: Socket, server: Server): string {
     const room = this.roomWithAvailableSlots();
+    if (!this.playerExists(player)) {
 
     if (room && room.state === State.WAITING) {
       client.join(room.id);
-      if (!this.playerExists(player)) {
+      this.startPlaying(player.user.id);
         if (room.players.length === 0) {
           player.playerNo = 1;
           player.position.x = 20;
           player.position.y = this.height / 2 - 100 / 2;
-          player.status = 'PLAYING';
+          // player.status = 'PLAYING';
           room.addPlayer(player);
 
           client.emit('playerNo', {
@@ -82,7 +105,8 @@ export class GameService {
           player.playerNo = 2;
           player.position.x = this.width - 35;
           player.position.y = this.height / 2 - 100 / 2;
-          player.status = 'PLAYING';
+          // player.status = 'PLAYING';
+          // this.startPlaying(player.user.id);
           room.addPlayer(player);
 
           server.to(room.id).emit('playerNo', {
@@ -159,6 +183,7 @@ export class GameService {
       if (playerIndex !== -1) {
         const player = room.players[playerIndex];
         room.removePlayer(player);
+        this.stopPlaying(player.user.id);
 
         if (room.players.length === 0) {
           // rmove the other player and delete the room
