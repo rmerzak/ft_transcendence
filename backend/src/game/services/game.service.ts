@@ -57,26 +57,33 @@ export class GameService {
     return null;
   }
 
-  private playerStatusListeners: { [playerId: number]: (newStatus: boolean) => void } = {};
+  playerStatusMap: Map<number, boolean> = new Map();
 
-  // ... other game logic
+  onPlayerStatusChange(
+    playerId: number,
+    callback: (newStatus: boolean) => void,
+  ) {
+    let status = this.playerStatusMap.get(playerId);
 
-  onPlayerStatusChange(playerId: number, callback: (newStatus: boolean) => void) {
-    this.playerStatusListeners[playerId] = callback;
+    if (status === undefined) {
+      // Set an initial status if needed
+      status = true;
+      this.playerStatusMap.set(playerId, status);
+    }
 
+    callback(status);
   }
 
-  // Example of triggering callbacks when a player's status changes
   startPlaying(playerId: number) {
-    // ... game logic to start the player
-    this.playerStatusListeners[playerId]?.(true); // Notify listeners
-    console.log('start playing', playerId);
+    this.updatePlayerStatus(playerId, true);
   }
 
   stopPlaying(playerId: number) {
-    // ... game logic to stop the player
-    this.playerStatusListeners[playerId]?.(false); // Notify listeners
-    console.log('stop playing', playerId);
+    this.updatePlayerStatus(playerId, false);
+  }
+
+  private updatePlayerStatus(playerId: number, newStatus: boolean) {
+    this.playerStatusMap.set(playerId, newStatus);
   }
 
   // this method is called when a player joins a room
@@ -85,10 +92,9 @@ export class GameService {
   joinRoom(player: Player, client: Socket, server: Server): string {
     const room = this.roomWithAvailableSlots();
     if (!this.playerExists(player)) {
-
-    if (room && room.state === State.WAITING) {
-      client.join(room.id);
-      this.startPlaying(player.user.id);
+      if (room && room.state === State.WAITING) {
+        client.join(room.id);
+        this.startPlaying(player.user.id);
         if (room.players.length === 0) {
           player.playerNo = 1;
           player.position.x = 20;
@@ -173,7 +179,6 @@ export class GameService {
       room.state = State.WAITING;
       room.endGame();
       client.leave(roomId);
-      console.log(this.rooms);
 
       // Find and remove the player from the room
       const playerIndex = room.players.findIndex(

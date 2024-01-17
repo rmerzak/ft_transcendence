@@ -66,18 +66,45 @@ function Play()
     const setBotTheme = useSetAtom(botThemeAtom);
     const theme = useAtomValue(themeAtom);
 
-    useEffect(() => {
-        // Initial check
-        fetchIsPlaying();
+    // useEffect(() => {
+    //     // Initial check
+    //     fetchIsPlaying();
 
-        // Periodically check every 1 seconds (adjust as needed)
-        const intervalId = setInterval(fetchIsPlaying, 1000);
+    //     // Periodically check every 1 seconds (adjust as needed)
+    //     const intervalId = setInterval(fetchIsPlaying, 1000);
+
+    //     return () => {
+    //         // Clear the interval when the component is unmounted
+    //         clearInterval(intervalId);
+    //     };
+    // }, [profile.id]);
+
+    useEffect(() => {
+        const eventSource = new EventSource(`${process.env.API_BASE_URL}/api/is-playing`, {
+          withCredentials: true,
+        });
+
+        eventSource.onmessage = (event) => {
+            try {
+                const parsedData = JSON.parse(event.data);
+                parsedData.forEach((player: { playerId: number, isPlaying: boolean }) => {
+                    if (player.isPlaying && player.playerId === profile.id) {
+                        setIsPlaying(true);
+                    } else if (!player.isPlaying && player.playerId === profile.id) {
+                        setIsPlaying(false);
+                    }
+                });
+            } catch (error) {
+                console.error('Error parsing JSON:', error);
+            }
+        };
 
         return () => {
-            // Clear the interval when the component is unmounted
-            clearInterval(intervalId);
+          eventSource.close();
         };
-    }, [profile.id]);
+
+      }, [profile.id]);
+
 
     return (
         <>
