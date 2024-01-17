@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { User } from './interfaces';
 
 async function isValidAccessToken(accessToken: string | undefined): Promise<boolean | { error: string }> {
   try {
@@ -24,26 +23,29 @@ async function isValidAccessToken(accessToken: string | undefined): Promise<bool
 }
 
 export async function middleware(req: NextRequest) {
+  const privatePath = ['/dashboard', '/auth/verify'];
   try {
     const cookies = req.cookies.get('accesstoken');
   const userId = req.cookies.get('userId');
+  console.log(req.nextUrl.pathname)
+  const isProtectedPath = privatePath.some((path) => req.nextUrl.pathname.startsWith(path));
   const valid : any  = await isValidAccessToken(cookies?.value);
-  if (!cookies && !userId) {
-    return NextResponse.redirect(new URL('/', process.env.SERVER_FRONTEND));
+  if (cookies === undefined && isProtectedPath) {
+    return NextResponse.redirect(new URL('/', req.url));
   }
 
   if (valid?.error === 'Unauthorized') {
-    return NextResponse.redirect(new URL('/auth/login', process.env.SERVER_FRONTEND));
+    return NextResponse.redirect(new URL('/auth/login', req.url));
   }
 
   if (valid?.user?.isVerified === false) {
     if (req.nextUrl.pathname !== '/auth/verify') {
-      return NextResponse.redirect(new URL('/auth/verify', process.env.SERVER_FRONTEND));
+      return NextResponse.redirect(new URL('/auth/verify', req.url));
     }
   }
   return NextResponse.next();
   } catch (error) {
-    return NextResponse.redirect(new URL('/auth/login', process.env.SERVER_FRONTEND));
+    return NextResponse.redirect(new URL('/auth/login', req.url));
   }
   
 }
