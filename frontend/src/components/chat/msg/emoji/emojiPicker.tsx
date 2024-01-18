@@ -14,17 +14,9 @@ const EmojiPicker: React.FC<EmojiPickerProps> = ({ setMessage }) => {
 
     return (
         <>
-            <Image
-                tabIndex={0}
-                src="/emoji.svg"
-                alt="emoji"
-                width={20}
-                height={20}
-                draggable={false}
-                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                className="cursor-pointer h-[50%] w-[10%]"
-                // style={{ width: "auto", height: "auto" }}
-            />
+            <button onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
+                <span className='text-2xl'>&#128512;</span>
+            </button>
             {showEmojiPicker &&
                 <div className="absolute bottom-[9%] right-[39.48%] z-10 w-[11%] overflow-y-auto rounded-lg bg-[#311150]/40 border">
                     <div className="flex flex-wrap justify-center max-h-80">
