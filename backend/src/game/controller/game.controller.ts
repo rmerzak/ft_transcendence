@@ -50,6 +50,7 @@ export class GameController {
   async getMatchHistory(
     @Body() id: PlayerDto,
   ): Promise<{ matchHistory: MatchHistory[] }> {
+    console.log('id', id);
     const { playerId } = id;
     const matchHistory = await this.game.getMatchHistory(playerId);
     return { matchHistory };
