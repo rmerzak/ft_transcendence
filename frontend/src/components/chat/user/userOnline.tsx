@@ -17,10 +17,11 @@ import UserItem from "./UserItem";
 const UserOnline = () => {
   const { profile, friends, setFriends, socket } = useContext(ContextGlobal);
 
-  function getFriends(number: number) {
-    getFriendList(number)
+  function getFriends() {
+    getFriendList()
       .then((res) => {
         if (res.data) {
+          console.log("getFriends: ", res.data);
           setFriends(res.data);
         }
       })
@@ -30,25 +31,26 @@ const UserOnline = () => {
   }
 
   useEffect(() => {
-    if (profile?.id) {
-      if (socket) {
-        socket.on("blockFriend", () => {
-          getFriends(profile.id);
+
+        socket?.on("blockFriend", (res) => {
+          if (res) {
+            console.log("blockFriend: ");
+            getFriends();
+          }
         });
-        socket.on("unblockFriend", () => {
-          getFriends(profile.id);
+        socket?.on("unblockFriend", (res) => {
+          if (res) {
+            console.log("unblockFriend: ");
+            getFriends();
+          }
         });
-      }
-      else {
-        getFriends(profile.id);
-      }
-    }
+    
     // console.log("friends: ", friends);
     return () => {
       socket?.off("blockFriend");
       socket?.off("unblockFriend");
     }
-  }, [profile?.id, socket]);
+  }, [profile?.id, socket, friends]);
 
   return (
     <>

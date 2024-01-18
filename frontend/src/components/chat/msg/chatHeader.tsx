@@ -1,18 +1,18 @@
 'user client';
 
 import { ContextGlobal } from "@/context/contex";
-// import { XOctagon } from "lucide-react";
 import Link from "next/link";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 interface ChatheaderProps {
     username?: string;
     status?: string;
     userId?: number;
+    friendBlock?: boolean | undefined;
 }
 
-const Chatheader: React.FC<ChatheaderProps> = ({ username, status, userId }) => {
-    const { socket } : any = useContext(ContextGlobal);
+const Chatheader: React.FC<ChatheaderProps> = ({ username, status, userId, friendBlock }) => {
+    const { socket } = useContext(ContextGlobal);
     const [isblock, setIsblock] = useState<boolean>(false);
     const handleUblock = () => {
         socket?.emit('unblockFriend', userId);
@@ -23,6 +23,10 @@ const Chatheader: React.FC<ChatheaderProps> = ({ username, status, userId }) => 
             setIsblock(true);
             //setFriends((prev:any) => prev.filter((item:any) => item.senderId !== friend.senderId));
     }
+    useEffect(() => {
+        if (friendBlock !== undefined)
+            setIsblock(friendBlock);
+    }, [friendBlock]);
     return (
         <>
             <div>

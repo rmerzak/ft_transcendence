@@ -56,6 +56,41 @@ export class RoomService {
             },
         });
     }
+    // get friends in chat room
+    async getFriendsInChatRoom(userId: number, chatRoomId: number): Promise<ChatRoomUsers[]> {
+        const user = await this.prisma.user.findUnique({
+            where: { id: userId },
+        });
+        if (!user) throw new Error('User not found');
+        const chatRoom = await this.prisma.chatRoom.findUnique({
+            where: { id: chatRoomId },
+        });
+        if (!chatRoom) throw new Error('Chat room not found');
+        const chatRoomMember = await this.prisma.chatRoomMember.findUnique({
+            where: { userId_chatRoomId: { userId: user.id, chatRoomId: chatRoom.id } },
+        });
+        if (!chatRoomMember) throw new Error('User not in chat room');
+        const roomMember = await this.prisma.chatRoomMember.findMany({
+            where: {
+                chatRoomId: chatRoomId,
+                userId: {
+                    not: userId,
+                },
+            },
+            select: {
+                user: {
+                    select: {
+                        id: true,
+                        username: true,
+                        image: true,
+                        status: true,
+                    },
+                },
+            },
+        }) as ChatRoomUsers[];
+
+        return roomMember;
+    }
     // get chat room by by name
     async getChatRoomByName(name: string): Promise<ChatRoom | null> {
         return await this.prisma.chatRoom.findUnique({

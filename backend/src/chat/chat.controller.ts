@@ -39,7 +39,7 @@ export class ChatController {
   }
 
   // create chat room
-  @Post('room/:id')
+  @Post('room')
   async createChatRoom(@Body() chatRoomData: ChatRoom): Promise<ChatRoom> {
     if (isEmpty(chatRoomData)) {
       throw new HttpException(

@@ -40,9 +40,13 @@ export class GatewayGateway
 
   @SubscribeMessage('send-message')
   async handleMessage(_client: Socket, payload: Message) {
-    const msg = await this.chatService.addMessage(payload, _client['user'].id);
-    this.server.to(payload.chatRoomId.toString()).emit('receive-message', msg);
-    // console.log("rooms: ", _client.rooms);
+    try {
+      const msg = await this.chatService.addMessage(payload, _client['user'].id);
+      this.server.to(payload.chatRoomId.toString()).emit('receive-message', msg);
+    } catch (error) {
+      console.log("error ==== ",error.message);
+      _client.emit('error', error.message);
+    }
   }
 
   @SubscribeMessage('join-room')

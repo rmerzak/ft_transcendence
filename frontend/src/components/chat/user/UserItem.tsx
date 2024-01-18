@@ -16,7 +16,8 @@ const UserItem = ({ friend } : { friend: Friendship }) => {
     } else {
       setStatus(friend.sender.status);
     }
-  }, []);
+    // console.log('status: ', status);
+  }, [status, friend]);
 
   function makeMessage() {
     const chatRoomData: ChatRoom = {
@@ -25,8 +26,6 @@ const UserItem = ({ friend } : { friend: Friendship }) => {
       name: profile.id + '_' + (profile?.id === friend.sender.id ? friend.receiver.id : friend.sender.id),
     };
     makeConversation((profile?.id === friend.sender.id ? friend.receiver.id : friend.sender.id), chatRoomData).then((res) => {
-      // console.log("sss ",res.data);
-      // chatSocket?.emit('join-room', {roomId:res.data.id});
       router.push(`/dashboard/chat/user/${res.data.id}`);
     }).catch((err) => {
       console.log(err);

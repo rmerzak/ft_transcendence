@@ -33,7 +33,7 @@ function SearchBar() {
         <>
             <div>
                 <div className="md:w-[500px]  flex items-center relative ">
-                    <input type="text" placeholder="Search" onAuxClickCapture={() =>{setOpen(false),setSearched(null),setSearch('')}} onBlur={handleBlur} onMouseDown={() => { setOpen(true); }}
+                    <input name="search" type="text" placeholder="Search" onAuxClickCapture={() =>{setOpen(false),setSearched(null),setSearch('')}} onBlur={handleBlur} onMouseDown={() => { setOpen(true); }}
                         ref={(input) => { inputRef.current = input; }} onChange={(e) => {setSearch(e.target.value);setOpen(true)}} className="bg-navbar w-full text-white rounded p-2" />
                     <Search size={25} color="#ffff" className="  absolute right-0 pr-1" /> 
                 </div>

@@ -20,6 +20,7 @@ const Channels: React.FC<Channel> = ({ header }) => {
 
   useEffect(() => {
     setChannels([...chatRoomsJoined, ...chatRoomsToJoin])
+    console.log("channels", chatRoomsJoined, chatRoomsToJoin)
   }, [chatRoomsJoined, chatRoomsToJoin]);
   return (
     <>

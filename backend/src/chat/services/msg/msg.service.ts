@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { Message, Recent } from '@prisma/client';
 import { PrismaService } from '../../../prisma/prisma.service';
+import { FriendshipService } from 'src/notification/friendship.service';
 
 // Chat service class
 @Injectable()
 export class MsgService {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService, private readonly Friends: FriendshipService) {}
 
   // get all messages of room
   async getChatRoomMessages(
@@ -58,10 +59,23 @@ export class MsgService {
       where: { id: messageData.chatRoomId },
     });
     if (!chatRoom) throw new Error('Chat room not found');
-    const chatRoomMember = await this.prisma.chatRoomMember.findUnique({
-      where: { userId_chatRoomId: { userId: user.id, chatRoomId: chatRoom.id } },
+    const chatRoomMembers = await this.prisma.chatRoomMember.findMany({
+      where: { chatRoomId: chatRoom.id },
     });
-    if (!chatRoomMember) throw new Error('User not in chat room');
+    console.log(chatRoomMembers);
+    const specificMember = chatRoomMembers.find((member) => member.userId === user.id);
+    if (!specificMember) throw new Error('User not in chat room');
+    // const friends = await this.Friends.getFriendListByUserId(userId);
+    // if (!/[a-zA-Z]/.test(chatRoom.name.charAt(0))) {
+    //   const roomMember = chatRoomMembers.find((member) => member.userId !== user.id);
+    //   if (roomMember){
+    //     const tmp = friends.find((friend) => friend.id === roomMember.userId);
+    //     tmp.block
+    //   }
+    // }
+    const roomMember = chatRoomMembers.find((member) => member.userId !== user.id);
+    const tmp = await this.Friends.getFriendship(userId, roomMember.userId);
+    if (tmp.block) throw new Error('User blocked');
     const msg = await this.prisma.message.create({
       data: messageData,
     });
