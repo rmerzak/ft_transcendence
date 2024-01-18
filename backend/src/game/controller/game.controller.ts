@@ -2,8 +2,7 @@ import { Body, Controller, Post, Sse, UseGuards } from '@nestjs/common';
 import { GameService } from '../services/game.service';
 import { PlayerDto } from '../dto/player.dto';
 import { JwtGuard } from 'src/auth/guard';
-import { Observable } from 'rxjs';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { Observable, startWith } from 'rxjs';
 
 type Statistics = {
   gameMatches: number;
@@ -30,24 +29,14 @@ type MatchHistory = {
 @Controller()
 @UseGuards(JwtGuard)
 export class GameController {
-  constructor(
-    private readonly game: GameService,
-    private readonly prisma: PrismaService,
-  ) {}
+  constructor(private readonly game: GameService) {}
 
   @Post('api/rooms')
   createRoom(): { roomId: string } {
     const room = this.game.roomWithAvailableSlots() || this.game.createRoom();
     return { roomId: room.id };
   }
-
-  @Post('api/players')
-  isPlayerPlaying(@Body() id: PlayerDto): { isPlaying: boolean } {
-    const { playerId } = id;
-    const isPlaying = this.game.isPlayerPlaying(playerId);
-    return { isPlaying };
-  }
-
+  
   @Post('api/statistics')
   async getStatistics(
     @Body() id: PlayerDto,
@@ -66,25 +55,12 @@ export class GameController {
     return { matchHistory };
   }
 
-  // @Sse('api/is-playing')
-  // sse(): Observable<string> {
-  //   return new Observable<string>((observer) => {
-  //     // You can adjust the interval based on your requirements
-  //     const intervalId = setInterval(() => {
-  //       const isPlayingData = Array.from(
-  //         this.game.playerStatusMap.entries(),
-  //       ).map(([playerId, isPlaying]) => ({ playerId, isPlaying }));
-
-  //       const formattedData = JSON.stringify(isPlayingData);
-  //       observer.next(formattedData);
-  //     }, 1000);
-
-  //     // Cleanup function to close the interval when the connection is closed
-  //     return () => clearInterval(intervalId);
-  //   });
-  // }
   @Sse('api/is-playing')
   sse(): Observable<string> {
-    return this.game.sseSubject.asObservable();
+    // Send the current state immediately
+    const initialState = this.game.getIsPlayingData();
+
+    // Return the observable for future updates, starting with the initial state
+    return this.game.sseSubject.pipe(startWith(initialState));
   }
 }

@@ -13,6 +13,7 @@ import 'swiper/css';
 import 'swiper/css/effect-coverflow';
 import 'swiper/css/pagination';
 import './styles.css';
+import { toast } from 'react-toastify';
 
 
 const img : string[] = ['t0', 't1', 't2', 't3', 't4', 't5'];
@@ -38,47 +39,10 @@ function Play()
                 router.push(`/dashboard/game/${data.roomId}`, { scroll: false });
         } catch {}
     }
-
-    // const checkIfUserPlaying = async (id: number): Promise<boolean> => {
-    //     try {
-    //         const res = await fetch(`${process.env.API_BASE_URL}/api/players`, {
-    //             method: 'POST',
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //             },
-    //             credentials: 'include',
-    //             body: JSON.stringify({ playerId: id }),
-    //         });
-    //         const data = await res.json();
-    //         return data.isPlaying as boolean ;
-    //     } catch {}
-    //     return false as boolean;
-    // }
-
-    // const fetchIsPlaying = async () => {
-    //     if (profile.id !== -1) {
-    //         const res = await checkIfUserPlaying(profile.id);
-    //         setIsPlaying(res);
-    //     }
-    // };
     
     const setTheme = useSetAtom(themeAtom);
     const setBotTheme = useSetAtom(botThemeAtom);
     const theme = useAtomValue(themeAtom);
-
-    // useEffect(() => {
-    //     // Initial check
-    //     fetchIsPlaying();
-
-    //     // Periodically check every 1 seconds (adjust as needed)
-    //     const intervalId = setInterval(fetchIsPlaying, 1000);
-
-    //     return () => {
-    //         // Clear the interval when the component is unmounted
-    //         clearInterval(intervalId);
-    //     };
-    // }, [profile.id]);
-
     useEffect(() => {
         const eventSource = new EventSource(`${process.env.API_BASE_URL}/api/is-playing`, {
           withCredentials: true,
@@ -89,14 +53,13 @@ function Play()
                 const parsedData = JSON.parse(event.data);
                 parsedData.forEach((player: { playerId: number, isPlaying: boolean }) => {
                     if (player.isPlaying && player.playerId === profile.id) {
+                        toast.error('You are already playing!', { autoClose: 500 })
                         setIsPlaying(true);
                     } else if (!player.isPlaying && player.playerId === profile.id) {
                         setIsPlaying(false);
                     }
                 });
-            } catch (error) {
-                console.error('Error parsing JSON:', error);
-            }
+            } catch {}
         };
 
         return () => {
@@ -104,7 +67,6 @@ function Play()
         };
 
       }, [profile.id]);
-
 
     return (
         <>

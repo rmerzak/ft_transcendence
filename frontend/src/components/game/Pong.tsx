@@ -387,6 +387,33 @@ function Pong()
             });
         });
 
+        socket.on('winByResign', () => {
+            isGameStarted = false;
+            Swal.fire({
+                title: 'You Win!',
+                text: 'Your opponent resigned!',
+                imageUrl: "/game/winner.gif",
+                imageWidth: 400,
+                imageHeight: 200,
+                confirmButtonText: 'Ok',
+                allowEscapeKey: false,
+                allowOutsideClick: false,
+                customClass: {
+                    popup: 'bg-gradient-to-r from-[#510546]/40 to-[#6958be]/40'
+                }
+            }).then((res) => {
+                if (res.isConfirmed)
+                    // redirect to game page
+                    router.push('/dashboard/game');
+             });
+
+            socket.emit('leave', {
+                roomId: roomID,
+                playerNo: playerNo
+            });
+        
+        });
+
         return () => {
             // reset theme
             setTheme(-1);

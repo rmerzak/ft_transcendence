@@ -25,8 +25,19 @@ export class GameService {
   }
 
   rooms: Array<Room> = [];
+  playerStatusMap: Map<number, boolean> = new Map();
+  sseSubject = new Subject<string>();
   private width = 1908;
   private height = 1146;
+
+  // this method is updating the status of a player
+  private updatePlayerStatus(playerId: number, newStatus: boolean) {
+    this.playerStatusMap.set(playerId, newStatus);
+
+    // Emit the updated data to the client
+    this.sseSubject.next(this.getIsPlayingData());
+  }
+
 
   // check if player already exists in a room or rooms
   // if player already exists, return true
@@ -58,38 +69,9 @@ export class GameService {
     return null;
   }
 
-  // playerStatusMap: Map<number, boolean> = new Map();
-
-  // onPlayerStatusChange(
-  //   playerId: number,
-  //   callback: (newStatus: boolean) => void,
-  // ) {
-  //   let status = this.playerStatusMap.get(playerId);
-
-  //   if (status === undefined) {
-  //     // Set an initial status if needed
-  //     status = true;
-  //     this.playerStatusMap.set(playerId, status);
-  //   }
-
-  //   callback(status);
-  // }
-
-  // startPlaying(playerId: number) {
-  //   this.updatePlayerStatus(playerId, true);
-  // }
-
-  // stopPlaying(playerId: number) {
-  //   this.updatePlayerStatus(playerId, false);
-  // }
-
-  // private updatePlayerStatus(playerId: number, newStatus: boolean) {
-  //   this.playerStatusMap.set(playerId, newStatus);
-  // }
-
-  playerStatusMap: Map<number, boolean> = new Map();
-  sseSubject = new Subject<string>();
-
+  
+  // this method call when status of player change
+  // if player status is undefined, set status to true
   onPlayerStatusChange(
     playerId: number,
     callback: (newStatus: boolean) => void,
@@ -105,21 +87,17 @@ export class GameService {
     callback(status);
   }
 
+  // start playing status
   startPlaying(playerId: number) {
     this.updatePlayerStatus(playerId, true);
   }
 
+  // stop playing status
   stopPlaying(playerId: number) {
     this.updatePlayerStatus(playerId, false);
   }
 
-  private updatePlayerStatus(playerId: number, newStatus: boolean) {
-    this.playerStatusMap.set(playerId, newStatus);
-
-    // Emit the updated data to the client
-    this.sseSubject.next(this.getIsPlayingData());
-  }
-
+  // get is playing data
   getIsPlayingData(): string {
     const isPlayingData = Array.from(this.playerStatusMap.entries()).map(
       ([playerId, isPlaying]) => ({ playerId, isPlaying }),
@@ -140,7 +118,6 @@ export class GameService {
           player.playerNo = 1;
           player.position.x = 20;
           player.position.y = this.height / 2 - 100 / 2;
-          // player.status = 'PLAYING';
           room.addPlayer(player);
 
           client.emit('playerNo', {
@@ -152,8 +129,6 @@ export class GameService {
           player.playerNo = 2;
           player.position.x = this.width - 35;
           player.position.y = this.height / 2 - 100 / 2;
-          // player.status = 'PLAYING';
-          // this.startPlaying(player.user.id);
           room.addPlayer(player);
 
           server.to(room.id).emit('playerNo', {
@@ -193,25 +168,6 @@ export class GameService {
     }
   }
 
-  // this method is called when a player leaves a room
-  // leaveRoom(roomId: string, playerId: string, client: Socket): void {
-  //   const room = this.rooms.find((room) => room.id === roomId);
-  //   client.leave(roomId);
-  //   console.log(this.rooms);
-  //   if (room) {
-  //     room.endGame();
-  //     const player = room.players.find(
-  //       (player) => player.socketId === playerId,
-  //     );
-  //     room.removePlayer(player);
-  //     if (room.players.length === 0) {
-  //       this.rooms.splice(this.rooms.indexOf(room), 1);
-  //       roomId = '';
-  //     }
-  //   }
-  //   console.log(this.rooms);
-  // }
-
   leaveRoom(roomId: string, playerId: string, client: Socket): void {
     const roomIndex = this.rooms.findIndex((room) => room.id === roomId);
 
@@ -232,30 +188,15 @@ export class GameService {
         this.stopPlaying(player.user.id);
 
         if (room.players.length === 0) {
-          // rmove the other player and delete the room
-          // const otherPlayer = room.players[0];
-
           this.rooms.splice(roomIndex, 1);
         }
       }
-
-      console.log(this.rooms);
     }
   }
 
   // this method for get room
   getRoom(roomId: string): Room {
     return this.rooms.find((room) => room.id === roomId);
-  }
-
-  isPlayerPlaying(playerId: number): boolean {
-    const isPlaying = this.rooms.some((room) =>
-      room.players.some(
-        ({ user: { id }, status }) => id === playerId && status === 'PLAYING',
-      ),
-    );
-
-    return isPlaying;
   }
 
   // Create match History

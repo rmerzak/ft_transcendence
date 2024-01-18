@@ -21,7 +21,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
   namespace: '/game',
 })
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
-  // prisma: any;
   constructor(
     private readonly game: GameService,
     private readonly prisma: PrismaService,
@@ -45,7 +44,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     // change user status to INGAME
     const userId = socket['payload']['sub'];
-    const usera = await this.prisma.user.update({
+    await this.prisma.user.update({
       where: { id: userId },
       data: { status: UserStatus.INGAME },
     });
@@ -60,8 +59,13 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       where: { id: userId },
       data: { status: UserStatus.ONLINE },
     });
+
+    console.log('first', this.game.rooms)
+
     // Leave the room for the disconnected player
     this.game.leaveRoom(this.roomId, client.id, client);
+
+    console.log('second', this.game.rooms)
 
     // Find the room where the disconnection occurred
     const targetRoom = this.game.rooms.find((room) => room.id === this.roomId);
@@ -72,7 +76,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         // Check if the player is not the disconnected player
         if (player.socketId !== client.id) {
           // Set the score to 5 for other players
-          this.server.to(player.socketId).emit('gameOver', { winner: true });
+          this.server.to(player.socketId).emit('winByResign');
         }
       });
     }
@@ -92,51 +96,33 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   // this mothod is for moving the player
   // the payload contains the direction the player is moving
   @SubscribeMessage('move')
-  move(client: Socket, payload: any): any {
+  move(client: Socket, payload: any): void {
     try {
       this.game.move(payload, this.server);
     } catch {}
   }
 
-  @SubscribeMessage('playerDisconnected')
-  playerDisconnected(client: Socket): void {
-    try {
-      this.game.leaveRoom(this.roomId, client.id, client);
-      const targetRoom = this.game.rooms.find(
-        (room) => room.id === this.roomId,
-      );
-      if (targetRoom) {
-        targetRoom.players.forEach((player) => {
-          // Check if the player is not the disconnected player
-          if (player.socketId !== client.id) {
-            // Set the score to 5 for other players
-            this.server.to(player.socketId).emit('gameOver', { winner: true });
-          }
-        });
-      }
-    } catch {}
-  }
-
   // this method is called when a player leaves a room
   @SubscribeMessage('leave')
-  leave(client: Socket, payload: any): any {
+  leave(client: Socket, payload: any): void {
     try {
       const playerId = client.id;
       this.game.leaveRoom(payload.roomId, playerId, client);
-      const targetRoom = this.game.rooms.find(
-        (room) => room.id === this.roomId,
-      );
+      // console.log(this.game.rooms.find((room) => room.id === payload.roomId));
+      // const targetRoom = this.game.rooms.find(
+      //   (room) => room.id === this.roomId,
+      // );
 
-      // If the room is found, update the scores of other players
-      if (targetRoom) {
-        targetRoom.players.forEach((player) => {
-          // Check if the player is not the disconnected player
-          if (player.socketId !== client.id) {
-            // Set the score to 5 for other players
-            this.server.to(player.socketId).emit('gameOver', { winner: true });
-          }
-        });
-      }
+      // // If the room is found, update the scores of other players
+      // if (targetRoom) {
+      //   targetRoom.players.forEach((player) => {
+      //     // Check if the player is not the disconnected player
+      //     if (player.socketId !== client.id) {
+      //       // Set the score to 5 for other players
+      //       this.server.to(player.socketId).emit('gameOver', { winner: true });
+      //     }
+      //   });
+      // }
       console.log('leave');
     } catch {}
   }
