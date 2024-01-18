@@ -1,6 +1,6 @@
 'use client'
 import { ContextGlobal } from "@/context/contex";
-import { User } from "@/interfaces"
+import { Friendship, User } from "@/interfaces"
 import { LoaderIcon, UserCheck, UserMinus } from "lucide-react";
 import { UserPlus } from 'lucide-react';
 
@@ -8,19 +8,19 @@ import Image from "next/image"
 import { useContext, useEffect, useState } from "react";
 import { getFriendshipStatus } from "@/api/friendship/friendship.api";
 const ProfileInformation = ({ profile, BtnFriend }: { profile: User, BtnFriend: boolean }) => {
-    const { socket }: any = useContext(ContextGlobal);
+    const { socket } = useContext(ContextGlobal);
     const [friend, setFriend] = useState<boolean | null>(null);
-    const [friendship, setFriendship] = useState<any>(null);
+    const [friendship, setFriendship] = useState<Friendship>();
     function HandleUnfriend() {
-        socket.emit('removeFriend', profile?.id);
+        socket?.emit('removeFriend', profile?.id);
         setFriend(null);
     }
     function HandleSendFriendRequest() {
-        socket.emit('friendRequest', profile?.id);
+        socket?.emit('friendRequest', profile?.id);
         setFriend(false);
     }
     function HandleAccepteFriendRequest() {
-        socket.emit('friendAcceptRequest', profile?.id);
+        socket?.emit('friendAcceptRequest', profile?.id);
         setFriend(true);
     }
     useEffect(() => {
@@ -31,17 +31,17 @@ const ProfileInformation = ({ profile, BtnFriend }: { profile: User, BtnFriend: 
             if (res.data.status === 'PENDING')
                 setFriend(false);
             setFriendship(res.data);
-            socket.on('friendRequest', (data: any) => {
+            socket?.on('friendRequest', (data: any) => {
                 if (data.notification) {
                     setFriend(false);
                 }
             });
-            socket.on('friendAcceptRequest', (data: any) => {
+            socket?.on('friendAcceptRequest', (data: any) => {
                 if (data.notification) {
                     setFriend(true);
                 }
             });
-            socket.on('removeFriend', (data: any) => {
+            socket?.on('removeFriend', (data: any) => {
                 if (data.status === true) {
                     setFriend(null);
                 }

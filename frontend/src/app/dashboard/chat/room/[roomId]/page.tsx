@@ -7,7 +7,7 @@ const Room = () => {
   const {roomId} = useParams()
   return (
     <>
-      <MsgShow/>
+      <MsgShow chatId={1}/>
     </>
   );
 };

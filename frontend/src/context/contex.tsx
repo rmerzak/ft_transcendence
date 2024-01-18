@@ -72,17 +72,16 @@ export const ContextProvider = ({ children }: { children: any }) => {
   const [chatRoomsJoined, setChatRoomsJoined] = useState<ChatRoom[]>([]);
   const [chatRoomsToJoin, setChatRoomsToJoin] = useState<ChatRoom[]>([]);
   useEffect(() => {
-    getUnreadNotification().then((res) => {
-      if (res.data)
-        setNotification(res.data);
-    }).catch((err) => { console.log(err) });
-
-    getUserInfo().then((res) => {
-      if (res.data)
-        setProfile(res.data);
-    }).catch((err) => { console.log(err) });
-
     if (profile.id !== -1) {
+      getUnreadNotification().then((res) => {
+        if (res.data)
+          setNotification(res.data);
+      }).catch((err) => { console.log(err) });
+  
+      getUserInfo().then((res) => {
+        if (res.data)
+          setProfile(res.data);
+      }).catch((err) => { console.log(err) });
       getFriendList(profile.id).then((res) => {
         if (res.data)
           setFriends(res.data);

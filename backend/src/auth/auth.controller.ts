@@ -4,7 +4,7 @@ import { AuthDto } from "./Dto";
 import { LeetStrategy } from "./strategy";
 import { LeetGuard } from "./guard/leet.guard";
 import { AuthGuard } from "@nestjs/passport";
-import { Request, Response } from "express";
+import e, { Request, Response } from "express";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
 import { JwtGuard } from "./guard";
@@ -79,12 +79,8 @@ export class AuthController {
     @UseGuards(JwtGuard)
     @Get('validateToken')
     async validateToken(@Req() req: Request, @Body() body: any): Promise<any> {
-        if (req.headers['body'] === req.user['id'].toString()) {
+        console.log(req.user);
             return { status: true, user: req.user };
-        }
-        else {
-            return { status: false, user: req.user };
-        }
     }
     @UseGuards(JwtGuard)
     @Get('2fa/generate')
@@ -121,6 +117,8 @@ export class AuthController {
             const { accessToken } = await this.authService.signToken(user['id'], user['email']);
             res.cookie('accesstoken', accessToken, { httpOnly: true, });
             res.status(200).json({ success: true });
+        } else {
+            res.status(401).json({ success: false });
         }
     }
     @Get('2fa/disable/:code')
