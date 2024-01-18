@@ -39,28 +39,28 @@ function Play()
         } catch {}
     }
 
-    const checkIfUserPlaying = async (id: number): Promise<boolean> => {
-        try {
-            const res = await fetch(`${process.env.API_BASE_URL}/api/players`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include',
-                body: JSON.stringify({ playerId: id }),
-            });
-            const data = await res.json();
-            return data.isPlaying as boolean ;
-        } catch {}
-        return false as boolean;
-    }
+    // const checkIfUserPlaying = async (id: number): Promise<boolean> => {
+    //     try {
+    //         const res = await fetch(`${process.env.API_BASE_URL}/api/players`, {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //             },
+    //             credentials: 'include',
+    //             body: JSON.stringify({ playerId: id }),
+    //         });
+    //         const data = await res.json();
+    //         return data.isPlaying as boolean ;
+    //     } catch {}
+    //     return false as boolean;
+    // }
 
-    const fetchIsPlaying = async () => {
-        if (profile.id !== -1) {
-            const res = await checkIfUserPlaying(profile.id);
-            setIsPlaying(res);
-        }
-    };
+    // const fetchIsPlaying = async () => {
+    //     if (profile.id !== -1) {
+    //         const res = await checkIfUserPlaying(profile.id);
+    //         setIsPlaying(res);
+    //     }
+    // };
     
     const setTheme = useSetAtom(themeAtom);
     const setBotTheme = useSetAtom(botThemeAtom);

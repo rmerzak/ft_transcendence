@@ -66,21 +66,25 @@ export class GameController {
     return { matchHistory };
   }
 
+  // @Sse('api/is-playing')
+  // sse(): Observable<string> {
+  //   return new Observable<string>((observer) => {
+  //     // You can adjust the interval based on your requirements
+  //     const intervalId = setInterval(() => {
+  //       const isPlayingData = Array.from(
+  //         this.game.playerStatusMap.entries(),
+  //       ).map(([playerId, isPlaying]) => ({ playerId, isPlaying }));
+
+  //       const formattedData = JSON.stringify(isPlayingData);
+  //       observer.next(formattedData);
+  //     }, 1000);
+
+  //     // Cleanup function to close the interval when the connection is closed
+  //     return () => clearInterval(intervalId);
+  //   });
+  // }
   @Sse('api/is-playing')
   sse(): Observable<string> {
-    return new Observable<string>((observer) => {
-      // You can adjust the interval based on your requirements
-      const intervalId = setInterval(() => {
-        const isPlayingData = Array.from(
-          this.game.playerStatusMap.entries(),
-        ).map(([playerId, isPlaying]) => ({ playerId, isPlaying }));
-
-        const formattedData = JSON.stringify(isPlayingData);
-        observer.next(formattedData);
-      }, 1000);
-
-      // Cleanup function to close the interval when the connection is closed
-      return () => clearInterval(intervalId);
-    });
+    return this.game.sseSubject.asObservable();
   }
 }

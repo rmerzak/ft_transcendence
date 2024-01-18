@@ -33,7 +33,7 @@ const Game = () => {
     }, [router, theme]);
 
     return (
-      <>
+      <GameProvider>
         {
           theme !== -1 &&
           <div className='w-[88%] mx-auto text-center p-[1%] shadow-md rounded-3xl bg-[#311251]/80 top-[50%]  -translate-y-[50%] absolute'>
@@ -57,7 +57,7 @@ const Game = () => {
                 </div>
           </div>
         }
-      </>
+      </GameProvider>
   );
 };
 

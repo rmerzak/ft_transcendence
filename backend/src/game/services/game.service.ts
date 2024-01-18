@@ -5,6 +5,7 @@ import { State } from '../models/state.model';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Socket, Server } from 'socket.io';
 import { v4 as uuidv4 } from 'uuid';
+import { Subject } from 'rxjs';
 
 @Injectable()
 export class GameService {
@@ -57,7 +58,37 @@ export class GameService {
     return null;
   }
 
+  // playerStatusMap: Map<number, boolean> = new Map();
+
+  // onPlayerStatusChange(
+  //   playerId: number,
+  //   callback: (newStatus: boolean) => void,
+  // ) {
+  //   let status = this.playerStatusMap.get(playerId);
+
+  //   if (status === undefined) {
+  //     // Set an initial status if needed
+  //     status = true;
+  //     this.playerStatusMap.set(playerId, status);
+  //   }
+
+  //   callback(status);
+  // }
+
+  // startPlaying(playerId: number) {
+  //   this.updatePlayerStatus(playerId, true);
+  // }
+
+  // stopPlaying(playerId: number) {
+  //   this.updatePlayerStatus(playerId, false);
+  // }
+
+  // private updatePlayerStatus(playerId: number, newStatus: boolean) {
+  //   this.playerStatusMap.set(playerId, newStatus);
+  // }
+
   playerStatusMap: Map<number, boolean> = new Map();
+  sseSubject = new Subject<string>();
 
   onPlayerStatusChange(
     playerId: number,
@@ -84,6 +115,16 @@ export class GameService {
 
   private updatePlayerStatus(playerId: number, newStatus: boolean) {
     this.playerStatusMap.set(playerId, newStatus);
+
+    // Emit the updated data to the client
+    this.sseSubject.next(this.getIsPlayingData());
+  }
+
+  getIsPlayingData(): string {
+    const isPlayingData = Array.from(this.playerStatusMap.entries()).map(
+      ([playerId, isPlaying]) => ({ playerId, isPlaying }),
+    );
+    return JSON.stringify(isPlayingData);
   }
 
   // this method is called when a player joins a room
