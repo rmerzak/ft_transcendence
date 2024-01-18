@@ -158,6 +158,7 @@ export class FriendshipService {
                 status: FriendshipStatus.BLOCKED,
             }
         });
+        return friendRequestBlocked;
     }
     async UnBlockFriend(socket: Socket, userId: number) {
         const user = await this.prisma.user.findUnique({ where: { id: userId } });

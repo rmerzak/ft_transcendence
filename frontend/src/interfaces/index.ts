@@ -1,5 +1,3 @@
-import { Socket } from "socket.io-client";
-
 export interface MatchHistoryItemInterface {
   PlayerOne: string;
   PlayerTwo: string;
@@ -34,7 +32,7 @@ export interface Notification {
   senderName: string;
   senderImage: string;
 }
-enum Blocker {
+export enum Blocker {
   'SENDER',
   'RECEIVER'
 }
@@ -45,7 +43,7 @@ export interface Friendship {
   status: string;
   senderId: number;
   receiverId: number;
-  blocked: boolean;
+  block: boolean;
   blockBy: Blocker | null;
   sender: User;
   receiver: User;
@@ -89,22 +87,29 @@ export interface Messages {
 // helper interface
 export interface ChatRoomUsers {
   user: {
-      id: number;
-      username: string;
-      image: string;
-      status: string;
+    id: number;
+    username: string;
+    image: string;
+    status: string;
   };
 }
 
-export interface ChatContext {
-  socket: Socket | null;
-  setSocket(socket: Socket | null): void;
-  friends: Friendship[] | [];
-  setFriends(friends: Friendship[] | []): void;
-  messages: Messages[] | [];
-  setMessages(messages: Messages[] | []): void;
-  chatRoom: ChatRoom | null;
-  setChatRoom(chatRoom: ChatRoom | null): void;
-  chatRoomMembers: ChatRoomUsers[] | [];
-  setChatRoomMembers(chatRoomMembers: ChatRoomUsers[] | []): void;
-}
+export interface Recent {
+  createdAt?: string;
+  updatedAt?: string;
+  userId?: number;
+  senderId?: number;
+  chatRoomId: number;
+  link: String;
+  show?: boolean;
+  lastMessage: string;
+  chatRoom?: {
+    id?: number;
+    name: string;
+    users: {
+      id: number;
+      username: string;
+      image: string;
+    }[];
+  }
+};

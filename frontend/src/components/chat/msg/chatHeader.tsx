@@ -1,39 +1,32 @@
 'user client';
-import { getChatRoomMembers } from '@/api/chat/chat.api';
-import { ContextGlobal } from '@/context/contex';
-import { ChatRoomUsers } from '@/interfaces';
-import React, { useContext, useEffect, useState } from 'react';
+
+import { ContextGlobal } from "@/context/contex";
+import Link from "next/link";
+import { useContext, useEffect, useState } from "react";
 
 interface ChatheaderProps {
-    // chatRoomMembers?: ChatRoomUsers[];
-    chatId?: number;
+    username?: string;
+    status?: string;
+    userId?: number;
+    friendBlock?: boolean | undefined;
 }
 
-const Chatheader: React.FC<ChatheaderProps> = ({ chatId }) => {
-    const { profile }: any = useContext(ContextGlobal);
-    const [username, setUsername] = useState<string>('');
-    const [status, setStatus] = useState<string>('');
-    const [chatRoomMembers, setChatRoomMembers] = useState<ChatRoomUsers[]>([]);
-
+const Chatheader: React.FC<ChatheaderProps> = ({ username, status, userId, friendBlock }) => {
+    const { socket } = useContext(ContextGlobal);
+    const [isblock, setIsblock] = useState<boolean>(false);
+    const handleUblock = () => {
+        socket?.emit('unblockFriend', userId);
+        setIsblock(false);
+    }
+    const handleBlock = () => {
+            socket?.emit('blockFriend', userId);
+            setIsblock(true);
+            //setFriends((prev:any) => prev.filter((item:any) => item.senderId !== friend.senderId));
+    }
     useEffect(() => {
-        if (chatId) {
-            getChatRoomMembers(chatId).then((res) => {
-                setChatRoomMembers(res.data);
-            }).catch((err) => {
-               console.log(err);
-            });
-        }
-    }, [chatId]);
-    
-    useEffect(() => {
-        const targetMessage = chatRoomMembers.find((member) => member.user.id !== profile?.id);
-    
-        if (targetMessage) {
-            setUsername(targetMessage.user.username);
-            setStatus(targetMessage.user.status);
-        }
-    }, [chatRoomMembers, profile]);
-
+        if (friendBlock !== undefined)
+            setIsblock(friendBlock);
+    }, [friendBlock]);
     return (
         <>
             <div>
@@ -42,14 +35,15 @@ const Chatheader: React.FC<ChatheaderProps> = ({ chatId }) => {
                         <div className="w-full flex justify-center items-center space-x-2">
                             <span className={`${status === 'ONLINE' ? 'bg-custom-green' : status === 'IN_GAME' ? 'bg-orange-400' : 'bg-gray-400'} rounded-full h-3 w-3`}></span>
                             <h1 className="text-xl font-thin">{username}</h1>
-                        </div>: <div className="w-full flex justify-center items-center space-x-2"></div>
+                        </div> : <div className="w-full flex justify-center items-center space-x-2"></div>
                     }
                     <div className="">
-                        {/* image messages parrametres */}
-                        <button>
+                        <div className="dropdown dropdown-left">
                             <svg
-                                className="h-8 w-8"
+                                role="button"
+                                className="h-8 w-8 m-1"
                                 viewBox="0 0 32 32"
+                                tabIndex={0}
                                 xmlns="http://www.w3.org/2000/svg"
                             >
                                 <path
@@ -58,7 +52,17 @@ const Chatheader: React.FC<ChatheaderProps> = ({ chatId }) => {
                                     className=""
                                 ></path>
                             </svg>
-                        </button>
+                            <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-purplee rounded-box w-52">
+                                <li><Link href={`/dashboard/profile/${username}`}>View profile</Link></li>
+                                {/* block icon */}
+                                <li>
+                                    <div onClick={isblock ? handleUblock : handleBlock} className="flex items-center space-x-2 cursor-pointer">
+                                        {/* <XOctagon /> */}
+                                        {(isblock ? 'Unblock' : 'Block') + ' ' + username}
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
                 <div className="flex justify-center">
