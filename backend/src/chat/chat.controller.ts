@@ -63,7 +63,8 @@ export class ChatController {
       );
     }
     try {
-      return await this.roomService.createChatRoom(chatRoomData);
+      // return await this.roomService.createChatRoom(chatRoomData);
+      return null;
     } catch (error) {
       throw new HttpException(
         {

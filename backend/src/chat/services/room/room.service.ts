@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { ChatRoom, ChatRoomMember, RoomVisibility } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ChatRoomUsers } from '../../interfaces/interfaces';
+import { Socket } from 'socket.io';
+import * as argon from 'argon2';
 
 @Injectable()
 export class RoomService {
@@ -9,6 +11,7 @@ export class RoomService {
 
     // start chat room
     // get chat room for user
+    public readonly connectedClients: Map<number, Socket[]> = new Map(); // must change to private its just for testing
     async getChatRoomsForUser(userId: number): Promise<ChatRoom[]> {
         const user = await this.prisma.user.findUnique({
             where: { id: userId },
@@ -98,21 +101,33 @@ export class RoomService {
         });
     }
     // create chat room
-    async createChatRoom(chatRoomData: ChatRoom): Promise<ChatRoom> {
+    async createChatRoom(socket: Socket, chatRoomData: ChatRoom): Promise<ChatRoom> {
+        console.log('chatRoomData: ', chatRoomData); 
         if (!chatRoomData.name[0].match(/[a-zA-Z]/)) throw new Error('Chat room name must start with a letter');
         const existingChatRoom = await this.prisma.chatRoom.findUnique({
             where: { name: chatRoomData.name },
         });
         if (existingChatRoom) throw new Error('Chat room already exists');
-        if (chatRoomData.hasOwnProperty('owner')) {
-            const owner = await this.prisma.user.findUnique({
-                where: { id: chatRoomData.owner },
-            });
-            if (!owner) throw new Error('Owner not found');
+        // if (chatRoomData.hasOwnProperty('owner')) {
+        //     const owner = await this.prisma.user.findUnique({
+        //         where: { id: chatRoomData.owner },
+        //     });
+        //     if (!owner) throw new Error('Owner not found');
+        // }
+        let hash = null;
+        if (chatRoomData.passwordHash) {
+            hash = await argon.hash(chatRoomData.passwordHash);
         }
-        return await this.prisma.chatRoom.create({
-            data: chatRoomData,
+        const newChatRoom = await this.prisma.chatRoom.create({
+            data: {
+                name: chatRoomData.name,
+                passwordHash: (chatRoomData.visibility === RoomVisibility.PRIVATE && hash !== null) ? hash : null,
+                visibility: chatRoomData.visibility,
+                owner: socket['user'].id ,
+            },
         });
+        console.log('newChatRoom: ', newChatRoom);
+        return newChatRoom;
     }
     // make conversation
     async makeConversation(userId: number, chatRoomData: ChatRoom): Promise<ChatRoom> {
