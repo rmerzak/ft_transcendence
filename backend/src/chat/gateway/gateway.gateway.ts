@@ -94,6 +94,15 @@ export class GatewayGateway
     }
     //_client.emit('receive-room', room);
   }
+  @SubscribeMessage('new-member')
+  async handleMemberRoom(_client: Socket, payload: ChatRoom) {
+    //console.log("payload: ", payload);
+    try {
+      const newMember = await this.roomService.addMemberToRoom(_client, payload);
+    } catch (error) {
+      _client.emit('error', error.message);
+    }
+  }
 
   handleDisconnect(_client: Socket) {
     console.log('disconnected chat id: ' + _client.id);
