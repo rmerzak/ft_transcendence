@@ -1,13 +1,8 @@
 import { Messages, ChatRoom, Recent } from "@/interfaces";
 import axios from "axios";
 
-const apiInstance = axios.create({
-    baseURL: process.env.API_BASE_URL,
-    withCredentials: true,
-    cancelToken: new axios.CancelToken((cancel) => {
-        cancel;
-    }),
-});
+import { apiInstance } from "../axios/axios.api";
+
 
 export const makeConversation = async (id: number, chatRoomData:ChatRoom) => apiInstance.post(`/chat/user/${id}`, chatRoomData);
 export const getChatRoomMembers = async (id: number) => apiInstance.get(`/chat/user?chatRoomId=${id}`);

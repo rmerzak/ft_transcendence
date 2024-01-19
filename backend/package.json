@@ -19,7 +19,7 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "db:dev:rm": "docker compose rm dev-db -s -f -v",
-    "db:dev:up": "docker compose up dev-db -d",
+    "db:dev:up": "docker-compose up -d dev-db",
     "db:dev:restart": "npm run db:dev:rm && npm run db:dev:up",
     "prisma:dev:deploy": "npx prisma migrate deploy",
     "prisma:dev:studio": "npx prisma studio"
@@ -56,6 +56,7 @@
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
     "streamifier": "^0.1.1",
+    "uuid": "^9.0.1",
     "swiper": "^11.0.5"
   },
   "devDependencies": {
@@ -68,6 +69,7 @@
     "@types/node": "^20.3.1",
     "@types/passport-local": "^1.0.37",
     "@types/supertest": "^2.0.12",
+    "@types/uuid": "^9.0.7",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "eslint": "^8.42.0",

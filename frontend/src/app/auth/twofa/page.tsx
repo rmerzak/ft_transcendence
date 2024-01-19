@@ -1,6 +1,7 @@
 "use client";
 import PreAuthForm from "@/components/auth/PreAuthForm";
 import TwoFa from "@/components/auth/TwoFa";
+import { ToastContainer } from "react-toastify";
 const Verify = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2 login-gradient">
@@ -14,7 +15,7 @@ const Verify = () => {
           <div className="text-white">PingPong</div>
         </div>
       </div>
-
+      <ToastContainer />
     </div>
   );
 };

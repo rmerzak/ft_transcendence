@@ -15,23 +15,23 @@ const Notification = () => {
             autoConnect: false,
             withCredentials: true,
         });
-        socket.connect();
-        socket.on('connect', () => {
+        socket?.connect();
+        socket?.on('connect', () => {
             setSocket(socket);
         });
-        socket.on('friendRequest', (data: any) => {
+        socket?.on('friendRequest', (data: any) => {
             if(data.notification){
                 setNotification((prev: Notification[]) => [data.notification, ...prev]);
                 toast.success('You have a new friend request');
             }
         });
-        socket.on('friendAcceptRequest', (data: any) => {
+        socket?.on('friendAcceptRequest', (data: any) => {
             if(data.notification){
                 setNotification((prev: Notification[]) => [data.notification, ...prev]);
                 toast.success('Your friend accepted your request');
             }
         });
-        socket.on('RequestError', (data) => {
+        socket?.on('RequestError', (data) => {
             if(data.error) {
                 toast.error(data.error);
             }
@@ -51,7 +51,7 @@ const Notification = () => {
             <span className="text-white bg-red-500 flex items-center justify-center font-bold text-[12px] rounded-full  w-[16px] h-[16px]  absolute top-0 left-4">{notification.length}</span>
         </div>
         <OutsideClickHandler onOutsideClick={() => setOpen(false)}>
-        <div className={`z-10 right-0 border absolute bg-search rounded-b-lg w-[500px] ${open === false ? "hidden" : ""} `}>
+        <div className={`z-10 right-0 absolute bg-search rounded-b-lg w-[500px] h-[110px] overflow-y-auto ${open === false ? "hidden" : ""} `}>
             {
                 open && notification.map((item :any, index:any) => (
                     <div key={index} className="flex items-center justify-between p-2 hover:bg-purple-300/50">

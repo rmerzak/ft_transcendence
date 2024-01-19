@@ -1,6 +1,6 @@
 'use client'
 import { ContextGlobal } from "@/context/contex";
-import { User } from "@/interfaces"
+import { Friendship, User } from "@/interfaces"
 import { LoaderIcon, UserCheck, UserMinus } from "lucide-react";
 import { UserPlus } from 'lucide-react';
 
@@ -8,19 +8,20 @@ import Image from "next/image"
 import { useContext, useEffect, useState } from "react";
 import { getFriendshipStatus } from "@/api/friendship/friendship.api";
 const ProfileInformation = ({ profile, BtnFriend }: { profile: User, BtnFriend: boolean }) => {
-    const { socket }: any = useContext(ContextGlobal);
+    const { socket } = useContext(ContextGlobal);
     const [friend, setFriend] = useState<boolean | null>(null);
-    const [friendship, setFriendship] = useState<any>(null);
+    const [block, setBlock] = useState<boolean> (false);
+    const [friendship, setFriendship] = useState<Friendship>();
     function HandleUnfriend() {
-        socket.emit('removeFriend', profile?.id);
+        socket?.emit('removeFriend', profile?.id);
         setFriend(null);
     }
     function HandleSendFriendRequest() {
-        socket.emit('friendRequest', profile?.id);
+        socket?.emit('friendRequest', profile?.id);
         setFriend(false);
     }
     function HandleAccepteFriendRequest() {
-        socket.emit('friendAcceptRequest', profile?.id);
+        socket?.emit('friendAcceptRequest', profile?.id);
         setFriend(true);
     }
     useEffect(() => {
@@ -31,21 +32,31 @@ const ProfileInformation = ({ profile, BtnFriend }: { profile: User, BtnFriend: 
             if (res.data.status === 'PENDING')
                 setFriend(false);
             setFriendship(res.data);
-            socket.on('friendRequest', (data: any) => {
+            socket?.on('friendRequest', (data: any) => {
                 if (data.notification) {
                     setFriend(false);
                 }
             });
-            socket.on('friendAcceptRequest', (data: any) => {
+            socket?.on('friendAcceptRequest', (data: any) => {
                 if (data.notification) {
                     setFriend(true);
                 }
             });
-            socket.on('removeFriend', (data: any) => {
+            socket?.on('removeFriend', (data: any) => {
                 if (data.status === true) {
                     setFriend(null);
                 }
             });
+            socket?.on('blockFriend', (data: any) => {
+                if (data.notification) {
+                    setFriend(null);
+                }
+            })
+            socket?.on('unblockFriend', (data: any) => {
+                if (data.notification) {
+                    setFriend(true);
+                }
+            })
 
         }).catch((err) => { console.log(err) });
     }, [socket, friend]);
@@ -68,7 +79,7 @@ const ProfileInformation = ({ profile, BtnFriend }: { profile: User, BtnFriend: 
                     <p className="text-[#CE6FF5]">Email</p>
                     <p className="text-[#FFFFFF] text-opacity-50">{profile?.email}</p>
                 </div>
-                {BtnFriend && <div>
+                {friendship?.status !== 'BLOCKED' && BtnFriend && <div>
                     {friend === true ? (
                         <button className="text-red-500 pl-1" onClick={HandleUnfriend}>
                             <UserMinus />
@@ -94,7 +105,7 @@ const ProfileInformation = ({ profile, BtnFriend }: { profile: User, BtnFriend: 
                 <div>
                     <div className="relative w-[120px] h-[120px] rounded-full ml-3">
                         <Image src={profile?.image} alt="profile pic" width={100} height={100} className="rounded-full" />
-                        <div className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 text-[50px] h-[15px] w-[15px] rounded-full bg-custom-green"></div>
+                        <div className={`absolute left-1/2 -translate-x-1/2 -translate-y-1/2 text-[50px] h-[15px] w-[15px] rounded-full ${profile?.status === 'ONLINE' ? 'bg-custom-green' : profile?.status === 'INGAME' ? 'bg-orange-400' : 'bg-gray-400'}`}></div>
                     </div>
                 </div>
                 <div>

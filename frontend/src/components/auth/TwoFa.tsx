@@ -6,6 +6,7 @@ import axios from "axios";
 import { QrCode } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { ContextGlobal } from "@/context/contex";
+import { ToastContainer, toast } from "react-toastify";
 const TwoFa = () => {
   const { profile, setProfile }:any = useContext(ContextGlobal);
   const router = useRouter();
@@ -19,8 +20,9 @@ const TwoFa = () => {
       if (res.data.success === true){
         setProfile({...profile, twoFactorEnabled: true});
         router.push("/dashboard/profile");
+      } else {
+        toast('invalid code');
       }
-      console.log(res.data.success);
     }).catch((err) => { router.push("/");});
   }
 

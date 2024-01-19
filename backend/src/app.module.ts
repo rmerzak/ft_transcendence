@@ -10,6 +10,7 @@ import { FriendshipController } from './notification/friendship.controller';
 import { FriendshipGateway } from './notification/gateway/friendship.gateway';
 import { FriendshipService } from './notification/friendship.service';
 import { NotificationService } from './notification/notification.service';
+import { GameModule } from './game/game.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { NotificationService } from './notification/notification.service';
     ConfigModule.forRoot({ isGlobal: true }),
     MulterModule.register({ dest: './uploads' }),
     ChatModule,
+    GameModule
   ],
   controllers: [NotificationController, FriendshipController],
   providers: [FriendshipGateway, FriendshipService, NotificationService],

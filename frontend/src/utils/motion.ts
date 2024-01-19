@@ -36,7 +36,7 @@ export const slideIn = (direction :string, type:string, delay:number, duration:n
   },
 });
 
-export const staggerContainer = (staggerChildren : number, delayChildren : number) : any => ({
+export const staggerContainer = (staggerChildren : number, delayChildren : number) => ({
   hidden: {},
   show: {
     transition: {

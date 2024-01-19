@@ -1,4 +1,6 @@
-import React from "react";
+'use client'
+import { ContextGlobal } from "@/context/contex";
+import React, { useContext, useEffect, useState } from "react";
 // import './userOnline.css';
 
 interface PopupProps {
@@ -6,21 +8,68 @@ interface PopupProps {
 }
 
 const Popup: React.FC<PopupProps> = ({ setChannel }) => {
+  const {chatSocket } = useContext(ContextGlobal);
+
+  const [formData, setFormData] = useState({
+    channelName: "",
+    password: "",
+    visibility: "PUBLIC",
+  });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleVisibilityChange = (visibility: string) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      visibility,
+    }));
+  };
+
+  const handleCreateChannel = (e:any) => {
+    e.preventDefault();
+    const channelData = {
+      name: formData.channelName,
+      passwordHash: formData.password,
+      visibility: formData.visibility,
+    };
+    
+    
+  console.log("Channel Data:", channelData);
+  chatSocket?.emit("create-room", channelData);
+  setFormData({
+      channelName: "",
+      password: "",
+      visibility: "PUBLIC",
+    });
+    setChannel();
+  };
+
   return (
     <>
       <div className="fixed top-0 left-0 w-screen h-screen bg-[#000000]/50 z-50 flex justify-center items-center font-inter">
+        <form onSubmit={handleCreateChannel}>
         <div className="bg-[#311150]/80 w-[550px] h-[300px] rounded-md shadow-lg font-light mx-2">
           <div className="flex justify-center items-center p-3">
             <h1 className="text-white md:text-lg">New Channel</h1>
           </div>
-          <div className="flex justify-center items-center my-2 w-3/4 mx-auto">
+          <div className="flex justify-center items-center my-2 w-3/4 mx-auto text-black">
             <div className="w-[90%] h-full flex justify-center items-center bg-[#D9D9D9] rounded-lg">
               <input
                 type="text"
+                name = "channelName"
+                value={formData.channelName}
+                onChange={handleInputChange}
+                required
                 className="w-[90%] md:h-11 h-[36px] rounded-l-lg bg-[#D9D9D9] outline-none px-2 md:text-lg text-sm"
                 placeholder="Channel name Ex: #mychannel"
               />
-              <div className="w-[10%] mr-2 md:mr-0 ">
+              <div className="w-[10%] mr-2 md:mr-0">
                 <svg
                   className="w-4 h-4 md:w-6 md:h-6 text-gray-500"
                   aria-hidden="true"
@@ -34,22 +83,22 @@ const Popup: React.FC<PopupProps> = ({ setChannel }) => {
               </div>
             </div>
           </div>
-          <div className="flex justify-center items-center my-2">
-            <input type="password" name="" id="" className="w-[67.5%] bg-[#D9D9D9] md:h-11 h-[36px] rounded-lg px-2 md:text-lg text-sm outline-none" placeholder="group password" />
-          </div>
+           {formData.visibility === "PROTECTED" && <div className="flex justify-center items-center my-2 text-black">
+            <input type="password" name="password" value={formData.password} onChange={handleInputChange} required className="w-[67.5%] bg-[#D9D9D9] md:h-11 h-[36px] rounded-lg px-2 md:text-lg text-sm outline-none" placeholder="group password" />
+          </div>}
           <div className="text-white font-light text-lg flex justify-center items-center space-x-1 my-3">
             <fieldset className="flex justify-between items-center space-x-4 w-[67.5%] h-10 p-2" id="safe">
               <div className="space-x-1 flex justify-center items-center text-base md:text-lg">
-                <input type="radio" name="safe" id="private" className="" defaultChecked />
+                <input type="radio" name="safe" id="public" onChange={() => handleVisibilityChange("PUBLIC")} checked={formData.visibility === "PUBLIC"}/>
                 <label htmlFor="private">public</label>
               </div>
               <div className="space-x-1 flex justify-center items-center text-base md:text-lg">
-                <input type="radio" name="safe" id="private"/>
-                <label htmlFor="private">private</label>
+                <input type="radio" name="safe" id="protected" onChange={() => handleVisibilityChange("PROTECTED")} checked={formData.visibility === "PROTECTED"}/>
+                <label htmlFor="private">protected</label>
               </div>
               <div className="space-x-1 flex justify-center items-center text-base md:text-lg">
-                <input type="radio" name="safe" id="private"/>
-                <label htmlFor="private">protected</label>
+                <input type="radio" name="safe" id="private" onChange={() => handleVisibilityChange("PRIVATE")} checked={formData.visibility === "PRIVATE"}/>
+                <label htmlFor="private">private</label>
               </div>
             </fieldset>
           </div>
@@ -58,12 +107,13 @@ const Popup: React.FC<PopupProps> = ({ setChannel }) => {
             <button onClick={setChannel} className="w-[100px] h-9 md:h-[40px] rounded-xl text-white hover:bg-[#811B77]/100 border">
               Cancel
             </button>
-            <button className="bg-[#811B77] w-[100px] h-9 md:h-[40px] rounded-xl text-white hover:bg-[#811B77]/100 border">
+            <button type="submit" className="bg-[#811B77] w-[100px] h-9 md:h-[40px] rounded-xl text-white hover:bg-[#811B77]/100 border">
               New
             </button>
             </div>
           </div>
         </div>
+      </form>
       </div>
     </>
   );

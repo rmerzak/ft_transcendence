@@ -26,6 +26,8 @@ interface contextProps {
   setChatRoomsJoined: (chatRooms: ChatRoom[]) => void;
   chatRoomsToJoin: ChatRoom[];
   setChatRoomsToJoin: (chatRooms: ChatRoom[]) => void;
+  gameSocket: Socket | null;
+  setGameSocket: (socket: Socket) => void;
 }
 
 export const ContextGlobal = createContext<contextProps>({
@@ -43,6 +45,8 @@ export const ContextGlobal = createContext<contextProps>({
   setChatRoomsJoined: (chatRooms: ChatRoom[]) => { },
   chatRoomsToJoin: [],
   setChatRoomsToJoin: (chatRooms: ChatRoom[]) => { },
+  gameSocket: null,
+  setGameSocket: (socket: Socket) => { },
 });
 
 
@@ -61,39 +65,39 @@ export const ContextProvider = ({ children }: { children: any }) => {
     status: '', // Add the status property and provide a valid value
   });
   const [socket, setSocket] = useState<any>(null);
+  const [gameSocket, setGameSocket] = useState<any>(null); // [1
   const [chatSocket, setChatSocket] = useState<any>(null);
   const [notification, setNotification] = useState<Notification[]>([]);
   const [friends, setFriends] = useState<Friendship[]>([]);
   const [chatRoomsJoined, setChatRoomsJoined] = useState<ChatRoom[]>([]);
   const [chatRoomsToJoin, setChatRoomsToJoin] = useState<ChatRoom[]>([]);
   useEffect(() => {
-    getUnreadNotification().then((res) => {
-      if (res.data)
-        setNotification(res.data);
-    }).catch((err) => { console.log(err) });
-
-    getUserInfo().then((res) => {
-      if (res.data)
-        setProfile(res.data);
-    }).catch((err) => { console.log(err) });
-
     if (profile.id !== -1) {
+      getUnreadNotification().then((res) => {
+        if (res.data)
+          setNotification(res.data);
+      }).catch((err) => { console.log(err) });
+  
+      getUserInfo().then((res) => {
+        if (res.data)
+          setProfile(res.data);
+      }).catch((err) => { console.log(err) });
       getFriendList(profile.id).then((res) => {
         if (res.data)
           setFriends(res.data);
       }).catch((err) => { console.log(err) });
 
-      getChatRoomsJoined().then((res) => {
-        if (res.data)
-          setChatRoomsJoined(res.data);
-        // console.log(res.data);
-      }).catch((err) => { console.log(err) });
+      // getChatRoomsJoined().then((res) => {
+      //   if (res.data)
+      //     setChatRoomsJoined(res.data);
+      //   // console.log(res.data);
+      // }).catch((err) => { console.log(err) });
 
-      getChatRoomsNotJoined().then((res) => {
-        if (res.data)
-          setChatRoomsToJoin(res.data);
-        // console.log(res.data);
-      }).catch((err) => { console.log(err) });
+      // getChatRoomsNotJoined().then((res) => {
+      //   if (res.data)
+      //     setChatRoomsToJoin(res.data);
+      //   // console.log(res.data);
+      // }).catch((err) => { console.log(err) });
     }
   }, [socket]);
 
@@ -112,6 +116,8 @@ export const ContextProvider = ({ children }: { children: any }) => {
     setChatRoomsJoined,
     chatRoomsToJoin,
     setChatRoomsToJoin,
+    gameSocket,
+    setGameSocket,
   };
 
   return <ContextGlobal.Provider value={providerValue} > {children} </ContextGlobal.Provider>;

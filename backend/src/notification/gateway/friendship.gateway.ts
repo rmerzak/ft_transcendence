@@ -89,9 +89,9 @@ export class FriendshipGateway {
       if(friendshipBlock){
 
         emitClient.forEach((socket) => {
-          socket.emit('blockFriend', { notification: null, friendship: null, status: true, error: null });
+          socket.emit('blockFriend', { notification: friendshipBlock, friendship: null, status: true, error: null });
         });
-        socket.emit('blockFriend', { notification: null, friendship: null, status: true, error: null });
+        socket.emit('blockFriend', { notification: friendshipBlock, friendship: null, status: true, error: null });
       }
       } catch (error) {
         socket.emit('RequestError', { notification: null, friendship: null, status: false, error: error.message });
@@ -103,9 +103,9 @@ export class FriendshipGateway {
       const emitClient = this.friendship.getSocketsByUser(Number(payload));
       const friendshipUnblock = await this.friendship.UnBlockFriend(socket, Number(payload));
       emitClient.forEach((socket) => {
-        socket.emit('unblockFriend', { notification: null, friendship: null, status: true, error: null });
+        socket.emit('unblockFriend', { notification: friendshipUnblock, friendship: null, status: true, error: null });
       });
-      socket.emit('unblockFriend', { notification: null, friendship: null, status: true, error: null });
+      socket.emit('unblockFriend', { notification: friendshipUnblock, friendship: null, status: true, error: null });
     } catch (error) {
       socket.emit('RequestError', { notification: null, friendship: null, status: false, error: error.message });
     }

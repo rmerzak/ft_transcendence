@@ -10,7 +10,8 @@ import { Socket } from 'socket.io';
 import { MsgService } from '../services/msg/msg.service';
 import { SocketAuthMiddleware } from 'src/auth/middleware/ws.mw';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Message, Recent } from '@prisma/client';
+import { ChatRoom, Message, Recent, RoomVisibility } from '@prisma/client';
+import { RoomService } from '../services/room/room.service';
 
 @WebSocketGateway({
   cors: { origin: 'http://localhost:8080', credentials: true },
@@ -26,7 +27,7 @@ export class GatewayGateway
     socket.use(SocketAuthMiddleware() as any);
   }
 
-  constructor(private chatService: MsgService, private prisma: PrismaService) { }
+  constructor(private chatService: MsgService, private roomService: RoomService,private prisma: PrismaService) { }
 
   async handleConnection(_client: Socket) {
     const user = await this.prisma.user.findUnique({ where: { id: _client['payload']['sub'] } });
@@ -35,6 +36,10 @@ export class GatewayGateway
     } else {
       _client.disconnect();
     }
+    if (!this.roomService.connectedClients.has(user.id)) {
+      this.roomService.connectedClients.set(user.id, []);
+    }
+    this.roomService.connectedClients.get(user.id).push(_client);
     console.log('connected chat id1: ' + _client.id);
   }
 
@@ -65,6 +70,29 @@ export class GatewayGateway
         this.server.to(recent.chatRoomId.toString()).emit('receive-recent', recent);
       }
     });
+  }
+  @SubscribeMessage('create-room')
+  async handleCreateRoom(_client: Socket, payload: ChatRoom) {
+    
+    try {
+      const room = await this.roomService.createChatRoom(_client, payload);
+      this.roomService.connectedClients.forEach((sockets, userId) => {
+        if (userId !== _client['user'].id) {
+          sockets.forEach(socket => {
+            socket.emit('create-room', room);
+          });
+        }
+        if (userId === _client['user'].id) {
+          sockets.forEach(socket => {
+            socket.emit('ownedRoom', room);
+          });
+        }
+      });
+
+    } catch (error) {
+      _client.emit('error', error.message);
+    }
+    //_client.emit('receive-room', room);
   }
 
   handleDisconnect(_client: Socket) {

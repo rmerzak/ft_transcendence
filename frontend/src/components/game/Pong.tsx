@@ -1,47 +1,55 @@
-'use client'
+/* eslint-disable react-hooks/exhaustive-deps */
 import styles from '@/app/dashboard/game/page.module.css'
-import { use, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
+import Swal from 'sweetalert2';
+import { setInterval, clearInterval } from 'timers';
+import { useGame,  } from '@/app/dashboard/game/context/gameContext';
+import { themeAtom } from './theme';
+import { useAtomValue, useSetAtom } from 'jotai';
 
 function Pong()
 {
-    const gameRef = useRef<HTMLCanvasElement>(null);
-
-     // socket.io
-    const socket = io('http://localhost:3000/', {
-        withCredentials: true,
-        autoConnect: false,
-        // transports: ['websocket'],
-    });
-
+    // game context
+    const { 
+        updateScores,
+        setPlayer1Elo,
+        setPlayer2Elo,
+        setUserInfo,
+        setOpponentInfo,
+    } =  useGame();
+    
+    // canvas    
+    const gameRef = useRef<HTMLCanvasElement | null>(null);
+    
+    // route
+    const router = useRouter();
+    
+    // theme
+    const theme = useAtomValue(themeAtom);
+    const setTheme = useSetAtom(themeAtom);
+    
     useEffect(() => {
-        if (socket.connect())
-        {
-            socket.emit('join');
-        }
-        return () => {
-            // off event listener
-            socket.off('playerNo');
-            socket.off('startingGame');
-            socket.off('startedGame');
-            socket.off('updateGame');
-            socket.off('gameOver');
-            socket.disconnect();
-            };
-    }, []);
+        
+        //  socket.io
+        const socket = io(`${process.env.API_BASE_URL}/game`, {
+            withCredentials: true,
+            autoConnect: false,
+        });
 
-    useEffect(() => {
         const canvas = gameRef.current;
         if (!canvas) return;
-
+        
         const ctx = canvas?.getContext('2d');
         if (!ctx) return;
 
-        let isGameStarted = false;
-        let playerNo = 0;
-        let roomID = 0;
-
-       
+        let isGameStarted: boolean = false;
+        let intervalId: NodeJS.Timeout;
+        let playerNo: number = 0;
+        let roomID: number = 0;
+        let handleKeyDown: (e: KeyboardEvent) => void;
+        let handleKeyUp: (e: KeyboardEvent) => void;
 
         class Player {
             x: number;
@@ -59,7 +67,6 @@ function Pong()
                 this.score = 0
             }
         }
-        
         class Ball {
             x: number;
             y: number;
@@ -73,61 +80,29 @@ function Pong()
                 this.y = y
                 this.radius = radius
                 this.color = color
-                this.speed = 5
-                this.velocityX = 5
-                this.velocityY = 5
+                this.speed = speed
+                this.velocityX = velocityX
+                this.velocityY = velocityY
             }
         }
-        
-        let player1: Player;
-        let player2: Player
-        let ball : Ball;
+        const colors = ["#ffffff", "#111111", "#FFF6E5", "#a6492c", "#c13f2d", "#1a5b7e"]
+
+        let player1: Player = new Player(20, 1146 / 2 - 100 / 2, 15, 180, colors[theme]);
+        let player2: Player = new Player(1908 - 35, 1146 / 2 - 100 / 2, 15, 180, colors[theme]);
+        let ball : Ball = new Ball(1908 / 2, 1908 / 2, 20, 10, 5, 5, colors[theme]);
 
         // effect components here
         // *****************************************************************************************
 
         let balls: Balls[] = [];
-
-        // let rgb = [
-        // 	"rgb(20, 20, 20)",
-        // 	"rgb(50, 50, 50)",
-        // 	"rgb(100, 100, 100)",
-        // 	"rgb(125, 125, 125)",
-        // 	"rgb(160, 160, 160)",
-        // 	"rgb(200, 200, 200)",
-        // 	"rgb(230, 230, 230)"
-        // ]
-
-        let rgb = [
-            "rgb(139, 69, 19)",
-            "rgb(160, 82, 45)",
-            "rgb(205, 133, 63)",
-            "rgb(244, 164, 96)",
-            "rgb(210, 105, 30)",
-            "rgb(139, 69, 19)",
-            "rgb(165, 42, 42)"
-        ];
-
-        // let rgb = [
-        //     "rgb(255, 223, 186)",
-        //     "rgb(255, 182, 193)",
-        //     "rgb(144, 238, 144)",
-        //     "rgb(173, 216, 230)",
-        //     "rgb(255, 228, 196)",
-        //     "rgb(221, 160, 221)",
-        //     "rgb(173, 216, 230)"
-        // ];
-
-
-        // let rgb = [
-        //     "rgb(0, 0, 255)",
-        //     "rgb(30, 144, 255)",
-        //     "rgb(70, 130, 180)",
-        //     "rgb(0, 191, 255)",
-        //     "rgb(135, 206, 250)",
-        //     "rgb(70, 130, 180)",
-        //     "rgb(100, 149, 237)"
-        // ];
+        const rgbs: string[][] = [
+            ["rgb(255, 255, 255)", "rgb(238, 238, 238)", "rgb(221, 221, 221)", "rgb(204, 204, 204)", "rgb(187, 187, 187)", "rgb(170, 170, 170)", "rgb(153, 153, 153)"],
+            ["rgb(17, 17, 17)", "rgb(34, 34, 34)", "rgb(51, 51, 51)", "rgb(68, 68, 68)", "rgb(85, 85, 85)", "rgb(102, 102, 102)", "rgb(119, 119, 119)"],
+            ["rgb(255, 246, 229)", "rgb(251, 241, 219)", "rgb(246, 236, 208)", "rgb(241, 231, 197)", "rgb(236, 226, 186)", "rgb(231, 221, 175)", "rgb(226, 216, 164)"],
+            ["rgb(139, 69, 19)", "rgb(160, 82, 45)", "rgb(205, 133, 63)", "rgb(244, 164, 96)", "rgb(210, 105, 30)", "rgb(139, 69, 19)", "rgb(165, 42, 42)"],
+            ["rgb(193, 63, 45)", "rgb(199, 74, 58)", "rgb(205, 85, 71)", "rgb(211, 96, 84)", "rgb(217, 107, 97)", "rgb(223, 118, 110)", "rgb(229, 129, 123)"],
+            ["rgb(0, 0, 255)", "rgb(30, 144, 255)", "rgb(70, 130, 180)", "rgb(0, 191, 255)", "rgb(135, 206, 250)", "rgb(70, 130, 180)", "rgb(100, 149, 237)"]
+          ];
 
         function getRandomInt(min: number, max: number) {
             return Math.round(Math.random() * (max - min)) + min;
@@ -168,7 +143,7 @@ function Pong()
                 this.y = this.start.y;
                 this.size = this.start.size;
 
-                this.style = rgb[getRandomInt(0, rgb.length - 1)];
+                this.style = rgbs[theme][getRandomInt(0, rgbs[theme].length - 1)];
 
                 this.time = 0;
                 this.ttl = 120;
@@ -222,12 +197,12 @@ function Pong()
             ctx.clearRect(0, 0, canvas.width, canvas.height);
            
             // draw the side line
-            drawRect(0, 0, 10, canvas.height, "white");
-            drawRect(canvas.width - 10, 0, 10, canvas.height, "white");
+            drawRect(0, 0, 10, canvas.height, colors[theme]);
+            drawRect(canvas.width - 10, 0, 10, canvas.height, colors[theme]);
             
             // draw the top and bottom line
-            drawRect(0, 0, canvas.width, 10, "white");
-            drawRect(0, canvas.height - 10, canvas.width, 10, "white");
+            drawRect(0, 0, canvas.width, 10, colors[theme]);
+            drawRect(0, canvas.height - 10, canvas.width, 10, colors[theme]);
         
             // draw the user and com paddle
             drawRect(player1.x, player1.y, player1.width, player1.height, player1.color);
@@ -247,99 +222,242 @@ function Pong()
             balls = temp;
         }
 
+        if (socket.connect()) {
+            socket.on('userInfo', () => {
+                socket.emit('join');
+            });
+        }
+
         // get player no
-        socket.on('playerNo', (newPlayerNo) => {
-            playerNo = newPlayerNo;
-        });
-
-        // starting game
-        socket.on('startingGame', () => {
-            isGameStarted = true;
-        });
-
-
-        // start game
-        socket.on('startedGame', (room) => {
-            roomID = room.id;
-            player1 = new Player(room.players[0].x, room.players[0].y, room.players[0].width, room.players[0].height, room.players[0].color);
-            player2 = new Player(room.players[1].x, room.players[1].y, room.players[1].width, room.players[1].height, room.players[1].color);
-            ball = new Ball(room.ball.x, room.ball.y, room.ball.radius, room.ball.speed, room.ball.velocityX, room.ball.velocityY, room.ball.color);
-
-            player1.score = room.players[0].score;
-            player2.score = room.players[1].score;
-
-            let movement = { up: false, down: false };
-
-            window.addEventListener('keydown', (e) => {
-                if (isGameStarted) {
-                    if (e.key === 'ArrowUp') {
-                        movement.up = true;
-                    } else if (e.key === 'ArrowDown') {
-                        movement.down = true;
-                    }
-                }
-            });
-
-            window.addEventListener('keyup', (e) => {
-                if (isGameStarted) {
-                    if (e.key === 'ArrowUp') {
-                        movement.up = false;
-                    } else if (e.key === 'ArrowDown') {
-                        movement.down = false;
-                    }
-                }
-            });
-
-            // Periodically send movement updates
-            setInterval(() => {
-                if (movement.up || movement.down) {
-                    socket.emit("move", {
-                        roomID: roomID,
-                        playerNo: playerNo,
-                        direction: movement.up ? 'up' : 'down'
+        socket.on('playerNo', (payload) => {
+            playerNo = payload.playerNo;
+            if (playerNo === 1) {
+                setUserInfo(payload.playerNo, payload.user?.username, payload.user?.image);
+                setPlayer1Elo(payload.user?.gameElo);
+                if (payload.showLoading) {
+                    Swal.fire({
+                        imageUrl: "/loading.gif",
+                        imageWidth: 500,
+                        imageHeight: 500,
+                        showConfirmButton: false,
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        customClass: {
+                            popup: 'bg-transparent',
+                            image: 'opacity-50 bg-transparent',
+                        },
                     });
                 }
-            }, 1000 / 60); // Adjust the interval as needed
+            } else if (playerNo === 2) {
+                setOpponentInfo(payload.playerNo, payload.user?.username, payload.user?.image);
+                setPlayer2Elo(payload.user?.gameElo);
+                Swal.close();
+            }
+            render();
+        });
+        
+        // starting game
+        socket.on('roomIsFull', (flag) => {
+            isGameStarted = flag;
+        });
+
+        // start game
+        socket.on('startedGame', ( id ) => {
+            roomID = id;
         },);
 
+        let movement = { up: false, down: false };
+
+        handleKeyDown = (e: KeyboardEvent) => {
+            if (isGameStarted) {
+                if (e.key === 'ArrowUp') {
+                    movement.up = true;
+                } else if (e.key === 'ArrowDown') {
+                    movement.down = true;
+                }
+            }
+        }
+        handleKeyUp = (e: KeyboardEvent) => {
+            if (isGameStarted) {
+                if (e.key === 'ArrowUp') {
+                    movement.up = false;
+                } else if (e.key === 'ArrowDown') {
+                    movement.down = false;
+                }
+            }
+        }
+        window.addEventListener('keydown', handleKeyDown);
+        window.addEventListener('keyup', handleKeyUp);
+        
+        // Periodically send movement updates
+        intervalId = setInterval(() => {
+            if (movement.up || movement.down) {
+                socket.emit("move", {
+                    roomId: roomID,
+                    playerNo: playerNo === 1 ? 2 : 1,
+                    direction: movement.up ? 'up' : 'down'
+                });
+            }
+        }, 1000 / 60); // Adjust the interval as needed
+            
         // update game
-        socket.on("updateGame", (room) => {
+        socket.on("updateGame", (update) => {
             if (!ball || !player1 || !player2) return;
-            ball.x = room.ball.x;
-            ball.y = room.ball.y;
+            ball.x = update.ball.position.x;
+            ball.y = update.ball.position.y;
 
             for (let i = 0; i < 3; i++) {
                 balls.push(new Balls(ball));
             }
 
-            player1.x = room.players[0].x;
-            player1.y = room.players[0].y;
+            // fix type error
+            player1.x = update.players[0].position.x;
+            player1.y = update.players[0].position.y;
 
-            player2.x = room.players[1].x;
-            player2.y = room.players[1].y;
+            player2.x = update.players[1].position.x;
+            player2.y = update.players[1].position.y;
 
-            player1.score = room.players[0].score;
-            player2.score = room.players[1].score;
             render();
         });
 
-        // game over
-        socket.on('gameOver', (room) => {
-            isGameStarted = false;
-            socket.emit('leave', roomID);
-
-            setTimeout(() => {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-            }, 4000);
+        // update scores
+        socket.on('updateScore', (scores) => {
+            updateScores(scores.player1, scores.player2);
         });
-    }, [socket]);
+
+        // redirect
+        socket.on('redirect', (flag) => {
+            if (flag) {
+                router.push('/dashboard/game');
+            }
+        });
+
+        // game over
+        socket.on('youWin', () => {
+            isGameStarted = false;
+
+            Swal.fire({
+                title: 'You Win!',
+                text: 'Congratulations! You win the game!',
+                imageUrl: "/game/winner.gif",
+                imageWidth: 400,
+                imageHeight: 200,
+                confirmButtonText: 'Ok',
+                allowEscapeKey: false,
+                allowOutsideClick: false,
+                customClass: {
+                    popup: 'bg-gradient-to-r from-[#510546]/40 to-[#6958be]/40'
+                }
+            }).then((res) => {
+
+                if (res.isConfirmed)
+                    // redirect to game page
+                    router.push('/dashboard/game');
+            });
+
+            socket.emit('leave', {
+                roomId: roomID,
+                playerNo: playerNo
+            });
+        });
+
+        socket.on('youLose', () => {
+            isGameStarted = false;
+            Swal.fire({
+                title: 'You Lose!',
+                text: 'You lose the game!',
+                imageUrl: "/game/loser.gif",
+                imageWidth: 400,
+                imageHeight: 200,
+                confirmButtonText: 'Ok',
+                allowEscapeKey: false,
+                allowOutsideClick: false,
+                customClass: {
+                    popup: 'bg-gradient-to-r from-[#510546]/40 to-[#6958be]/40'
+                }
+            }).then((res) => {
+                if (res.isConfirmed)
+                    // redirect to game page
+                    router.push('/dashboard/game');
+             });
+
+            socket.emit('leave', {
+                roomId: roomID,
+                playerNo: playerNo
+            });
+        });
+
+        socket.on('winByResign', () => {
+            isGameStarted = false;
+            Swal.fire({
+                title: 'You Win!',
+                text: 'Your opponent resigned!',
+                imageUrl: "/game/winner.gif",
+                imageWidth: 400,
+                imageHeight: 200,
+                confirmButtonText: 'Ok',
+                allowEscapeKey: false,
+                allowOutsideClick: false,
+                customClass: {
+                    popup: 'bg-gradient-to-r from-[#510546]/40 to-[#6958be]/40'
+                }
+            }).then((res) => {
+                if (res.isConfirmed)
+                    // redirect to game page
+                    router.push('/dashboard/game');
+             });
+
+            socket.emit('leave', {
+                roomId: roomID,
+                playerNo: playerNo
+            });
+        
+        });
+
+        return () => {
+            // reset theme
+            setTheme(-1);
+
+            // remove canvas
+            canvas.remove();
+
+            // close swal
+            Swal.close();
+
+            // Remove event listeners
+            removeEventListener('keydown', handleKeyDown);
+            removeEventListener('keyup', handleKeyUp);
+
+            // Clear interval
+            clearInterval(intervalId);
+            
+            // off event listener
+            socket.off('playerNo');
+            socket.off('roomIsFull');
+            socket.off('startedGame');
+            socket.off('updateGame');
+            socket.off('redirect');
+            socket.off('gameOver');
+            socket.off('connect');
+
+            updateScores(0, 0);
+            setUserInfo(1, 'Loading...', '/game/avatar.jpeg');
+            setOpponentInfo(2, 'Loading...', '/game/avatar.jpeg');
+
+            socket.disconnect();
+        };
+
+    }, []);
+    
+    const themes: string[] = ['b0', 'b1', 'b2', 'b3', 'b4', 'b5']
+
     return (
         <>
-            <div className= {styles.canvas_container}>
+            <div className='flex justify-center items-center w-[80%] shadow-md'>
                 <canvas
                     ref={gameRef}
                     className={styles.game_canvas}
-                    style={ { backgroundImage: `url('/A1.png')` } }
+                    style={ { backgroundImage: `url(/game/${themes[theme]}.png)` } }
                     >
                 </canvas>
             </div>

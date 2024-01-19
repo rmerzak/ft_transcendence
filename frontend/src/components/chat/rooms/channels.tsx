@@ -4,14 +4,17 @@ import Popup from "./popup";
 import { use, useContext, useEffect, useState } from "react";
 import { ContextGlobal } from "@/context/contex";
 import { ChatRoom } from "@/interfaces";
+import { IoIosExit } from "react-icons/io";
+import { MdOutlineKey } from "react-icons/md";
+import { MdAddLink } from "react-icons/md";
+import { getChatRoomsJoined, getChatRoomsNotJoined } from "@/api/chat/chat.api";
 
 interface Channel {
   header: string;
 }
 
 const Channels: React.FC<Channel> = ({ header }) => {
-  const [channels, setChannels] = useState<ChatRoom[]>([]);
-  const { chatRoomsJoined, chatRoomsToJoin } = useContext(ContextGlobal);
+  const { chatRoomsJoined, chatRoomsToJoin,setChatRoomsToJoin,setChatRoomsJoined ,chatSocket } = useContext(ContextGlobal);
   const [newChannel, setNewChannel] = useState<boolean>(false);
 
   function handleNewChannel() {
@@ -19,9 +22,21 @@ const Channels: React.FC<Channel> = ({ header }) => {
   }
 
   useEffect(() => {
-    setChannels([...chatRoomsJoined, ...chatRoomsToJoin])
-    console.log("channels", chatRoomsJoined, chatRoomsToJoin)
-  }, [chatRoomsJoined, chatRoomsToJoin]);
+    chatSocket?.on("create-room", (room: ChatRoom) => {
+      console.log("create-room", room);
+      getChatRoomsNotJoined().then((res) => {
+        if (res.data)
+          setChatRoomsToJoin(res.data);
+      }).catch((err) => { console.log(err) });
+    });
+    chatSocket?.on("ownedRoom", (room: ChatRoom) => {
+      getChatRoomsJoined().then((res) => {
+        if (res.data)
+          setChatRoomsJoined(res.data);
+      }).catch((err) => { console.log(err) });
+    });
+    console.log("chatRoomsJoined");
+  }, [chatSocket]);
   return (
     <>
       <div className="mt-6">
@@ -32,26 +47,28 @@ const Channels: React.FC<Channel> = ({ header }) => {
       </div>
 
       <div className="rounded-md md:w-3/4 mx-auto mt-2 md:scroll-y-auto md:max-h-[300px]">
-        {channels.length > 0 ? channels.map((channel, index) => (
+        {chatRoomsJoined.length > 0 ? chatRoomsJoined.map((channel, index) => (
           <div
             key={index}
             className="flex bg-[#811B77]/50 justify-between items-center text-xs md:text-base p-3 my-[6px] md:my-[10px] rounded-md text-white hover:bg-[#811B77]/100"
           >
             <p>#{channel.name}</p>
-            <Image
-              src={index <= chatRoomsJoined.length && chatRoomsJoined.length > 0 ? "/leave.svg" : "/link.svg"}
-              alt={"channel"}
-              width={25}
-              height={24}
-              priority={true}
-              draggable={false}
-              onClick={() => { alert("Link to channel") }}
-              className="w-5 h-5 object-cover"
-            />
+            <IoIosExit className=" w-[25px] h-[25px]" />
+          </div>
+        )): <p className="text-center text-white">No channels</p>}
+        {chatRoomsToJoin.length > 0 ? chatRoomsToJoin.map((channel, index) => (
+          <div
+            key={index}
+            className="flex bg-[#811B77]/50 justify-between items-center text-xs md:text-base p-3 my-[6px] md:my-[10px] rounded-md text-white hover:bg-[#811B77]/100"
+          >
+            <p>#{channel.name}</p>
+            <div className="flex">
+            {channel.visibility === 'PROTECTED' &&  <MdOutlineKey className=" w-[25px] h-[25px]"/>}
+            {channel.visibility === 'PUBLIC' && <MdAddLink className=" w-[25px] h-[25px]"/>}
+            </div>
           </div>
         )): <p className="text-center text-white">No channels</p>}
       </div>
-      {
         <div className="my-2 md:my-4 flex justify-center items-center">
           <button onClick={handleNewChannel}>
             <Image
@@ -65,7 +82,7 @@ const Channels: React.FC<Channel> = ({ header }) => {
             />
           </button>
         </div>
-      }
+      
       {newChannel && <Popup setChannel={handleNewChannel} />}
     </>
   );
