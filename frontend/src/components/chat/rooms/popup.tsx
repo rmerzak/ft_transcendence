@@ -1,5 +1,6 @@
 'use client'
-import React, { useEffect, useState } from "react";
+import { ContextGlobal } from "@/context/contex";
+import React, { useContext, useEffect, useState } from "react";
 // import './userOnline.css';
 
 interface PopupProps {
@@ -7,6 +8,8 @@ interface PopupProps {
 }
 
 const Popup: React.FC<PopupProps> = ({ setChannel }) => {
+  const {chatSocket } = useContext(ContextGlobal);
+
   const [formData, setFormData] = useState({
     channelName: "",
     password: "",
@@ -14,7 +17,6 @@ const Popup: React.FC<PopupProps> = ({ setChannel }) => {
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.preventDefault();
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
@@ -29,22 +31,22 @@ const Popup: React.FC<PopupProps> = ({ setChannel }) => {
     }));
   };
 
-  const handleCreateChannel = () => {
+  const handleCreateChannel = (e:any) => {
+    e.preventDefault();
     const channelData = {
-      channelname: formData.channelName,
+      name: formData.channelName,
       passwordHash: formData.password,
       visibility: formData.visibility,
     };
     
     
   console.log("Channel Data:", channelData);
-    
+  chatSocket?.emit("create-room", channelData);
   setFormData({
       channelName: "",
       password: "",
       visibility: "PUBLIC",
     });
-
     setChannel();
   };
 
@@ -81,7 +83,7 @@ const Popup: React.FC<PopupProps> = ({ setChannel }) => {
               </div>
             </div>
           </div>
-           {formData.visibility === "PRIVATE" && <div className="flex justify-center items-center my-2 text-black">
+           {formData.visibility === "PROTECTED" && <div className="flex justify-center items-center my-2 text-black">
             <input type="password" name="password" value={formData.password} onChange={handleInputChange} required className="w-[67.5%] bg-[#D9D9D9] md:h-11 h-[36px] rounded-lg px-2 md:text-lg text-sm outline-none" placeholder="group password" />
           </div>}
           <div className="text-white font-light text-lg flex justify-center items-center space-x-1 my-3">

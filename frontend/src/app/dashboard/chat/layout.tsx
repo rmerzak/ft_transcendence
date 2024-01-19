@@ -5,10 +5,11 @@ import Recent from "@/components/chat/recent/recent";
 import { useContext, useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import { ContextGlobal } from '@/context/contex';
+import { getChatRoomsJoined, getChatRoomsNotJoined } from '@/api/chat/chat.api';
 
 
 const Layout = ({ children }: any) => {
-  const { setChatSocket } = useContext(ContextGlobal);
+  const { setChatSocket ,chatRoomsJoined, chatRoomsToJoin,setChatRoomsToJoin,setChatRoomsJoined ,chatSocket} = useContext(ContextGlobal);
 
   useEffect(() => {
     const sock = io("http://localhost:3000/chat", {
@@ -35,7 +36,17 @@ const Layout = ({ children }: any) => {
       sock.disconnect();
     };
   }, []); ///
+  useEffect(() => {
+      getChatRoomsJoined().then((res) => {
+        if (res.data)
+          setChatRoomsJoined(res.data);
+      }).catch((err) => { console.log(err) });
 
+      getChatRoomsNotJoined().then((res) => {
+        if (res.data)
+          setChatRoomsToJoin(res.data);
+      }).catch((err) => { console.log(err) });
+  }, []);
   return (
     <div className="w-full bg-[#311251]/80 md:rounded-3xl rounded-t-md md:w-[95%] md:h-[90%] md:mt-6 md:overflow-auto md:mx-auto md:shadow-lg">
       <h1 className="text-white md:text-2xl text-lg md:font-bold text-center m-2 p-1 md:m-4 md:p-2 font-inter w-auto">

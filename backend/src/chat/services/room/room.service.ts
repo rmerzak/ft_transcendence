@@ -45,20 +45,27 @@ export class RoomService {
         const user = await this.prisma.user.findUnique({
             where: { id: userId },
         });
+    
         if (!user) throw new Error('User not found');
-        return await this.prisma.chatRoom.findMany({
+    
+        const chatRooms = await this.prisma.chatRoom.findMany({
             where: {
                 users: {
                     none: {
                         userId: userId,
                     },
                 },
-                AND: {
-                    visibility: RoomVisibility.PUBLIC,
+                visibility: {
+                    in: [RoomVisibility.PUBLIC, RoomVisibility.PROTECTED],
                 },
             },
         });
+    
+        console.log('chatRooms: ', chatRooms);
+        return chatRooms;
     }
+    
+    
     // get friends in chat room
     async getFriendsInChatRoom(userId: number, chatRoomId: number): Promise<ChatRoomUsers[]> {
         const user = await this.prisma.user.findUnique({
@@ -108,12 +115,6 @@ export class RoomService {
             where: { name: chatRoomData.name },
         });
         if (existingChatRoom) throw new Error('Chat room already exists');
-        // if (chatRoomData.hasOwnProperty('owner')) {
-        //     const owner = await this.prisma.user.findUnique({
-        //         where: { id: chatRoomData.owner },
-        //     });
-        //     if (!owner) throw new Error('Owner not found');
-        // }
         let hash = null;
         if (chatRoomData.passwordHash) {
             hash = await argon.hash(chatRoomData.passwordHash);
@@ -121,12 +122,19 @@ export class RoomService {
         const newChatRoom = await this.prisma.chatRoom.create({
             data: {
                 name: chatRoomData.name,
-                passwordHash: (chatRoomData.visibility === RoomVisibility.PRIVATE && hash !== null) ? hash : null,
+                passwordHash: (chatRoomData.visibility === RoomVisibility.PROTECTED && hash !== null) ? hash : null,
                 visibility: chatRoomData.visibility,
                 owner: socket['user'].id ,
             },
         });
-        console.log('newChatRoom: ', newChatRoom);
+        // add user to chat room
+        const chatRoomMember = await this.prisma.chatRoomMember.create({
+            data: {
+                user: { connect: { id: socket['user'].id } },
+                chatRoom: { connect: { id: newChatRoom.id } },
+                is_admin: true,
+            }
+        });
         return newChatRoom;
     }
     // make conversation

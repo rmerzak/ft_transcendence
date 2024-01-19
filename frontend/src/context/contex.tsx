@@ -87,17 +87,17 @@ export const ContextProvider = ({ children }: { children: any }) => {
           setFriends(res.data);
       }).catch((err) => { console.log(err) });
 
-      getChatRoomsJoined().then((res) => {
-        if (res.data)
-          setChatRoomsJoined(res.data);
-        // console.log(res.data);
-      }).catch((err) => { console.log(err) });
+      // getChatRoomsJoined().then((res) => {
+      //   if (res.data)
+      //     setChatRoomsJoined(res.data);
+      //   // console.log(res.data);
+      // }).catch((err) => { console.log(err) });
 
-      getChatRoomsNotJoined().then((res) => {
-        if (res.data)
-          setChatRoomsToJoin(res.data);
-        // console.log(res.data);
-      }).catch((err) => { console.log(err) });
+      // getChatRoomsNotJoined().then((res) => {
+      //   if (res.data)
+      //     setChatRoomsToJoin(res.data);
+      //   // console.log(res.data);
+      // }).catch((err) => { console.log(err) });
     }
   }, [socket]);
 

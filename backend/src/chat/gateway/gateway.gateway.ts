@@ -73,13 +73,22 @@ export class GatewayGateway
   }
   @SubscribeMessage('create-room')
   async handleCreateRoom(_client: Socket, payload: ChatRoom) {
+    
     try {
       const room = await this.roomService.createChatRoom(_client, payload);
       this.roomService.connectedClients.forEach((sockets, userId) => {
+        if (userId !== _client['user'].id) {
           sockets.forEach(socket => {
             socket.emit('create-room', room);
           });
+        }
+        if (userId === _client['user'].id) {
+          sockets.forEach(socket => {
+            socket.emit('ownedRoom', room);
+          });
+        }
       });
+
     } catch (error) {
       _client.emit('error', error.message);
     }
