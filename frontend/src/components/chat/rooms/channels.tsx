@@ -17,6 +17,26 @@ const Channels: React.FC<Channel> = ({ header }) => {
   const { chatRoomsJoined, chatRoomsToJoin,setChatRoomsToJoin,setChatRoomsJoined ,chatSocket } = useContext(ContextGlobal);
   const [newChannel, setNewChannel] = useState<boolean>(false);
 
+  const [isPrompetVisible, setIsPrompetVisible] = useState<boolean>(false);
+  const [invalue, setinValue] = useState<string>("");
+
+  const handleClick = () => {
+    setIsPrompetVisible(true);
+  }
+  
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (e.keyCode === 13) {
+      handleInput();
+    }
+  };
+
+
+  const handleInput = () => {
+    console.log('User entered:', invalue);
+    setIsPrompetVisible(false);
+    setinValue('');
+  };
+
   function handleNewChannel() {
     setNewChannel(!newChannel);
   }
@@ -46,7 +66,9 @@ const Channels: React.FC<Channel> = ({ header }) => {
         </div>
       </div>
 
-      <div className="rounded-md md:w-3/4 mx-auto mt-2 md:scroll-y-auto md:max-h-[300px]">
+      <div className=" flex flex-col rounded-md md:w-3/4 mx-auto mt-2 md:scroll-y-auto md:max-h-[300px]">
+      <h1 className="font-bold  text-center text-green-400">Joined Channels</h1>
+        <div className="mb-2 h-[180px] overflow-auto">
         {chatRoomsJoined.length > 0 ? chatRoomsJoined.map((channel, index) => (
           <div
             key={index}
@@ -56,6 +78,9 @@ const Channels: React.FC<Channel> = ({ header }) => {
             <IoIosExit className=" w-[25px] h-[25px]" />
           </div>
         )): <p className="text-center text-white">No channels</p>}
+        </div>
+        <h1 className="mt-2 font-bold  text-center text-orange-400">channels to join</h1>
+        <div className="h-[160px] overflow-auto">
         {chatRoomsToJoin.length > 0 ? chatRoomsToJoin.map((channel, index) => (
           <div
             key={index}
@@ -63,11 +88,14 @@ const Channels: React.FC<Channel> = ({ header }) => {
           >
             <p>#{channel.name}</p>
             <div className="flex">
-            {channel.visibility === 'PROTECTED' &&  <MdOutlineKey className=" w-[25px] h-[25px]"/>}
+            {!isPrompetVisible && channel.visibility === 'PROTECTED' && <button onClick={handleClick}> <MdOutlineKey className=" w-[25px] h-[25px]"/> </button>}
+            {isPrompetVisible && <input type="text" placeholder="Enter password" value={invalue} onChange={(e) => setinValue(e.target.value)} onKeyDown={handleKeyDown} className="text-black rounded-full w-[100%] ml-1"/>}
             {channel.visibility === 'PUBLIC' && <MdAddLink className=" w-[25px] h-[25px]"/>}
             </div>
           </div>
         )): <p className="text-center text-white">No channels</p>}
+        </div>
+      
       </div>
         <div className="my-2 md:my-4 flex justify-center items-center">
           <button onClick={handleNewChannel}>
@@ -88,3 +116,59 @@ const Channels: React.FC<Channel> = ({ header }) => {
   );
 };
 export default Channels;
+
+
+/*
+// ...
+
+const YourComponent = () => {
+  const [isPromptVisible, setPromptVisible] = useState(false);
+  const [inputValue, setInputValue] = useState('');
+
+  const handleClick = () => {
+    setPromptVisible(true);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.keyCode === 13) {
+      handleInput();
+    }
+  };
+
+  const handleInput = () => {
+    // Use the inputValue variable wherever you need it
+    console.log('User entered:', inputValue);
+
+    // You can also handle channel.visibility logic here
+
+    // Close the input prompt
+    setPromptVisible(false);
+  };
+
+  return (
+    <div>
+      {channel.visibility === 'PROTECTED' && (
+        <button onClick={handleClick}>
+          <MdOutlineKey className="border w-[25px] h-[25px]" />
+        </button>
+      )}
+
+      {isPromptVisible && (
+        <div>
+          <p>Enter your password:</p>
+          <input
+            type="password"
+            placeholder="Enter password"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyDown={handleKeyDown}
+            className="text-black"
+          />
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ...
+*/
