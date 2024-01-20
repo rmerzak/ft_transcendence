@@ -81,9 +81,9 @@ const Recent = () => {
                       draggable={false}
                       className="w-10 h-10 object-cover rounded-full"
                     />
-                     <h2 className="text-sm font-inter font-medium opacity-50 relative -left-3">@{recent.chatRoom?.users[0]?.username}</h2>
+                     <h2 className="text-sm font-inter font-medium opacity-50 relative -left-2 ">@{recent.chatRoom?.users[0]?.username}</h2>
                   </div>
-                  <div className="mt-1">
+                  <div className="m-1">
                     <p>{profile?.id === recent.senderId ? "You" : recent.chatRoom?.users[0]?.username}</p>
                     <p className="text-xs">{recent.lastMessage}</p>
                   </div>
