@@ -42,7 +42,7 @@ const UserItem = ({ friend } : { friend: Friendship }) => {
           priority={true}
           className="h-[45px] w-[45px] md:h-[60px] md:w-[60px] rounded-full mx-auto hover:cursor-pointer"
         />
-        <span className={`w-2 md:w-3 h-2 md:h-3 md:left-10 left-7 top-9 md:left-[82px] md:top-12 rounded-full absolute ${status === 'ONLINE' ? 'bg-custom-green' : status === 'IN_GAME' ? 'bg-orange-400' : 'bg-gray-400'}`}></span>
+        <span className={`w-2 md:w-3 h-2 md:h-3 md:left-9 left-7 top-9 md:left-[82px] md:top-12 rounded-full absolute ${status === 'ONLINE' ? 'bg-custom-green' : status === 'IN_GAME' ? 'bg-orange-400' : 'bg-gray-400'}`}></span>
         <p className={`text-white text-center text-xs md:text-base`}>
         {profile?.id === friend.sender.id ? friend.receiver.username : friend.sender.username }
         </p>
