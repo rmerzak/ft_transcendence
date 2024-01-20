@@ -68,14 +68,14 @@ const Popup: React.FC<PopupProps> = ({ setChannel }) => {
 
   return (
     <>
-      <div className="fixed top-0 left-0 w-screen h-screen bg-[#000000]/50 z-50 flex justify-center items-center font-inter">
+      <div className="b fixed top-0 left-0 w-screen h-screen bg-[#000000]/50 z-50 flex justify-center items-center font-inter">
         <form onSubmit={handleCreateChannel}>
         <div className="bg-[#311150]/80 w-[550px] h-[300px] rounded-md shadow-lg font-light mx-2">
           <div className="flex justify-center items-center p-3">
             <h1 className="text-white md:text-lg">New Channel</h1>
           </div>
           <div className="flex justify-center items-center my-2 w-3/4 mx-auto text-black">
-            <div className="w-[90%] h-full flex justify-center items-center bg-[#D9D9D9] rounded-lg">
+            <div className="relative w-[90%] h-full flex justify-center items-center bg-[#D9D9D9] rounded-lg">
               <input
                 type="text"
                 name = "channelName"
@@ -86,7 +86,7 @@ const Popup: React.FC<PopupProps> = ({ setChannel }) => {
                 placeholder="Channel name Ex: #mychannel"
               />
               {Validationerror && (
-                <div className="text-red-400 text-xs font-bold md:text-sm ml-2">
+                <div className="text-red-500 text-xs font-bold left-0 ml-1 absolute top-0">
                       {Validationerror}
                       </div>
                   )}

@@ -53,6 +53,8 @@ const Recent = () => {
 
   return (
     <>
+    <div className="border">
+
       <div className="md:mt-6">
         <h1 className="text-white md:text-xl text-center font-inter">Recent</h1>
         <div className="flex justify-center md:mt-2">
@@ -100,6 +102,7 @@ const Recent = () => {
           </div>
         ))}
       </div>
+    </div>
     </>
   );
 };
