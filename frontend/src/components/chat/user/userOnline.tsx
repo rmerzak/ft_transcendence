@@ -54,11 +54,11 @@ const UserOnline = () => {
 
   return (
     <>
-    <div className="border">
-      <div className="my-5">
+    <div className="">
+      <div className="">
         <h1 className="text-white md:text-xl text-center">Online</h1>
-        <div className="flex justify-center md:mt-2">
-          <div className="mb-4 border-b border-white w-12 md:w-16"></div>
+        <div className="flex justify-center mt-1">
+          <div className="mb-3 border-b border-white w-6 md:w-10"></div>
         </div>
       </div>
       <Swiper
