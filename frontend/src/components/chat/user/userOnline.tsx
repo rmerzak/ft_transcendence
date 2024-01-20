@@ -54,6 +54,7 @@ const UserOnline = () => {
 
   return (
     <>
+    <div className="border">
       <div className="my-5">
         <h1 className="text-white md:text-xl text-center">Online</h1>
         <div className="flex justify-center md:mt-2">
@@ -73,6 +74,7 @@ const UserOnline = () => {
           </SwiperSlide>
         )) : <div className="flex justify-center items-center"><h1 className="text-white text-2xl">You have no friends</h1></div>}
       </Swiper>
+    </div>
     </>
   );
 };

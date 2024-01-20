@@ -71,7 +71,7 @@ const Channels: React.FC<Channel> = ({ header }) => {
         </div>
       </div>
 
-      <div className=" flex flex-col rounded-md md:w-3/4 mx-auto mt-2 md:scroll-y-auto md:max-h-[300px]">
+      <div className="border flex flex-col rounded-md md:w-3/4 mx-auto mt-2 md:scroll-y-auto md:max-h-[300px]">
       <h1 className="font-bold  text-center text-green-400">Joined Channels</h1>
         <div className="mb-2 h-[180px] overflow-auto">
         {chatRoomsJoined.length > 0 ? chatRoomsJoined.map((channel, index) => (
