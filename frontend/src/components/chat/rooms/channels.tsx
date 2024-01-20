@@ -19,9 +19,11 @@ const Channels: React.FC<Channel> = ({ header }) => {
 
   const [isPrompetVisible, setIsPrompetVisible] = useState<boolean>(false);
   const [invalue, setinValue] = useState<string>("");
+  const [selectedChannel, setSelectedChannel] = useState<ChatRoom | null>(null);
 
-  const handleClick = () => {
+  const handleClick = (ChatRoom: ChatRoom) => {
     setIsPrompetVisible(true);
+    setSelectedChannel(ChatRoom);
   }
   
   const handleKeyDown = (e: KeyboardEvent) => {
@@ -34,6 +36,8 @@ const Channels: React.FC<Channel> = ({ header }) => {
   const handleInput = () => {
     console.log('User entered:', invalue);
     setIsPrompetVisible(false);
+    chatSocket?.emit("join-channel", invalue);
+    setSelectedChannel(null);
     setinValue('');
   };
 
@@ -88,8 +92,8 @@ const Channels: React.FC<Channel> = ({ header }) => {
           >
             <p>#{channel.name}</p>
             <div className="flex">
-            {!isPrompetVisible && channel.visibility === 'PROTECTED' && <button onClick={handleClick}> <MdOutlineKey className=" w-[25px] h-[25px]"/> </button>}
-            {isPrompetVisible && <input type="text" placeholder="Enter password" value={invalue} onChange={(e) => setinValue(e.target.value)} onKeyDown={handleKeyDown} className="text-black rounded-full w-[100%] ml-1"/>}
+            {channel.visibility === 'PROTECTED' && selectedChannel?.id !== channel.id && <button onClick={() => handleClick(channel)}> <MdOutlineKey className=" w-[25px] h-[25px]"/> </button>}
+            {isPrompetVisible && selectedChannel?.id === channel.id && <input type="text" placeholder="Enter password" value={invalue} onChange={(e) => setinValue(e.target.value)} onKeyDown={handleKeyDown} className="text-black rounded-full w-[100%] ml-1"/>}
             {channel.visibility === 'PUBLIC' && <MdAddLink className=" w-[25px] h-[25px]"/>}
             </div>
           </div>
@@ -116,59 +120,3 @@ const Channels: React.FC<Channel> = ({ header }) => {
   );
 };
 export default Channels;
-
-
-/*
-// ...
-
-const YourComponent = () => {
-  const [isPromptVisible, setPromptVisible] = useState(false);
-  const [inputValue, setInputValue] = useState('');
-
-  const handleClick = () => {
-    setPromptVisible(true);
-  };
-
-  const handleKeyDown = (e) => {
-    if (e.keyCode === 13) {
-      handleInput();
-    }
-  };
-
-  const handleInput = () => {
-    // Use the inputValue variable wherever you need it
-    console.log('User entered:', inputValue);
-
-    // You can also handle channel.visibility logic here
-
-    // Close the input prompt
-    setPromptVisible(false);
-  };
-
-  return (
-    <div>
-      {channel.visibility === 'PROTECTED' && (
-        <button onClick={handleClick}>
-          <MdOutlineKey className="border w-[25px] h-[25px]" />
-        </button>
-      )}
-
-      {isPromptVisible && (
-        <div>
-          <p>Enter your password:</p>
-          <input
-            type="password"
-            placeholder="Enter password"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onKeyDown={handleKeyDown}
-            className="text-black"
-          />
-        </div>
-      )}
-    </div>
-  );
-};
-
-// ...
-*/
