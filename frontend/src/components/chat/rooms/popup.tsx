@@ -9,6 +9,7 @@ interface PopupProps {
 
 const Popup: React.FC<PopupProps> = ({ setChannel }) => {
   const {chatSocket } = useContext(ContextGlobal);
+  const [Validationerror, setValidationError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
     channelName: "",
@@ -22,6 +23,15 @@ const Popup: React.FC<PopupProps> = ({ setChannel }) => {
       ...prevData,
       [name]: value,
     }));
+    validateChannelName(value);
+  };
+
+  const validateChannelName = (name: string) => {
+    if (name.length < 2 || name.length > 12) {
+      setValidationError("Channel name must be between 2 and 12 characters.");
+    } else {
+      setValidationError(null);
+    }
   };
 
   const handleVisibilityChange = (visibility: string) => {
@@ -33,6 +43,11 @@ const Popup: React.FC<PopupProps> = ({ setChannel }) => {
 
   const handleCreateChannel = (e:any) => {
     e.preventDefault();
+    const { channelName } = formData;
+    if (channelName.length < 2 || channelName.length > 12) {
+      setValidationError("Channel name must be between 2 and 12 characters.");
+      return;
+    }
     const channelData = {
       name: formData.channelName,
       passwordHash: formData.password,
@@ -47,6 +62,7 @@ const Popup: React.FC<PopupProps> = ({ setChannel }) => {
       password: "",
       visibility: "PUBLIC",
     });
+    setValidationError(null);
     setChannel();
   };
 
@@ -66,9 +82,14 @@ const Popup: React.FC<PopupProps> = ({ setChannel }) => {
                 value={formData.channelName}
                 onChange={handleInputChange}
                 required
-                className="w-[90%] md:h-11 h-[36px] rounded-l-lg bg-[#D9D9D9] outline-none px-2 md:text-lg text-sm"
+                className="w-[90%] md:h-11 h-[36px] rounded-l-lg bg-[#D9D9D9] outline-none px-2 md:text-lg text-sm mr-2"
                 placeholder="Channel name Ex: #mychannel"
               />
+              {Validationerror && (
+                <div className="text-red-400 text-xs font-bold md:text-sm ml-2">
+                      {Validationerror}
+                      </div>
+                  )}
               <div className="w-[10%] mr-2 md:mr-0">
                 <svg
                   className="w-4 h-4 md:w-6 md:h-6 text-gray-500"
@@ -90,11 +111,11 @@ const Popup: React.FC<PopupProps> = ({ setChannel }) => {
             <fieldset className="flex justify-between items-center space-x-4 w-[67.5%] h-10 p-2" id="safe">
               <div className="space-x-1 flex justify-center items-center text-base md:text-lg">
                 <input type="radio" name="safe" id="public" onChange={() => handleVisibilityChange("PUBLIC")} checked={formData.visibility === "PUBLIC"}/>
-                <label htmlFor="private">public</label>
+                <label htmlFor="public">public</label>
               </div>
               <div className="space-x-1 flex justify-center items-center text-base md:text-lg">
                 <input type="radio" name="safe" id="protected" onChange={() => handleVisibilityChange("PROTECTED")} checked={formData.visibility === "PROTECTED"}/>
-                <label htmlFor="private">protected</label>
+                <label htmlFor="protected">protected</label>
               </div>
               <div className="space-x-1 flex justify-center items-center text-base md:text-lg">
                 <input type="radio" name="safe" id="private" onChange={() => handleVisibilityChange("PRIVATE")} checked={formData.visibility === "PRIVATE"}/>
