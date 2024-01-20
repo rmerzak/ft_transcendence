@@ -8,6 +8,7 @@ import { IoIosExit } from "react-icons/io";
 import { MdOutlineKey } from "react-icons/md";
 import { MdAddLink } from "react-icons/md";
 import { getChatRoomsJoined, getChatRoomsNotJoined } from "@/api/chat/chat.api";
+import OutsideClickHandler from "react-outside-click-handler";
 
 interface Channel {
   header: string;
@@ -88,12 +89,15 @@ const Channels: React.FC<Channel> = ({ header }) => {
         {chatRoomsToJoin.length > 0 ? chatRoomsToJoin.map((channel, index) => (
           <div
             key={index}
-            className="flex bg-[#811B77]/50 justify-between items-center text-xs md:text-base p-3 my-[6px] md:my-[10px] rounded-md text-white hover:bg-[#811B77]/100"
-          >
+            className="flex bg-[#811B77]/50 justify-between items-center text-xs md:text-base p-3 my-[6px] md:my-[10px] rounded-md text-white hover:bg-[#811B77]/100">
             <p>#{channel.name}</p>
             <div className="flex">
-            {channel.visibility === 'PROTECTED' && selectedChannel?.id !== channel.id && <button onClick={() => handleClick(channel)}> <MdOutlineKey className=" w-[25px] h-[25px]"/> </button>}
-            {isPrompetVisible && selectedChannel?.id === channel.id && <input type="text" placeholder="Enter password" value={invalue} onChange={(e) => setinValue(e.target.value)} onKeyDown={handleKeyDown} className="text-black rounded-full w-[100%] ml-1"/>}
+            {channel.visibility === 'PROTECTED' && selectedChannel?.id !== channel.id && 
+            <OutsideClickHandler onOutsideClick={() => setSelectedChannel(null)}>
+            <button onClick={() => handleClick(channel)}> <MdOutlineKey className=" w-[25px] h-[25px]"/> </button>
+            </OutsideClickHandler>
+            }
+            {isPrompetVisible && selectedChannel?.id === channel.id &&<input type="text" autoFocus placeholder="Enter password" value={invalue} onChange={(e) => setinValue(e.target.value)} onKeyDown={handleKeyDown} className="text-black rounded-full w-[100%] ml-1"/>}
             {channel.visibility === 'PUBLIC' && <MdAddLink className=" w-[25px] h-[25px]"/>}
             </div>
           </div>
