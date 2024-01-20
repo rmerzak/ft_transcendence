@@ -93,7 +93,7 @@ const Channels: React.FC<Channel> = ({ header }) => {
             <p>#{channel.name}</p>
             <div className="flex">
             {channel.visibility === 'PROTECTED' && selectedChannel?.id !== channel.id && 
-            <OutsideClickHandler onOutsideClick={() => setSelectedChannel(null)}>
+            <OutsideClickHandler onOutsideClick={() => { setSelectedChannel(null); setinValue(''); }}>
             <button onClick={() => handleClick(channel)}> <MdOutlineKey className=" w-[25px] h-[25px]"/> </button>
             </OutsideClickHandler>
             }
