@@ -27,7 +27,7 @@ export class GatewayGateway
     socket.use(SocketAuthMiddleware() as any);
   }
 
-  constructor(private chatService: MsgService, private roomService: RoomService,private prisma: PrismaService) { }
+  constructor(private chatService: MsgService, private roomService: RoomService, private prisma: PrismaService) { }
 
   async handleConnection(_client: Socket) {
     const user = await this.prisma.user.findUnique({ where: { id: _client['payload']['sub'] } });
@@ -49,7 +49,6 @@ export class GatewayGateway
       const msg = await this.chatService.addMessage(payload, _client['user'].id);
       this.server.to(payload.chatRoomId.toString()).emit('receive-message', msg);
     } catch (error) {
-      console.log("error ==== ",error.message);
       _client.emit('error', error.message);
     }
   }
@@ -59,13 +58,17 @@ export class GatewayGateway
     if (_client.rooms.has(payload.roomId.toString())) return;
     _client.join(payload.roomId.toString());
     this.server.to(payload.roomId.toString()).emit('has-joined');
-    // console.log("rooms: ", _client.rooms);
   }
 
   @SubscribeMessage('add-recent')
   async handleAddRecent(_client: Socket, payload: Recent[]) {
     payload.map(async (recent, index) => {
-      await this.chatService.addRecent(recent);
+      try {
+        await this.chatService.addRecent(recent);
+      }
+      catch (error) {
+        _client.emit('error', error.message);
+      }
       if (payload.length === index + 1) {
         this.server.to(recent.chatRoomId.toString()).emit('receive-recent', recent);
       }
@@ -73,7 +76,7 @@ export class GatewayGateway
   }
   @SubscribeMessage('create-room')
   async handleCreateRoom(_client: Socket, payload: ChatRoom) {
-    
+
     try {
       const room = await this.roomService.createChatRoom(_client, payload);
       this.roomService.connectedClients.forEach((sockets, userId) => {

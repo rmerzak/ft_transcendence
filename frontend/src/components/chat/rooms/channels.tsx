@@ -8,6 +8,7 @@ import { IoIosExit } from "react-icons/io";
 import { MdOutlineKey } from "react-icons/md";
 import { MdAddLink } from "react-icons/md";
 import { getChatRoomsJoined, getChatRoomsNotJoined } from "@/api/chat/chat.api";
+import { MessageCircle } from "lucide-react";
 
 interface Channel {
   header: string;
@@ -48,12 +49,15 @@ const Channels: React.FC<Channel> = ({ header }) => {
 
       <div className="rounded-md md:w-3/4 mx-auto mt-2 md:scroll-y-auto md:max-h-[300px]">
         {chatRoomsJoined.length > 0 ? chatRoomsJoined.map((channel, index) => (
-          <div
+          <div 
             key={index}
             className="flex bg-[#811B77]/50 justify-between items-center text-xs md:text-base p-3 my-[6px] md:my-[10px] rounded-md text-white hover:bg-[#811B77]/100"
           >
             <p>#{channel.name}</p>
+            <div className="flex">
+              <MessageCircle onClick={()=>{alert("enter the channel")}}/>
             <IoIosExit className=" w-[25px] h-[25px]" />
+            </div>
           </div>
         )): <p className="text-center text-white">No channels</p>}
         {chatRoomsToJoin.length > 0 ? chatRoomsToJoin.map((channel, index) => (

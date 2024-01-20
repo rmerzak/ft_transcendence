@@ -1,6 +1,4 @@
 import { Messages, ChatRoom, Recent } from "@/interfaces";
-import axios from "axios";
-
 import { apiInstance } from "../axios/axios.api";
 
 

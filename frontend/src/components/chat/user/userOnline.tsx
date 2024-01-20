@@ -77,14 +77,3 @@ const UserOnline = () => {
   );
 };
 export default UserOnline;
-
-      {/* <div className="flex justify-center items-center space-x-2">
-        <input
-          type="text"
-          className="bg-gray-300 text-black rounded-full px-2 h-[32px] md:h-11 w-3/5 focus:outline-none text-xs md:text-base my-3"
-          placeholder="Your placeholder text"
-        />
-        <button className="rounded-full text-white border w-[30%] md:w-1/5 md:h-11 text-xs md:text-base h-[32px]">
-          Search
-        </button>
-      </div> */}
