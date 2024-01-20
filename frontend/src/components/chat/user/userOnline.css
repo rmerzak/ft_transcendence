@@ -1,0 +1,52 @@
+.mySwiper {
+  width: 600px;
+  margin: 0 auto;
+  border-radius: 99px;
+}
+
+.swiper-slide {
+  width: 100%;
+  height: 100%;
+  /* background: #000; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@media (min-width: 834px) and (max-height: 1194px){
+  .mySwiper {
+    width: 300px;
+    height: 65px;
+    margin: 0 auto;
+    border-radius: 99px;
+  }
+}
+
+@media (min-width: 1280px) and (max-width: 2500px) {
+  .mySwiper {
+    width: 350px;
+    height: 65px;
+    margin: 0 auto;
+    border-radius: 99px;
+  }
+}
+
+
+@media (min-width: 800px) and (max-width: 1280px) {
+  .mySwiper {
+    width: 300px;
+    height: 65px;
+    margin: 0 auto;
+    border-radius: 99px;
+  }
+}
+
+@media (min-width: 100px) and (max-width: 800px) {
+  .mySwiper {
+    width: 300px;
+    height: 65px;
+    margin: 0 auto;
+    border-radius: 99px;
+  }
+}
+

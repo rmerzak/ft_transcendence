@@ -1,7 +1,5 @@
 import { Server } from 'socket.io';
 import {
-  ConnectedSocket,
-  MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
   SubscribeMessage,
@@ -9,40 +7,95 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
-
-// let users = new Map<string, string[]>();
+import { MsgService } from '../services/msg/msg.service';
+import { SocketAuthMiddleware } from 'src/auth/middleware/ws.mw';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { ChatRoom, Message, Recent, RoomVisibility } from '@prisma/client';
+import { RoomService } from '../services/room/room.service';
 
 @WebSocketGateway({
-  cors: { origin: 'http://localhost:8080', namespace: '/chat' },
+  cors: { origin: 'http://localhost:8080', credentials: true },
+  namespace: '/chat'
 })
 export class GatewayGateway
-  implements OnGatewayConnection, OnGatewayDisconnect
-{
+  implements OnGatewayConnection, OnGatewayDisconnect {
+
   // add a map to store users
   @WebSocketServer()
   server: Server;
+  afterInit(socket: Socket) {
+    socket.use(SocketAuthMiddleware() as any);
+  }
 
-  constructor() {}
-  handleConnection(_client: Socket) {
-    console.log('connected: ' + _client);
-    //check jwt token
-    // const isValidToken = this.validateToken(_client.handshake.query.token);
-    // add user to map
-    // users.set(_client.id, []);
+  constructor(private chatService: MsgService, private roomService: RoomService,private prisma: PrismaService) { }
+
+  async handleConnection(_client: Socket) {
+    const user = await this.prisma.user.findUnique({ where: { id: _client['payload']['sub'] } });
+    if (user) {
+      _client['user'] = user;
+    } else {
+      _client.disconnect();
+    }
+    if (!this.roomService.connectedClients.has(user.id)) {
+      this.roomService.connectedClients.set(user.id, []);
+    }
+    this.roomService.connectedClients.get(user.id).push(_client);
+    console.log('connected chat id1: ' + _client.id);
+  }
+
+  @SubscribeMessage('send-message')
+  async handleMessage(_client: Socket, payload: Message) {
+    try {
+      const msg = await this.chatService.addMessage(payload, _client['user'].id);
+      this.server.to(payload.chatRoomId.toString()).emit('receive-message', msg);
+    } catch (error) {
+      console.log("error ==== ",error.message);
+      _client.emit('error', error.message);
+    }
+  }
+
+  @SubscribeMessage('join-room')
+  handleJoinRoom(_client: Socket, payload: { roomId: number }) {
+    if (_client.rooms.has(payload.roomId.toString())) return;
+    _client.join(payload.roomId.toString());
+    this.server.to(payload.roomId.toString()).emit('has-joined');
+    // console.log("rooms: ", _client.rooms);
+  }
+
+  @SubscribeMessage('add-recent')
+  async handleAddRecent(_client: Socket, payload: Recent[]) {
+    payload.map(async (recent, index) => {
+      await this.chatService.addRecent(recent);
+      if (payload.length === index + 1) {
+        this.server.to(recent.chatRoomId.toString()).emit('receive-recent', recent);
+      }
+    });
+  }
+  @SubscribeMessage('create-room')
+  async handleCreateRoom(_client: Socket, payload: ChatRoom) {
+    
+    try {
+      const room = await this.roomService.createChatRoom(_client, payload);
+      this.roomService.connectedClients.forEach((sockets, userId) => {
+        if (userId !== _client['user'].id) {
+          sockets.forEach(socket => {
+            socket.emit('create-room', room);
+          });
+        }
+        if (userId === _client['user'].id) {
+          sockets.forEach(socket => {
+            socket.emit('ownedRoom', room);
+          });
+        }
+      });
+
+    } catch (error) {
+      _client.emit('error', error.message);
+    }
+    //_client.emit('receive-room', room);
   }
 
   handleDisconnect(_client: Socket) {
-    console.log('disconnected: ' + _client.id);
-    // check jwt token
-    // remove user from map
-    // users.delete(_client.id);
-  }
-
-  @SubscribeMessage('sendmessage')
-  handleMessage(
-    @MessageBody() data: string,
-    @ConnectedSocket() client: Socket,
-  ) {
-    this.server.emit('message', { message: data, id: client.id });
+    console.log('disconnected chat id: ' + _client.id);
   }
 }

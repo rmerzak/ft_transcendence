@@ -6,17 +6,17 @@ import styles from "../..";
 import { fadeIn, staggerContainer, Variants } from "@/utils/motion";
 import { startingFeatures } from "@/constants/index";
 const GetStarted = () => (
-  <section className={`${styles.paddings} relative z-10`}>
+  <section className="sm:p-16 xs:p-8 px-6 py-12 relative z-10">
     <motion.div
-      variants={staggerContainer}
+    variants={staggerContainer(1, 1)}
       initial="hidden"
       whileInView="show"
       viewport={{ once: false, amount: 0.25 }}
-      className={`${styles.innerWidth} mx-auto flex lg:flex-row flex-col gap-8`}
+      className="2xl:max-w-[1280px] w-full mx-auto flex lg:flex-row flex-col gap-8"
     >
       <motion.div
         variants={Variants('left')}
-        className={`flex-1 ${styles.flexCenter}`}
+        className="flex-1 flex justify-center items-center"
       >
         <img
           src="/ping.webp"
@@ -29,7 +29,7 @@ const GetStarted = () => (
         className="flex-[0.75] flex justify-center flex-col"
       >
         <TypingText title="| How PingPong Works" />
-        <TitleText title={<>Get started with just a few clicks</>} />
+        <TitleText title="Get started with just a few clicks" />
         <div className="mt-[31px] flex flex-col max-w-[370px] gap-[24px]">
           {startingFeatures.map((feature, index) => (
             <StartSteps

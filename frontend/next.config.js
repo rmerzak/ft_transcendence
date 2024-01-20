@@ -3,7 +3,7 @@ const nextConfig = {
     headers: async function () {
       return [
         {
-          source: '/auth/:path*',
+          source: '/dashboard/:path*',
           headers: [
             {
               key: 'Access-Control-Allow-Origin',
@@ -31,13 +31,29 @@ const nextConfig = {
       API_USER_FINISH_AUTH: process.env.USER_FINISH_AUTH,
       API_Cloudinary_URL: process.env.CLOUDINARY_URL,
       API_USER_LOGOUT: process.env.USER_API_USER_LOGOUT,
+      API_FRONT_END: process.env.SERVER_FRONTEND,
 
     },
     images: {
-      domains: ['res.cloudinary.com', 'i.pravatar.cc', 'localhost'],
-    }
+      //domains: ['res.cloudinary.com','cdn.intra.42.fr','i.pravatar.cc'],
+      remotePatterns: [{
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+        pathname: '**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cdn.intra.42.fr',
+        pathname: '**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'i.pravatar.cc',
+        pathname: '**',
+      },
+    ]
+    },
+    reactStrictMode: false,
   };
   
   module.exports = nextConfig;
-  
-  

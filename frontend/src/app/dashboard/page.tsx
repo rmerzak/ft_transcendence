@@ -1,9 +1,13 @@
-
+'use client'
+import { ContextGlobal } from '@/context/contex';
+import React, { useContext } from 'react'
 
 const Dashboard = () => {
+  const { socket, setSocket, chatSocket }: any = useContext(ContextGlobal);
   return (
     <div>
-      dashboard
+      socket {socket?.id}******
+      chatSocket {chatSocket?.id}
     </div>
   )
 }

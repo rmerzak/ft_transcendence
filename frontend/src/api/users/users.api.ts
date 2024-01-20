@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 import { useRouter } from "next/navigation";
+
 axios.interceptors.response.use(
   (response) => {
     return response;
@@ -34,7 +35,6 @@ class UsersService {
         }
     }
     async getVerify(): Promise<any> {
-        console.log(process.env.API_USER_VERIFY);
         return await this.axiosCall<any>({ url: process.env.API_USER_VERIFY , method: "GET" });
     }
 

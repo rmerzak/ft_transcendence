@@ -17,18 +17,12 @@ enum RoomVisibility {
   PROTECTED
 }
 
-// model User {
-//   id Int @id @default(autoincrement())
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
+enum UserStatus {
+  ONLINE
+  OFFLINE
+  INGAME
+}
 
-//   email String @unique
-//   hash String
-
-//   firstname String?
-//   lastname String?
-//   username String?
-// }
 model User {
   // initial user data
   id Int @id @default(autoincrement())
@@ -39,34 +33,90 @@ model User {
   email String @unique
   firstname String
   lastname String
-  username String
+  username String @unique
   image String
 
   // verification user authentification
   isVerified Boolean @default(false)
 
+  // user status online , offline ,in game
+  status UserStatus @default(OFFLINE)
+  // user 2fa
+  twoFactorSecret String
+  twoFactorEnabled Boolean @default(false)
+
   // Game user data
-  gamewins Int @default(0)
-  gameplays Int @default(0)
-  gamefails Int @default(0)
-  gamepoints Int @default(0)
+  gameWins Int @default(0)
+  gameMatches Int @default(0)
+  gameLoses Int @default(0)
+  gameElo Int @default(800)
   
-  games Game[]
+  uGames Game[] @relation(name: "userGame")
+  oGames Game[] @relation(name: "oppGame")
 
   // Chat user data
   chatRooms ChatRoomMember[]
   sentMessages Message[] @relation(name: "SentMessages")
+  sentFriendRequests Friendship[] @relation("Sender")
+  receivedFriendRequests Friendship[] @relation("Receiver")
+  receivedNotification Notification[] @relation("Receiver")
+  sendNotification Notification[] @relation("Sender")
+  user Recent[] @relation("recent")
 }
 
 model Game {
-  gameId String @id @map("game-id")
+  gameId Int @id @default(autoincrement())
   userPlayerId Int
-  userOpponnentId Int
+  userOpponentId Int
+  userScore Int
+  oppScore Int
+  user User @relation(name:"userGame", fields: [userPlayerId], references: [id])
+  opponent User @relation(name: "oppGame", fields: [userOpponentId], references: [id])
+}
+
+enum FriendshipStatus {
+  PENDING
+  ACCEPTED
+  BLOCKED
+}
+enum Blocker {
+  SENDER
+  RECEIVER
+}
+model Friendship {
+  id Int @id @default(autoincrement())
   createdAt DateTime @default(now())
-  score Int
-  status String
-  dateStart DateTime
-  user User @relation(fields: [userPlayerId], references: [id])
+  updateAt DateTime @updatedAt
+
+  status FriendshipStatus
+
+  sender User @relation("Sender", fields: [senderId], references: [id])
+  senderId Int
+  receiver User @relation("Receiver", fields: [receiverId], references: [id])
+  receiverId Int
+
+  block Boolean @default(false)
+  blockBy Blocker?
+}
+
+enum RequestType {
+  FRIENDSHIP
+  GAME
+}
+model Notification {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  type String
+  content String
+  RequestId Int
+  RequestType RequestType
+  vue Boolean @default(false)
+  userId Int
+  senderId Int
+  senderName String
+  senderImage String
+  Receiver User @relation( "Receiver",fields: [userId], references: [id])
+  sender User @relation( "Sender",fields: [senderId], references: [id])
 }
 
 // begin chat models
@@ -76,19 +126,21 @@ model ChatRoom {
   updatedAt DateTime @updatedAt
   name String? @unique
   passwordHash String?
+  owner Int?
   visibility RoomVisibility? @default(PUBLIC)
   users ChatRoomMember[]
   messages Message[]
+  recent Recent[] @relation("chatrecent")
 }
 
 model ChatRoomMember {
   // Foreign keys
   userId Int
   chatRoomId Int
-  user User @relation(fields: [userId], references: [id])
-  chatRoom ChatRoom @relation(fields: [chatRoomId], references: [id])
-  is_admin Boolean
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  chatRoom ChatRoom @relation(fields: [chatRoomId], references: [id], onDelete: Cascade)
   joinedAt DateTime @default(now())
+  is_admin Boolean @default(false)
   leftAt DateTime?
   @@id([userId, chatRoomId])
 }
@@ -97,9 +149,21 @@ model Message {
   id Int @id @default(autoincrement())
   createdAt DateTime @default(now())
   senderId Int
-  ChatRoomId Int 
-  sender User @relation(name: "SentMessages", fields: [senderId], references: [id])
-  chatRoom ChatRoom @relation(fields: [ChatRoomId], references: [id])
+  chatRoomId Int 
+  sender User @relation(name: "SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  chatRoom ChatRoom @relation(fields: [chatRoomId], references: [id], onDelete: Cascade)
   text String
 }
 
+model Recent {
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId Int
+  senderId Int
+  chatRoomId Int
+  user User @relation(name: "recent", fields: [userId], references: [id], onDelete: Cascade)
+  chatRoom ChatRoom @relation(name: "chatrecent", fields: [chatRoomId], references: [id], onDelete: Cascade)
+  lastMessage String
+  link String
+  @@id([userId, chatRoomId])
+}

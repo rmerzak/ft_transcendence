@@ -5,10 +5,13 @@ import { PrismaModule } from "src/prisma/prisma.module";
 import { JwtModule } from "@nestjs/jwt";
 import { JwtStrategy, LeetStrategy } from "./strategy";
 import { PassportModule } from "@nestjs/passport";
+import { TwoFactorService } from './two-factor/two-factor.service';
 
 @Module({
-    imports:[PrismaModule,JwtModule.register({}),PassportModule.register({ session: false })],
+    imports:[PrismaModule,JwtModule.register({
+        secret: process.env.JWT_SERCRET,
+    }),PassportModule.register({ session: false })],
     controllers: [AuthController],
-    providers: [AuthService, JwtStrategy,LeetStrategy]
+    providers: [AuthService, JwtStrategy,LeetStrategy, TwoFactorService]
 })
 export class AuthModule{}

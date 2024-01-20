@@ -127,12 +127,16 @@
 }
 
 .footer-gradient {
-  position: absolute;
-  width: 500px;
-  height: 100px;
-  left: 37%;
-  bottom: 0;
+    position: absolute;
+    width: 500px;
+    height: 100px;
+    left: 37%;
+    bottom: 0;
 
-  background: #65c4fa;
-  filter: blur(150px);
+    background: #65c4fa;
+    filter: blur(150px);
+}
+
+.border-colors {
+    border-color: aliceblue;
 }

@@ -5,6 +5,12 @@ import { UserModule } from './user/user.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { ChatModule } from './chat/chat.module';
+import { NotificationController } from './notification/notification.controller';
+import { FriendshipController } from './notification/friendship.controller';
+import { FriendshipGateway } from './notification/gateway/friendship.gateway';
+import { FriendshipService } from './notification/friendship.service';
+import { NotificationService } from './notification/notification.service';
+import { GameModule } from './game/game.module';
 
 @Module({
   imports: [
@@ -14,8 +20,9 @@ import { ChatModule } from './chat/chat.module';
     ConfigModule.forRoot({ isGlobal: true }),
     MulterModule.register({ dest: './uploads' }),
     ChatModule,
+    GameModule
   ],
-  controllers: [],
-  providers: [],
+  controllers: [NotificationController, FriendshipController],
+  providers: [FriendshipGateway, FriendshipService, NotificationService],
 })
 export class AppModule {}
