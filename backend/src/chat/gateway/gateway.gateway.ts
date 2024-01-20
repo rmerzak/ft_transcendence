@@ -96,9 +96,16 @@ export class GatewayGateway
   }
   @SubscribeMessage('new-member')
   async handleMemberRoom(_client: Socket, payload: ChatRoom) {
-    //console.log("payload: ", payload);
+    console.log("payload: ", payload);
     try {
-      const newMember = await this.roomService.addMemberToRoom(_client, payload);
+      const room = await this.roomService.addMemberToRoom(_client, payload);
+      this.roomService.connectedClients.forEach((sockets, userId) => {
+        if (userId === _client['user'].id) {
+          sockets.forEach(socket => {
+            socket.emit('ownedRoom', room);
+          });
+        }
+      });
     } catch (error) {
       _client.emit('error', error.message);
     }

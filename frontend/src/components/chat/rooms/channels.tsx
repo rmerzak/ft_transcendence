@@ -11,6 +11,8 @@ import { getChatRoomsJoined, getChatRoomsNotJoined } from "@/api/chat/chat.api";
 import OutsideClickHandler from "react-outside-click-handler";
 import Swal from "sweetalert2";
 import { PlusCircle } from 'lucide-react';
+import { toast } from "react-toastify";
+import JoinChannel from "./JoinChannel";
 
 interface Channel {
   header: string;
@@ -19,7 +21,8 @@ interface Channel {
 const Channels: React.FC<Channel> = ({ header }) => {
   const { chatRoomsJoined, chatRoomsToJoin,setChatRoomsToJoin,setChatRoomsJoined ,chatSocket } = useContext(ContextGlobal);
   const [newChannel, setNewChannel] = useState<boolean>(false);
-
+  const [open, setOpen] = useState<boolean>(false);
+  const [openChannel, setOpenChannel] = useState<ChatRoom | null>(null);
   const [isPrompetVisible, setIsPrompetVisible] = useState<boolean>(false);
   const [invalue, setinValue] = useState<string>("");
   const [selectedChannel, setSelectedChannel] = useState<ChatRoom | null>(null);
@@ -27,51 +30,42 @@ const Channels: React.FC<Channel> = ({ header }) => {
   const handleClick = (ChatRoom: ChatRoom) => {
     //setIsPrompetVisible(true);
     //setSelectedChannel(ChatRoom);
-    Swal.fire({
-      title: `Enter Password for: ${ChatRoom.name}`,
-      input: "password",
-      inputAttributes: {
-        autocapitalize: "off"
-      },
-      showCancelButton: true,
-      confirmButtonText: "Join",
-      showLoaderOnConfirm: true,
-        customClass: {
-          popup: 'bg-[#78196F]/50 rounded-[2rem]',
-          title: 'text-white',
-          input: 'rounded-full',
-          confirmButton: 'bg-[#fffff]',
-          cancelButton: 'bg-white'
-      },
-      preConfirm: async (login) => {
-        console.log(login);
-        try {
-          const githubUrl = `
-            https://api.github.com/users/${login}
-          `;
-          const response = await fetch(githubUrl);
-          if (!response.ok) {
-            return Swal.showValidationMessage(`
-              ${JSON.stringify(await response.json())}
-            `);
-          }
-          return response.json();
-        } catch (error) {
-          Swal.showValidationMessage(`
-            Request failed: ${error}
-          `);
-        }
-      },
-      allowOutsideClick: () => !Swal.isLoading()
-    }).then((result) => {
-      if (result.isConfirmed) {
-        Swal.fire({
-          title: `${result.value.login}'s avatar`,
-          imageUrl: result.value.avatar_url
-        });
-      }
-    });
-    console.log("helllo");
+    // Swal.fire({
+    //   title: `Enter Password for: ${ChatRoom.name}`,
+    //   input: "password",
+    //   inputAttributes: {
+    //     autocapitalize: "off"
+    //   },
+    //   showCancelButton: true,
+    //   confirmButtonText: "Join",
+    //   showLoaderOnConfirm: true,
+    //     customClass: {
+    //       popup: 'bg-[#78196F]/50 rounded-[2rem]',
+    //       title: 'text-white',
+    //       input: 'rounded-full',
+    //       confirmButton: 'bg-[#fffff]',
+    //       cancelButton: 'bg-white'
+    //   },
+    //   preConfirm: async (password) => {
+    //     try {
+    //       chatSocket?.emit("new-member", { name: ChatRoom.name, passwordHash: password });
+    //       setChatRoomsToJoin((prev: ChatRoom[]) => prev.filter((item: ChatRoom) => item.name !== ChatRoom.name));
+    //     } catch (error) {
+    //       console.log(error);
+    //       Swal.showValidationMessage(`
+    //         Request failed: ${error}
+    //       `);
+    //     }
+    //   },
+    //   allowOutsideClick: () => !Swal.isLoading()
+    // }).then((result) => {
+    //   if (result.isConfirmed) {
+    //    console.log(result);
+    //   }
+    // });
+    console.log('User entered:');
+    setOpen(true);
+    setOpenChannel(ChatRoom)
   }
   
   const handleKeyDown = (e: KeyboardEvent) => {
@@ -107,6 +101,11 @@ const Channels: React.FC<Channel> = ({ header }) => {
           setChatRoomsJoined(res.data);
       }).catch((err) => { console.log(err) });
     });
+    chatSocket?.on('error', (data) => {
+      if(data) {
+        toast.error(data);
+    }
+});
     console.log("chatRoomsJoined");
   }, [chatSocket]);
   return (
@@ -138,10 +137,11 @@ const Channels: React.FC<Channel> = ({ header }) => {
             className="flex bg-[#811B77]/50 justify-between items-center text-xs md:text-base p-3 my-[6px] md:my-[10px] rounded-md text-white hover:bg-[#811B77]/100">
             <p>#{channel.name}</p>
             <div className="flex">
-            {channel.visibility === 'PROTECTED' && selectedChannel?.id !== channel.id && 
-            <OutsideClickHandler onOutsideClick={() => { setSelectedChannel(null); setinValue(''); }}>
-            <button onClick={() => handleClick(channel)}> <MdOutlineKey className=" w-[25px] h-[25px]"/> </button>
-            </OutsideClickHandler>
+            {channel.visibility === 'PROTECTED' && selectedChannel?.id !== channel.id &&
+              <OutsideClickHandler onOutsideClick={() => { setSelectedChannel(null); setinValue(''); }}>
+                <button onClick={() => handleClick(channel)}> <MdOutlineKey className=" w-[25px] h-[25px]" /> </button>
+                {openChannel === channel && <JoinChannel channel={channel} setOpenChannel={setOpenChannel} />}
+              </OutsideClickHandler>
             }
             {isPrompetVisible && selectedChannel?.id === channel.id &&<input type="text" autoFocus placeholder="Enter password" value={invalue} onChange={(e) => setinValue(e.target.value)} onKeyDown={handleKeyDown} className="text-black rounded-full w-[100%] ml-1"/>}
             {channel.visibility === 'PUBLIC' && <MdAddLink className=" w-[25px] h-[25px]"/>}

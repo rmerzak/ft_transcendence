@@ -268,7 +268,7 @@ export class RoomService {
         });
     }
     // add user to chat room
-    async addMemberToRoom(_client: Socket, payload: ChatRoom): Promise<ChatRoomMember> {
+    async addMemberToRoom(_client: Socket, payload: ChatRoom): Promise<any> {
         const chatRoom = await this.prisma.chatRoom.findUnique({
             where: { name: payload.name },
         });
@@ -277,6 +277,7 @@ export class RoomService {
             console.log('chatRoom.passwordHash: ', payload.passwordHash);
             if (payload.passwordHash === null || payload.passwordHash === undefined) throw new Error('Chat room password not set');
             const isPasswordValid = await argon.verify(chatRoom.passwordHash, payload.passwordHash);
+            console.log('isPasswordValid: ', isPasswordValid);
             if (!isPasswordValid) throw new Error('Invalid password');
         }
         const chatRoomMember = await this.prisma.chatRoomMember.findUnique({
@@ -291,7 +292,7 @@ export class RoomService {
                 is_admin: false,
             }
         });
-        return newChatRoomMember;
+        return chatRoom;
     }
 
 
