@@ -33,6 +33,7 @@ function Pong()
     useEffect(() => {
         
         //  socket.io
+        console.log("Connecting to socket...");
         const socket = io(`${process.env.API_BASE_URL}/game`, {
             withCredentials: true,
             autoConnect: false,
@@ -430,6 +431,13 @@ function Pong()
 
             // Clear interval
             clearInterval(intervalId);
+
+            const handleBeforeUnload = () => {
+                console.log("Emitting refresh event...");
+                socket.emit('resign', {roomId: roomID});
+              };
+          
+              addEventListener('beforeunload', handleBeforeUnload);
             
             // off event listener
             socket.off('playerNo');
@@ -443,7 +451,8 @@ function Pong()
             updateScores(0, 0);
             setUserInfo(1, 'Loading...', '/game/avatar.jpeg');
             setOpponentInfo(2, 'Loading...', '/game/avatar.jpeg');
-
+            // socket.emit('resign', {roomId: roomID});
+            console.log('socket disconnect');
             socket.disconnect();
         };
 

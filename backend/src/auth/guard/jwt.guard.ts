@@ -14,7 +14,7 @@ export class JwtGuard extends AuthGuard('jwt') {
          if (token) {
             try{
                 const payload = verify(token, process.env.JWT_SERCRET);
-                console.log(payload)
+                // console.log(payload)
                 return super.canActivate(context) as boolean;
             } catch (error) {
                 response.clearCookie('accesstoken');
