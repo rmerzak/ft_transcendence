@@ -36,7 +36,7 @@ const UserItem = ({ friend } : { friend: Friendship }) => {
     (friend.status === 'ACCEPTED' && !friend.block && (status === 'ONLINE' || status === 'IN_GAME')) ? (
         <div onClick={makeMessage}>
         <Image
-          src={profile?.id === friend.sender.id ? friend.receiver.image : friend.sender.image }
+          src={profile?.id === friend.sender.id ? friend.receiver.image : friend.sender.image}
           alt={profile?.id === friend.sender.id ? friend.receiver.username : friend.sender.username }
           width={60}
           height={60}

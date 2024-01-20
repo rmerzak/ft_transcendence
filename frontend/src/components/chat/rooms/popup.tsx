@@ -90,11 +90,11 @@ const Popup: React.FC<PopupProps> = ({ setChannel }) => {
             <fieldset className="flex justify-between items-center space-x-4 w-[67.5%] h-10 p-2" id="safe">
               <div className="space-x-1 flex justify-center items-center text-base md:text-lg">
                 <input type="radio" name="safe" id="public" onChange={() => handleVisibilityChange("PUBLIC")} checked={formData.visibility === "PUBLIC"}/>
-                <label htmlFor="private">public</label>
+                <label htmlFor="public">public</label>
               </div>
               <div className="space-x-1 flex justify-center items-center text-base md:text-lg">
                 <input type="radio" name="safe" id="protected" onChange={() => handleVisibilityChange("PROTECTED")} checked={formData.visibility === "PROTECTED"}/>
-                <label htmlFor="private">protected</label>
+                <label htmlFor="protected" >protected</label>
               </div>
               <div className="space-x-1 flex justify-center items-center text-base md:text-lg">
                 <input type="radio" name="safe" id="private" onChange={() => handleVisibilityChange("PRIVATE")} checked={formData.visibility === "PRIVATE"}/>

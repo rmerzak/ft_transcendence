@@ -55,7 +55,7 @@ export class GatewayGateway
 
   @SubscribeMessage('join-room')
   handleJoinRoom(_client: Socket, payload: { roomId: number }) {
-    if (_client.rooms.has(payload.roomId.toString())) return;
+    if (_client.rooms.has(payload.roomId.toString()) || !payload.hasOwnProperty('roomId')) return;
     _client.join(payload.roomId.toString());
     this.server.to(payload.roomId.toString()).emit('has-joined');
   }
@@ -70,7 +70,7 @@ export class GatewayGateway
         _client.emit('error', error.message);
       }
       if (payload.length === index + 1) {
-        this.server.to(recent.chatRoomId.toString()).emit('receive-recent', recent);
+        this.server.to(recent.chatRoomId.toString()).emit('receive-recent');
       }
     });
   }

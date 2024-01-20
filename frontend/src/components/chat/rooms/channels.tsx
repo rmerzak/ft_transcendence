@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import Popup from "./popup";
-import { use, useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ContextGlobal } from "@/context/contex";
 import { ChatRoom } from "@/interfaces";
 import { IoIosExit } from "react-icons/io";
@@ -9,6 +9,7 @@ import { MdOutlineKey } from "react-icons/md";
 import { MdAddLink } from "react-icons/md";
 import { getChatRoomsJoined, getChatRoomsNotJoined } from "@/api/chat/chat.api";
 import { MessageCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface Channel {
   header: string;
@@ -17,7 +18,12 @@ interface Channel {
 const Channels: React.FC<Channel> = ({ header }) => {
   const { chatRoomsJoined, chatRoomsToJoin,setChatRoomsToJoin,setChatRoomsJoined ,chatSocket } = useContext(ContextGlobal);
   const [newChannel, setNewChannel] = useState<boolean>(false);
+  const router = useRouter();
 
+  function handleJoinRoom(roomId: number) {
+    chatSocket?.emit("join-room", { roomId: roomId });
+    router.push(`/dashboard/chat/room/${roomId}`);
+  }
   function handleNewChannel() {
     setNewChannel(!newChannel);
   }
@@ -55,7 +61,7 @@ const Channels: React.FC<Channel> = ({ header }) => {
           >
             <p>#{channel.name}</p>
             <div className="flex">
-              <MessageCircle onClick={()=>{alert("enter the channel")}}/>
+            <MessageCircle onClick={() => handleJoinRoom(Number(channel.id))} />
             <IoIosExit className=" w-[25px] h-[25px]" />
             </div>
           </div>

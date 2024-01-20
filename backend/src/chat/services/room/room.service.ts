@@ -107,6 +107,18 @@ export class RoomService {
             where: { name },
         });
     }
+    // get chat room by by id
+    async getChatRoomById(id: number): Promise<ChatRoom | null> {
+        if (!id) throw new Error('Chat room id not provided');
+        try {
+            return await this.prisma.chatRoom.findUnique({
+                where: { id },
+            });
+        }catch (error) {
+            console.error('Error getting chat room by id:', error.message);
+            return null;
+        }
+    }
     // create chat room
     async createChatRoom(socket: Socket, chatRoomData: ChatRoom): Promise<ChatRoom> {
         console.log('chatRoomData: ', chatRoomData); 

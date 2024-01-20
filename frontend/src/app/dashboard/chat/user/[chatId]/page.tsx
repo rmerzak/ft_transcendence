@@ -14,7 +14,6 @@ function splitPathname(pathname: string) {
 const Chat = () => {
   const { chatSocket, profile } = useContext(ContextGlobal);
   const { chatId } = useParams();
-  const pathname = usePathname();
   const [messages, setMessages] = useState<Messages[]>([]);
   const [chatRoomId, setChatRoomId] = useState<number>(0);
   const [error, setError] = useState<string>('');
