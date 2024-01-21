@@ -11,6 +11,8 @@ import { getChatRoomsJoined, getChatRoomsNotJoined } from "@/api/chat/chat.api";
 import OutsideClickHandler from "react-outside-click-handler";
 import Swal from "sweetalert2";
 import { PlusCircle } from 'lucide-react';
+import { Search } from 'lucide-react';
+
 
 interface Channel {
   header: string;
@@ -112,12 +114,23 @@ const Channels: React.FC<Channel> = ({ header }) => {
   return (
     <>
     <div className="flex justify-evenly mt-0 md:mt-4">
-      <div >
-        <h1 className="text-white md:text-xl text-center">{header}</h1>
-        <div className="flex justify-center my-1">
+      <div className="flex justify-around">
+        <div className="mr-6">
+          <h1 className="text-white md:text-xl text-center">{header}</h1>
+          <div className="flex justify-center my-1">
           <div className="border-b border-white w-10"></div>
         </div>
+        </div>
+        <div className="flex items-center space-x-1">
+          <input
+            type="text"
+            className="bg-gray-300 text-black  rounded-xl h-10  md:w-3/3 focus:outline-none"
+            placeholder="channel name"
+          />
+          <button className="text-yellow-300" ><Search size={24} strokeWidth={2.5}/></button>
+        </div>
       </div>
+      
       <div className="mt-1 text-center">
           <button onClick={handleNewChannel}>
           <PlusCircle size={24} strokeWidth={2.5} className="text-green-400"/>
