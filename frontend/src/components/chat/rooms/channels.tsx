@@ -15,6 +15,9 @@ import { Search } from 'lucide-react';
 
 import { MessageCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
+import JoinChannel from "./JoinChannel";
+import { Mail } from 'lucide-react';
 
 interface Channel {
   header: string;
@@ -25,6 +28,8 @@ const Channels: React.FC<Channel> = ({ header }) => {
   const [newChannel, setNewChannel] = useState<boolean>(false);
   const router = useRouter();
 
+  const [open, setOpen] = useState<boolean>(false);
+  const [openChannel, setOpenChannel] = useState<ChatRoom | null>(null);
   const [isPrompetVisible, setIsPrompetVisible] = useState<boolean>(false);
   const [invalue, setinValue] = useState<string>("");
   const [selectedChannel, setSelectedChannel] = useState<ChatRoom | null>(null);
@@ -32,51 +37,42 @@ const Channels: React.FC<Channel> = ({ header }) => {
   const handleClick = (ChatRoom: ChatRoom) => {
     //setIsPrompetVisible(true);
     //setSelectedChannel(ChatRoom);
-    Swal.fire({
-      title: `Enter Password for: ${ChatRoom.name}`,
-      input: "password",
-      inputAttributes: {
-        autocapitalize: "off"
-      },
-      showCancelButton: true,
-      confirmButtonText: "Join",
-      showLoaderOnConfirm: true,
-        customClass: {
-          popup: 'bg-[#78196F]/50 rounded-[2rem]',
-          title: 'text-white',
-          input: 'rounded-full',
-          confirmButton: 'bg-[#fffff]',
-          cancelButton: 'bg-white'
-      },
-      preConfirm: async (login) => {
-        console.log(login);
-        try {
-          const githubUrl = `
-            https://api.github.com/users/${login}
-          `;
-          const response = await fetch(githubUrl);
-          if (!response.ok) {
-            return Swal.showValidationMessage(`
-              ${JSON.stringify(await response.json())}
-            `);
-          }
-          return response.json();
-        } catch (error) {
-          Swal.showValidationMessage(`
-            Request failed: ${error}
-          `);
-        }
-      },
-      allowOutsideClick: () => !Swal.isLoading()
-    }).then((result) => {
-      if (result.isConfirmed) {
-        Swal.fire({
-          title: `${result.value.login}'s avatar`,
-          imageUrl: result.value.avatar_url
-        });
-      }
-    });
-    console.log("helllo");
+    // Swal.fire({
+    //   title: `Enter Password for: ${ChatRoom.name}`,
+    //   input: "password",
+    //   inputAttributes: {
+    //     autocapitalize: "off"
+    //   },
+    //   showCancelButton: true,
+    //   confirmButtonText: "Join",
+    //   showLoaderOnConfirm: true,
+    //     customClass: {
+    //       popup: 'bg-[#78196F]/50 rounded-[2rem]',
+    //       title: 'text-white',
+    //       input: 'rounded-full',
+    //       confirmButton: 'bg-[#fffff]',
+    //       cancelButton: 'bg-white'
+    //   },
+    //   preConfirm: async (password) => {
+    //     try {
+    //       chatSocket?.emit("new-member", { name: ChatRoom.name, passwordHash: password });
+    //       setChatRoomsToJoin((prev: ChatRoom[]) => prev.filter((item: ChatRoom) => item.name !== ChatRoom.name));
+    //     } catch (error) {
+    //       console.log(error);
+    //       Swal.showValidationMessage(`
+    //         Request failed: ${error}
+    //       `);
+    //     }
+    //   },
+    //   allowOutsideClick: () => !Swal.isLoading()
+    // }).then((result) => {
+    //   if (result.isConfirmed) {
+    //    console.log(result);
+    //   }
+    // });
+    console.log('User entered:');
+    setOpen(true);
+    setOpenChannel(ChatRoom)
   }
   
   const handleKeyDown = (e: KeyboardEvent) => {
@@ -116,29 +112,32 @@ const Channels: React.FC<Channel> = ({ header }) => {
           setChatRoomsJoined(res.data);
       }).catch((err) => { console.log(err) });
     });
+    chatSocket?.on('error', (data) => {
+      if(data) {
+        toast.error(data);
+    }
+});
     console.log("chatRoomsJoined");
   }, [chatSocket]);
   return (
     <>
-    <div className="flex justify-evenly mt-0">
-      <div className="flex justify-around">
-  
-        <div className="flex items-center space-x-1 bg-gray-300 rounded-xl pr-1">
-          <input
-            type="text"
-            className="bg-gray-300 text-black border-none rounded-xl  focus:ring-0 h-10 md:w-3/3 focus:outline-none"
-            placeholder="channel name"
-          />
-          <button className="text-black" ><Search size={24} strokeWidth={2.5}/></button>
+    <div className="flex justify-around my-3 mx-auto w-[90%]">
+            <div className="flex">
+              <input
+                type="text"
+                className="bg-gray-300 text-black border-none  rounded-l-xl focus:ring-0 h-10 md:w-3/4 focus:outline-none"
+                placeholder="channel name"
+              />
+              <button className="pr-1 bg-gray-300 text-black rounded-r-xl  md:w-1/7 focus:outline-none " ><Search size={24} strokeWidth={2.5}/></button>
+            </div>
+          
+          <div className="flex text-center">
+              <button onClick={handleNewChannel}>
+              <PlusCircle size={24} strokeWidth={2.5} className="text-green-400"/>
+              </button>
+            </div>
         </div>
-      </div>
-      
-      <div className="mt-2 text-center">
-          <button onClick={handleNewChannel}>
-          <PlusCircle size={24} strokeWidth={2.5} className="text-green-400"/>
-          </button>
-        </div>
-    </div>
+
       <div className="flex flex-col rounded-md md:w-[90%] w-[90%] mx-auto h-[69%] ">
       <h1 className="font-bold text-center text-white bg-[green] rounded-2xl w-44% mx-auto p-2">Joined Channels</h1>
         <div className="h-[330px] overflow-auto">
@@ -149,13 +148,13 @@ const Channels: React.FC<Channel> = ({ header }) => {
           >
             <p>#{channel.name}</p>
             <div className="flex">
-            <MessageCircle onClick={() => handleJoinRoom(Number(channel.id))} />
-            <IoIosExit className=" w-[25px] h-[25px]" />
+            <Mail size={24} strokeWidth={2.5} onClick={() => handleJoinRoom(Number(channel.id))} />
+            <IoIosExit size={24} strokeWidth={2.5} className=" w-[25px] h-[25px]" />
             </div>
           </div>
         )): <p className="text-center text-white">No channels</p>}
         </div>
-        <h1 className="font-bold text-center text-white bg-orange-700 rounded-2xl w-44% mx-auto p-2 mt-4">channels to join</h1>
+        <h1 className="font-bold text-center text-white bg-orange-500 rounded-2xl w-44% mx-auto p-2 mt-4">channels to join</h1>
         <div className="h-[160px] overflow-auto">
         {chatRoomsToJoin.length > 0 ? chatRoomsToJoin.map((channel, index) => (
           <div
@@ -163,10 +162,11 @@ const Channels: React.FC<Channel> = ({ header }) => {
             className="flex bg-[#811B77]/50 justify-between items-center text-xs md:text-base p-3 my-[6px] md:my-[10px] rounded-md text-white hover:bg-[#811B77]/100">
             <p>#{channel.name}</p>
             <div className="flex">
-            {channel.visibility === 'PROTECTED' && selectedChannel?.id !== channel.id && 
-            <OutsideClickHandler onOutsideClick={() => { setSelectedChannel(null); setinValue(''); }}>
-            <button onClick={() => handleClick(channel)}> <MdOutlineKey className=" w-[25px] h-[25px]"/> </button>
-            </OutsideClickHandler>
+            {channel.visibility === 'PROTECTED' && selectedChannel?.id !== channel.id &&
+              <OutsideClickHandler onOutsideClick={() => { setSelectedChannel(null); setinValue(''); }}>
+                <button onClick={() => handleClick(channel)}> <MdOutlineKey className=" w-[25px] h-[25px]" /> </button>
+                {openChannel === channel && <JoinChannel channel={channel} setOpenChannel={setOpenChannel} />}
+              </OutsideClickHandler>
             }
             {isPrompetVisible && selectedChannel?.id === channel.id &&<input type="text" autoFocus placeholder="Enter password" value={invalue} onChange={(e) => setinValue(e.target.value)} onKeyDown={handleKeyDown} className="text-black rounded-full w-[100%] ml-1"/>}
             {channel.visibility === 'PUBLIC' && <MdAddLink className=" w-[25px] h-[25px]"/>}

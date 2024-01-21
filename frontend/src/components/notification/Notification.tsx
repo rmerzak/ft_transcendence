@@ -32,8 +32,8 @@ const Notification = () => {
             }
         });
         socket?.on('RequestError', (data) => {
-            if(data.error) {
-                toast.error(data.error);
+            if(data) {
+                toast.error(data);
             }
         });
         return () => {

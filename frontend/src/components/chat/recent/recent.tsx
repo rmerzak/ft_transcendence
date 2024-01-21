@@ -81,8 +81,6 @@ const Recent: React.FC<RecentProps> = ({ rooms }) => {
           >
             <div className="flex items-center space-x-2 px-2 pt-1 hover:cursor-pointer w-[95%] h-full">
               <div>
-
-                <h2 className=" mb-1 text-sm font-inter font-medium opacity-50">{`@` + recent.chatRoom?.users[0]?.username }</h2>
                 <div className="flex mb-1">
                   <div className="">
                     <Image

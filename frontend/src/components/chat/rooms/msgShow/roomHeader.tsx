@@ -6,12 +6,27 @@ import { ChatRoom, ChatRoomMember } from "@/interfaces";
 import { User2Icon } from "lucide-react";
 import Link from "next/link";
 import { useContext, useEffect, useState } from "react";
+import  ChannelSettingPopup  from "../ChannelSettingPopup";
 
 interface roomHeaderProps {
     chatRoom?: ChatRoom;
 }
 
 const RoomHeader: React.FC<roomHeaderProps> = ({ chatRoom }) => {
+    const [isPopupVisible, setPopupVisible] = useState(false);
+
+  const handleSettingClick = () => {
+    setPopupVisible(true);
+  };
+
+  const handleClosePopup = () => {
+    setPopupVisible(false);
+  };
+
+
+    const openChannelSettingPopup = () => {
+        ChannelSettingPopup;
+      };
     return (
         <>
             <div>
@@ -47,8 +62,11 @@ const RoomHeader: React.FC<roomHeaderProps> = ({ chatRoom }) => {
                                 </li>
                                 <li>
                                     <div className="flex items-center space-x-2 cursor-pointer">
-                                        Setting
+                                        <button onClick={handleSettingClick}>Setting</button>
                                     </div>
+                                    {isPopupVisible && (
+                                        <ChannelSettingPopup onClose={handleClosePopup} />
+                                    )}
                                 </li>
                             </ul>
                         </div>
