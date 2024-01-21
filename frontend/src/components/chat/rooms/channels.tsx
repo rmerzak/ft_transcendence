@@ -113,31 +113,26 @@ const Channels: React.FC<Channel> = ({ header }) => {
   }, [chatSocket]);
   return (
     <>
-    <div className="flex justify-evenly mt-0 md:mt-4">
+    <div className="flex justify-evenly mt-0">
       <div className="flex justify-around">
-        <div className="mr-6">
-          <h1 className="text-white md:text-xl text-center">{header}</h1>
-          <div className="flex justify-center my-1">
-          <div className="border-b border-white w-10"></div>
-        </div>
-        </div>
-        <div className="flex items-center space-x-1">
+  
+        <div className="flex items-center space-x-1 bg-gray-300 rounded-xl pr-1">
           <input
             type="text"
-            className="bg-gray-300 text-black  rounded-xl h-10  md:w-3/3 focus:outline-none"
+            className="bg-gray-300 text-black border-none rounded-xl  focus:ring-0 h-10 md:w-3/3 focus:outline-none"
             placeholder="channel name"
           />
-          <button className="text-yellow-300" ><Search size={24} strokeWidth={2.5}/></button>
+          <button className="text-black" ><Search size={24} strokeWidth={2.5}/></button>
         </div>
       </div>
       
-      <div className="mt-1 text-center">
+      <div className="mt-2 text-center">
           <button onClick={handleNewChannel}>
           <PlusCircle size={24} strokeWidth={2.5} className="text-green-400"/>
           </button>
         </div>
     </div>
-      <div className="flex flex-col rounded-md md:w-[90%] w-[90%] mx-auto h-[60%] mt-4">
+      <div className="flex flex-col rounded-md md:w-[90%] w-[90%] mx-auto h-[69%] ">
       <h1 className="font-bold text-center text-white bg-[green] rounded-2xl w-44% mx-auto p-2">Joined Channels</h1>
         <div className="h-[330px] overflow-auto">
         {chatRoomsJoined.length > 0 ? chatRoomsJoined.map((channel, index) => (
