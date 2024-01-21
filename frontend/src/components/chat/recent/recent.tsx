@@ -1,17 +1,20 @@
 "use client";
 import { deleteRecentMessage, getChatRoomMembers, getRecentMessages } from "@/api/chat/chat.api";
 import { ContextGlobal } from "@/context/contex";
-import { ChatRoomUsers, Recent } from "@/interfaces";
-import { profile } from "console";
-import { get } from "http";
-import { X } from "lucide-react";
+import { ChatRoom, ChatRoomUsers, Recent } from "@/interfaces";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 import { XCircle } from 'lucide-react';
 
+type RecentProps = {
+  rooms?: ChatRoom[];
+};
 
-const Recent = () => {
+const isNumber = (value: string | number): boolean => {
+  return !isNaN(Number(value.toString()));
+}
+const Recent: React.FC<RecentProps> = ({ rooms }) => {
   const { profile, chatSocket } = useContext(ContextGlobal);
   const [recents, setRecent] = useState<Recent[]>([]);
   const router = useRouter();
@@ -19,7 +22,7 @@ const Recent = () => {
 
   useEffect(() => {
     getRecentMessages().then((res) => {
-      // console.log("res", res);
+      // console.log("res first render: ", res);
       setRecent(res.data);
     }).catch((err) => {
       console.log("err", err);
@@ -27,10 +30,18 @@ const Recent = () => {
   }, []);
 
   useEffect(() => {
+    if (rooms) {
+      rooms.forEach((room) => {
+        chatSocket?.emit('join-room', { roomId: room.id });
+      });
+    }
+  }, [rooms]);
+
+  useEffect(() => {
     if (chatSocket) {
       chatSocket.on('receive-recent', () => {
         getRecentMessages().then((res) => {
-          // console.log("res recent", res);
+          // console.log("res socket event: ", res);
           setRecent(res.data);
         }).catch((err) => {
           console.log("err", err);
@@ -41,7 +52,7 @@ const Recent = () => {
 
   function removeRecent(chatRoomId: number) {
     deleteRecentMessage(chatRoomId).then((res) => {
-      console.log("res", res);
+      // console.log("res", res);
       getRecentMessages().then((res) => {
         setRecent(res.data);
       }).catch((err) => {
@@ -70,6 +81,8 @@ const Recent = () => {
           >
             <div className="flex items-center space-x-2 px-2 pt-1 hover:cursor-pointer w-[95%] h-full">
               <div>
+
+                <h2 className=" mb-1 text-sm font-inter font-medium opacity-50">{`@` + recent.chatRoom?.users[0]?.username }</h2>
                 <div className="flex mb-1">
                   <div className="">
                     <Image

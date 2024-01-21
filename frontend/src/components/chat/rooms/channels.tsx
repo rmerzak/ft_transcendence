@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import Popup from "./popup";
-import { use, useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ContextGlobal } from "@/context/contex";
 import { ChatRoom } from "@/interfaces";
 import { IoIosExit } from "react-icons/io";
@@ -13,6 +13,8 @@ import Swal from "sweetalert2";
 import { PlusCircle } from 'lucide-react';
 import { Search } from 'lucide-react';
 
+import { MessageCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface Channel {
   header: string;
@@ -21,6 +23,7 @@ interface Channel {
 const Channels: React.FC<Channel> = ({ header }) => {
   const { chatRoomsJoined, chatRoomsToJoin,setChatRoomsToJoin,setChatRoomsJoined ,chatSocket } = useContext(ContextGlobal);
   const [newChannel, setNewChannel] = useState<boolean>(false);
+  const router = useRouter();
 
   const [isPrompetVisible, setIsPrompetVisible] = useState<boolean>(false);
   const [invalue, setinValue] = useState<string>("");
@@ -91,6 +94,10 @@ const Channels: React.FC<Channel> = ({ header }) => {
     setinValue('');
   };
 
+  function handleJoinRoom(roomId: number) {
+    chatSocket?.emit("join-room", { roomId: roomId });
+    router.push(`/dashboard/chat/room/${roomId}`);
+  }
   function handleNewChannel() {
     setNewChannel(!newChannel);
   }
@@ -136,12 +143,15 @@ const Channels: React.FC<Channel> = ({ header }) => {
       <h1 className="font-bold text-center text-white bg-[green] rounded-2xl w-44% mx-auto p-2">Joined Channels</h1>
         <div className="h-[330px] overflow-auto">
         {chatRoomsJoined.length > 0 ? chatRoomsJoined.map((channel, index) => (
-          <div
+          <div 
             key={index}
             className="flex bg-[#811B77]/50 justify-between items-center text-xs md:text-base p-3 my-[6px] md:my-[10px] rounded-xl text-white hover:bg-[#811B77]/100"
           >
             <p>#{channel.name}</p>
+            <div className="flex">
+            <MessageCircle onClick={() => handleJoinRoom(Number(channel.id))} />
             <IoIosExit className=" w-[25px] h-[25px]" />
+            </div>
           </div>
         )): <p className="text-center text-white">No channels</p>}
         </div>
