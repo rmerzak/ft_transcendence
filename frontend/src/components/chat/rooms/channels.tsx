@@ -35,41 +35,6 @@ const Channels: React.FC<Channel> = ({ header }) => {
   const [selectedChannel, setSelectedChannel] = useState<ChatRoom | null>(null);
 
   const handleClick = (ChatRoom: ChatRoom) => {
-    //setIsPrompetVisible(true);
-    //setSelectedChannel(ChatRoom);
-    // Swal.fire({
-    //   title: `Enter Password for: ${ChatRoom.name}`,
-    //   input: "password",
-    //   inputAttributes: {
-    //     autocapitalize: "off"
-    //   },
-    //   showCancelButton: true,
-    //   confirmButtonText: "Join",
-    //   showLoaderOnConfirm: true,
-    //     customClass: {
-    //       popup: 'bg-[#78196F]/50 rounded-[2rem]',
-    //       title: 'text-white',
-    //       input: 'rounded-full',
-    //       confirmButton: 'bg-[#fffff]',
-    //       cancelButton: 'bg-white'
-    //   },
-    //   preConfirm: async (password) => {
-    //     try {
-    //       chatSocket?.emit("new-member", { name: ChatRoom.name, passwordHash: password });
-    //       setChatRoomsToJoin((prev: ChatRoom[]) => prev.filter((item: ChatRoom) => item.name !== ChatRoom.name));
-    //     } catch (error) {
-    //       console.log(error);
-    //       Swal.showValidationMessage(`
-    //         Request failed: ${error}
-    //       `);
-    //     }
-    //   },
-    //   allowOutsideClick: () => !Swal.isLoading()
-    // }).then((result) => {
-    //   if (result.isConfirmed) {
-    //    console.log(result);
-    //   }
-    // });
     console.log('User entered:');
     setOpen(true);
     setOpenChannel(ChatRoom)
@@ -105,13 +70,19 @@ const Channels: React.FC<Channel> = ({ header }) => {
         if (res.data)
           setChatRoomsToJoin(res.data);
       }).catch((err) => { console.log(err) });
+      
     });
     chatSocket?.on("ownedRoom", (room: ChatRoom) => {
       getChatRoomsJoined().then((res) => {
-        if (res.data)
+        console.log(room);
+        if (res.data) {
           setChatRoomsJoined(res.data);
+          setChatRoomsToJoin((prev: ChatRoom[]) => prev.filter((item: ChatRoom) => item.name !== room.name));
+        }
+
       }).catch((err) => { console.log(err) });
     });
+    
     chatSocket?.on('error', (data) => {
       if(data) {
         toast.error(data);
@@ -169,7 +140,15 @@ const Channels: React.FC<Channel> = ({ header }) => {
               </OutsideClickHandler>
             }
             {isPrompetVisible && selectedChannel?.id === channel.id &&<input type="text" autoFocus placeholder="Enter password" value={invalue} onChange={(e) => setinValue(e.target.value)} onKeyDown={handleKeyDown} className="text-black rounded-full w-[100%] ml-1"/>}
-            {channel.visibility === 'PUBLIC' && <MdAddLink className=" w-[25px] h-[25px]"/>}
+            {channel.visibility === 'PUBLIC' && 
+            <div>
+            
+            <OutsideClickHandler onOutsideClick={() => { setSelectedChannel(null); setinValue(''); }}>
+                <button onClick={() => handleClick(channel)}> <MdAddLink  className=" w-[25px] h-[25px]"/> </button>
+                {openChannel === channel && <JoinChannel channel={channel} setOpenChannel={setOpenChannel} />}
+              </OutsideClickHandler>
+              </div>
+            }
             </div>
           </div>
         )): <p className="text-center text-white">No channels</p>}
