@@ -79,7 +79,7 @@ export class AuthController {
     @UseGuards(JwtGuard)
     @Get('validateToken')
     async validateToken(@Req() req: Request, @Body() body: any): Promise<any> {
-        console.log(req.user);
+        // console.log(req.user);
             return { status: true, user: req.user };
     }
     @UseGuards(JwtGuard)

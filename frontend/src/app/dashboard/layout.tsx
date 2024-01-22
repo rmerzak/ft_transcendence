@@ -1,3 +1,5 @@
+"use client";
+
 import { getFriendList } from '@/api/friendship/friendship.api';
 import { getUnreadNotification } from '@/api/notifications/notifications.api';
 import { getUserInfo } from '@/api/user/user';
@@ -9,14 +11,16 @@ import { useContext, useEffect } from 'react';
 import { ToastContainer } from 'react-toastify';
 import JotaiProvider from '@/app/dashboard/game/context/jotai';
 
+import ChannelPopup from '@/components/chat/rooms/ChannelPopup';
+import { ChatRoom } from '@/interfaces';
 
 const Layout = ({children} : any) => {
-    return (
+  return (
       <div className="flex login-gradient">
         <ContextProvider>
-            <div className="flex-1 ">
+            <div className="flex-1">
                 <Sidebar />
-            </div>
+            </div> 
             <div className="flex-[10] ">
                 <Navbar />
                 {children}

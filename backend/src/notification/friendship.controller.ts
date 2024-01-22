@@ -21,7 +21,7 @@ export class FriendshipController {
             return error.message;
         }
     }
-    @Get('friendlist/:id')
+    @Get('friendlist')
     async getFriendList(@Req() req : Request) {
         // console.log("i m here")
         try {

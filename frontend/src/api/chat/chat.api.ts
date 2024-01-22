@@ -1,12 +1,18 @@
-import { Messages, ChatRoom } from "@/interfaces";
-import axios from "axios";
+import { Messages, ChatRoom, Recent } from "@/interfaces";
 import { apiInstance } from "../axios/axios.api";
 
-export const makeConversation = (id: number, chatRoomData:ChatRoom) => apiInstance.post(`/chat/user/${id}`, chatRoomData);
-export const getChatRoomMembers = (id: number) => apiInstance.get(`/chat/user?chatRoomId=${id}`);
-export const getChatRoomsJoined = () => apiInstance.get(`/chat/rooms`);
-export const getChatRoomsNotJoined = () => apiInstance.get(`/chat/rooms/not`);
-export const getChatRoomMessages = (id: number) => apiInstance.get(`/chat/user/${id}`);
-export const addMessage = (messageData: Messages) => apiInstance.post(`/chat/user`, messageData);
-export const updateMessage = (messageData: any) => apiInstance.put(`/chat`, messageData);
-export const deleteMessage = (id: number) => apiInstance.delete(`/chat?id=${id}`);
+
+export const makeConversation = async (id: number, chatRoomData:ChatRoom) => apiInstance.post(`/chat/user/${id}`, chatRoomData);
+export const getChatRoomMembers = async (id: number) => apiInstance.get(`/chat/user?chatRoomId=${id}`);
+export const getChatRoomsJoined = async () => apiInstance.get(`/chat/rooms`);
+export const getChatRoomsNotJoined = async () => apiInstance.get(`/chat/rooms/not`);
+export const getChatRoomByName = async (user1: any, user2: string) => apiInstance.get(`/chat/room?user1=${user1}&user2=${user2}`);
+export const getChatRoomById = async (id: number) => apiInstance.get(`/chat/room/${id}`);
+export const getChatRoomMessages = async (id: number) => apiInstance.get(`/chat/user/${id}`);
+export const addMessage = async (messageData: Messages) => apiInstance.post(`/chat/user`, messageData);
+export const updateMessage = async (messageData: any) => apiInstance.put(`/chat`, messageData);
+export const deleteMessage = async (id: number) => apiInstance.delete(`/chat?id=${id}`);
+// recent messages
+export const getRecentMessages = async () => apiInstance.get(`/chat/recent`);
+export const addRecentMessage = async (messageData: Recent) => apiInstance.post(`/chat/recent`, messageData);
+export const deleteRecentMessage = async (roomId: number) => apiInstance.delete(`/chat/recent?roomId=${roomId}`);

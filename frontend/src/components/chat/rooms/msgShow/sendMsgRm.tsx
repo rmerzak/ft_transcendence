@@ -3,7 +3,7 @@ import React, { useContext, useState, KeyboardEvent } from 'react'
 import Image from 'next/image';
 import { ContextGlobal } from '@/context/contex';
 import { Messages, Recent } from '@/interfaces';
-import EmojiPicker from './emoji/emojiPicker';
+import EmojiPicker from '../../msg/emoji/emojiPicker';
 
 interface SendchatmsgProps {
     chatRoomId: number;
@@ -11,7 +11,7 @@ interface SendchatmsgProps {
     friendId?: number;
 }
 
-const Sendchatmsg: React.FC<SendchatmsgProps> = ({ chatRoomId, isblocked, friendId }) => {
+const SendMsgRm: React.FC<SendchatmsgProps> = ({ chatRoomId, isblocked, friendId }) => {
     const { profile, chatSocket } = useContext(ContextGlobal);
     const [message, setMessage] = useState<string>('');
 
@@ -29,23 +29,6 @@ const Sendchatmsg: React.FC<SendchatmsgProps> = ({ chatRoomId, isblocked, friend
             chatRoomId: chatRoomId,
             text: message,
         };
-        const recentArray: Recent[] = [
-            {
-                chatRoomId: chatRoomId,
-                userId: profile?.id,
-                senderId: profile?.id,
-                link: `/dashboard/chat/user/${chatRoomId}`,
-                lastMessage: message,
-            },
-            {
-                chatRoomId: chatRoomId,
-                userId: friendId,
-                senderId: profile?.id,
-                link: `/dashboard/chat/user/${chatRoomId}`,
-                lastMessage: message,
-            }
-        ];
-        chatSocket?.emit('add-recent', recentArray);
         chatSocket?.emit('send-message', messageData);
         setMessage('');
     }
@@ -91,4 +74,4 @@ const Sendchatmsg: React.FC<SendchatmsgProps> = ({ chatRoomId, isblocked, friend
     );
 };
 
-export default Sendchatmsg;
+export default SendMsgRm;
