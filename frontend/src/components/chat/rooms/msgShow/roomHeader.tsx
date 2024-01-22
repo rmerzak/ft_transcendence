@@ -6,27 +6,31 @@ import { ChatRoom, ChatRoomMember } from "@/interfaces";
 import { User2Icon } from "lucide-react";
 import Link from "next/link";
 import { useContext, useEffect, useState } from "react";
-import  ChannelSettingPopup  from "../ChannelSettingPopup";
-
+import ChannelSettingPopup from "../ChannelSettingPopup";
+import { FaUserFriends } from "react-icons/fa";
+import RoomUsers from "../roomUsers/roomUsers";
 interface roomHeaderProps {
     chatRoom?: ChatRoom;
 }
 
 const RoomHeader: React.FC<roomHeaderProps> = ({ chatRoom }) => {
     const [isPopupVisible, setPopupVisible] = useState(false);
+    const [openUserList, setOpenUserList] = useState(false);
+    const handleSettingClick = () => {
+        setPopupVisible(true);
+    };
 
-  const handleSettingClick = () => {
-    setPopupVisible(true);
-  };
+    const handleClosePopup = () => {
+        setPopupVisible(false);
+    };
 
-  const handleClosePopup = () => {
-    setPopupVisible(false);
-  };
-
+    function handleUserListClick(){
+        setOpenUserList(!openUserList);
+    }
 
     const openChannelSettingPopup = () => {
         ChannelSettingPopup;
-      };
+    };
     return (
         <>
             <div>
@@ -38,8 +42,15 @@ const RoomHeader: React.FC<roomHeaderProps> = ({ chatRoom }) => {
                         </div>
                         // : <div className="w-full flex justify-center items-center space-x-2"></div>
                     }
-                    <div className=" flex">
-                        <User2Icon />
+                    <div className=" flex items-center">
+                        <button onClick={handleUserListClick}>
+                            <FaUserFriends className="w-[30px] h-[30px]" />
+                        </button>
+                        {
+                            openUserList && (
+                                <RoomUsers handleUserListClick={handleUserListClick}/>
+                            )
+                        }
                         <div className="dropdown dropdown-left">
                             <svg
                                 role="button"
