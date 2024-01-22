@@ -26,14 +26,21 @@ const Notification = () => {
             }
         });
         socket?.on('friendAcceptRequest', (data: any) => {
+            console.log(data.notification);
             if(data.notification){
                 setNotification((prev: Notification[]) => [data.notification, ...prev]);
                 toast.success('Your friend accepted your request');
             }
         });
+        socket?.on('challengeGame', (data: any) => {
+            if(data.notification){
+                setNotification((prev: Notification[]) => [data.notification, ...prev]);
+                toast.success('Your friend challenged you to a game');
+            }
+        });
         socket?.on('RequestError', (data) => {
-            if(data.error) {
-                toast.error(data.error);
+            if(data) {
+                toast.error(data);
             }
         });
         return () => {

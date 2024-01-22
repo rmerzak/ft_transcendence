@@ -107,6 +107,18 @@ export class RoomService {
             where: { name },
         });
     }
+    // get chat room by by id
+    async getChatRoomById(id: number): Promise<ChatRoom | null> {
+        if (!id) throw new Error('Chat room id not provided');
+        try {
+            return await this.prisma.chatRoom.findUnique({
+                where: { id },
+            });
+        }catch (error) {
+            console.error('Error getting chat room by id:', error.message);
+            return null;
+        }
+    }
     // create chat room
     async createChatRoom(socket: Socket, chatRoomData: ChatRoom): Promise<ChatRoom> {
         console.log('chatRoomData: ', chatRoomData); 
@@ -267,5 +279,34 @@ export class RoomService {
             where: { userId_chatRoomId: { userId, chatRoomId } },
         });
     }
+    // add user to chat room
+    async addMemberToRoom(_client: Socket, payload: ChatRoom): Promise<any> {
+        const chatRoom = await this.prisma.chatRoom.findUnique({
+            where: { name: payload.name },
+        });
+        if (!chatRoom) throw new Error('Chat room not found');
+        if (chatRoom.visibility === 'PROTECTED') {
+            console.log('chatRoom.passwordHash: ', payload.passwordHash);
+            if (payload.passwordHash === null || payload.passwordHash === undefined) throw new Error('Chat room password not set');
+            const isPasswordValid = await argon.verify(chatRoom.passwordHash, payload.passwordHash);
+            console.log('isPasswordValid: ', isPasswordValid);
+            if (!isPasswordValid) throw new Error('Invalid password');
+        }
+        const chatRoomMember = await this.prisma.chatRoomMember.findUnique({
+            where: { userId_chatRoomId: { userId: _client['user'].id, chatRoomId: chatRoom.id } },
+        });
+        console.log('chatRoomMember: ', chatRoomMember);
+        if (chatRoomMember) throw new Error('User already in chat room');
+        const newChatRoomMember = await this.prisma.chatRoomMember.create({
+            data: {
+                user: { connect: { id: _client['user'].id } },
+                chatRoom: { connect: { id: chatRoom.id } },
+                is_admin: false,
+            }
+        });
+        return chatRoom;
+    }
+
+
     // end user chat room
 }

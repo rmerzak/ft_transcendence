@@ -7,7 +7,7 @@ import { makeConversation } from '@/api/chat/chat.api';
 import { useRouter } from 'next/navigation';
 
 const UserItem = ({ friend } : { friend: Friendship }) => {
-  const { profile }:any = useContext(ContextGlobal);
+  const { profile, chatSocket } = useContext(ContextGlobal);
   const [status, setStatus] = useState<string>('');
   const router = useRouter();
   useEffect(() => {
@@ -23,9 +23,10 @@ const UserItem = ({ friend } : { friend: Friendship }) => {
     const chatRoomData: ChatRoom = {
       visibility: RoomVisibility.PRIVATE,
       passwordHash: '',
-      name: profile.id + '_' + (profile?.id === friend.sender.id ? friend.receiver.id : friend.sender.id),
+      name: profile?.id + '_' + (profile?.id === friend.sender.id ? friend.receiver.id : friend.sender.id),
     };
     makeConversation((profile?.id === friend.sender.id ? friend.receiver.id : friend.sender.id), chatRoomData).then((res) => {
+      chatSocket?.emit('join-room', res.data.id);
       router.push(`/dashboard/chat/user/${res.data.id}`);
     }).catch((err) => {
       console.log(err);
@@ -35,7 +36,7 @@ const UserItem = ({ friend } : { friend: Friendship }) => {
     (friend.status === 'ACCEPTED' && !friend.block && (status === 'ONLINE' || status === 'IN_GAME')) ? (
         <div onClick={makeMessage} className='relative'>
         <Image
-          src={profile?.id === friend.sender.id ? friend.receiver.image : friend.sender.image }
+          src={profile?.id === friend.sender.id ? friend.receiver.image : friend.sender.image}
           alt={profile?.id === friend.sender.id ? friend.receiver.username : friend.sender.username }
           width={60}
           height={60}

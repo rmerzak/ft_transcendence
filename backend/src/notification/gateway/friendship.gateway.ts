@@ -33,7 +33,7 @@ export class FriendshipGateway {
     try {
       const emitClient = this.friendship.getSocketsByUser(Number(payload));
       const request = await this.friendship.CreateFriendRequest(socket, Number(payload));
-      const notification = await this.friendship.CreateNotification(socket, Number(payload), 'friendRequest', 'you have a friend request', request);
+      const notification = await this.friendship.CreateNotification(socket, Number(payload), 'friendRequest', 'you have a friend request', request,'FRIENDSHIP');
       emitClient.forEach((socket) => {
         socket.emit('friendRequest', { notification: notification, friendship: request, status: true, error: null });
       });
@@ -48,7 +48,7 @@ export class FriendshipGateway {
     try {
       const emitClient = this.friendship.getSocketsByUser(Number(payload));
       const RequestAccepted = await this.friendship.AcceptFriendRequest(socket, Number(payload));
-      const notification = await this.friendship.CreateNotification(socket, Number(payload), 'friendAcceptRequest', 'your friend request has been accepted', RequestAccepted);
+      const notification = await this.friendship.CreateNotification(socket, Number(payload), 'friendAcceptRequest', 'your friend request has been accepted', RequestAccepted,'FRIENDSHIP');
       emitClient.forEach((socket) => {
         socket.emit('friendAcceptRequest', { notification: notification, friendship: RequestAccepted, status: true, error: null });
       });
@@ -109,5 +109,22 @@ export class FriendshipGateway {
     } catch (error) {
       socket.emit('RequestError', { notification: null, friendship: null, status: false, error: error.message });
     }
+  }
+  @SubscribeMessage('challengeGame')
+  async challengeGame(socket: Socket, payload: number) {
+    console.log("challengeGame", payload)
+    try {
+      const emitClient = this.friendship.getSocketsByUser(Number(payload));
+      // you must creaet a room or a game logic here
+      // const rooom = await this.friendship.CreateRoom(socket, Number(payload));
+      const gameNotification = await this.friendship.CreateNotification(socket, Number(payload), 'challengeGame', '343123455-5613232-654313-654321312', null,'GAME');
+      console.log("gameNotification", gameNotification)
+      emitClient.forEach((socket) => {
+        socket.emit('challengeGame', { notification: gameNotification , friendship: null, status: true, error: null });
+      });
+    } catch (error) {
+      socket.emit('RequestError', { notification: null, friendship: null, status: false, error: error.message });
+    }
+
   }
 }

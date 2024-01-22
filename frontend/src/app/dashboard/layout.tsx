@@ -15,11 +15,6 @@ import ChannelPopup from '@/components/chat/rooms/ChannelPopup';
 import { ChatRoom } from '@/interfaces';
 
 const Layout = ({children} : any) => {
-  const handleclick = () => {
-    <ChannelPopup setChannel={function (): void {
-      throw new Error('Function not implemented.');
-    } }/>
-  }  
   return (
       <div className="flex login-gradient">
         <ContextProvider>
@@ -29,7 +24,6 @@ const Layout = ({children} : any) => {
             <div className="flex-[10] ">
                 <Navbar />
                 {children}
-                <button className='text-black bg-white rounded-2xl p-2  flex justify-center text-2xl text-center relative top-1/2 left-1/2' onClick={() => handleclick()}>Reload</button>
             </div>
             <ToastContainer />
         </ContextProvider>

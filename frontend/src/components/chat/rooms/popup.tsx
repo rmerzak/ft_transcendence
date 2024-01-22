@@ -115,7 +115,7 @@ const Popup: React.FC<PopupProps> = ({ setChannel }) => {
               </div>
               <div className="space-x-1 flex justify-center items-center text-base md:text-lg">
                 <input type="radio" name="safe" id="protected" onChange={() => handleVisibilityChange("PROTECTED")} checked={formData.visibility === "PROTECTED"}/>
-                <label htmlFor="protected">protected</label>
+                <label htmlFor="protected" >protected</label>
               </div>
               <div className="space-x-1 flex justify-center items-center text-base md:text-lg">
                 <input type="radio" name="safe" id="private" onChange={() => handleVisibilityChange("PRIVATE")} checked={formData.visibility === "PRIVATE"}/>

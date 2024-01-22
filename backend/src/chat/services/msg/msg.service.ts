@@ -62,20 +62,15 @@ export class MsgService {
     const chatRoomMembers = await this.prisma.chatRoomMember.findMany({
       where: { chatRoomId: chatRoom.id },
     });
-    console.log(chatRoomMembers);
     const specificMember = chatRoomMembers.find((member) => member.userId === user.id);
     if (!specificMember) throw new Error('User not in chat room');
-    // const friends = await this.Friends.getFriendListByUserId(userId);
-    // if (!/[a-zA-Z]/.test(chatRoom.name.charAt(0))) {
-    //   const roomMember = chatRoomMembers.find((member) => member.userId !== user.id);
-    //   if (roomMember){
-    //     const tmp = friends.find((friend) => friend.id === roomMember.userId);
-    //     tmp.block
-    //   }
+    if (!/[a-zA-Z]/.test(chatRoom.name.charAt(0))) {
+      const roomMember = chatRoomMembers.find((member) => member.userId !== user.id);
+      const tmp = await this.Friends.getFriendship(userId, roomMember.userId);
+      if (tmp.block) throw new Error('User blocked');
+    }//else{
+    //   if (specificMember.status === 'block') throw new Error('User blocked'
     // }
-    const roomMember = chatRoomMembers.find((member) => member.userId !== user.id);
-    const tmp = await this.Friends.getFriendship(userId, roomMember.userId);
-    if (tmp.block) throw new Error('User blocked');
     const msg = await this.prisma.message.create({
       data: messageData,
     });

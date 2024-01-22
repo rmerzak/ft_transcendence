@@ -27,7 +27,7 @@ export class GatewayGateway
     socket.use(SocketAuthMiddleware() as any);
   }
 
-  constructor(private chatService: MsgService, private roomService: RoomService,private prisma: PrismaService) { }
+  constructor(private chatService: MsgService, private roomService: RoomService, private prisma: PrismaService) { }
 
   async handleConnection(_client: Socket) {
     const user = await this.prisma.user.findUnique({ where: { id: _client['payload']['sub'] } });
@@ -49,31 +49,34 @@ export class GatewayGateway
       const msg = await this.chatService.addMessage(payload, _client['user'].id);
       this.server.to(payload.chatRoomId.toString()).emit('receive-message', msg);
     } catch (error) {
-      console.log("error ==== ",error.message);
       _client.emit('error', error.message);
     }
   }
 
   @SubscribeMessage('join-room')
   handleJoinRoom(_client: Socket, payload: { roomId: number }) {
-    if (_client.rooms.has(payload.roomId.toString())) return;
+    if (_client.rooms.has(payload.roomId.toString()) || !payload.hasOwnProperty('roomId')) return;
     _client.join(payload.roomId.toString());
     this.server.to(payload.roomId.toString()).emit('has-joined');
-    // console.log("rooms: ", _client.rooms);
   }
 
   @SubscribeMessage('add-recent')
   async handleAddRecent(_client: Socket, payload: Recent[]) {
     payload.map(async (recent, index) => {
-      await this.chatService.addRecent(recent);
+      try {
+        await this.chatService.addRecent(recent);
+      }
+      catch (error) {
+        _client.emit('error', error.message);
+      }
       if (payload.length === index + 1) {
-        this.server.to(recent.chatRoomId.toString()).emit('receive-recent', recent);
+        this.server.to(recent.chatRoomId.toString()).emit('receive-recent');
       }
     });
   }
   @SubscribeMessage('create-room')
   async handleCreateRoom(_client: Socket, payload: ChatRoom) {
-    
+
     try {
       const room = await this.roomService.createChatRoom(_client, payload);
       this.roomService.connectedClients.forEach((sockets, userId) => {
@@ -93,6 +96,22 @@ export class GatewayGateway
       _client.emit('error', error.message);
     }
     //_client.emit('receive-room', room);
+  }
+  @SubscribeMessage('new-member')
+  async handleMemberRoom(_client: Socket, payload: ChatRoom) {
+    console.log("payload: ", payload);
+    try {
+      const room = await this.roomService.addMemberToRoom(_client, payload);
+      this.roomService.connectedClients.forEach((sockets, userId) => {
+        if (userId === _client['user'].id) {
+          sockets.forEach(socket => {
+            socket.emit('ownedRoom', room);
+          });
+        }
+      });
+    } catch (error) {
+      _client.emit('error', error.message);
+    }
   }
 
   handleDisconnect(_client: Socket) {

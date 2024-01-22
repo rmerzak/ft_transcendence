@@ -2,15 +2,16 @@
 import Channels from '@/components/chat/rooms/channels'
 import UserOnline from '@/components/chat/user/userOnline'
 import Recent from "@/components/chat/recent/recent";
-import { useContext, useEffect, useState } from 'react';
+import { use, useContext, useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import { ContextGlobal } from '@/context/contex';
-import { getChatRoomsJoined, getChatRoomsNotJoined } from '@/api/chat/chat.api';
+import { getChatRoomByName, getChatRoomsJoined, getChatRoomsNotJoined } from '@/api/chat/chat.api';
+import { ChatRoom } from '@/interfaces';
 
 
 const Layout = ({ children }: any) => {
-  const { setChatSocket ,chatRoomsJoined, chatRoomsToJoin,setChatRoomsToJoin,setChatRoomsJoined ,chatSocket} = useContext(ContextGlobal);
-
+  const { setChatSocket ,setChatRoomsToJoin,setChatRoomsJoined, friends, profile } = useContext(ContextGlobal);
+  const [privChat, setPrivChat] = useState<ChatRoom[]>([]);
   useEffect(() => {
     const sock = io("http://localhost:3000/chat", {
       autoConnect: false,
@@ -46,7 +47,24 @@ const Layout = ({ children }: any) => {
         if (res.data)
           setChatRoomsToJoin(res.data);
       }).catch((err) => { console.log(err) });
+    friends.forEach((friend) => {
+      getChatRoomByName(profile?.id.toString() , friend.id.toString()).then((res) => {
+        if (res.data)
+          setPrivChat((prev) => [...prev, res.data]);
+      }).catch((err) => { console.log(err) });
+    });
   }, []);
+
+  useEffect(() => {
+    if (profile && friends)
+      friends.forEach((friend) => {
+        const friendId = friend.senderId === profile.id ? friend.receiverId : friend.senderId;
+        getChatRoomByName(profile?.id.toString() , friendId.toString()).then((res) => {
+          if (res.data)
+            setPrivChat((prev) => [...prev, res.data]);
+        }).catch((err) => { console.log(err) });
+      });
+  }, [friends, profile]);
   return (
     <div className=" w-full bg-[#311251]/80 md:rounded-3xl rounded-t-md md:w-[95%] md:h-[90%] md:mt-6 md:overflow-auto md:mx-auto md:shadow-lg">
       <h1 className="text-white md:text-3xl text-lg md:font-bold text-center m-2 p-1 md:m-4 md:p-2 font-inter w-auto">
@@ -57,7 +75,7 @@ const Layout = ({ children }: any) => {
           <UserOnline />
           <Channels header="Channels" />
           {/* <Channels header="Public" /> */}
-          <Recent />
+          <Recent rooms={privChat} />
         </div>
         {children}
       </div>
