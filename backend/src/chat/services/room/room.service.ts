@@ -16,7 +16,6 @@ export class RoomService {
         const user = await this.prisma.user.findUnique({
             where: { id: userId },
         });
-    
         if (!user) {
             throw new Error('User not found');
         }
@@ -36,7 +35,6 @@ export class RoomService {
             const firstChar = room.name.charAt(0);
             return isNaN(parseInt(firstChar, 10));
         });
-    
         return filteredChatRooms;
     }
 
@@ -45,7 +43,6 @@ export class RoomService {
         const user = await this.prisma.user.findUnique({
             where: { id: userId },
         });
-    
         if (!user) throw new Error('User not found');
     
         const chatRooms = await this.prisma.chatRoom.findMany({
@@ -60,8 +57,6 @@ export class RoomService {
                 },
             },
         });
-    
-        console.log('chatRooms: ', chatRooms);
         return chatRooms;
     }
     

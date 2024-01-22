@@ -30,7 +30,7 @@ const Channels: React.FC<Channel> = ({ header }) => {
 
   useEffect(() => {
     chatSocket?.on("create-room", (room: ChatRoom) => {
-      console.log("create-room", room);
+      // console.log("create-room", room);
       getChatRoomsNotJoined().then((res) => {
         if (res.data)
           setChatRoomsToJoin(res.data);
@@ -42,7 +42,7 @@ const Channels: React.FC<Channel> = ({ header }) => {
           setChatRoomsJoined(res.data);
       }).catch((err) => { console.log(err) });
     });
-    console.log("chatRoomsJoined");
+    // console.log("chatRoomsJoined");
   }, [chatSocket]);
   return (
     <>

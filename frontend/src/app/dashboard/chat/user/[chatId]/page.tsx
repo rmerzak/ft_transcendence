@@ -39,6 +39,7 @@ const Chat = () => {
     }
     return () => {
       chatSocket?.off('receive-message');
+      // chatSocket?.emit('leave-room', { roomId: chatId });
     };
   }, [chatId, chatSocket]);
 

@@ -10,7 +10,8 @@ type RecentProps = {
   rooms?: ChatRoom[];
 };
 
-const isNumber = (value: string | number): boolean => {
+const isNumber = (value: string | number | undefined): boolean => {
+  if (value === undefined) return false;
   return !isNaN(Number(value.toString()));
 }
 const Recent: React.FC<RecentProps> = ({ rooms }) => {
@@ -30,8 +31,9 @@ const Recent: React.FC<RecentProps> = ({ rooms }) => {
 
   useEffect(() => {
     if (rooms) {
+      console.log("rooms in recent: ", rooms);
       rooms.forEach((room) => {
-        chatSocket?.emit('join-room', { roomId: room.id });
+        isNumber(room.id) ? chatSocket?.emit('join-room', { roomId: room.id }) : null;
       });
     }
   }, [rooms]);
@@ -40,7 +42,7 @@ const Recent: React.FC<RecentProps> = ({ rooms }) => {
     if (chatSocket) {
       chatSocket.on('receive-recent', () => {
         getRecentMessages().then((res) => {
-          // console.log("res socket event: ", res);
+          console.log("res socket event: ", res);
           setRecent(res.data);
         }).catch((err) => {
           console.log("err", err);
@@ -73,6 +75,7 @@ const Recent: React.FC<RecentProps> = ({ rooms }) => {
 
       <div className="mx-auto md:w-3/4 md:scroll-y-auto md:max-h-[300px] my-2 text-white p-1">
         {recents.map((recent) => (
+          isNumber(recent.chatRoomId) &&
           <div
             onClick={() => { router.push(recent.link.toString()) }}
             key={recent.chatRoomId}
@@ -81,7 +84,7 @@ const Recent: React.FC<RecentProps> = ({ rooms }) => {
             <div className="flex items-center space-x-2 px-3 py-1 hover:cursor-pointer w-[95%] h-full md:active:p-[10px]">
               <div>
 
-                <h2 className=" mb-1 text-sm font-inter font-medium opacity-50">{!isNumber(recent.chatRoom?.name[0].toString())?`@` + recent.chatRoom?.users[0]?.username : recent.chatRoom?.name}</h2>
+                <h2 className=" mb-1 text-sm font-inter font-medium opacity-50">{`@` + recent.chatRoom?.users[0]?.username}</h2>
                 <div className="flex mb-1">
                   <div className="">
                     <Image

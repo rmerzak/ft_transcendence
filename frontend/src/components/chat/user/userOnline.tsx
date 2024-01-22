@@ -21,7 +21,7 @@ const UserOnline = () => {
     getFriendList()
       .then((res) => {
         if (res.data) {
-          console.log("getFriends: ", res.data);
+          // console.log("getFriends: ", res.data);
           setFriends(res.data);
         }
       })
@@ -34,13 +34,13 @@ const UserOnline = () => {
 
         socket?.on("blockFriend", (res) => {
           if (res) {
-            console.log("blockFriend: ");
+            // console.log("blockFriend: ");
             getFriends();
           }
         });
         socket?.on("unblockFriend", (res) => {
           if (res) {
-            console.log("unblockFriend: ");
+            // console.log("unblockFriend: ");
             getFriends();
           }
         });

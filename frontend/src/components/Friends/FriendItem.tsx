@@ -13,7 +13,7 @@ const FriendItem = ({ friend } : { friend: Friendship }) => {
     getUserInfoById((profile?.id ===  friend.senderId ? friend.receiverId : friend.senderId)).then((res) => {
       if (res.data)
         setUser(res.data);
-      console.log("user ", user);
+      // console.log("user ", user);
     }).catch((err) => { console.log(err) });
   }, [friend,friends]);
   return (

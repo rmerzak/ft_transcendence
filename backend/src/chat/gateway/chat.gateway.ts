@@ -55,9 +55,16 @@ export class GatewayGateway
 
   @SubscribeMessage('join-room')
   handleJoinRoom(_client: Socket, payload: { roomId: number }) {
-    if (_client.rooms.has(payload.roomId.toString()) || !payload.hasOwnProperty('roomId')) return;
+    if ( !payload.hasOwnProperty('roomId') || _client.rooms.has(payload.roomId.toString())) return;
     _client.join(payload.roomId.toString());
     this.server.to(payload.roomId.toString()).emit('has-joined');
+  }
+
+  @SubscribeMessage('leave-room')
+  handleLeaveRoom(_client: Socket, payload: { roomId: number }) {
+    if ( !payload.hasOwnProperty('roomId') || !_client.rooms.has(payload.roomId.toString())) return;
+    _client.leave(payload.roomId.toString());
+    this.server.to(payload.roomId.toString()).emit('has-left');
   }
 
   @SubscribeMessage('add-recent')
