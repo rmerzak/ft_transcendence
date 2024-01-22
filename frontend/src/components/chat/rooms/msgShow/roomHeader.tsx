@@ -17,20 +17,13 @@ const RoomHeader: React.FC<roomHeaderProps> = ({ chatRoom }) => {
     const [isPopupVisible, setPopupVisible] = useState(false);
     const [openUserList, setOpenUserList] = useState(false);
     const handleSettingClick = () => {
-        setPopupVisible(true);
-    };
-
-    const handleClosePopup = () => {
-        setPopupVisible(false);
+        setPopupVisible(!isPopupVisible);
     };
 
     function handleUserListClick(){
         setOpenUserList(!openUserList);
     }
 
-    const openChannelSettingPopup = () => {
-        ChannelSettingPopup;
-    };
     return (
         <>
             <div>
@@ -50,6 +43,11 @@ const RoomHeader: React.FC<roomHeaderProps> = ({ chatRoom }) => {
                             openUserList && (
                                 <RoomUsers handleUserListClick={handleUserListClick}/>
                             )
+                        }
+                        {
+                            isPopupVisible && (
+                                    <ChannelSettingPopup handleSettingClick={handleSettingClick} chatRoom={chatRoom}/>
+                                        )
                         }
                         <div className="dropdown dropdown-left">
                             <svg
@@ -75,8 +73,6 @@ const RoomHeader: React.FC<roomHeaderProps> = ({ chatRoom }) => {
                                     <div className="flex items-center space-x-2 cursor-pointer">
                                         <button onClick={handleSettingClick}>Setting</button>
                                     </div>
-                                    {isPopupVisible && (
-                                    <ChannelSettingPopup onClose={handleClosePopup} />)}
                                 </li>
                             </ul>
                         </div>
