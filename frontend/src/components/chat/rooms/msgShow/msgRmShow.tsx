@@ -35,7 +35,8 @@ const MsgRmShow: React.FC<MsgShowProps> = ({ messages, roomId, error }) => {
       <div className="bg-[#5D5959]/40 w-[66%] text-white h-[1030px] rounded-3xl p-4 hidden md:block">
         {error === '' ? (
           <>
-            <RoomHeader chatRoom={room} />
+            <RoomHeader  chatRoom={room} />
+            
             <div className='mt-6 h-[88%]'>
               <Chat messages={messages} />
             </div>

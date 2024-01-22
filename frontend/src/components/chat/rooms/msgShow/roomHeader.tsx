@@ -65,8 +65,7 @@ const RoomHeader: React.FC<roomHeaderProps> = ({ chatRoom }) => {
                                         <button onClick={handleSettingClick}>Setting</button>
                                     </div>
                                     {isPopupVisible && (
-                                        <ChannelSettingPopup onClose={handleClosePopup} />
-                                    )}
+                                    <ChannelSettingPopup onClose={handleClosePopup} />)}
                                 </li>
                             </ul>
                         </div>
