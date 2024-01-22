@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { Message, Recent } from '@prisma/client';
+import { Message, Recent, RoomStatus  } from '@prisma/client';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { FriendshipService } from 'src/notification/friendship.service';
+import e from 'express';
 
 // Chat service class
 @Injectable()
@@ -68,9 +69,10 @@ export class MsgService {
       const roomMember = chatRoomMembers.find((member) => member.userId !== user.id);
       const tmp = await this.Friends.getFriendship(userId, roomMember.userId);
       if (tmp.block) throw new Error('User blocked');
-    }//else{
-    //   if (specificMember.status === 'block') throw new Error('User blocked'
-    // }
+    }else{
+      if (specificMember.status === RoomStatus.BANNED) throw new Error('Your are banned from this room');
+      else if (specificMember.status === RoomStatus.MUTED) throw new Error('Your are muted from this room');
+    }
     const msg = await this.prisma.message.create({
       data: messageData,
     });

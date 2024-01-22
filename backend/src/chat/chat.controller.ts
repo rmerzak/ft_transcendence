@@ -127,8 +127,8 @@ export class ChatController {
       );
     }
   }
-  // create user conversation room
 
+  // create user conversation room
   @Post('user/:id')
   async createConversationRoom(@Body() chatRoomData: ChatRoom, @Req() req: Request): Promise<ChatRoom> {
     const user = req.user as User;
@@ -174,6 +174,9 @@ export class ChatController {
         joinedAt: undefined,
         is_admin: false,
         leftAt: undefined,
+        status: 'NORMAL',
+        mutedDuration: undefined,
+        updatedAt: undefined,
       });
 
       await this.roomService.addUserToChatRoom({
@@ -182,6 +185,9 @@ export class ChatController {
         joinedAt: undefined,
         is_admin: false,
         leftAt: undefined,
+        status: 'NORMAL',
+        mutedDuration: undefined,
+        updatedAt: undefined,
       });
 
       return newChatRoom;
@@ -189,7 +195,7 @@ export class ChatController {
       throw new HttpException(
         {
           statusCode: HttpStatus.BAD_REQUEST,
-          message: error.message || 'Error creating chat room',
+          message: error.message || 'Error creating conversation room',
         },
         HttpStatus.BAD_REQUEST,
       );
