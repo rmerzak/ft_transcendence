@@ -41,24 +41,26 @@ export class FriendshipService {
     getSocketsByUser(userId: number): any {
         return this.connectedClients.get(userId) || [];
     }
-    async CreateNotification(socket: Socket, user: any, type: string, content: string, RequestId: number) {
+    async CreateNotification(socket: Socket, user: any, type: string, content: string, requestId: number, requestType: RequestType) {
         //type: 'friendRequest' | 'friendRequestAccepted' | 'friendRequestRejected' | 'friendRequestCanceled' | 'friendRequestDeleted' | 'friendRequestBlocked' | 'friendRequestUnblocked' | 'friendRequestUnfriended' | 'friendRequestUnblocked'
+        console.log(' i  m herre');
         const Receiver = await this.prisma.user.findUnique({ where: { id: user } });
         const Sender = await this.prisma.user.findUnique({ where: { id: socket['payload']['sub'] } });
         const notification = await this.prisma.notification.create({
             data: {
                 type: type,
                 content: content,
-                RequestId: RequestId,
+                RequestId: requestId ? requestId : 0, /// must work on it
                 Receiver: { connect: { id: Receiver?.id } },
         sender: { connect: { id: Sender?.id } },
-                RequestType: RequestType.FRIENDSHIP, 
+                RequestType: requestType, 
                 vue: false,
                 senderName: Sender?.username,
                 senderImage: Sender?.image,
                 createdAt: new Date(),
             } as any
         });
+        console.log('notification', notification);
         return notification;
     }
     async CreateFriendRequest(socket: Socket, userId: number) {

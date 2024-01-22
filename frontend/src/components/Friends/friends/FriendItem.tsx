@@ -21,6 +21,9 @@ const FriendItem = ({ friend } : { friend: Friendship }) => {
         //setFriends((prev:any) => prev.filter((item:any) => item.senderId !== friend.senderId));
     }
 }
+const handleChalenge = () => {
+  socket?.emit('challengeGame', profile?.id === friend.sender.id ? friend.receiver.id : friend.sender.id);
+}
   useEffect(() => {
     if (profile?.id === friend.sender.id) {
       setStatus(friend.receiver.status);
@@ -47,7 +50,7 @@ const FriendItem = ({ friend } : { friend: Friendship }) => {
         {
           status === 'INGAME' ? null :
         <button className="md:px-2 px-1">
-          <Gamepad2 />
+          <Gamepad2 onClick={()=> handleChalenge()}/>
         </button>
         }
         <button className="md:px-2 px-1">

@@ -67,37 +67,40 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     console.log('targetRoom', targetRoom);
 
-    if (targetRoom) {
-      if (targetRoom.players[0].socketId === client.id) {
-        this.game.createMatchHistory(
-          targetRoom.players[0].user.id,
-          targetRoom.players[1].user.id,
-          0,
-          5,
-        );
-        this.game.updateStatistics(targetRoom.players[1].user.id, 5, 0);
-        this.game.updateStatistics(targetRoom.players[0].user.id, 0, 5);
-      }
-      if (targetRoom.players[1].socketId === client.id) {
-        this.game.createMatchHistory(
-          targetRoom.players[0].user.id,
-          targetRoom.players[1].user.id,
-          5,
-          0,
-        );
-        this.game.updateStatistics(targetRoom.players[0].user.id, 5, 0);
-        this.game.updateStatistics(targetRoom.players[1].user.id, 0, 5);
-      }
-      targetRoom.players.forEach((player) => {
-        // Check if the player is not the disconnected player
-        if (player.socketId !== client.id) {
-          this.server.to(player.socketId).emit('winByResign');
-        }
-      });
-      this.game.leaveRoom(targetRoom.id, client.id, client);
-    }
+    try {
 
-    console.log('targetRoom', targetRoom);
+      if (targetRoom) {
+        if (targetRoom.players[0].socketId === client.id) {
+          this.game.createMatchHistory(
+            targetRoom.players[0].user.id,
+            targetRoom.players[1].user.id,
+            0,
+            5,
+          );
+          this.game.updateStatistics(targetRoom.players[1].user.id, 5, 0);
+          this.game.updateStatistics(targetRoom.players[0].user.id, 0, 5);
+        }
+        if (targetRoom.players[1].socketId === client.id) {
+          this.game.createMatchHistory(
+            targetRoom.players[0].user.id,
+            targetRoom.players[1].user.id,
+            5,
+            0,
+          );
+          this.game.updateStatistics(targetRoom.players[0].user.id, 5, 0);
+          this.game.updateStatistics(targetRoom.players[1].user.id, 0, 5);
+        }
+        targetRoom.players.forEach((player) => {
+          // Check if the player is not the disconnected player
+          if (player.socketId !== client.id) {
+            this.server.to(player.socketId).emit('winByResign');
+          }
+        });
+        this.game.leaveRoom(targetRoom.id, client.id, client);
+      }
+  
+      console.log('targetRoom', targetRoom);
+    } catch {}
 
     // console.log('first', this.game.rooms)
 
