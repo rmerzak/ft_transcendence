@@ -451,7 +451,7 @@ function Pong()
             updateScores(0, 0);
             setUserInfo(1, 'Loading...', '/game/avatar.jpeg');
             setOpponentInfo(2, 'Loading...', '/game/avatar.jpeg');
-            // socket.emit('resign', {roomId: roomID});
+            socket.emit('resign', {roomId: roomID});
             console.log('socket disconnect');
             socket.disconnect();
         };

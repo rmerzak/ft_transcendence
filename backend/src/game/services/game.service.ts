@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Room } from '../models/room.model';
 import { Player } from '../models/player.model';
-import { State } from '../models/state.model';
+import { Mode, State } from '../models/state.model';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Socket, Server } from 'socket.io';
 import { v4 as uuidv4 } from 'uuid';
@@ -52,8 +52,8 @@ export class GameService {
 
   // this method is creating a new room
   // the id of the room is returned
-  createRoom(): Room {
-    const room = new Room(uuidv4());
+  createRoom(mode: Mode): Room {
+    const room = new Room(uuidv4(), mode);
     this.rooms.push(room);
     return room;
   }
@@ -63,7 +63,7 @@ export class GameService {
   // if there is no room with an available slot, 0 is returned
   roomWithAvailableSlots(): Room | null {
     const room = this.rooms.find((room) => room.players.length < 2);
-    if (room) {
+    if (room && room.mode === Mode.NORMAL) {
       return room;
     }
     return null;
@@ -111,7 +111,7 @@ export class GameService {
   joinRoom(player: Player, client: Socket, server: Server): string {
     const room = this.roomWithAvailableSlots();
     if (!this.playerExists(player)) {
-      if (room && room.state === State.WAITING) {
+      if (room && room.state === State.WAITING && room.mode === Mode.NORMAL) {
         client.join(room.id);
         this.startPlaying(player.user.id);
         if (room.players.length === 0) {
@@ -143,8 +143,7 @@ export class GameService {
           room.state = State.PLAYING;
         }
       } else {
-        // client.emit('redirect', true);
-        // don't allow player to join
+        
       }
       if (room.players.length === 2) {
         room.ball.color = 'white';

@@ -5,11 +5,16 @@ import { MessagesSquare, Gamepad2, XOctagon, UserMinus } from 'lucide-react';
 import { Friendship, User } from '@/interfaces';
 import { getUserInfoById } from '@/api/user/user';
 import { ContextGlobal } from '@/context/contex';
-import { stat } from 'fs';
+import Swal from 'sweetalert2';
+import GameSwiper from '@/components/game/GameSwiper';
+import { renderToString } from 'react-dom/server';
+import ChallengeAlert from '@/components/game/ChallengeAlert';
+
 
 const FriendItem = ({ friend } : { friend: Friendship }) => {
   const {  profile, socket  } : any = useContext(ContextGlobal);
   const [status, setStatus] = useState<string>();
+  const [openAlert, setOpenAlert] = useState<boolean>(false);
   const handleFriend = (status:boolean) => {
     if(status){
       
@@ -21,9 +26,7 @@ const FriendItem = ({ friend } : { friend: Friendship }) => {
         //setFriends((prev:any) => prev.filter((item:any) => item.senderId !== friend.senderId));
     }
 }
-const handleChalenge = () => {
-  socket?.emit('challengeGame', profile?.id === friend.sender.id ? friend.receiver.id : friend.sender.id);
-}
+
   useEffect(() => {
     if (profile?.id === friend.sender.id) {
       setStatus(friend.receiver.status);
@@ -50,8 +53,10 @@ const handleChalenge = () => {
         {
           status === 'INGAME' ? null :
         <button className="md:px-2 px-1">
-          <Gamepad2 onClick={()=> handleChalenge()}/>
+          <Gamepad2 onClick={()=> setOpenAlert(!openAlert)}/>
         </button>
+        } {
+          openAlert && <ChallengeAlert openAl={() => {setOpenAlert(!openAlert);}} playerId={profile?.id === friend.sender.id ? friend.receiver.id : friend.sender.id} />
         }
         <button className="md:px-2 px-1">
           <XOctagon  onClick={()=> handleFriend(false)} />

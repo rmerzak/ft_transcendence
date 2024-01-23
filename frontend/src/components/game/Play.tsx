@@ -14,6 +14,7 @@ import 'swiper/css/effect-coverflow';
 import 'swiper/css/pagination';
 import './styles.css';
 import { toast } from 'react-toastify';
+import GameSwiper from './GameSwiper';
 
 
 const img : string[] = ['t0', 't1', 't2', 't3', 't4', 't5'];
@@ -124,7 +125,7 @@ function Play()
                         Maps
                     </h1>
 
-                    <Swiper
+                    {/* <Swiper
                         onSlideChange={ (swiper) => { setTheme(swiper.realIndex); setBotTheme(swiper.realIndex) } }
                         effect={'coverflow'}
                         grabCursor={true}
@@ -154,7 +155,8 @@ function Play()
                                 />
                             </SwiperSlide>
                         ))}
-                    </Swiper>
+                    </Swiper> */}
+                    <GameSwiper />
                 </div>
             </div>
         </>

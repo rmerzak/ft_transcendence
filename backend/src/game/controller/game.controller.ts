@@ -3,6 +3,7 @@ import { GameService } from '../services/game.service';
 import { PlayerDto } from '../dto/player.dto';
 import { JwtGuard } from 'src/auth/guard';
 import { Observable, startWith } from 'rxjs';
+import { Mode } from '../models/state.model';
 
 type Statistics = {
   gameMatches: number;
@@ -33,7 +34,16 @@ export class GameController {
 
   @Post('api/rooms')
   createRoom(): { roomId: string } {
-    const room = this.game.roomWithAvailableSlots() || this.game.createRoom();
+    const room = this.game.roomWithAvailableSlots() || this.game.createRoom(Mode.NORMAL);
+    return { roomId: room.id };
+  }
+
+  @Post('api/rooms-challenge')
+  createChallengeRoom(@Body() id: PlayerDto): { roomId: string } {
+    const { playerId } = id;
+    console.log('playerId', playerId);
+    const room = this.game.createRoom(Mode.CHALLENGE);
+    room.setInvitedId(playerId);
     return { roomId: room.id };
   }
   
