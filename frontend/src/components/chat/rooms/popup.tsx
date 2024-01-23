@@ -140,3 +140,8 @@ const Popup: React.FC<PopupProps> = ({ setChannel }) => {
   );
 };
 export default Popup;
+
+/*
+<button onClick={handleNameChange} className="bg-red-500  text-white rounded-l-xl  md:w-1/7 focus:outline-none " ><h1>Save</h1></button> 
+<button onClick={handleSettingClick} className="bg-red-500  text-white rounded-r-xl  md:w-1/7 focus:outline-none " ><h1>Exit</h1></button>
+  */
