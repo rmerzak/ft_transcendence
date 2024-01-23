@@ -6,3 +6,10 @@ export interface ChatRoomUsers {
         status: string;
     };
 }
+
+export interface duration {
+    days?: number;
+    hours?: number;
+    minutes?: number;
+    seconds?: number;
+}

@@ -66,7 +66,7 @@ const Popup: React.FC<PopupProps> = ({ setChannel }) => {
                 value={formData.channelName}
                 onChange={handleInputChange}
                 required
-                className="w-[90%] md:h-11 h-[36px] rounded-l-lg bg-[#D9D9D9] outline-none px-2 md:text-lg text-sm"
+                className="w-[90%] md:h-11 h-[36px] rounded-l-lg bg-[#D9D9D9] outline-none px-2 md:text-lg text-sm focus:ring-0"
                 placeholder="Channel name Ex: #mychannel"
               />
               <div className="w-[10%] mr-2 md:mr-0">

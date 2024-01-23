@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { Message, Recent, RoomStatus  } from '@prisma/client';
+import { Message, Recent, RoomStatus } from '@prisma/client';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { FriendshipService } from 'src/notification/friendship.service';
-import e from 'express';
+import { duration } from 'src/chat/interfaces/interfaces';
 
 // Chat service class
 @Injectable()
 export class MsgService {
-  constructor(private readonly prisma: PrismaService, private readonly Friends: FriendshipService) {}
+  constructor(private readonly prisma: PrismaService, private readonly Friends: FriendshipService) { }
 
   // get all messages of room
   async getChatRoomMessages(
@@ -69,9 +69,24 @@ export class MsgService {
       const roomMember = chatRoomMembers.find((member) => member.userId !== user.id);
       const tmp = await this.Friends.getFriendship(userId, roomMember.userId);
       if (tmp.block) throw new Error('User blocked');
-    }else{
+    } else {
       if (specificMember.status === RoomStatus.BANNED) throw new Error('Your are banned from this room');
-      else if (specificMember.status === RoomStatus.MUTED) throw new Error('Your are muted from this room');
+      else if (specificMember.status === RoomStatus.MUTED) {
+        const splitDur = specificMember.mutedDuration.split(' ');
+        const arr: string[] = ['days', 'hours', 'minutes', 'seconds'];
+        if (arr.includes(splitDur[1])) {
+          const result = compareDateWithCurrent(addDates(specificMember.updatedAt, { [splitDur[1]]: parseInt(splitDur[0]) }));
+          if (result) throw new Error('Your are muted from this room');
+          else
+            await this.prisma.chatRoomMember.update({
+              where: { userId_chatRoomId: { userId: user.id, chatRoomId: chatRoom.id } },
+              data: {
+                status: RoomStatus.NORMAL,
+                mutedDuration: null,
+              }
+            });
+        }
+      }
     }
     const msg = await this.prisma.message.create({
       data: messageData,
@@ -127,11 +142,11 @@ export class MsgService {
       const user = await this.prisma.user.findUnique({
         where: { id: userId },
       });
-  
+
       if (!user) {
         throw new Error('User not found');
       }
-  
+
       const recent = await this.prisma.recent.findMany({
         where: {
           userId: userId,
@@ -160,7 +175,7 @@ export class MsgService {
           },
         },
       });
-  
+
       const userDetails = await Promise.all(
         recent.map((r) =>
           this.prisma.user.findMany({
@@ -178,7 +193,7 @@ export class MsgService {
           })
         )
       );
-  
+
       // Merge userDetails with recent
       const result = recent.map((r, i) => ({
         ...r,
@@ -187,14 +202,14 @@ export class MsgService {
           users: userDetails[i],
         },
       }));
-  
+
       return result;
     } catch (error) {
       console.error(error);
       throw error;
     }
   }
-  
+
   // add or update recent for user
   async addRecent(recentData: Recent): Promise<Recent> {
     const user = await this.prisma.user.findUnique({
@@ -211,7 +226,7 @@ export class MsgService {
     if (!chatRoomMember) throw new Error('User not in chat room');
     const recent = await this.prisma.recent.findUnique({
       where: {
-          userId_chatRoomId: { userId: recentData.userId, chatRoomId: recentData.chatRoomId },
+        userId_chatRoomId: { userId: recentData.userId, chatRoomId: recentData.chatRoomId },
       }
     });
     if (recent) {
@@ -235,4 +250,24 @@ export class MsgService {
       }
     });
   }
+}
+// add two dates
+
+function addDates(date: Date, duration: duration): Date {
+  if (!duration)
+    return date;
+  if (duration.hasOwnProperty('days'))
+    date.setDate(date.getDate() + duration.days);
+  if (duration.hasOwnProperty('hours'))
+    date.setHours(date.getHours() + duration.hours);
+  if (duration.hasOwnProperty('minutes'))
+    date.setMinutes(date.getMinutes() + duration.minutes);
+  if (duration.hasOwnProperty('seconds'))
+    date.setSeconds(date.getSeconds() + duration.seconds);
+  return date;
+}
+
+function compareDateWithCurrent(date1: Date): boolean {
+  const date2 = new Date();
+  return date1.getTime() > date2.getTime();
 }

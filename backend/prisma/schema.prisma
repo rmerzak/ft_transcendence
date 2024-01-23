@@ -24,6 +24,13 @@ enum RoomStatus {
   NORMAL
 }
 
+enum InviteRoomStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  BLOCKED
+}
+
 
 enum UserStatus {
   ONLINE
@@ -153,7 +160,7 @@ model ChatRoomMember {
   is_admin Boolean @default(false)
   leftAt DateTime?
   status RoomStatus? @default(NORMAL)
-  mutedDuration Int?
+  mutedDuration String?
   @@id([userId, chatRoomId])
 }
 model RoomReqJoin {
@@ -162,6 +169,7 @@ model RoomReqJoin {
   chatRoom ChatRoom @relation(name: "RedJoin", fields: [chatRoomId], references: [id], onDelete: Cascade)
   senderId Int
   sender User @relation(name: "senderReqJoin", fields: [senderId], references: [id], onDelete: Cascade)
+  status InviteRoomStatus @default(PENDING)
   @@id([senderId, chatRoomId])
 }
 

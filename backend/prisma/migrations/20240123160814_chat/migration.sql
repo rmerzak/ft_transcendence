@@ -5,6 +5,9 @@ CREATE TYPE "RoomVisibility" AS ENUM ('PUBLIC', 'PRIVATE', 'PROTECTED');
 CREATE TYPE "RoomStatus" AS ENUM ('MUTED', 'BANNED', 'NORMAL');
 
 -- CreateEnum
+CREATE TYPE "InviteRoomStatus" AS ENUM ('PENDING', 'ACCEPTED', 'DECLINED', 'BLOCKED');
+
+-- CreateEnum
 CREATE TYPE "UserStatus" AS ENUM ('ONLINE', 'OFFLINE', 'INGAME');
 
 -- CreateEnum
@@ -102,7 +105,7 @@ CREATE TABLE "ChatRoomMember" (
     "is_admin" BOOLEAN NOT NULL DEFAULT false,
     "leftAt" TIMESTAMP(3),
     "status" "RoomStatus" DEFAULT 'NORMAL',
-    "mutedDuration" INTEGER,
+    "mutedDuration" TEXT,
 
     CONSTRAINT "ChatRoomMember_pkey" PRIMARY KEY ("userId","chatRoomId")
 );
@@ -112,7 +115,7 @@ CREATE TABLE "RoomReqJoin" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "chatRoomId" INTEGER NOT NULL,
     "senderId" INTEGER NOT NULL,
-    "accepted" BOOLEAN NOT NULL DEFAULT false,
+    "status" "InviteRoomStatus" NOT NULL DEFAULT 'PENDING',
 
     CONSTRAINT "RoomReqJoin_pkey" PRIMARY KEY ("senderId","chatRoomId")
 );
