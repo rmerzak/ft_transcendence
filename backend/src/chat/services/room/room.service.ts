@@ -219,6 +219,7 @@ export class RoomService {
         return await this.prisma.chatRoomMember.findMany({
             where: { chatRoomId: chatRoomId },
             select: {
+                is_admin: true,
                 user: {
                     select: {
                         id: true,
@@ -226,8 +227,11 @@ export class RoomService {
                         image: true,
                         status: true,
                     },
-                },
+                }
             },
+            orderBy: {
+                joinedAt: 'asc',
+            }
         }) as ChatRoomUsers[];
     }
 

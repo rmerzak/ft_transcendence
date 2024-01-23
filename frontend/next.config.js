@@ -1,30 +1,30 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    headers: async function () {
-      return [
-        {
-          source: '/dashboard/:path*',
-          headers: [
-            {
-              key: 'Access-Control-Allow-Origin',
-              value: '*',
-            },
-            {
-              key: 'Access-Control-Allow-Methods',
-              value: 'GET, POST, PUT, DELETE, OPTIONS',
-            },
-            {
-              key: 'Access-Control-Allow-Headers',
-              value: 'Content-Type, Authorization, X-Requested-With',
-            },
-            {
-              key: 'Access-Control-Allow-Credentials',
-              value: 'true',
-            },
-          ],
-        },
-      ];
-    },
+    // headers: async function () {
+    //   return [
+    //     {
+    //       source: '/dashboard/:path*',
+    //       headers: [
+    //         {
+    //           key: 'Access-Control-Allow-Origin',
+    //           value: '*',
+    //         },
+    //         {
+    //           key: 'Access-Control-Allow-Methods',
+    //           value: 'GET, POST, PUT, DELETE, OPTIONS',
+    //         },
+    //         {
+    //           key: 'Access-Control-Allow-Headers',
+    //           value: 'Content-Type, Authorization, X-Requested-With',
+    //         },
+    //         {
+    //           key: 'Access-Control-Allow-Credentials',
+    //           value: 'true',
+    //         },
+    //       ],
+    //     },
+    //   ];
+    // },
     env: {
       API_BASE_URL: process.env.SERVER_BACKEND,
       API_USER_VERIFY: process.env.USER_VERIFY,
@@ -53,7 +53,7 @@ const nextConfig = {
       },
     ]
     },
-    reactStrictMode: false,
+    reactStrictMode: true,
   };
   
   module.exports = nextConfig;
