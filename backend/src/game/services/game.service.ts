@@ -69,6 +69,19 @@ export class GameService {
     return null;
   }
 
+  // this method is checking if there is a room with an available slot and challenge mode
+  // if there is a room with an available slot and challenge mode, the id of that room is returned
+  // if there is no room with an available slot and challenge mode, 0 is returned
+  roomWithAvailableSlotsAndChallengeMode(): Room | null {
+    const room = this.rooms.find(
+      (room) => room.players.length < 2 && room.mode === Mode.CHALLENGE,
+    );
+    if (room) {
+      return room;
+    }
+    return null;
+  }
+
   
   // this method call when status of player change
   // if player status is undefined, set status to true
@@ -109,7 +122,7 @@ export class GameService {
   // if there is a room with an available slot, the player is added to that room
   // if there is no room with an available slot, a new room is created and the player is added to that room
   joinRoom(player: Player, client: Socket, server: Server): string {
-    const room = this.roomWithAvailableSlots();
+    let room = this.roomWithAvailableSlots();
     if (!this.playerExists(player)) {
       if (room && room.state === State.WAITING && room.mode === Mode.NORMAL) {
         client.join(room.id);
@@ -143,7 +156,42 @@ export class GameService {
           room.state = State.PLAYING;
         }
       } else {
-        
+        // find room with available slot and challenge mode
+        room = this.roomWithAvailableSlotsAndChallengeMode();
+        if (room) {
+          client.join(room.id);
+          this.startPlaying(player.user.id);
+          if (room.players.length === 0) {
+            player.playerNo = 1;
+            player.position.x = 20;
+            player.position.y = this.height / 2 - 100 / 2;
+            room.addPlayer(player);
+
+            client.emit('playerNo', {
+              playerNo: 1,
+              user: room.players[0].user,
+              showLoading: true,
+            });
+          } else {
+            if (room.invitedId === player.user.id) {
+              player.playerNo = 2;
+              player.position.x = this.width - 35;
+              player.position.y = this.height / 2 - 100 / 2;
+              room.addPlayer(player);
+  
+              server.to(room.id).emit('playerNo', {
+                playerNo: 2,
+                user: room.players[1].user,
+              });
+              client.emit('playerNo', {
+                playerNo: 1,
+                user: room.players[0].user,
+                showLoading: false,
+              });
+              room.state = State.PLAYING;
+            }
+          }
+        }
       }
       if (room.players.length === 2) {
         room.ball.color = 'white';

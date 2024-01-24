@@ -74,24 +74,24 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
       if (targetRoom) {
         if (targetRoom.players[0].socketId === client.id) {
-          this.game.createMatchHistory(
-            targetRoom.players[0].user.id,
-            targetRoom.players[1].user.id,
-            0,
-            5,
-          );
-          this.game.updateStatistics(targetRoom.players[1].user.id, 5, 0);
-          this.game.updateStatistics(targetRoom.players[0].user.id, 0, 5);
-        }
-        if (targetRoom.players[1].socketId === client.id) {
-          this.game.createMatchHistory(
-            targetRoom.players[0].user.id,
-            targetRoom.players[1].user.id,
-            5,
-            0,
-          );
-          this.game.updateStatistics(targetRoom.players[0].user.id, 5, 0);
-          this.game.updateStatistics(targetRoom.players[1].user.id, 0, 5);
+        //   this.game.createMatchHistory(
+        //     targetRoom.players[0].user.id,
+        //     targetRoom.players[1].user.id,
+        //     0,
+        //     5,
+        //   );
+        //   this.game.updateStatistics(targetRoom.players[1].user.id, 5, 0);
+        //   this.game.updateStatistics(targetRoom.players[0].user.id, 0, 5);
+        // }
+        // if (targetRoom.players[1].socketId === client.id) {
+        //   this.game.createMatchHistory(
+        //     targetRoom.players[0].user.id,
+        //     targetRoom.players[1].user.id,
+        //     5,
+        //     0,
+        //   );
+        //   this.game.updateStatistics(targetRoom.players[0].user.id, 5, 0);
+        //   this.game.updateStatistics(targetRoom.players[1].user.id, 0, 5);
         }
         targetRoom.players.forEach((player) => {
           // Check if the player is not the disconnected player

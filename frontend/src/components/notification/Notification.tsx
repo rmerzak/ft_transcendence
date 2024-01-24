@@ -6,7 +6,8 @@ import { io } from "socket.io-client";
 import { getUnreadNotification } from "@/api/notifications/notifications.api";
 import { data } from "@/data/MatchHistory";
 import NotificationItem from "./NotificationItem";
-import OutsideClickHandler from 'react-outside-click-handler';
+import OutsideClickHandler from 'react-outside-click-handler'
+
 const Notification = () => {
     const { setSocket, notification ,setNotification}: any = useContext(ContextGlobal);
     const [open, setOpen] = useState<boolean>(false);
@@ -33,6 +34,7 @@ const Notification = () => {
             }
         });
         socket?.on('challengeGame', (data: any) => {
+            console.log('here', data.notification);
             if(data.notification){
                 setNotification((prev: Notification[]) => [data.notification, ...prev]);
                 toast.success('Your friend challenged you to a game');
@@ -48,6 +50,7 @@ const Notification = () => {
             socket?.off('friendRequest');
             socket?.off('friendAcceptRequest');
             socket?.off('RequestError');
+            socket?.off('challengeGame');
             socket.disconnect();
         };
     }, []);

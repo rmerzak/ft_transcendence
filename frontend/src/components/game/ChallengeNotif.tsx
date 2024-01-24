@@ -4,36 +4,15 @@ import OutsideClickHandler from "react-outside-click-handler";
 import { ContextGlobal } from "@/context/contex";
 import { useRouter } from "next/navigation";
 
-const ChallengeAlert = ( { openAl, playerId }: {openAl: any, playerId: number} ) => {
+
+const ChallengeNotif = ( { openAl, gameId }: {openAl: any, gameId: string} ) => {
 
     const router = useRouter();
     const {  socket  } : any = useContext(ContextGlobal);
-    const createChallengeRoom = async () => {
-        try {
-            const res = await fetch(`${process.env.API_BASE_URL}/api/rooms-challenge`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include',
-                body: JSON.stringify({ playerId: playerId }),
-            });
-            const data = await res.json();
-
-            if (data.roomId)
-            {
-                socket?.emit('challengeGame', {
-                    playerId: playerId,
-                    gameId: data.roomId
-                });
-                router.push(`/dashboard/game/${data.roomId}`, { scroll: false });
-            }
-        } catch {}
-    }
-
 
     const challenge = () => {
-        createChallengeRoom();
+        // socket?.emit('challengeGame', playerId);
+        router.push(`/dashboard/game/${gameId}`, { scroll: false });
     }
 
   return (
@@ -47,8 +26,8 @@ const ChallengeAlert = ( { openAl, playerId }: {openAl: any, playerId: number} )
                             <GameSwiper />
                         </div>
                         <div className="justify-evenly flex">
-                            <button className="btn btn-sm" onClick={openAl}>Cancel</button>
-                            <button className="btn btn-sm btn-primary" onClick={challenge}>Challenge</button>
+                            <button className="btn btn-sm" onClick={openAl}>refuse</button>
+                            <button className="btn btn-sm btn-primary" onClick={() => {openAl(); challenge();}}>Accept</button>
                         </div>
                     </div>
                 </div>
@@ -58,4 +37,4 @@ const ChallengeAlert = ( { openAl, playerId }: {openAl: any, playerId: number} )
   )
 }
 
-export default ChallengeAlert
+export default ChallengeNotif

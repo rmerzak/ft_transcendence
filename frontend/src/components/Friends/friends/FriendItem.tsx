@@ -23,7 +23,7 @@ const FriendItem = ({ friend } : { friend: Friendship }) => {
     } 
     else {
         socket?.emit('blockFriend', profile?.id === friend.sender.id ? friend.receiver.id : friend.sender.id);
-        //setFriends((prev:any) => prev.filter((item:any) => item.senderId !== friend.senderId));
+        // setFriends((prev:any) => prev.filter((item:any) => item.senderId !== friend.senderId));
     }
 }
 
