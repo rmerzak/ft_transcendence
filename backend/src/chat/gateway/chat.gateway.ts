@@ -6,6 +6,7 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
+import { msgRecent } from '../interfaces/interfaces';
 import { Socket } from 'socket.io';
 import { MsgService } from '../services/msg/msg.service';
 import { SocketAuthMiddleware } from 'src/auth/middleware/ws.mw';
@@ -44,10 +45,21 @@ export class GatewayGateway
   }
 
   @SubscribeMessage('send-message')
-  async handleMessage(_client: Socket, payload: Message) {
+  async handleMessage(_client: Socket, { msgData, recentData }: { msgData: Message, recentData: Recent[] }) {
     try {
-      const msg = await this.chatService.addMessage(payload, _client['user'].id);
-      this.server.to(payload.chatRoomId.toString()).emit('receive-message', msg);
+      recentData.map(async (recent, index) => {
+        try {
+          await this.chatService.addRecent(recent);
+        }
+        catch (error) {
+          _client.emit('error', error.message);
+        }
+        if (recentData.length === index + 1) {
+          this.server.to(recent.chatRoomId.toString()).emit('receive-recent');
+        }
+      });
+      const msg = await this.chatService.addMessage(msgData, _client['user'].id);
+      this.server.to(msgData.chatRoomId.toString()).emit('receive-message', msg);
     } catch (error) {
       _client.emit('error', error.message);
     }
@@ -55,32 +67,33 @@ export class GatewayGateway
 
   @SubscribeMessage('join-room')
   handleJoinRoom(_client: Socket, payload: { roomId: number }) {
-    if ( !payload.hasOwnProperty('roomId') || _client.rooms.has(payload.roomId.toString())) return;
+    if (!payload.hasOwnProperty('roomId') || _client.rooms.has(payload.roomId.toString())) return;
     _client.join(payload.roomId.toString());
     this.server.to(payload.roomId.toString()).emit('has-joined');
   }
 
   @SubscribeMessage('leave-room')
   handleLeaveRoom(_client: Socket, payload: { roomId: number }) {
-    if ( !payload.hasOwnProperty('roomId') || !_client.rooms.has(payload.roomId.toString())) return;
+    if (!payload.hasOwnProperty('roomId') || !_client.rooms.has(payload.roomId.toString())) return;
     _client.leave(payload.roomId.toString());
     this.server.to(payload.roomId.toString()).emit('has-left');
   }
 
-  @SubscribeMessage('add-recent')
-  async handleAddRecent(_client: Socket, payload: Recent[]) {
-    payload.map(async (recent, index) => {
-      try {
-        await this.chatService.addRecent(recent);
-      }
-      catch (error) {
-        _client.emit('error', error.message);
-      }
-      if (payload.length === index + 1) {
-        this.server.to(recent.chatRoomId.toString()).emit('receive-recent');
-      }
-    });
-  }
+  // @SubscribeMessage('add-recent')
+  // async handleAddRecent(_client: Socket, payload: Recent[]) {
+  //   payload.map(async (recent, index) => {
+  //     try {
+  //       await this.chatService.addRecent(recent);
+  //     }
+  //     catch (error) {
+  //       _client.emit('error', error.message);
+  //     }
+  //     if (payload.length === index + 1) {
+  //       this.server.to(recent.chatRoomId.toString()).emit('receive-recent');
+  //     }
+  //   });
+  // }
+
   @SubscribeMessage('create-room')
   async handleCreateRoom(_client: Socket, payload: ChatRoom) {
 

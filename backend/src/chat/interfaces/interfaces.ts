@@ -1,3 +1,5 @@
+import { Message, Recent } from "@prisma/client";
+
 export interface ChatRoomUsers {
     user: {
         id: number;
@@ -12,4 +14,8 @@ export interface duration {
     hours?: number;
     minutes?: number;
     seconds?: number;
+}
+export interface msgRecent {
+    msgData: Message;
+    recentData?: Recent[];
 }

@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { ContextGlobal } from '@/context/contex';
 import { Messages, Recent } from '@/interfaces';
 import EmojiPicker from './emoji/emojiPicker';
+import { data } from '@/data/MatchHistory';
 
 interface SendchatmsgProps {
     chatRoomId: number;
@@ -45,8 +46,12 @@ const Sendchatmsg: React.FC<SendchatmsgProps> = ({ chatRoomId, isblocked, friend
                 lastMessage: message,
             }
         ];
-        chatSocket?.emit('add-recent', recentArray);
-        chatSocket?.emit('send-message', messageData);
+        const data = {
+            msgData: messageData,
+            recentData: recentArray,
+        };
+        chatSocket?.emit('add-recent', data);
+        chatSocket?.emit('send-message', data);
         setMessage('');
     }
 

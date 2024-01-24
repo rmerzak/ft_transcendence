@@ -346,7 +346,6 @@ export class ChatController {
   // add message
   @Post('msg')
   async addMessage(@Body() messageData: Message, @Req() req: Request): Promise<Message> {
-    console.log("addMessage", messageData);
     if (isEmpty(messageData)) {
       throw new HttpException(
         {

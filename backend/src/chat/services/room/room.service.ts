@@ -30,7 +30,6 @@ export class RoomService {
             },
         });
 
-        // Filter out rooms whose names start with a number
         const filteredChatRooms = chatRooms.filter(room => {
             const firstChar = room.name.charAt(0);
             return isNaN(parseInt(firstChar, 10));
@@ -116,7 +115,7 @@ export class RoomService {
     }
     // create chat room
     async createChatRoom(socket: Socket, chatRoomData: ChatRoom): Promise<ChatRoom> {
-        console.log('chatRoomData: ', chatRoomData);
+        // console.log('chatRoomData: ', chatRoomData);
         if (!chatRoomData.name[0].match(/[a-zA-Z]/)) throw new Error('Chat room name must start with a letter');
         const existingChatRoom = await this.prisma.chatRoom.findUnique({
             where: { name: chatRoomData.name },
@@ -135,7 +134,7 @@ export class RoomService {
             },
         });
         // add user to chat room
-        const chatRoomMember = await this.prisma.chatRoomMember.create({
+        await this.prisma.chatRoomMember.create({
             data: {
                 user: { connect: { id: socket['user'].id } },
                 chatRoom: { connect: { id: newChatRoom.id } },

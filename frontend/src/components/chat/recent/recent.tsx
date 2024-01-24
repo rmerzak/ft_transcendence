@@ -1,7 +1,7 @@
 "use client";
-import { deleteRecentMessage, getChatRoomMembers, getRecentMessages } from "@/api/chat/chat.api";
+import { deleteRecentMessage, getRecentMessages } from "@/api/chat/chat.api";
 import { ContextGlobal } from "@/context/contex";
-import { ChatRoom, ChatRoomUsers, Recent } from "@/interfaces";
+import { ChatRoom, Recent } from "@/interfaces";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
@@ -41,6 +41,7 @@ const Recent: React.FC<RecentProps> = ({ rooms }) => {
   useEffect(() => {
     if (chatSocket) {
       chatSocket.on('receive-recent', () => {
+        console.log("receive-recent");
         getRecentMessages().then((res) => {
           console.log("res socket event: ", res);
           setRecent(res.data);
@@ -48,6 +49,9 @@ const Recent: React.FC<RecentProps> = ({ rooms }) => {
           console.log("err", err);
         });
       });
+    }
+    return () => {
+      chatSocket?.off('receive-recent');
     }
   }, [chatSocket]);
 
@@ -72,16 +76,22 @@ const Recent: React.FC<RecentProps> = ({ rooms }) => {
           <div className="md:mb-4 border-b border-white w-14"></div>
         </div>
       </div>
-
+      {
+        recents.length === 0 &&
+        <div className="flex justify-center items-center h-[300px]">
+          <p className="text-white font-inter">No recent chats</p>
+        </div>
+      }
       <div className="mx-auto md:w-3/4 md:scroll-y-auto md:max-h-[300px] my-2 text-white p-1">
         {recents.map((recent) => (
           isNumber(recent.chatRoomId) &&
           <div
-            onClick={() => { router.push(recent.link.toString()) }}
             key={recent.chatRoomId}
             className="flex justify-between items-center my-[6px] md:my-[10px] rounded-md font-inter  bg-[#5D5959]/50 hover:bg-[#5D5959]/100"
           >
-            <div className="flex items-center space-x-2 px-3 py-1 hover:cursor-pointer w-[95%] h-full md:active:p-[10px]">
+            <div
+              onClick={() => { router.push(recent.link.toString()) }}
+              className="flex items-center space-x-2 px-3 py-1 hover:cursor-pointer w-[95%] h-full md:active:p-[10px]">
               <div>
 
                 <h2 className=" mb-1 text-sm font-inter font-medium opacity-50">{`@` + recent.chatRoom?.users[0]?.username}</h2>
