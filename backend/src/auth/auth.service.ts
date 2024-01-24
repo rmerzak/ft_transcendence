@@ -21,18 +21,18 @@ export class AuthService {
         try {
             let user = await this.prisma.user.findUnique({ where: { email: dto.email } });
             if (user)
-            return user;
-        user = await this.prisma.user.create({
-            data: {
-                id: dto.id,
-                email: dto.email,
-                image: dto.image,
-                firstname: dto.firstname,
-                lastname: dto.lastname,
-                username: dto.username,
-                twoFactorSecret: "null",
-            },
-        })
+                return user;
+            user = await this.prisma.user.create({
+                data: {
+                    id: dto.id,
+                    email: dto.email,
+                    image: dto.image,
+                    firstname: dto.firstname,
+                    lastname: dto.lastname,
+                    username: dto.username,
+                    twoFactorSecret: "null",
+                },
+            })
             return user;
         } catch (error) {
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -110,13 +110,13 @@ export class AuthService {
     }
     async validateAccessToken(accessToken: string): Promise<boolean> {
         try {
-          const decoded = await this.jwt.verify(accessToken, this.config.get('JWT_SERCRET'));
-          return !!decoded;
+            const decoded = await this.jwt.verify(accessToken, this.config.get('JWT_SERCRET'));
+            return !!decoded;
         } catch (error) {
-          console.error('Error validating token:', error);
-          return false;
+            console.error('Error validating token:', error);
+            return false;
         }
-      }
+    }
     async findUserById(id: number) {
         const user = await this.prisma.user.findUnique({ where: { id } });
         if (!user) {
