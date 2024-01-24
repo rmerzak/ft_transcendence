@@ -20,17 +20,19 @@ interface SendchatmsgProps {
 const Sendchatmsg: React.FC<SendchatmsgProps> = ({ chatRoomId, isblocked, friendId }) => {
     const { profile, chatSocket } = useContext(ContextGlobal);
     const [message, setMessage] = useState<string>('');
+    const [showEmojiPicker, setShowEmojiPicker] = useState<boolean>(false);
 
-
-    const showEmogieTable = () => {
-        <Picker data={data} onEmojiSelect={(e: { native: string; }) => setMessage(message + e.native)} />
-    }
     const handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === 'Enter') {
             e.preventDefault();
             addMsg();
         }
     };
+
+    const showEmogieTable = () => {
+        setShowEmojiPicker(!showEmojiPicker);
+      };    
+
     function addMsg() {
         chatSocket?.emit('join-room', { roomId: chatRoomId });
         if (!message || message.length === 0) return;
@@ -73,20 +75,26 @@ const Sendchatmsg: React.FC<SendchatmsgProps> = ({ chatRoomId, isblocked, friend
                     {/* <div className="bg-gray-300 w-[6%] h-10 rounded-3xl flex justify-center items-center space-x-4">
                     </div> */}
                     <div className=" bg-gray-300 text-black flex justify-center items-center w-[30%] h-10 rounded-3xl font-light">
-                        <div>
-                            <button onClick={() => showEmogieTable} ><SmilePlus size={24} strokeWidth={2.5} /></button>
+                    <div className='relative flex ml-1'>
+                        <button onClick={showEmogieTable}>
+                    <SmilePlus size={24} strokeWidth={2} />
+                                </button>
+              {showEmojiPicker &&  (<div className='absolute bottom-[100%] left-0 '> 
+                <Picker theme="dark" data={data} onEmojiSelect={(emoji: { native: string; }) => setMessage((prev: string) => prev + emoji.native)} />
                             </div>
+                            )}
+                        </div>
                         <input
                             type="text"
                             name='message'
                             placeholder="Please Be nice in the chat"
-                            className="w-4/5 h-full border-none focus:ring-0 bg-transparent"
+                            className="w-full h-full border-none focus:ring-0 bg-transparent"
                             onChange={(e) => setMessage(e.target.value)}
                             value={message}
                             onKeyDown={(e) => handleKeyDown(e)}
                         />
-                        <button onClick={() => { addMsg() }} className="cursor-pointer" draggable={false} >
-                               <SendHorizontal  size={24} strokeWidth={2.5} />
+                        <button onClick={() => { addMsg() }} className="cursor-pointer mr-1" draggable={false} >
+                               <SendHorizontal  size={22} strokeWidth={2} />
                             {/*<Image
                                 src="/send-1.svg"
                                 alt="send"
