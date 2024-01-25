@@ -3,6 +3,7 @@ import { Notification } from '@/interfaces';
 import React, { useContext } from 'react'
 import { postReadNotification } from '@/api/notifications/notifications.api';
 import { useRouter } from 'next/navigation';
+import { Play, X } from 'lucide-react';
 function NotificationItem({item,setOpen}: {item: Notification,setOpen: any}) {
     const { notification ,setNotification}: any = useContext(ContextGlobal);
     const router = useRouter();
@@ -42,8 +43,19 @@ function NotificationItem({item,setOpen}: {item: Notification,setOpen: any}) {
     return (
         <>
             <img src={item.senderImage} alt="" className="w-10 h-10 rounded-full" />
-            <p className="ml-2 text-white">{item?.content}</p>
-            <button className="bg-[#78196F] p-1  rounded text-[14px] text-white" onClick={handleButtonClick}>Check</button>
+            
+            {
+                item.RequestType === 'FRIENDSHIP' ?
+                <div className='flex'>
+                <p className="ml-2 text-white">{item?.content}</p>
+                    <button className="bg-[#78196F] p-1  rounded text-[14px] text-white" onClick={handleButtonClick}>Check</button>
+                </div>:
+                <div className='flex items-center'>
+                    <p className="ml-2 text-white">your friend is challenging you</p>
+                    <button><Play/> </button>
+                    <button><X/></button>
+                </div>
+            }
         </>
     );
 }

@@ -312,6 +312,34 @@ export class RoomService {
             where: { userId_chatRoomId: { userId, chatRoomId } },
         });
     }
+    // add user to chat room
+    async addMemberToRoom(_client: Socket, payload: ChatRoom): Promise<any> {
+        const chatRoom = await this.prisma.chatRoom.findUnique({
+            where: { name: payload.name },
+        });
+        if (!chatRoom) throw new Error('Chat room not found');
+        if (chatRoom.visibility === 'PROTECTED') {
+            console.log('chatRoom.passwordHash: ', payload.passwordHash);
+            if (payload.passwordHash === null || payload.passwordHash === undefined) throw new Error('Chat room password not set');
+            const isPasswordValid = await argon.verify(chatRoom.passwordHash, payload.passwordHash);
+            console.log('isPasswordValid: ', isPasswordValid);
+            if (!isPasswordValid) throw new Error('Invalid password');
+        }
+        const chatRoomMember = await this.prisma.chatRoomMember.findUnique({
+            where: { userId_chatRoomId: { userId: _client['user'].id, chatRoomId: chatRoom.id } },
+        });
+        console.log('chatRoomMember: ', chatRoomMember);
+        if (chatRoomMember) throw new Error('User already in chat room');
+        const newChatRoomMember = await this.prisma.chatRoomMember.create({
+            data: {
+                user: { connect: { id: _client['user'].id } },
+                chatRoom: { connect: { id: chatRoom.id } },
+                is_admin: false,
+            }
+        });
+        return chatRoom;
+    }
+
 
     // end user chat room
 

@@ -541,6 +541,12 @@ export class ChatController {
     const user = req.user as User;
     return await this.chatService.deleteRecent(user.id, Number(roomId));
   }
+
+  @Get('room/:id')
+  async getChatRoomMembersById(@Param('id') id: string): Promise<ChatRoomUsers[] | null> {
+    checkIfNumber(id.toString(), 'Chat room id must be a number');
+    return await this.roomService.getChatRoomMembers(Number(id));
+  }
 }
 
 // helper functions

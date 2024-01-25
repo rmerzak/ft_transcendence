@@ -9,6 +9,7 @@ interface PopupProps {
 
 const Popup: React.FC<PopupProps> = ({ setChannel }) => {
   const {chatSocket } = useContext(ContextGlobal);
+  const [Validationerror, setValidationError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
     channelName: "",
@@ -22,6 +23,15 @@ const Popup: React.FC<PopupProps> = ({ setChannel }) => {
       ...prevData,
       [name]: value,
     }));
+    validateChannelName(value);
+  };
+
+  const validateChannelName = (name: string) => {
+    if (name.length < 2 || name.length > 12) {
+      setValidationError("Channel name must be between 2 and 12 characters.");
+    } else {
+      setValidationError(null);
+    }
   };
 
   const handleVisibilityChange = (visibility: string) => {
@@ -33,6 +43,11 @@ const Popup: React.FC<PopupProps> = ({ setChannel }) => {
 
   const handleCreateChannel = (e:any) => {
     e.preventDefault();
+    const { channelName } = formData;
+    if (channelName.length < 2 || channelName.length > 12) {
+      setValidationError("Channel name must be between 2 and 12 characters.");
+      return;
+    }
     const channelData = {
       name: formData.channelName,
       passwordHash: formData.password,
@@ -47,28 +62,34 @@ const Popup: React.FC<PopupProps> = ({ setChannel }) => {
       password: "",
       visibility: "PUBLIC",
     });
+    setValidationError(null);
     setChannel();
   };
 
   return (
     <>
-      <div className="fixed top-0 left-0 w-screen h-screen bg-[#000000]/50 z-50 flex justify-center items-center font-inter">
+      <div className="b fixed top-0 left-0 w-screen h-screen bg-[#000000]/50 z-50 flex justify-center items-center font-inter">
         <form onSubmit={handleCreateChannel}>
         <div className="bg-[#311150]/80 w-[550px] h-[300px] rounded-md shadow-lg font-light mx-2">
           <div className="flex justify-center items-center p-3">
             <h1 className="text-white md:text-lg">New Channel</h1>
           </div>
           <div className="flex justify-center items-center my-2 w-3/4 mx-auto text-black">
-            <div className="w-[90%] h-full flex justify-center items-center bg-[#D9D9D9] rounded-lg">
+            <div className="relative w-[90%] h-full flex justify-center items-center bg-[#D9D9D9] rounded-lg">
               <input
                 type="text"
                 name = "channelName"
                 value={formData.channelName}
                 onChange={handleInputChange}
                 required
-                className="w-[90%] md:h-11 h-[36px] rounded-l-lg bg-[#D9D9D9] outline-none px-2 md:text-lg text-sm focus:ring-0"
+                className="w-[90%] md:h-11 h-[36px] rounded-l-lg bg-[#D9D9D9] outline-none px-2 md:text-lg text-sm mr-2"
                 placeholder="Channel name Ex: #mychannel"
               />
+              {Validationerror && (
+                <div className="text-red-500 text-xs font-bold left-0 ml-1 absolute top-0">
+                      {Validationerror}
+                      </div>
+                  )}
               <div className="w-[10%] mr-2 md:mr-0">
                 <svg
                   className="w-4 h-4 md:w-6 md:h-6 text-gray-500"
@@ -119,3 +140,8 @@ const Popup: React.FC<PopupProps> = ({ setChannel }) => {
   );
 };
 export default Popup;
+
+/*
+<button onClick={handleNameChange} className="bg-red-500  text-white rounded-l-xl  md:w-1/7 focus:outline-none " ><h1>Save</h1></button> 
+<button onClick={handleSettingClick} className="bg-red-500  text-white rounded-r-xl  md:w-1/7 focus:outline-none " ><h1>Exit</h1></button>
+  */

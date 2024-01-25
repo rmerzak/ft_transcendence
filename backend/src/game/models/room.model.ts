@@ -133,7 +133,7 @@ export class Room {
         this.resetBall(this);
       }
 
-      if (this.players[0].score === 5 || this.players[1].score === 5) {
+      if (this.players[0].score === 500 || this.players[1].score === 500) {
         if (this.players[0].score === 5) {
           server.to(this.players[0].socketId).emit('youWin');
           server.to(this.players[1].socketId).emit('youLose');
@@ -144,22 +144,22 @@ export class Room {
         }
 
         // update match history and statistics
-        game.createMatchHistory(
-          this.players[0].user.id,
-          this.players[1].user.id,
-          this.players[0].score,
-          this.players[1].score,
-        );
-        game.updateStatistics(
-          this.players[0].user.id,
-          this.players[0].score,
-          this.players[1].score,
-        );
-        game.updateStatistics(
-          this.players[1].user.id,
-          this.players[1].score,
-          this.players[0].score,
-        );
+        // game.createMatchHistory(
+        //   this.players[0].user.id,
+        //   this.players[1].user.id,
+        //   this.players[0].score,
+        //   this.players[1].score,
+        // );
+        // game.updateStatistics(
+        //   this.players[0].user.id,
+        //   this.players[0].score,
+        //   this.players[1].score,
+        // );
+        // game.updateStatistics(
+        //   this.players[1].user.id,
+        //   this.players[1].score,
+        //   this.players[0].score,
+        // );
         this.state = State.FINISHED;
         clearInterval(gameLoopInterval);
         return;

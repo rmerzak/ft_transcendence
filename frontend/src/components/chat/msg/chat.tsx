@@ -25,7 +25,7 @@ const Chat: React.FC<ChatProps> = ({ messages }) => {
   useEffect(() => {
   }, [messages]);
   return (
-    <div className='max-w-[80%] mx-auto overflow-y-auto md:max-h-[97%] p-2'>
+    <div className='max-w-[80%] mx-auto overflow-y-auto md:max-h-[97%] p-2 '>
       {messages?.map((message, index) => {
         const isOwnMessage = message.senderId === profile?.id;
         const senderName = isOwnMessage ? "You" : message.sender?.username;

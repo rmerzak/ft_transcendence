@@ -6,12 +6,24 @@ import { ChatRoom, ChatRoomMember } from "@/interfaces";
 import { User2Icon } from "lucide-react";
 import Link from "next/link";
 import { useContext, useEffect, useState } from "react";
-
+import ChannelSettingPopup from "../ChannelSettingPopup";
+import { FaUserFriends } from "react-icons/fa";
+import RoomUsers from "../roomUsers/roomUsers";
 interface roomHeaderProps {
     chatRoom?: ChatRoom;
 }
 
 const RoomHeader: React.FC<roomHeaderProps> = ({ chatRoom }) => {
+    const [isPopupVisible, setPopupVisible] = useState(false);
+    const [openUserList, setOpenUserList] = useState(false);
+    const handleSettingClick = () => {
+        setPopupVisible(!isPopupVisible);
+    };
+
+    function handleUserListClick(){
+        setOpenUserList(!openUserList);
+    }
+
     return (
         <>
             <div>
@@ -23,8 +35,20 @@ const RoomHeader: React.FC<roomHeaderProps> = ({ chatRoom }) => {
                         </div>
                         // : <div className="w-full flex justify-center items-center space-x-2"></div>
                     }
-                    <div className=" flex">
-                        <User2Icon />
+                    <div className=" flex items-center">
+                        <button onClick={handleUserListClick}>
+                            <FaUserFriends className="w-[30px] h-[30px]" />
+                        </button>
+                        {
+                            openUserList && (
+                                <RoomUsers handleUserListClick={handleUserListClick}/>
+                            )
+                        }
+                        {
+                            isPopupVisible && (
+                                    <ChannelSettingPopup handleSettingClick={handleSettingClick} chatRoom={chatRoom}/>
+                                        )
+                        }
                         <div className="dropdown dropdown-left">
                             <svg
                                 role="button"
@@ -39,14 +63,15 @@ const RoomHeader: React.FC<roomHeaderProps> = ({ chatRoom }) => {
                                     className=""
                                 ></path>
                             </svg>
-                            <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-purplee rounded-box w-52">
+                            <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-purplee rounded-box w-40">
                                 <li>
                                     <div className="flex items-center space-x-2 cursor-pointer">
                                         Leave
                                     </div>
                                 </li>
                                 <li>
-                                    <div className="flex items-center space-x-2 cursor-pointer">
+                                    <div className="flex items-center space-x-2 cursor-pointer " onClick={handleSettingClick}>
+                                        {/* <button className="w-full text-start" onClick={handleSettingClick}>Setting</button> */}
                                         Setting
                                     </div>
                                 </li>
