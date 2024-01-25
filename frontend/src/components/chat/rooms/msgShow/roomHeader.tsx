@@ -17,20 +17,13 @@ const RoomHeader: React.FC<roomHeaderProps> = ({ chatRoom }) => {
     const [isPopupVisible, setPopupVisible] = useState(false);
     const [openUserList, setOpenUserList] = useState(false);
     const handleSettingClick = () => {
-        setPopupVisible(true);
-    };
-
-    const handleClosePopup = () => {
-        setPopupVisible(false);
+        setPopupVisible(!isPopupVisible);
     };
 
     function handleUserListClick(){
         setOpenUserList(!openUserList);
     }
 
-    const openChannelSettingPopup = () => {
-        ChannelSettingPopup;
-    };
     return (
         <>
             <div>
@@ -51,6 +44,11 @@ const RoomHeader: React.FC<roomHeaderProps> = ({ chatRoom }) => {
                                 <RoomUsers handleUserListClick={handleUserListClick} chatRoom={chatRoom}/>
                             )
                         }
+                        {
+                            isPopupVisible && (
+                                    <ChannelSettingPopup handleSettingClick={handleSettingClick} chatRoom={chatRoom}/>
+                                        )
+                        }
                         <div className="dropdown dropdown-left">
                             <svg
                                 role="button"
@@ -65,19 +63,17 @@ const RoomHeader: React.FC<roomHeaderProps> = ({ chatRoom }) => {
                                     className=""
                                 ></path>
                             </svg>
-                            <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-purplee rounded-box w-52">
+                            <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-purplee rounded-box w-40">
                                 <li>
                                     <div className="flex items-center space-x-2 cursor-pointer">
                                         Leave
                                     </div>
                                 </li>
                                 <li>
-                                    <div className="flex items-center space-x-2 cursor-pointer">
-                                        <button onClick={handleSettingClick}>Setting</button>
+                                    <div className="flex items-center space-x-2 cursor-pointer " onClick={handleSettingClick}>
+                                        {/* <button className="w-full text-start" onClick={handleSettingClick}>Setting</button> */}
+                                        Setting
                                     </div>
-                                    {isPopupVisible && (
-                                        <ChannelSettingPopup onClose={handleClosePopup} />
-                                    )}
                                 </li>
                             </ul>
                         </div>
