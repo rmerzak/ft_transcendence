@@ -311,6 +311,19 @@ export class RoomService {
         return chatRoom;
     }
 
+    async getChatRoomMemberByRoomId(userId :number ,id: number): Promise<ChatRoomMember | null> {
+        const user = await this.prisma.user.findUnique({where: { id: userId }});
+        if(!user) throw new Error('User not found');
+        const chatRoom = await this.prisma.chatRoom.findUnique({where: { id: id }});
+        if(!chatRoom) throw new Error('Chat room not found');
+        const chatRoomMember = await this.prisma.chatRoomMember.findUnique({
+            where: { userId_chatRoomId: { userId: user.id, chatRoomId: chatRoom.id } },
+        });
+        if(!chatRoomMember) throw new Error('User not in chat room');
+        console.log('chatRoomMember: ', chatRoomMember)
+        return chatRoomMember;
+    }
+
 
     // end user chat room
 }

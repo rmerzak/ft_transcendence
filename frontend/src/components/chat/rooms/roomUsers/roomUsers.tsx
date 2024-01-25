@@ -1,6 +1,6 @@
 'use client'
 
-import { getChatRoomMembers } from "@/api/chat/chat.api"
+import { getChatRoomMemberByRoomId, getChatRoomMembers } from "@/api/chat/chat.api"
 import { User, X } from "lucide-react"
 import { useEffect, useState } from "react"
 import OutsideClickHandler from "react-outside-click-handler"
@@ -8,6 +8,7 @@ import RoomUserItem from "./roomUserItem"
 
 function RoomUsers({ handleUserListClick, chatRoom }: { handleUserListClick: any, chatRoom: any }) {
     const [users, setUsers] = useState<any>([])
+    const [profileRoomStatus, setProfileRoomStatus] = useState<any>({})
     useEffect(() => {
         if(chatRoom) {
             getChatRoomMembers(chatRoom.id).then((res) => {
@@ -16,8 +17,13 @@ function RoomUsers({ handleUserListClick, chatRoom }: { handleUserListClick: any
             }).catch((err) => {
                 console.log(err);
             });
-        
-        console.log("RoomUsers")
+            getChatRoomMemberByRoomId(chatRoom.id).then((res) => {
+                console.log(res.data);
+                if(res.data)
+                    setProfileRoomStatus(res.data)
+            }).catch((err) => {
+                //throw err; must ask about the catch error what to do
+            });
         }
     },[])
     return (
@@ -34,7 +40,7 @@ function RoomUsers({ handleUserListClick, chatRoom }: { handleUserListClick: any
                             </div>
                             {
                                 users.map((user: any) => (
-                                    <RoomUserItem chatRoom={chatRoom} chatRoomMember={user} chatRoomRole={user.user.id === chatRoom.owner ? "owner" : user.is_admin === true ? "admin" : "member"} />
+                                    <RoomUserItem chatRoom={chatRoom} profileRoomStatus={profileRoomStatus} chatRoomMember={user} chatRoomRole={user.user.id === chatRoom.owner ? "owner" : user.is_admin === true ? "admin" : "member"} />
                                 ))
                             }
 

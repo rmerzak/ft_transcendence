@@ -541,6 +541,22 @@ export class ChatController {
     checkIfNumber(id.toString(), 'Chat room id must be a number');
     return await this.roomService.getChatRoomMembers(Number(id));
   }
+  @Get('room/user/:id')
+  async getChatRoomMemberByRoomId(@Req() req: Request, @Param('id') id: string): Promise<ChatRoomMember | null> {
+    try {
+      checkIfNumber(id.toString(), 'User id must be a number');
+      const user = req.user as User;
+      return await this.roomService.getChatRoomMemberByRoomId(user.id, Number(id));
+    } catch (error) {
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: error.message,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
 }
 
 // helper functions

@@ -6,7 +6,7 @@ import { GoShieldX } from "react-icons/go";
 import { GiBootKick } from "react-icons/gi";
 import { RiChatOffFill } from "react-icons/ri";
 
-function RoomUserItem({ chatRoomMember, chatRoom, chatRoomRole }: { chatRoomMember: ChatRoomMember, chatRoom: any,chatRoomRole: string}) {
+function RoomUserItem({ chatRoomMember, profileRoomStatus, chatRoom, chatRoomRole }: { chatRoomMember: ChatRoomMember, chatRoom: any, chatRoomRole: string, profileRoomStatus: any }) {
     const { profile } = useContext(ContextGlobal);
     return (
         <div className="flex items-center space-x-2">
@@ -19,38 +19,33 @@ function RoomUserItem({ chatRoomMember, chatRoom, chatRoomRole }: { chatRoomMemb
                     {chatRoomRole}
                 </h1>
             </div>
-            <div>
-                {
-                    profile.id === chatRoom.owner && chatRoomMember.user.id !== chatRoom.owner && (
-                        chatRoomMember.is_admin === false ?
-                        <button className="bg-[#A1A1A1] rounded-full px-2 py-1">
-                            <GoShieldLock />
-                        </button> :
-                         <button className="bg-[#A1A1A1] rounded-full px-2 py-1">
-                         <GoShieldX />
-                     </button>
-                    )
-                }
-            </div>
-            <div>
-                {
-                    profile.id === chatRoom.owner && chatRoomMember.user.id !== chatRoom.owner && (
+            {
+                profileRoomStatus.userId === chatRoom.owner && chatRoomMember.user.id !== chatRoom.owner && (
+                    chatRoomMember.is_admin === false ?
+                        <div>
+                            <button className="bg-[#A1A1A1] rounded-full px-2 py-1">
+                                <GoShieldLock />
+                            </button>
+                        </div> :
+                        <div>
+                            <button className="bg-[#A1A1A1] rounded-full px-2 py-1">
+                            <GoShieldX />
+                            </button>
+                        </div>
+                )
+            }
+            {
+                profileRoomStatus.is_admin && profileRoomStatus.userId !== chatRoomMember.user.id && chatRoomMember.user.id !== chatRoom.owner && (
+                    <div className='flex items-center justify-center space-x-2'>
                         <button className="bg-[#A1A1A1] rounded-full px-2 py-1">
                             <GiBootKick />
                         </button>
-                    )
-                }
-            </div>
-            <div>
-                {
-                    profile.id === chatRoom.owner && chatRoomMember.user.id !== chatRoom.owner && (
                         <button className="bg-[#A1A1A1] rounded-full px-2 py-1">
                             <RiChatOffFill />
                         </button>
-                    )
-                }
-            </div>
-           
+                    </div>
+                )
+            }
         </div>
     )
 }
