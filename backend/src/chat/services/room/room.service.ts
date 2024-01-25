@@ -165,12 +165,24 @@ export class RoomService {
     // end make conversation
 
     // update chat room
-    async updateChatRoom(
-        id: number,
-        chatRoomData: ChatRoom,
-    ): Promise<ChatRoom | null> {
+    async updateChatRoom(userId: number, chatRoomData: ChatRoom): Promise<ChatRoom | null> {
+        const user = await this.prisma.user.findUnique({
+            where: { id: userId },
+        });
+        if (!user) throw new Error('User not found');
+        const isOwner = await this.prisma.chatRoom.findUnique({
+            where: { id: chatRoomData.id },
+            select: {
+                owner: true,
+            },
+        });
+        if (!isOwner) throw new Error('Chat room not found');
+        else if (isOwner.owner !== user.id || user.id !== chatRoomData.owner) throw new Error('you are not the owner of this chat room');
+        if (chatRoomData.passwordHash) {
+            chatRoomData.passwordHash = await argon.hash(chatRoomData.passwordHash);
+        }
         return await this.prisma.chatRoom.update({
-            where: { id },
+            where: { id: chatRoomData.id },
             data: {
                 name: chatRoomData.name,
                 passwordHash: chatRoomData.passwordHash,
@@ -301,7 +313,7 @@ export class RoomService {
             },
         });
     }
-    
+
 
     // remove user from chat room
     async deletechatRoomMember(

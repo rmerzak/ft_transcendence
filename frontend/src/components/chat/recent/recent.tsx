@@ -1,6 +1,7 @@
 "use client";
 import {
   deleteRecentMessage,
+  getChatRoomMembers,
   getRecentMessages,
 } from "@/api/chat/chat.api";
 import { ContextGlobal } from "@/context/contex";
@@ -26,7 +27,6 @@ const Recent: React.FC<RecentProps> = ({ rooms }) => {
   useEffect(() => {
     getRecentMessages()
       .then((res) => {
-        // console.log("res first render: ", res);
         setRecent(res.data);
       })
       .catch((err) => {
@@ -36,7 +36,6 @@ const Recent: React.FC<RecentProps> = ({ rooms }) => {
 
   useEffect(() => {
     if (rooms) {
-      console.log("rooms in recent: ", rooms);
       rooms.forEach((room) => {
         isNumber(room.id) ? chatSocket?.emit('join-room', { roomId: room.id }) : null;
       });
@@ -46,9 +45,7 @@ const Recent: React.FC<RecentProps> = ({ rooms }) => {
   useEffect(() => {
     if (chatSocket) {
       chatSocket.on('receive-recent', () => {
-        console.log("receive-recent");
         getRecentMessages().then((res) => {
-          console.log("res socket event: ", res);
           setRecent(res.data);
         }).catch((err) => {
           console.log("err", err);
@@ -63,14 +60,15 @@ const Recent: React.FC<RecentProps> = ({ rooms }) => {
   function removeRecent(chatRoomId: number) {
     deleteRecentMessage(chatRoomId)
       .then((res) => {
-        console.log("res", res);
-        getRecentMessages()
-          .then((res) => {
-            setRecent(res.data);
-          })
-          .catch((err) => {
-            console.log("err", err);
-          });
+        if (res.data) {
+          getRecentMessages()
+            .then((res) => {
+              setRecent(res.data);
+            })
+            .catch((err) => {
+              console.log("err", err);
+            });
+        }
       })
       .catch((err) => {
         console.log("err", err);
@@ -85,13 +83,8 @@ const Recent: React.FC<RecentProps> = ({ rooms }) => {
           <div className="md:mb-2 mb-0 border-b border-white md:w-14 w-6"></div>
         </div>
       </div>
-      {
-        recents.length === 0 &&
-        <div className="flex justify-center items-center h-[300px]">
-          <p className="text-white font-inter">No recent chats</p>
-        </div>
-      }
-      <div className="mx-auto md:w-3/4 md:scroll-y-auto md:max-h-[300px] my-2 text-white p-1">
+
+      <div className="mx-auto w-[90%] md:scroll-y-auto mb-1 text-white rounded-xl">
         {recents.map((recent) => (
           isNumber(recent.chatRoomId) &&
           <div
@@ -99,11 +92,12 @@ const Recent: React.FC<RecentProps> = ({ rooms }) => {
             className="flex justify-between items-center my-[6px] md:my-[10px] rounded-md font-inter  bg-[#5D5959]/50 hover:bg-[#5D5959]/100"
           >
             <div
-              onClick={() => { router.push(recent.link.toString()) }}
-              className="flex items-center space-x-2 px-3 py-1 hover:cursor-pointer w-[95%] h-full md:active:p-[10px]">
-              <div>
-
-                <h2 className=" mb-1 text-sm font-inter font-medium opacity-50">{`@` + recent.chatRoom?.users[0]?.username}</h2>
+              onClick={() => {
+                router.push(recent.link.toString());
+              }}
+              className="flex items-center space-x-2 px-2 pt-1 hover:cursor-pointer w-[95%] h-full"
+            >
+              <div className="flex justify-between">
                 <div className="flex mb-1">
                   <div className="">
                     <Image

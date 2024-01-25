@@ -5,7 +5,7 @@ import { ContextGlobal } from "@/context/contex";
 import { ChatRoom, ChatRoomMember } from "@/interfaces";
 import { User2Icon } from "lucide-react";
 import Link from "next/link";
-import { useContext, useEffect, useState } from "react";
+import { useState } from "react";
 import ChannelSettingPopup from "../ChannelSettingPopup";
 import { FaUserFriends } from "react-icons/fa";
 import RoomUsers from "../roomUsers/roomUsers";
@@ -20,7 +20,7 @@ const RoomHeader: React.FC<roomHeaderProps> = ({ chatRoom }) => {
         setPopupVisible(!isPopupVisible);
     };
 
-    function handleUserListClick(){
+    function handleUserListClick() {
         setOpenUserList(!openUserList);
     }
 
@@ -41,13 +41,13 @@ const RoomHeader: React.FC<roomHeaderProps> = ({ chatRoom }) => {
                         </button>
                         {
                             openUserList && (
-                                <RoomUsers handleUserListClick={handleUserListClick}/>
+                                <RoomUsers handleUserListClick={handleUserListClick} />
                             )
                         }
                         {
                             isPopupVisible && (
-                                    <ChannelSettingPopup handleSettingClick={handleSettingClick} chatRoom={chatRoom}/>
-                                        )
+                                <ChannelSettingPopup handleSettingClick={handleSettingClick} chatRoom={chatRoom} />
+                            )
                         }
                         <div className="dropdown dropdown-left">
                             <svg
@@ -71,7 +71,6 @@ const RoomHeader: React.FC<roomHeaderProps> = ({ chatRoom }) => {
                                 </li>
                                 <li>
                                     <div className="flex items-center space-x-2 cursor-pointer " onClick={handleSettingClick}>
-                                        {/* <button className="w-full text-start" onClick={handleSettingClick}>Setting</button> */}
                                         Setting
                                     </div>
                                 </li>

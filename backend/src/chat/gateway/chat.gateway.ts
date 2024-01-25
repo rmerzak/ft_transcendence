@@ -37,6 +37,7 @@ export class GatewayGateway
     } else {
       _client.disconnect();
     }
+    _client.join('public');
     if (!this.roomService.connectedClients.has(user.id)) {
       this.roomService.connectedClients.set(user.id, []);
     }
@@ -75,28 +76,6 @@ export class GatewayGateway
     _client.join(payload.roomId.toString());
     this.server.to(payload.roomId.toString()).emit('has-joined');
   }
-
-  @SubscribeMessage('leave-room')
-  handleLeaveRoom(_client: Socket, payload: { roomId: number }) {
-    if (!payload.hasOwnProperty('roomId') || !_client.rooms.has(payload.roomId.toString())) return;
-    _client.leave(payload.roomId.toString());
-    this.server.to(payload.roomId.toString()).emit('has-left');
-  }
-
-  // @SubscribeMessage('add-recent')
-  // async handleAddRecent(_client: Socket, payload: Recent[]) {
-  //   payload.map(async (recent, index) => {
-  //     try {
-  //       await this.chatService.addRecent(recent);
-  //     }
-  //     catch (error) {
-  //       _client.emit('error', error.message);
-  //     }
-  //     if (payload.length === index + 1) {
-  //       this.server.to(recent.chatRoomId.toString()).emit('receive-recent');
-  //     }
-  //   });
-  // }
 
   @SubscribeMessage('create-room')
   async handleCreateRoom(_client: Socket, payload: ChatRoom) {
@@ -137,8 +116,40 @@ export class GatewayGateway
       _client.emit('error', error.message);
     }
   }
+  @SubscribeMessage('update-room')
+  async handleUpdateRoom(_client: Socket, payload: ChatRoom) {
+    console.log("payload: ", payload);
+    try {
+      const room = await this.roomService.updateChatRoom(_client['user'].id, payload);
+      this.server.to('public').emit('updated-room', room);
+    } catch (error) {
+      _client.emit('error', error.message);
+    }
+  }
 
   handleDisconnect(_client: Socket) {
     console.log('disconnected chat id: ' + _client.id);
   }
 }
+
+// @SubscribeMessage('leave-room')
+// handleLeaveRoom(_client: Socket, payload: { roomId: number }) {
+//   if (!payload.hasOwnProperty('roomId') || !_client.rooms.has(payload.roomId.toString())) return;
+//   _client.leave(payload.roomId.toString());
+//   this.server.to(payload.roomId.toString()).emit('has-left');
+// }
+
+// @SubscribeMessage('add-recent')
+// async handleAddRecent(_client: Socket, payload: Recent[]) {
+//   payload.map(async (recent, index) => {
+//     try {
+//       await this.chatService.addRecent(recent);
+//     }
+//     catch (error) {
+//       _client.emit('error', error.message);
+//     }
+//     if (payload.length === index + 1) {
+//       this.server.to(recent.chatRoomId.toString()).emit('receive-recent');
+//     }
+//   });
+// }

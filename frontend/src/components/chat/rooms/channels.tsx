@@ -65,35 +65,52 @@ const Channels: React.FC<Channel> = ({ header }) => {
   }
 
   useEffect(() => {
-    chatSocket?.on("create-room", (room: ChatRoom) => {
-      // console.log("create-room", room);
-      getChatRoomsNotJoined().then((res) => {
-        if (res.data)
-          setChatRoomsToJoin(res.data);
-      }).catch((err) => { console.log(err) });
-    });
-    chatSocket?.on("ownedRoom", (room: ChatRoom) => {
-      getChatRoomsJoined()
-        .then((res) => {
-          console.log(room);
-          if (res.data) {
-            setChatRoomsJoined(res.data);
-            setChatRoomsToJoin((prev: ChatRoom[]) =>
-              prev.filter((item: ChatRoom) => item.name !== room.name)
-            );
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    });
-
-    chatSocket?.on("error", (data) => {
-      if (data) {
-        toast.error(data);
-      }
-    });
-    // console.log("chatRoomsJoined");
+    if (chatSocket) {
+      chatSocket?.on("create-room", (room: ChatRoom) => {
+        getChatRoomsNotJoined().then((res) => {
+          if (res.data)
+            setChatRoomsToJoin(res.data);
+        }).catch((err) => { console.log(err) });
+      });
+      chatSocket?.on("ownedRoom", (room: ChatRoom) => {
+        getChatRoomsJoined()
+          .then((res) => {
+            if (res.data) {
+              setChatRoomsJoined(res.data);
+              const newChatRoomsToJoin = chatRoomsToJoin.filter((item: ChatRoom) => item.name !== room.name);
+              setChatRoomsToJoin(newChatRoomsToJoin);
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      });
+      chatSocket?.on('updated-room', (room: ChatRoom) => {
+        // console.log('updated-room', room);
+        if (room) {
+          getChatRoomsJoined().then((res) => {
+            if (res.data) {
+              setChatRoomsJoined(res.data);
+            }
+          }).catch((err) => { console.log(err); });
+          getChatRoomsNotJoined().then((res) => {
+            if (res.data)
+              setChatRoomsToJoin(res.data);
+          }).catch((err) => { console.log(err) });
+        }
+      });
+      chatSocket?.on("error", (data) => {
+        if (data) {
+          toast.error(data);
+        }
+      });
+    }
+    return () => {
+      chatSocket?.off("create-room");
+      chatSocket?.off("ownedRoom");
+      chatSocket?.off("error");
+      chatSocket?.off("updated-room");
+    };
   }, [chatSocket]);
   return (
     <>
@@ -122,7 +139,7 @@ const Channels: React.FC<Channel> = ({ header }) => {
           {chatRoomsJoined.length > 0 ? (
             chatRoomsJoined.map((channel, index) => (
               <div key={index} className="flex w-full  bg-[#811B77]/50  hover:bg-[#811B77]/100 rounded-xl h-[15%] mb-[9px]">
-                
+
                 <div
                   onClick={() => handleJoinRoom(Number(channel.id))}
                   className=" flex items-center w-full text-xs md:text-base p-3 my-[6px] md:my-[10px] text-white hover:bg-[#811B77]/100"
