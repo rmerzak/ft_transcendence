@@ -72,7 +72,7 @@ const ChannelSettingPopup: React.FC<PopupProps> = ({ handleSettingClick, chatRoo
 
   return (
     <div className="fixed top-0 left-0 w-screen h-screen bg-[#000000]/50 z-40 flex justify-center items-center font-inter">
-      <div className="bg-[#311150]/80 w-[35%] h-[20%] rounded-3xl shadow-lg font-light mx-2">
+      <div className=" bg-[#311150]/80 w-[45%] h-[200px] rounded-3xl shadow-lg font-light mx-2">
         <div className="flex justify-evenly w-full">
           <h1 className="text-xl mt-5 ml-2">Change Name:</h1>
           <div className="flex">
