@@ -46,7 +46,7 @@ const Sidebar = () => {
               <span className={` overflow-hidden transition-all  md:w-35 md:ml-3 hidden md:block`}>
                 {text}
               </span>
-                <div className={`absolute left-full rounded-md px-2 py-1 ml-6 bg-indigo-100 text-indigo-800 text-sm invisible opacity-20 -translate-x-3 transition-all group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-10`}>
+                <div className={`absolute left-1/8 bottom-full rounded-md px-2 py-1 ml-6 bg-indigo-100 text-indigo-800 text-sm invisible opacity-20 -translate-x-3 transition-all group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-10`}>
                   {text}
                 </div>
             </li>

@@ -72,8 +72,6 @@ const Sendchatmsg: React.FC<SendchatmsgProps> = ({ chatRoomId, isblocked, friend
             {
                 !isblocked &&
                 <div className={` flex justify-center items-center space-x-2 my-3`}>
-                    {/* <div className="bg-gray-300 w-[6%] h-10 rounded-3xl flex justify-center items-center space-x-4">
-                    </div> */}
                     <div className=" bg-gray-300 text-black flex justify-center items-center w-[30%] h-10 rounded-3xl font-light">
                     <div className='relative flex ml-1'>
                         <button onClick={showEmogieTable}>
@@ -95,15 +93,6 @@ const Sendchatmsg: React.FC<SendchatmsgProps> = ({ chatRoomId, isblocked, friend
                         />
                         <button onClick={() => { addMsg() }} className="cursor-pointer mr-1" draggable={false} >
                                <SendHorizontal  size={22} strokeWidth={2} />
-                            {/*<Image
-                                src="/send-1.svg"
-                                alt="send"
-                                width={30}
-                                height={30}
-                                className="cursor-pointer"
-                                priority={true}
-                                draggable={false}
-                            />*/}
                         </button>
                     </div>
                 </div>
