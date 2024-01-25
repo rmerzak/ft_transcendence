@@ -10,7 +10,7 @@ import BlackList from "@/components/Friends/blockedFriends/BlackList";
 const Friends = () => {
   const { profile, setProfile, setFriends, friends, socket }: any = useContext(ContextGlobal);
   function getFriends(number: number) {
-    getFriendList(number).then((res) => {
+    getFriendList().then((res) => {
       if (res.data)
         setFriends(res.data);
       console.log("friends inside 1", friends);
