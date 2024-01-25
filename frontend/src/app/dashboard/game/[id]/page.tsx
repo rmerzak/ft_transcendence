@@ -4,7 +4,7 @@ import Pong from '@/components/game/Pong';
 import User from '@/components/game/User';
 import { GameProvider, UserEnum } from '../context/gameContext';
 import { useAtomValue } from 'jotai';
-import { themeAtom } from '@/components/game/theme';
+import { themeAtom } from '@/components/game/atoms';
 import Swal from 'sweetalert2';
 import { useRouter } from 'next/navigation';
 

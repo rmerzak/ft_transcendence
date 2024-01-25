@@ -7,8 +7,8 @@ import Image from 'next/image'
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { EffectCoverflow, Pagination } from 'swiper/modules';
 import { useAtomValue, useSetAtom } from 'jotai';
-import { themeAtom } from './theme';
-import { botThemeAtom } from './theme';
+import { themeAtom } from './atoms';
+import { botThemeAtom } from './atoms';
 
 
 const img : string[] = ['t0', 't1', 't2', 't3', 't4', 't5'];

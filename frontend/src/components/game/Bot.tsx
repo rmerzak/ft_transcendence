@@ -3,7 +3,7 @@ import styles from '@/app/dashboard/game/page.module.css'
 import { useRouter } from 'next/navigation';
 import { useGame } from '@/app/dashboard/game/context/gameContext';
 import Swal from 'sweetalert2';
-import { botThemeAtom } from './theme';
+import { botThemeAtom } from './atoms';
 import { useAtomValue } from 'jotai';
 import { useSetAtom } from 'jotai';
 

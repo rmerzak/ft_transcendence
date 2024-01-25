@@ -3,13 +3,17 @@ import GameSwiper from "./GameSwiper";
 import OutsideClickHandler from "react-outside-click-handler";
 import { ContextGlobal } from "@/context/contex";
 import { useRouter } from "next/navigation";
+import { Mode, modeAtom } from "./atoms";
+import { useSetAtom } from "jotai";
 
 const ChallengeAlert = ( { openAl, playerId }: {openAl: any, playerId: number} ) => {
 
     const router = useRouter();
+    const setMode = useSetAtom(modeAtom);
     const {  socket  } : any = useContext(ContextGlobal);
     const createChallengeRoom = async () => {
         try {
+            setMode(Mode.challenge);
             const res = await fetch(`${process.env.API_BASE_URL}/api/rooms-challenge`, {
                 method: 'POST',
                 headers: {
@@ -30,7 +34,6 @@ const ChallengeAlert = ( { openAl, playerId }: {openAl: any, playerId: number} )
             }
         } catch {}
     }
-
 
     const challenge = () => {
         createChallengeRoom();
