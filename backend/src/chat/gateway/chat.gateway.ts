@@ -45,21 +45,25 @@ export class GatewayGateway
   }
 
   @SubscribeMessage('send-message')
-  async handleMessage(_client: Socket, { msgData, recentData }: { msgData: Message, recentData: Recent[] }) {
+  async handleMessage(_client: Socket, payload: msgRecent) {
+    // console.log(payload);
     try {
-      recentData.map(async (recent, index) => {
-        try {
-          await this.chatService.addRecent(recent);
-        }
-        catch (error) {
-          _client.emit('error', error.message);
-        }
-        if (recentData.length === index + 1) {
-          this.server.to(recent.chatRoomId.toString()).emit('receive-recent');
-        }
-      });
-      const msg = await this.chatService.addMessage(msgData, _client['user'].id);
-      this.server.to(msgData.chatRoomId.toString()).emit('receive-message', msg);
+      if (payload.hasOwnProperty('recentData')) {
+        payload.recentData.map(async (recent, index) => {
+          try {
+            await this.chatService.addRecent(recent);
+          }
+          catch (error) {
+            _client.emit('error', error.message);
+          }
+          if (payload.recentData.length === index + 1) {
+            this.server.to(recent.chatRoomId.toString()).emit('receive-recent');
+          }
+        });
+      }
+      if (!payload.hasOwnProperty('msgData')) throw new Error('No message data');
+      const msg = await this.chatService.addMessage(payload.msgData, _client['user'].id);
+      this.server.to(payload.msgData.chatRoomId.toString()).emit('receive-message', msg);
     } catch (error) {
       _client.emit('error', error.message);
     }

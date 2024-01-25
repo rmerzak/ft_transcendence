@@ -15,7 +15,7 @@ export interface duration {
     minutes?: number;
     seconds?: number;
 }
-export interface msgRecent {
+export type msgRecent = {
     msgData: Message;
     recentData?: Recent[];
 }

@@ -2,7 +2,7 @@
 import React, { useContext, useState, KeyboardEvent } from 'react'
 import Image from 'next/image';
 import { ContextGlobal } from '@/context/contex';
-import { Messages, Recent } from '@/interfaces';
+import { Messages} from '@/interfaces';
 import EmojiPicker from '../../msg/emoji/emojiPicker';
 
 interface SendchatmsgProps {
@@ -29,7 +29,8 @@ const SendMsgRm: React.FC<SendchatmsgProps> = ({ chatRoomId, isblocked, friendId
             chatRoomId: chatRoomId,
             text: message,
         };
-        chatSocket?.emit('send-message', messageData);
+
+        chatSocket?.emit('send-message', {msgData: messageData});
         setMessage('');
     }
 

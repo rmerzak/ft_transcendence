@@ -21,7 +21,7 @@ const UserOnline = () => {
     getFriendList()
       .then((res) => {
         if (res.data) {
-          // console.log("getFriends: ", res.data);
+          console.log("getFriends: ", res.data);
           setFriends(res.data);
         }
       })
