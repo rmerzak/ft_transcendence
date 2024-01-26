@@ -1,16 +1,16 @@
 'use client'
-
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { MatchHistoryItemInterface } from "@/interfaces";
 import MatchHistoryItem from "./MatchHistoryItem";
 import { ContextGlobal } from "@/context/contex";
+import { useRouter } from "next/navigation";
 
 const MatchHistory = ({ data, head }: { data: MatchHistoryItemInterface[]; head: string[] }) => {
     const itemsPerPage = 6;
     const [currentPage, setCurrentPage] = useState(1);
     const { profile }: any = useContext(ContextGlobal);
-
+    const router = useRouter();
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     const [currentData, setCurrentData] = useState([]);
@@ -50,7 +50,9 @@ const MatchHistory = ({ data, head }: { data: MatchHistoryItemInterface[]; head:
 
     }, [profile.id]);
         // console.log(match)
-
+    const redirectToAnotherPage = () => {
+        router.push('/dashboard/game');
+    };
     const renderPageNumbers = () => {
         if (totalPages <= 3) {
 
@@ -91,17 +93,34 @@ const MatchHistory = ({ data, head }: { data: MatchHistoryItemInterface[]; head:
         const reversedMatches = match.slice().reverse();
 
         if (reversedMatches.length === 0) {
-            return         <div className='flex items-center w-full h-[60px] bg-achievements3  my-2 text-white pb-1'>
-            <div className='flex items-center justify-center w-[96.33%] h-[60px] text-[12px] md:text-[16px]'>
-                {"NO MATCHES HISTORY"}
-            </div>
- 
-            </div>;
+            return (
+                <>
+                <div className='flex items-center w-full h-[60px] bg-achievements3 my-2 text-white pb-1'>
+                    <div className='flex items-center justify-center w-[100%] h-[60px] text-[12px] md:text-[16px] mt-2'>
+                        {"NO MATCHES HISTORY"}
+                    </div>
+                </div>
+                <div className="flex justify-center text-gray-300 mb-4">
+                <button onClick={redirectToAnotherPage} className="bg-achievements2 w-[26%] py-1 border">
+                    game</button>
+                </div>
+                </>
+            );
         }
+
         
+        <>
+                <div className="flex items-center justify-between h-[40px] bg-head text-white text-[14px] md:text-[16px]">
+                    {head.map((item, index) => (
+                        <div className="w-1/2 flex items-center justify-center" key={index}>
+                            {item}
+                        </div>
+                    ))}
+                </div>
+                <div className="pagination flex items-center justify-center text-white bg-achievements3">{renderPageNumbers()}</div>
+        </>
         const startIdx = (currentPage - 1) * itemsPerPage;
         const endIdx = startIdx + itemsPerPage;
-
         return reversedMatches.slice(startIdx, endIdx).map((item: any, index: any) => (
             <MatchHistoryItem
                 key={index}
@@ -110,21 +129,16 @@ const MatchHistory = ({ data, head }: { data: MatchHistoryItemInterface[]; head:
                 ImgPlayerOne={item.opponent.image}
                 ImgPlayerTwo={item.user.image}
                 result={`${item.oppScore}-${item.userScore}`}
+                
             />
+
         ));
     };
 
     return (
         <>
-            <div className="flex items-center justify-between h-[40px] bg-head text-white text-[14px] md:text-[16px]">
-                {head.map((item, index) => (
-                    <div className="w-1/2 flex items-center justify-center" key={index}>
-                        {item}
-                    </div>
-                ))}
-            </div>
             {renderMatchItems()}
-            <div className="pagination flex items-center justify-center text-white bg-achievements3">{renderPageNumbers()}</div>
+            {/* <div className="pagination flex items-center justify-center text-white bg-achievements3">{renderPageNumbers()}</div> */}
         </>
     );
 };
