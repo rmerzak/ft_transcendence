@@ -62,7 +62,7 @@ export interface ChatRoom {
   createdAt?: string;
   updatedAt?: string;
   passwordHash?: string;
-  ownerId?: number;
+  owner?: number;
 }
 
 export interface ChatRoomMember {

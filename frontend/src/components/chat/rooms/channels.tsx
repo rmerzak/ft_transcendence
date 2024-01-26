@@ -89,11 +89,13 @@ const Channels: React.FC<Channel> = ({ header }) => {
         // console.log('updated-room', room);
         if (room) {
           getChatRoomsJoined().then((res) => {
+            console.log('joined', res.data);
             if (res.data) {
               setChatRoomsJoined(res.data);
             }
           }).catch((err) => { console.log(err); });
           getChatRoomsNotJoined().then((res) => {
+            console.log('not joined', res.data);
             if (res.data)
               setChatRoomsToJoin(res.data);
           }).catch((err) => { console.log(err) });

@@ -28,6 +28,20 @@ export class RoomService {
                     },
                 },
             },
+            select: {
+                id: true,
+                name: true,
+                visibility: true,
+                owner: true,
+                users: {
+                    select: {
+                        id: true,
+                        username: true,
+                        image: true,
+                        status: true,
+                    },
+                },
+            },
         });
 
         const filteredChatRooms = chatRooms.filter(room => {
@@ -178,7 +192,8 @@ export class RoomService {
         });
         if (!isOwner) throw new Error('Chat room not found');
         else if (isOwner.owner !== user.id || user.id !== chatRoomData.owner) throw new Error('you are not the owner of this chat room');
-        if (chatRoomData.passwordHash) {
+        if (chatRoomData.visibility === 'PROTECTED') {
+            if (!chatRoomData.passwordHash || chatRoomData.passwordHash === '') throw new Error('Chat room password not set');
             chatRoomData.passwordHash = await argon.hash(chatRoomData.passwordHash);
         }
         return await this.prisma.chatRoom.update({

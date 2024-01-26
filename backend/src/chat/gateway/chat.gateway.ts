@@ -116,6 +116,7 @@ export class GatewayGateway
       _client.emit('error', error.message);
     }
   }
+
   @SubscribeMessage('update-room')
   async handleUpdateRoom(_client: Socket, payload: ChatRoom) {
     console.log("payload: ", payload);

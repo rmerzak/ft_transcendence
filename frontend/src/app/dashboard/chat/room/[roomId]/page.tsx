@@ -31,7 +31,6 @@ const Room = () => {
     }
     return () => {
       chatSocket?.off('receive-message');
-      // chatSocket?.emit('leave-room', { roomId: roomId });
     };
   }, [roomId, chatSocket]);
 
