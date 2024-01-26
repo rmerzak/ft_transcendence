@@ -1,23 +1,61 @@
 'use client'
-import React, { useState } from "react";
+
+import React, { useState, useEffect, useContext } from "react";
+import axios from "axios";
 import { MatchHistoryItemInterface } from "@/interfaces";
 import MatchHistoryItem from "./MatchHistoryItem";
+import { ContextGlobal } from "@/context/contex";
 
 const MatchHistory = ({ data, head }: { data: MatchHistoryItemInterface[]; head: string[] }) => {
     const itemsPerPage = 6;
     const [currentPage, setCurrentPage] = useState(1);
+    const { profile }: any = useContext(ContextGlobal);
 
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    const currentData = data.slice(startIndex, endIndex);
-
+    const [currentData, setCurrentData] = useState([]);
     const totalPages = Math.ceil(data.length / itemsPerPage);
+    const [match, setMatch] = useState<any>([]);
 
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
     };
 
+    async function name() {
+        // console.log(profile.id);
+        const payload = {
+            playerId: profile.id
+        };
+        await axios.post(`${process.env.API_BASE_URL}/api/match-history`, payload, 
+        { withCredentials: true })
+        .then(
+            res => {
+                console.log(res.data)
+                setMatch(res.data.matchHistory)
+                console.log("Fetched matches:", res.data.matchHistory);
+
+            }
+            )
+            .catch(
+                err => {
+                    console.log(err)
+                }
+        )
+    }
+
+    useEffect( () => {
+
+        if (profile.id != -1)  
+            name();
+
+    }, [profile.id]);
+        // console.log(match)
+
     const renderPageNumbers = () => {
+        if (totalPages <= 3) {
+
+            return null;
+        }
         const pageNumbers = [];
         const maxVisiblePages = 2;
 
@@ -46,6 +84,34 @@ const MatchHistory = ({ data, head }: { data: MatchHistoryItemInterface[]; head:
         }
 
         return pageNumbers;
+    }; 
+
+
+    const renderMatchItems = () => {
+        const reversedMatches = match.slice().reverse();
+
+        if (reversedMatches.length === 0) {
+            return         <div className='flex items-center w-full h-[60px] bg-achievements3  my-2 text-white pb-1'>
+            <div className='flex items-center justify-center w-[96.33%] h-[60px] text-[12px] md:text-[16px]'>
+                {"NO MATCHES HISTORY"}
+            </div>
+ 
+            </div>;
+        }
+        
+        const startIdx = (currentPage - 1) * itemsPerPage;
+        const endIdx = startIdx + itemsPerPage;
+
+        return reversedMatches.slice(startIdx, endIdx).map((item: any, index: any) => (
+            <MatchHistoryItem
+                key={index}
+                playerOne={item.opponent.username}
+                playerTwo={item.user.username}
+                ImgPlayerOne={item.opponent.image}
+                ImgPlayerTwo={item.user.image}
+                result={`${item.oppScore}-${item.userScore}`}
+            />
+        ));
     };
 
     return (
@@ -57,16 +123,7 @@ const MatchHistory = ({ data, head }: { data: MatchHistoryItemInterface[]; head:
                     </div>
                 ))}
             </div>
-            {currentData.map((item, index) => (
-                <MatchHistoryItem
-                    key={index}
-                    playerOne={item.PlayerOne}
-                    playerTwo={item.PlayerTwo}
-                    ImgPlayerOne={item.ImgPlayerOne}
-                    ImgPlayerTwo={item.ImgPlayerTwo}
-                    result={`${item.ScorePlayerOne}-${item.ScorePlayerTwo}`}
-                />
-            ))}
+            {renderMatchItems()}
             <div className="pagination flex items-center justify-center text-white bg-achievements3">{renderPageNumbers()}</div>
         </>
     );

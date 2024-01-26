@@ -51,14 +51,17 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   async handleDisconnect(client: Socket) {
+
     console.log('disconnected');
 
+    
     // Change user status to ONLINE
     const userId = client['payload']['sub'];
     await this.prisma.user.update({
       where: { id: userId },
       data: { status: UserStatus.ONLINE },
     });
+    this.game.stopPlaying(userId); // remove this later 
 
     // find the room using socket id
     const targetRoom = this.game.rooms.find((room) =>
@@ -71,24 +74,24 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
       if (targetRoom) {
         if (targetRoom.players[0].socketId === client.id) {
-          this.game.createMatchHistory(
-            targetRoom.players[0].user.id,
-            targetRoom.players[1].user.id,
-            0,
-            5,
-          );
-          this.game.updateStatistics(targetRoom.players[1].user.id, 5, 0);
-          this.game.updateStatistics(targetRoom.players[0].user.id, 0, 5);
-        }
-        if (targetRoom.players[1].socketId === client.id) {
-          this.game.createMatchHistory(
-            targetRoom.players[0].user.id,
-            targetRoom.players[1].user.id,
-            5,
-            0,
-          );
-          this.game.updateStatistics(targetRoom.players[0].user.id, 5, 0);
-          this.game.updateStatistics(targetRoom.players[1].user.id, 0, 5);
+        //   this.game.createMatchHistory(
+        //     targetRoom.players[0].user.id,
+        //     targetRoom.players[1].user.id,
+        //     0,
+        //     5,
+        //   );
+        //   this.game.updateStatistics(targetRoom.players[1].user.id, 5, 0);
+        //   this.game.updateStatistics(targetRoom.players[0].user.id, 0, 5);
+        // }
+        // if (targetRoom.players[1].socketId === client.id) {
+        //   this.game.createMatchHistory(
+        //     targetRoom.players[0].user.id,
+        //     targetRoom.players[1].user.id,
+        //     5,
+        //     0,
+        //   );
+        //   this.game.updateStatistics(targetRoom.players[0].user.id, 5, 0);
+        //   this.game.updateStatistics(targetRoom.players[1].user.id, 0, 5);
         }
         targetRoom.players.forEach((player) => {
           // Check if the player is not the disconnected player
@@ -153,50 +156,50 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     } catch {}
   }
 
-  // @SubscribeMessage('resign')
-  // resign(client: Socket, payload: {roomId: string}): void {
-  //   try {
-  //     // console.log(payload);
-  //     console.log('resign');
-  //     console.log('first', this.game.rooms)
-  //     const room = this.game.rooms.find((room) => room.id === payload.roomId);
-  //     if (room) {
-  //       console.log('player 1', room.players[0]);
-  //       console.log('player 2', room.players[1]);
-  //       // create match history, if the player resigns, the other player wins by default with 5 points to 0
-  //       if (room.players[0].socketId === client.id) {
-  //         this.game.createMatchHistory(
-  //           room.players[0].user.id,
-  //           room.players[1].user.id,
-  //           0,
-  //           5,
-  //         );
-  //         this.game.updateStatistics(room.players[1].user.id, 5, 0);
-  //         this.game.updateStatistics(room.players[0].user.id, 0, 5);
-  //       }
-  //       if (room.players[1].socketId === client.id) {
-  //         this.game.createMatchHistory(
-  //           room.players[0].user.id,
-  //           room.players[1].user.id,
-  //           5,
-  //           0,
-  //         );
-  //         this.game.updateStatistics(room.players[0].user.id, 5, 0);
-  //         this.game.updateStatistics(room.players[1].user.id, 0, 5);
-  //       }
+  @SubscribeMessage('resign')
+  resign(client: Socket, payload: {roomId: string}): void {
+    try {
+      // console.log(payload);
+      console.log('resign');
+      console.log('first', this.game.rooms)
+      const room = this.game.rooms.find((room) => room.id === payload.roomId);
+      if (room) {
+        console.log('player 1', room.players[0]);
+        console.log('player 2', room.players[1]);
+        // create match history, if the player resigns, the other player wins by default with 5 points to 0
+        if (room.players[0].socketId === client.id) {
+          this.game.createMatchHistory(
+            room.players[0].user.id,
+            room.players[1].user.id,
+            0,
+            5,
+          );
+          this.game.updateStatistics(room.players[1].user.id, 5, 0);
+          this.game.updateStatistics(room.players[0].user.id, 0, 5);
+        }
+        if (room.players[1].socketId === client.id) {
+          this.game.createMatchHistory(
+            room.players[0].user.id,
+            room.players[1].user.id,
+            5,
+            0,
+          );
+          this.game.updateStatistics(room.players[0].user.id, 5, 0);
+          this.game.updateStatistics(room.players[1].user.id, 0, 5);
+        }
 
-  //       room.players.forEach((player) => {
-  //         if (player.socketId !== client.id) {
-  //           this.server.to(player.socketId).emit('winByResign');
-  //         }
-  //       });
-  //       this.game.leaveRoom(payload.roomId, client.id, client);
-  //     }
+        room.players.forEach((player) => {
+          if (player.socketId !== client.id) {
+            this.server.to(player.socketId).emit('winByResign');
+          }
+        });
+        this.game.leaveRoom(payload.roomId, client.id, client);
+      }
 
-  //     // update statistics
-  //     console.log('second', this.game.rooms)
-  //   } catch {}
-  // }
+      // update statistics
+      console.log('second', this.game.rooms)
+    } catch {}
+  }
 
   // this method is called when a player leaves a room
   @SubscribeMessage('leave')

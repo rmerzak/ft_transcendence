@@ -6,7 +6,7 @@ import { io } from 'socket.io-client';
 import Swal from 'sweetalert2';
 import { setInterval, clearInterval } from 'timers';
 import { useGame,  } from '@/app/dashboard/game/context/gameContext';
-import { themeAtom } from './theme';
+import { themeAtom, modeAtom, Mode } from './atoms';
 import { useAtomValue, useSetAtom } from 'jotai';
 
 function Pong()
@@ -26,9 +26,11 @@ function Pong()
     // route
     const router = useRouter();
     
-    // theme
+    // atoms
     const theme = useAtomValue(themeAtom);
     const setTheme = useSetAtom(themeAtom);
+    const mode = useAtomValue(modeAtom);
+    const setMode = useSetAtom(modeAtom);
     
     useEffect(() => {
         
@@ -225,7 +227,10 @@ function Pong()
 
         if (socket.connect()) {
             socket.on('userInfo', () => {
-                socket.emit('join');
+                if (mode === Mode.normal)
+                    socket.emit('join');
+                else if (mode === Mode.challenge)
+                    socket.emit('challengeJoin');
             });
         }
 
@@ -243,10 +248,16 @@ function Pong()
                         showConfirmButton: false,
                         allowOutsideClick: false,
                         allowEscapeKey: false,
+                        // cancel button
+                        showCancelButton: true,
                         customClass: {
                             popup: 'bg-transparent',
                             image: 'opacity-50 bg-transparent',
                         },
+                    }).then((res) => {
+                        if (res.isDismissed) {
+                            router.push('/dashboard/game');
+                        }
                     });
                 }
             } else if (playerNo === 2) {
@@ -419,6 +430,9 @@ function Pong()
             // reset theme
             setTheme(-1);
 
+            // reset mode
+            setMode(Mode.normal);
+
             // remove canvas
             canvas.remove();
 
@@ -451,7 +465,7 @@ function Pong()
             updateScores(0, 0);
             setUserInfo(1, 'Loading...', '/game/avatar.jpeg');
             setOpponentInfo(2, 'Loading...', '/game/avatar.jpeg');
-            // socket.emit('resign', {roomId: roomID});
+            socket.emit('resign', {roomId: roomID});
             console.log('socket disconnect');
             socket.disconnect();
         };

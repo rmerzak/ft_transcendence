@@ -111,14 +111,12 @@ export class FriendshipGateway {
     }
   }
   @SubscribeMessage('challengeGame')
-  async challengeGame(socket: Socket, payload: number) {
-    console.log("challengeGame", payload)
+  async challengeGame(socket: Socket, payload: {playerId: number, gameId: string}) {
     try {
-      const emitClient = this.friendship.getSocketsByUser(Number(payload));
+      const emitClient = this.friendship.getSocketsByUser(payload.playerId);
       // you must creaet a room or a game logic here
       // const rooom = await this.friendship.CreateRoom(socket, Number(payload));
-      const gameNotification = await this.friendship.CreateNotification(socket, Number(payload), 'challengeGame', '343123455-5613232-654313-654321312', null,'GAME');
-      console.log("gameNotification", gameNotification)
+      const gameNotification = await this.friendship.CreateNotification(socket, payload.playerId, 'challengeGame', payload.gameId , null,'GAME');
       emitClient.forEach((socket) => {
         socket.emit('challengeGame', { notification: gameNotification , friendship: null, status: true, error: null });
       });

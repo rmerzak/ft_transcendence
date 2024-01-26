@@ -18,14 +18,16 @@ const Layout = ({children} : any) => {
   return (
       <div className="flex login-gradient">
         <ContextProvider>
-            <div className="flex-1">
-                <Sidebar />
-            </div> 
-            <div className="flex-[10] ">
-                <Navbar />
-                {children}
-            </div>
-            <ToastContainer />
+          <JotaiProvider>
+              <div className="flex-1">
+                  <Sidebar />
+              </div> 
+              <div className="flex-[10] ">
+                  <Navbar />
+                  {children}
+              </div>
+              <ToastContainer />
+          </JotaiProvider>
         </ContextProvider>
       </div>
     )
