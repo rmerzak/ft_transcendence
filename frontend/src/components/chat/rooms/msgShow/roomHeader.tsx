@@ -40,7 +40,7 @@ const RoomHeader: React.FC<roomHeaderProps> = ({ chatRoom }) => {
                         </button>
                         {
                             openUserList && (
-                                <RoomUsers handleUserListClick={handleUserListClick} />
+                                <RoomUsers handleUserListClick={handleUserListClick} chatRoom={chatRoom}/>
                             )
                         }
                         {
