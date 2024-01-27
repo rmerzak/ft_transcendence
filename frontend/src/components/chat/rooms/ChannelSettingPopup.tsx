@@ -1,43 +1,31 @@
 import { ContextGlobal } from "@/context/contex";
 import React, { useContext, useEffect, useState } from "react";
-import { ChatRoom } from "@/interfaces";
+import { ChatRoom, RoomVisibility } from "@/interfaces";
 
 interface PopupProps {
   handleSettingClick: () => void;
   chatRoom: ChatRoom | undefined;
 }
 
-enum RoomVisibility {
-  PUBLIC = "PUBLIC",
-  PROTECTED = "PROTECTED",
-  PRIVATE = "PRIVATE",
-}
 
 const ChannelSettingPopup: React.FC<PopupProps> = ({ handleSettingClick, chatRoom }) => {
-  const [invalue, setinValue] = useState("");
-  const [formData, setFormData] = useState({
-    channelName: "",
-    password: chatRoom?.passwordHash || "",
-    visibility: chatRoom?.visibility || RoomVisibility.PUBLIC,
-  });
+  const { chatSocket } = useContext(ContextGlobal);
+  const [formData, setFormData] = useState<ChatRoom>({});
 
   useEffect(() => {
-    setFormData({
-      channelName: chatRoom?.name || "",
-      password: chatRoom?.passwordHash || "",
-      visibility: chatRoom?.visibility || RoomVisibility.PUBLIC,
-    });
+    if (chatRoom)
+      setFormData(chatRoom);
   }, [chatRoom]);
 
   useEffect(() => {
     if (formData.visibility !== RoomVisibility.PROTECTED) {
       setFormData((prevData) => ({
         ...prevData,
-        password: "", 
+        passwordHash: "",
       }));
     }
   }, [formData.visibility]);
-  
+
 
   const handleVisibilityChange = (visibility: RoomVisibility) => {
     setFormData((prevData) => ({
@@ -51,22 +39,10 @@ const ChannelSettingPopup: React.FC<PopupProps> = ({ handleSettingClick, chatRoo
   };
 
   const handleSave = () => {
-    if (
-      chatRoom &&
-      (chatRoom.name !== formData.channelName ||
-        chatRoom.visibility !== formData.visibility ||
-        (formData.visibility === RoomVisibility.PROTECTED && chatRoom.passwordHash !== formData.password))
-    ) {
-      chatRoom.name = invalue;
-      chatRoom.visibility = formData.visibility;
-      chatRoom.passwordHash = formData.password;
-
-      console.log("channel name from inputValue:", invalue);
-      console.log("channel name from formData:", formData.channelName);
-      console.log("data from formData:", formData);
-      console.log("Updated Channel Data:", chatRoom);
-    }
-
+    chatSocket?.emit("update-room", {
+      ...formData,
+      id: chatRoom?.id,
+    });
     handleSettingClick();
   };
 
@@ -79,14 +55,13 @@ const ChannelSettingPopup: React.FC<PopupProps> = ({ handleSettingClick, chatRoo
             <input
               type="text"
               className="bg-gray-800 text-white mt-4 border-none rounded-xl focus:ring-0 h-9 md:w-3/4 focus:outline-none"
-              placeholder={`# ${chatRoom?.name}`}
+              placeholder={`#${chatRoom?.name}`}
               required
-              value={invalue}
-              onChange={(e) => setinValue(e.target.value)}
+              onChange={(e) => setFormData((prevData) => ({ ...prevData, name: e.target.value }))}
             />
           </div>
         </div>
-        <div className="text-white font-light text-lg flex justify-center items-center space-x-1 my-3">
+        <div className="text-white font-light text-lg flex justify-center items-center space-x-1 mt-3 mb-1">
           <fieldset className="flex justify-between items-center space-x-4 w-[67.5%] h-10 p-2" id="safe">
             <div className="space-x-1 flex justify-center items-center text-base md:text-lg">
               <input
@@ -120,17 +95,21 @@ const ChannelSettingPopup: React.FC<PopupProps> = ({ handleSettingClick, chatRoo
             </div>
           </fieldset>
         </div>
-        {formData.visibility === RoomVisibility.PROTECTED && chatRoom?.visibility !== RoomVisibility.PROTECTED && (
-      <div className="flex justify-evenly w-full">
-    <input
-      type="password"
-      className="bg-gray-800 text-white border-none rounded-xl focus:ring-0 h-9 md:w-3/5 focus:outline-none"
-      placeholder="Enter password"
-      value={formData.password}
-      onChange={(e) => setFormData((prevData) => ({ ...prevData, password: e.target.value }))}
-      />
-    </div>
-      )}
+        {formData.visibility === RoomVisibility.PROTECTED && (
+          <div className="flex justify-evenly w-full ">
+             {chatRoom?.visibility ===  RoomVisibility.PROTECTED ? <div>
+              <p className="text-[8px] text-center">(optional)</p>
+            <label className="text-xl">change password:</label>
+            </div> : <label className="text-xl">set password:</label>}
+            <input
+              type="password"
+              className="bg-gray-800 text-white border-none rounded-xl focus:ring-0 h-10 md:w-3/6 focus:outline-none"
+              placeholder="Enter password"
+              value={formData.passwordHash}
+              onChange={(e) => setFormData((prevData) => ({ ...prevData, passwordHash: e.target.value }))}
+            />
+          </div>
+        )}
         <div className="flex justify-around w-full mt-3 ">
           <button onClick={handleSave} className=" bg-[#811B77]/80 border text-white rounded-lg md:w-1/6 focus:outline-none hover:bg-green-400">
             <h1>Save</h1>

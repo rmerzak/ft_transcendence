@@ -5,7 +5,7 @@ import {
   getRecentMessages,
 } from "@/api/chat/chat.api";
 import { ContextGlobal } from "@/context/contex";
-import { ChatRoom, ChatRoomUsers, Recent } from "@/interfaces";
+import { ChatRoom, Recent } from "@/interfaces";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
@@ -15,7 +15,8 @@ type RecentProps = {
   rooms?: ChatRoom[];
 };
 
-const isNumber = (value: string | number): boolean => {
+const isNumber = (value: string | number | undefined): boolean => {
+  if (value === undefined) return false;
   return !isNaN(Number(value.toString()));
 };
 const Recent: React.FC<RecentProps> = ({ rooms }) => {
@@ -26,7 +27,6 @@ const Recent: React.FC<RecentProps> = ({ rooms }) => {
   useEffect(() => {
     getRecentMessages()
       .then((res) => {
-        // console.log("res first render: ", res);
         setRecent(res.data);
       })
       .catch((err) => {
@@ -37,37 +37,38 @@ const Recent: React.FC<RecentProps> = ({ rooms }) => {
   useEffect(() => {
     if (rooms) {
       rooms.forEach((room) => {
-        chatSocket?.emit("join-room", { roomId: room.id });
+        isNumber(room.id) ? chatSocket?.emit('join-room', { roomId: room.id }) : null;
       });
     }
   }, [rooms]);
 
   useEffect(() => {
     if (chatSocket) {
-      chatSocket.on("receive-recent", () => {
-        getRecentMessages()
-          .then((res) => {
-            // console.log("res socket event: ", res);
-            setRecent(res.data);
-          })
-          .catch((err) => {
-            console.log("err", err);
-          });
+      chatSocket.on('receive-recent', () => {
+        getRecentMessages().then((res) => {
+          setRecent(res.data);
+        }).catch((err) => {
+          console.log("err", err);
+        });
       });
+    }
+    return () => {
+      chatSocket?.off('receive-recent');
     }
   }, [chatSocket]);
 
   function removeRecent(chatRoomId: number) {
     deleteRecentMessage(chatRoomId)
       .then((res) => {
-        console.log("res", res);
-        getRecentMessages()
-          .then((res) => {
-            setRecent(res.data);
-          })
-          .catch((err) => {
-            console.log("err", err);
-          });
+        if (res.data) {
+          getRecentMessages()
+            .then((res) => {
+              setRecent(res.data);
+            })
+            .catch((err) => {
+              console.log("err", err);
+            });
+        }
       })
       .catch((err) => {
         console.log("err", err);
@@ -85,6 +86,7 @@ const Recent: React.FC<RecentProps> = ({ rooms }) => {
 
       <div className="mx-auto w-[90%] md:scroll-y-auto mb-1 text-white rounded-xl">
         {recents.map((recent) => (
+          isNumber(recent.chatRoomId) &&
           <div
             key={recent.chatRoomId}
             className="flex justify-between items-center my-[6px] md:my-[10px] rounded-md font-inter  bg-[#5D5959]/50 hover:bg-[#5D5959]/100"

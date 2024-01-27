@@ -17,6 +17,26 @@ enum RoomVisibility {
   PROTECTED
 }
 
+// enum for room status muted, banned, normal
+enum RoomStatus {
+  MUTED
+  BANNED
+  NORMAL
+}
+
+enum MessageStatus {
+  NORMAL
+  ANNOCEMENT
+}
+
+enum InviteRoomStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  BLOCKED
+}
+
+
 enum UserStatus {
   ONLINE
   OFFLINE
@@ -62,6 +82,7 @@ model User {
   receivedNotification Notification[] @relation("Receiver")
   sendNotification Notification[] @relation("Sender")
   user Recent[] @relation("recent")
+  senderReqJoin RoomReqJoin[] @relation(name: "senderReqJoin")
 }
 
 model Game {
@@ -94,7 +115,6 @@ model Friendship {
   senderId Int
   receiver User @relation("Receiver", fields: [receiverId], references: [id])
   receiverId Int
-
   block Boolean @default(false)
   blockBy Blocker?
 }
@@ -131,18 +151,31 @@ model ChatRoom {
   users ChatRoomMember[]
   messages Message[]
   recent Recent[] @relation("chatrecent")
+  reqJoin RoomReqJoin[] @relation(name: "RedJoin")
 }
 
 model ChatRoomMember {
   // Foreign keys
   userId Int
   chatRoomId Int
+  updatedAt DateTime? @updatedAt
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   chatRoom ChatRoom @relation(fields: [chatRoomId], references: [id], onDelete: Cascade)
   joinedAt DateTime @default(now())
   is_admin Boolean @default(false)
   leftAt DateTime?
+  status RoomStatus? @default(NORMAL)
+  mutedDuration String?
   @@id([userId, chatRoomId])
+}
+model RoomReqJoin {
+  createdAt DateTime @default(now())
+  chatRoomId Int
+  chatRoom ChatRoom @relation(name: "RedJoin", fields: [chatRoomId], references: [id], onDelete: Cascade)
+  senderId Int
+  sender User @relation(name: "senderReqJoin", fields: [senderId], references: [id], onDelete: Cascade)
+  status InviteRoomStatus @default(PENDING)
+  @@id([senderId, chatRoomId])
 }
 
 model Message {
@@ -167,3 +200,4 @@ model Recent {
   link String
   @@id([userId, chatRoomId])
 }
+

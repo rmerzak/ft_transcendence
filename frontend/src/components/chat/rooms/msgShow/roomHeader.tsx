@@ -3,9 +3,7 @@
 import User from "@/components/game/User";
 import { ContextGlobal } from "@/context/contex";
 import { ChatRoom, ChatRoomMember } from "@/interfaces";
-import { User2Icon } from "lucide-react";
-import Link from "next/link";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import ChannelSettingPopup from "../ChannelSettingPopup";
 import { FaUserFriends } from "react-icons/fa";
 import RoomUsers from "../roomUsers/roomUsers";
@@ -16,11 +14,12 @@ interface roomHeaderProps {
 const RoomHeader: React.FC<roomHeaderProps> = ({ chatRoom }) => {
     const [isPopupVisible, setPopupVisible] = useState(false);
     const [openUserList, setOpenUserList] = useState(false);
+    const { profile } = useContext(ContextGlobal);
     const handleSettingClick = () => {
         setPopupVisible(!isPopupVisible);
     };
 
-    function handleUserListClick(){
+    function handleUserListClick() {
         setOpenUserList(!openUserList);
     }
 
@@ -41,13 +40,13 @@ const RoomHeader: React.FC<roomHeaderProps> = ({ chatRoom }) => {
                         </button>
                         {
                             openUserList && (
-                                <RoomUsers handleUserListClick={handleUserListClick}/>
+                                <RoomUsers handleUserListClick={handleUserListClick} chatRoom={chatRoom}/>
                             )
                         }
                         {
                             isPopupVisible && (
-                                    <ChannelSettingPopup handleSettingClick={handleSettingClick} chatRoom={chatRoom}/>
-                                        )
+                                <ChannelSettingPopup handleSettingClick={handleSettingClick} chatRoom={chatRoom} />
+                            )
                         }
                         <div className="dropdown dropdown-left">
                             <svg
@@ -69,9 +68,8 @@ const RoomHeader: React.FC<roomHeaderProps> = ({ chatRoom }) => {
                                         Leave
                                     </div>
                                 </li>
-                                <li>
+                                <li className= {profile?.id === chatRoom?.owner ? `block` : `hidden`}>
                                     <div className="flex items-center space-x-2 cursor-pointer " onClick={handleSettingClick}>
-                                        {/* <button className="w-full text-start" onClick={handleSettingClick}>Setting</button> */}
                                         Setting
                                     </div>
                                 </li>

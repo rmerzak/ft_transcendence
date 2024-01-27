@@ -57,8 +57,12 @@ const Sendchatmsg: React.FC<SendchatmsgProps> = ({ chatRoomId, isblocked, friend
                 lastMessage: message,
             }
         ];
-        chatSocket?.emit('add-recent', recentArray);
-        chatSocket?.emit('send-message', messageData);
+        const data = {
+            msgData: messageData,
+            recentData: recentArray,
+        };
+        chatSocket?.emit('add-recent', data);
+        chatSocket?.emit('send-message', data);
         setMessage('');
     }
 

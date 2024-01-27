@@ -19,7 +19,7 @@ export class JwtGuard extends AuthGuard('jwt') {
             } catch (error) {
                 response.clearCookie('accesstoken');
                 response.clearCookie('userId');
-                throw new UnauthorizedException('Invalid or expired token');
+                //throw new UnauthorizedException('Invalid or expired token');
             }
         }
     

@@ -37,7 +37,8 @@ const SendMsgRm: React.FC<SendchatmsgProps> = ({ chatRoomId, isblocked, friendId
             chatRoomId: chatRoomId,
             text: message,
         };
-        chatSocket?.emit('send-message', messageData);
+
+        chatSocket?.emit('send-message', {msgData: messageData});
         setMessage('');
     }
 

@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import Popup from "./popup";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, KeyboardEvent } from "react";
 import { ContextGlobal } from "@/context/contex";
 import { ChatRoom } from "@/interfaces";
 import { IoIosExit } from "react-icons/io";
@@ -43,7 +43,7 @@ const Channels: React.FC<Channel> = ({ header }) => {
   };
 
   const handleKeyDown = (e: KeyboardEvent) => {
-    if (e.keyCode === 13) {
+    if (e.key === "Enter") {
       handleInput();
     }
   };
@@ -65,44 +65,61 @@ const Channels: React.FC<Channel> = ({ header }) => {
   }
 
   useEffect(() => {
-    chatSocket?.on("create-room", (room: ChatRoom) => {
-      console.log("create-room", room);
-      getChatRoomsNotJoined()
-        .then((res) => {
-          if (res.data) setChatRoomsToJoin(res.data);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    });
-    chatSocket?.on("ownedRoom", (room: ChatRoom) => {
-      getChatRoomsJoined()
-        .then((res) => {
-          console.log(room);
-          if (res.data) {
-            setChatRoomsJoined(res.data);
-            setChatRoomsToJoin((prev: ChatRoom[]) =>
-              prev.filter((item: ChatRoom) => item.name !== room.name)
-            );
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    });
-
-    chatSocket?.on("error", (data) => {
-      if (data) {
-        toast.error(data);
-      }
-    });
-    console.log("chatRoomsJoined");
+    if (chatSocket) {
+      chatSocket?.on("create-room", (room: ChatRoom) => {
+        getChatRoomsNotJoined().then((res) => {
+          if (res.data)
+            setChatRoomsToJoin(res.data);
+        }).catch((err) => { console.log(err) });
+      });
+      chatSocket?.on("ownedRoom", (room: ChatRoom) => {
+        getChatRoomsJoined()
+          .then((res) => {
+            if (res.data) {
+              setChatRoomsJoined(res.data);
+              const newChatRoomsToJoin = chatRoomsToJoin.filter((item: ChatRoom) => item.name !== room.name);
+              setChatRoomsToJoin(newChatRoomsToJoin);
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      });
+      chatSocket?.on('updated-room', (room: ChatRoom) => {
+        // console.log('updated-room', room);
+        if (room) {
+          getChatRoomsJoined().then((res) => {
+            // console.log('joined', res.data);
+            if (res.data) {
+              setChatRoomsJoined(res.data);
+            }
+          }).catch((err) => { console.log(err); });
+          getChatRoomsNotJoined().then((res) => {
+            // console.log('not joined', res.data);
+            if (res.data)
+              setChatRoomsToJoin(res.data);
+          }).catch((err) => { console.log(err) });
+        }
+      });
+      chatSocket?.on("error", (data) => {
+        if (data) {
+          toast.error(data);
+        }
+      });
+    }
+    return () => {
+      chatSocket?.off("create-room");
+      chatSocket?.off("ownedRoom");
+      chatSocket?.off("error");
+      chatSocket?.off("updated-room");
+    };
   }, [chatSocket]);
   return (
     <>
       <div className=" my-3 mx-auto w-[90%]">
         <div className="flex justify-center">
           <input
+            id="channelName"
             type="text"
             className="bg-gray-300 text-black border-none  rounded-l-xl focus:ring-0 h-10 md:w-[70%] focus:outline-none"
             placeholder="channel name"
@@ -125,7 +142,7 @@ const Channels: React.FC<Channel> = ({ header }) => {
           {chatRoomsJoined.length > 0 ? (
             chatRoomsJoined.map((channel, index) => (
               <div key={index} className="flex w-full  bg-[#811B77]/50  hover:bg-[#811B77]/100 rounded-xl h-[15%] mb-[9px]">
-                
+
                 <div
                   onClick={() => handleJoinRoom(Number(channel.id))}
                   className=" flex items-center w-full text-xs md:text-base p-3 my-[6px] md:my-[10px] text-white hover:bg-[#811B77]/100"
@@ -207,7 +224,7 @@ const Channels: React.FC<Channel> = ({ header }) => {
                       placeholder="Enter password"
                       value={invalue}
                       onChange={(e) => setinValue(e.target.value)}
-                      onKeyDown={handleKeyDown}
+                      onKeyDown={(e) => handleKeyDown(e)}
                       className="text-black rounded-full w-[100%] ml-1"
                     />
                   )}
