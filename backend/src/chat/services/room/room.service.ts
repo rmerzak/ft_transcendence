@@ -140,7 +140,8 @@ export class RoomService {
     // create chat room
     async createChatRoom(socket: Socket, chatRoomData: ChatRoom): Promise<ChatRoom> {
         // console.log('chatRoomData: ', chatRoomData);
-        if (!chatRoomData.name[0].match(/[a-zA-Z]/)) throw new Error('Chat room name must start with a letter');
+        // if (!chatRoomData.name[0].match(/[a-zA-Z]/)) throw new Error('Chat room name must start with a letter');
+        chatRoomDataValidation(chatRoomData);
         const existingChatRoom = await this.prisma.chatRoom.findUnique({
             where: { name: chatRoomData.name },
         });
@@ -206,6 +207,7 @@ export class RoomService {
             where: { name: chatRoomData.name, NOT: { id: chatRoomData.id } },
         });
         if (chatRoom) throw new Error('Chat room already exists');
+        chatRoomDataValidation(chatRoomData);
         if (!room) throw new Error('Chat room not found');
         if (room.owner !== user.id || user.id !== chatRoomData.owner) throw new Error('you are not the owner of this chat room');
         if (room.visibility !== RoomVisibility.PROTECTED) {
@@ -216,10 +218,9 @@ export class RoomService {
             else
                 chatRoomData.passwordHash = null;
         } else if (room.visibility === RoomVisibility.PROTECTED) {
-            console.log('room.passwordHash: ', room.passwordHash);
+            
             if (chatRoomData.visibility === RoomVisibility.PROTECTED && (chatRoomData.passwordHash === null
                 || chatRoomData.passwordHash === '' || chatRoomData.visibility === undefined)) {
-                console.log('here');
                 chatRoomData.passwordHash = room.passwordHash;
             } else if (chatRoomData.visibility === RoomVisibility.PROTECTED && (chatRoomData.passwordHash !== null || chatRoomData.passwordHash !== '')) {
                 chatRoomData.passwordHash = await argon.hash(chatRoomData.passwordHash);
@@ -481,4 +482,13 @@ export class RoomService {
             where: { senderId_chatRoomId: { senderId, chatRoomId } },
         });
     }
+}
+
+// fuctions helpers
+const chatRoomDataValidation = (chatRoomData: ChatRoom) => {
+    if (!chatRoomData.name[0].match(/[a-zA-Z]/)) throw new Error('Chat room name must start with a letter');
+    if (!chatRoomData.name.match(/\S/)) throw new Error('Chat room name must not be all spaces');
+    if (!chatRoomData.name.match(/^[a-zA-Z0-9_ ]+$/)) throw new Error('Chat room name must contain only letters, numbers and underscores');
+    if (chatRoomData.name.length < 3) throw new Error('Chat room name must be at least 3 characters long');
+    if (chatRoomData.name.length > 12) throw new Error('Chat room name must be at most 20 characters long');
 }
