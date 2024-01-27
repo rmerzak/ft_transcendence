@@ -3,9 +3,7 @@
 import User from "@/components/game/User";
 import { ContextGlobal } from "@/context/contex";
 import { ChatRoom, ChatRoomMember } from "@/interfaces";
-import { User2Icon } from "lucide-react";
-import Link from "next/link";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import ChannelSettingPopup from "../ChannelSettingPopup";
 import { FaUserFriends } from "react-icons/fa";
 import RoomUsers from "../roomUsers/roomUsers";
@@ -16,6 +14,7 @@ interface roomHeaderProps {
 const RoomHeader: React.FC<roomHeaderProps> = ({ chatRoom }) => {
     const [isPopupVisible, setPopupVisible] = useState(false);
     const [openUserList, setOpenUserList] = useState(false);
+    const { profile } = useContext(ContextGlobal);
     const handleSettingClick = () => {
         setPopupVisible(!isPopupVisible);
     };
@@ -69,7 +68,7 @@ const RoomHeader: React.FC<roomHeaderProps> = ({ chatRoom }) => {
                                         Leave
                                     </div>
                                 </li>
-                                <li>
+                                <li className= {profile?.id === chatRoom?.owner ? `block` : `hidden`}>
                                     <div className="flex items-center space-x-2 cursor-pointer " onClick={handleSettingClick}>
                                         Setting
                                     </div>

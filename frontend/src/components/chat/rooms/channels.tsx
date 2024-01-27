@@ -89,13 +89,13 @@ const Channels: React.FC<Channel> = ({ header }) => {
         // console.log('updated-room', room);
         if (room) {
           getChatRoomsJoined().then((res) => {
-            console.log('joined', res.data);
+            // console.log('joined', res.data);
             if (res.data) {
               setChatRoomsJoined(res.data);
             }
           }).catch((err) => { console.log(err); });
           getChatRoomsNotJoined().then((res) => {
-            console.log('not joined', res.data);
+            // console.log('not joined', res.data);
             if (res.data)
               setChatRoomsToJoin(res.data);
           }).catch((err) => { console.log(err) });
@@ -119,6 +119,7 @@ const Channels: React.FC<Channel> = ({ header }) => {
       <div className=" my-3 mx-auto w-[90%]">
         <div className="flex justify-center">
           <input
+            id="channelName"
             type="text"
             className="bg-gray-300 text-black border-none  rounded-l-xl focus:ring-0 h-10 md:w-[70%] focus:outline-none"
             placeholder="channel name"

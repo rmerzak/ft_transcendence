@@ -33,16 +33,10 @@ export class RoomService {
                 name: true,
                 visibility: true,
                 owner: true,
-                users: {
-                    select: {
-                        id: true,
-                        username: true,
-                        image: true,
-                        status: true,
-                    },
-                },
+                createdAt: true,
+                updatedAt: true,
             },
-        });
+        }) as ChatRoom[];
 
         const filteredChatRooms = chatRooms.filter(room => {
             const firstChar = room.name.charAt(0);
@@ -113,7 +107,15 @@ export class RoomService {
     async getChatRoomByName(name: string): Promise<ChatRoom | null> {
         return await this.prisma.chatRoom.findUnique({
             where: { name },
-        });
+            select: {
+                id: true,
+                name: true,
+                visibility: true,
+                owner: true,
+                createdAt: true,
+                updatedAt: true,
+            },
+        }) as ChatRoom | null;
     }
     // get chat room by by id
     async getChatRoomById(id: number): Promise<ChatRoom | null> {
@@ -121,7 +123,15 @@ export class RoomService {
         try {
             return await this.prisma.chatRoom.findUnique({
                 where: { id },
-            });
+                select: {
+                    id: true,
+                    name: true,
+                    visibility: true,
+                    owner: true,
+                    createdAt: true,
+                    updatedAt: true,
+                },
+            }) as ChatRoom | null;
         } catch (error) {
             console.error('Error getting chat room by id:', error.message);
             return null;
@@ -184,17 +194,37 @@ export class RoomService {
             where: { id: userId },
         });
         if (!user) throw new Error('User not found');
-        const isOwner = await this.prisma.chatRoom.findUnique({
+        const room = await this.prisma.chatRoom.findUnique({
             where: { id: chatRoomData.id },
             select: {
+                passwordHash: true,
+                visibility: true,
                 owner: true,
             },
         });
-        if (!isOwner) throw new Error('Chat room not found');
-        else if (isOwner.owner !== user.id || user.id !== chatRoomData.owner) throw new Error('you are not the owner of this chat room');
-        if (chatRoomData.visibility === 'PROTECTED') {
-            if (!chatRoomData.passwordHash || chatRoomData.passwordHash === '') throw new Error('Chat room password not set');
-            chatRoomData.passwordHash = await argon.hash(chatRoomData.passwordHash);
+        const chatRoom = await this.prisma.chatRoom.findFirst({
+            where: { name: chatRoomData.name, NOT: { id: chatRoomData.id } },
+        });
+        if (chatRoom) throw new Error('Chat room already exists');
+        if (!room) throw new Error('Chat room not found');
+        if (room.owner !== user.id || user.id !== chatRoomData.owner) throw new Error('you are not the owner of this chat room');
+        if (room.visibility !== RoomVisibility.PROTECTED) {
+            if (chatRoomData.visibility === RoomVisibility.PROTECTED && (chatRoomData.passwordHash === null || chatRoomData.passwordHash === ''
+                || chatRoomData.visibility === undefined)) throw new Error('Chat room password not set');
+            else if (chatRoomData.visibility === RoomVisibility.PROTECTED && (chatRoomData.passwordHash !== null || chatRoomData.passwordHash !== ''))
+                chatRoomData.passwordHash = await argon.hash(chatRoomData.passwordHash);
+            else
+                chatRoomData.passwordHash = null;
+        } else if (room.visibility === RoomVisibility.PROTECTED) {
+            console.log('room.passwordHash: ', room.passwordHash);
+            if (chatRoomData.visibility === RoomVisibility.PROTECTED && (chatRoomData.passwordHash === null
+                || chatRoomData.passwordHash === '' || chatRoomData.visibility === undefined)) {
+                console.log('here');
+                chatRoomData.passwordHash = room.passwordHash;
+            } else if (chatRoomData.visibility === RoomVisibility.PROTECTED && (chatRoomData.passwordHash !== null || chatRoomData.passwordHash !== '')) {
+                chatRoomData.passwordHash = await argon.hash(chatRoomData.passwordHash);
+            } else
+                chatRoomData.passwordHash = null;
         }
         return await this.prisma.chatRoom.update({
             where: { id: chatRoomData.id },

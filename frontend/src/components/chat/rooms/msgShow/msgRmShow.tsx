@@ -16,21 +16,15 @@ interface MsgShowProps {
 const MsgRmShow: React.FC<MsgShowProps> = ({ messages, roomId, error }) => {
   const [room, setRoom] = useState<ChatRoom>();
   const { chatSocket } = useContext(ContextGlobal);
-  // const [roomMember, setRoomMember] = useState<ChatRoomMember[]>([]);
 
   useEffect(() => {
     if (roomId) {
       getChatRoomById(roomId).then((res) => {
-          console.log('getChatRoomById', res.data);
+          // console.log('getChatRoomById', res.data);
           setRoom(res.data);
         }).catch((err) => {
           console.log(err);
         });
-      // getChatRoomMembers(roomId).then((res) => {
-      //   setRoomMember(res.data);
-      // }).catch((err) => {
-      //   console.log(err);
-      // });
     }
     if (chatSocket) {
       chatSocket.on('updated-room', (room) => {

@@ -37,7 +37,9 @@ export class GatewayGateway
     } else {
       _client.disconnect();
     }
-    _client.join('public');
+    if (!_client.rooms.has('1_public')) {
+      _client.join('1_public');
+    }
     if (!this.roomService.connectedClients.has(user.id)) {
       this.roomService.connectedClients.set(user.id, []);
     }
@@ -119,10 +121,10 @@ export class GatewayGateway
 
   @SubscribeMessage('update-room')
   async handleUpdateRoom(_client: Socket, payload: ChatRoom) {
-    console.log("payload: ", payload);
+    // console.log("payload: ", payload);
     try {
       const room = await this.roomService.updateChatRoom(_client['user'].id, payload);
-      this.server.to('public').emit('updated-room', room);
+      this.server.to('1_public').emit('updated-room', room);
     } catch (error) {
       _client.emit('error', error.message);
     }
