@@ -10,13 +10,12 @@ export class Room {
   private height = 1146;
   id: string;
   state: State;
-  Password: string;
+  timerId: NodeJS.Timeout;
   players: Array<Player> = new Array<Player>();
   ball: Ball = new Ball(this.width);
   constructor(id: string) {
     this.id = id;
     this.state = State.WAITING;
-    this.Password = '';
   }
 
   addPlayer(player: Player): void {
@@ -194,10 +193,6 @@ export class Room {
       players: this.players,
       ball: this.ball,
     });
-  }
-
-  setPassword(password: string): void {
-    this.Password = password;
   }
 
   endGame(): void {

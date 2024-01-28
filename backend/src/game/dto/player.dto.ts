@@ -5,7 +5,10 @@ export class PlayerDto {
   playerId: number;
 }
 
-export class PassDto {
+export class RoomDto {
   @IsString()
-  password: string;
+  roomId: string;
+
+  @IsNumber()
+  roomMode: number;
 }

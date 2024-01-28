@@ -343,24 +343,34 @@ function Pong() {
 				);
 				setPlayer1Elo(payload.user?.gameElo);
 				if (payload.showLoading) {
-					Swal.fire({
-						imageUrl: "/loading.gif",
-						imageWidth: 300,
-						imageHeight: 300,
-						showConfirmButton: false,
-						allowOutsideClick: false,
-						allowEscapeKey: false,
-						showCancelButton: true,
+                    Swal.fire({
+                        imageUrl: "/loading.gif",
+                        imageWidth: 300,
+                        imageHeight: 300,
+                        showConfirmButton: false,
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        showCancelButton: true,
                         cancelButtonColor: "#510546",
-						customClass: {
-							popup: "bg-transparent",
-							image: "opacity-50 bg-transparent",
-						},
-					}).then((res) => {
-						if (res.isDismissed && res.dismiss === Swal.DismissReason.cancel) {
-							router.push("/dashboard/game");
-						}
-					});
+                        cancelButtonText: "Leave",
+                        customClass: {
+                            popup: "bg-transparent",
+                            image: "opacity-50 bg-transparent",
+                        },
+                    }).then((res) => {
+                        if (
+                            res.isDismissed &&
+                            res.dismiss === Swal.DismissReason.cancel
+                        ) {
+                            socket.emit("leave", {
+                                roomId: roomID,
+                                playerNo: playerNo,
+                                mode: mode,
+                            });
+                            router.push("/dashboard/game");
+                        }
+                    });
+                
 				}
 			} else if (playerNo === 2) {
 				setOpponentInfo(
@@ -373,6 +383,32 @@ function Pong() {
 			}
 			render();
 		});
+
+        // time out
+        socket.on("timeOut", () => {
+            Swal.fire({
+                title: "Time Out!",
+                text: "Your opponent not accept your challenge!",
+                imageUrl: "/game/timeout.gif",
+                imageWidth: 400,
+                imageHeight: 200,
+                confirmButtonText: "Ok",
+                allowEscapeKey: false,
+                allowOutsideClick: false,
+                customClass: {
+                    popup: "bg-gradient-to-r from-[#510546]/40 to-[#6958be]/40",
+                },
+            }).then((res) => {
+                if (res.isConfirmed) {
+                    socket.emit("leave", {
+                        roomId: roomID,
+                        playerNo: playerNo,
+                        mode: mode,
+                    });
+                    router.push("/dashboard/game");
+                }
+            });
+        });
 
 		// starting game
 		socket.on("roomIsFull", (flag) => {
@@ -469,15 +505,14 @@ function Pong() {
 				},
 			}).then((res) => {
 				if (res.isConfirmed)
-					// redirect to game page
+                    socket.emit("leave", {
+                        roomId: roomID,
+                        playerNo: playerNo,
+                        mode: mode,
+                    });
 					router.push("/dashboard/game");
 			});
 
-			socket.emit("leave", {
-				roomId: roomID,
-				playerNo: playerNo,
-				mode: mode,
-			});
 		});
 
 		socket.on("youLose", () => {
@@ -495,16 +530,16 @@ function Pong() {
 					popup: "bg-gradient-to-r from-[#510546]/40 to-[#6958be]/40",
 				},
 			}).then((res) => {
-				if (res.isConfirmed)
-					// redirect to game page
+				if (res.isConfirmed) {
+                    socket.emit("leave", {
+                        roomId: roomID,
+                        playerNo: playerNo,
+                        mode: mode,
+                    });
 					router.push("/dashboard/game");
+                }
 			});
 
-			socket.emit("leave", {
-				roomId: roomID,
-				playerNo: playerNo,
-				mode: mode,
-			});
 		});
 
 		socket.on("winByResign", () => {
@@ -522,16 +557,16 @@ function Pong() {
 					popup: "bg-gradient-to-r from-[#510546]/40 to-[#6958be]/40",
 				},
 			}).then((res) => {
-				if (res.isConfirmed)
-					// redirect to game page
-					router.push("/dashboard/game");
-			});
+				if (res.isConfirmed) {
+                    socket.emit("leave", {
+                        roomId: roomID,
+                        playerNo: playerNo,
+                        mode: mode,
+                    });
+                    router.push("/dashboard/game");
 
-			socket.emit("leave", {
-				roomId: roomID,
-				playerNo: playerNo,
-				mode: mode,
-			});
+                }
+            });
 		});
 
 		return () => {

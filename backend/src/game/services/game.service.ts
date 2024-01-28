@@ -213,6 +213,20 @@ export class GameService {
           room.state = State.PLAYING;
         }
       }
+      // Start the 3-minute timer for room removal
+      const timerId = setTimeout(() => {
+        if (room.players == undefined || room.players.length < 2) {
+          // remove the room if note filled within 3 minutes
+          const roomIndex = this.challenge.findIndex(
+            (room) => room.id === payload,
+          );
+          if (roomIndex !== -1) {
+            this.challenge.splice(roomIndex, 1);
+          }
+          server.to(room.id).emit('timeOut');
+        }
+      }, 180000);
+      room.timerId = timerId;
       if (room.players.length === 2) {
         server.to(room.id).emit('roomIsFull', true);
         setTimeout(() => {
@@ -284,6 +298,7 @@ export class GameService {
         const player = room.players[playerIndex];
         room.removePlayer(player);
         this.stopPlaying(player.user.id);
+        // clearInterval(room.timerId);
 
         if (room.players.length === 1) {
           this.challenge.splice(roomIndex, 1);

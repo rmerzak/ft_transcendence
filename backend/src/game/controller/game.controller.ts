@@ -1,6 +1,6 @@
 import { Body, Controller, Post, Sse, UseGuards } from '@nestjs/common';
 import { GameService } from '../services/game.service';
-import { PlayerDto, PassDto } from '../dto/player.dto';
+import { PlayerDto, RoomDto } from '../dto/player.dto';
 import { JwtGuard } from 'src/auth/guard';
 import { Observable, startWith } from 'rxjs';
 
@@ -38,12 +38,20 @@ export class GameController {
   }
 
   @Post('api/rooms-challenge')
-  createChallengeRoom(@Body() pass: PassDto): { roomId: string } {
-    const { password } = pass;
-    console.log('password', password);
+  createChallengeRoom(): { roomId: string } {
     const room = this.game.createChallengeRoom();
-    room.setPassword(password);
     return { roomId: room.id };
+  }
+
+  @Post('api/check-room')
+  checkRoom(@Body() rm: RoomDto): { check: boolean } {
+    const { roomId } = rm;
+    const { roomMode } = rm;
+    const room = this.game.getRoom(roomId, roomMode);
+    if (room === undefined) {
+      return { check: false };
+    }
+    return { check: true };
   }
 
   @Post('api/statistics')

@@ -5,11 +5,6 @@ import { ContextGlobal } from "@/context/contex";
 import { useRouter } from "next/navigation";
 import { Mode, modeAtom } from "./atoms";
 import { useSetAtom } from "jotai";
-import crypto from "crypto";
-
-function generatePassword(): string {
-	return crypto.randomBytes(16).toString("hex");
-}
 
 const ChallengeAlert = ({
 	openAl,
@@ -32,9 +27,6 @@ const ChallengeAlert = ({
 						"Content-Type": "application/json",
 					},
 					credentials: "include",
-					body: JSON.stringify({
-						password: generatePassword(),
-					}),
 				}
 			);
 			const data = await res.json();

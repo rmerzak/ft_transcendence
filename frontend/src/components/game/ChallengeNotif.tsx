@@ -17,8 +17,8 @@ const ChallengeNotif = ( { openAl, gameId }: {openAl: any, gameId: string} ) => 
     }
 
   return (
-    <div className="fixed top-0 left-0 w-screen h-screen bg-[#000000]/50 z-50 flex justify-center items-center font-inter">
-        <div className="bg-[#311150]/80 w-[30%]  rounded-3xl shadow-lg font-light mx-2">
+    <div className="fixed top-0 left-0 w-screen h-screen bg-black bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-30 z-50 flex justify-center items-center font-inter">
+        <div className="w-[30%]  rounded-3xl shadow-lg font-light mx-2">
             <OutsideClickHandler onOutsideClick={openAl}>
                 <div role="alert" className="alert flex opacity-70">
                     <div className="flex flex-col">
