@@ -9,12 +9,6 @@ export interface ChatRoomUsers {
     };
 }
 
-export interface duration {
-    days?: number;
-    hours?: number;
-    minutes?: number;
-    seconds?: number;
-}
 export type msgRecent = {
     msgData: Message;
     recentData?: Recent[];

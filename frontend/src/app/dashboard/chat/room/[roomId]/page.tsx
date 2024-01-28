@@ -26,6 +26,8 @@ const Room = () => {
       }
       chatSocket.emit('join-room', { roomId: roomId });
       chatSocket.on('receive-message', (message) => {
+        console.log("i m here")
+        console.log("message", message);
         setMessages((messages) => [...messages, message]);
       });
     }

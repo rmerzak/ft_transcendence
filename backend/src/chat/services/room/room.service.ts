@@ -311,7 +311,6 @@ export class RoomService {
                 is_admin: chatRoomMemData.is_admin,
                 leftAt: chatRoomMemData.leftAt,
                 status: RoomStatus.NORMAL,
-                mutedDuration: chatRoomMemData.mutedDuration,
             }
         });
     }

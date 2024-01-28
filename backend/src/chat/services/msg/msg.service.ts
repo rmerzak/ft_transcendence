@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { Message, Recent, RoomStatus } from '@prisma/client';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { FriendshipService } from 'src/notification/friendship.service';
-import { duration } from 'src/chat/interfaces/interfaces';
 
 // Chat service class
 @Injectable()
@@ -39,6 +38,7 @@ export class MsgService {
         createdAt: true,
         senderId: true,
         chatRoomId: true,
+        type: true,
         sender: {
           select: {
             id: true,
@@ -52,6 +52,7 @@ export class MsgService {
   }
   // add user message
   async addMessage(messageData: Message, userId: number): Promise<Message> {
+    console.log("message data ",messageData);
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
     });
@@ -72,20 +73,16 @@ export class MsgService {
     } else {
       if (specificMember.status === RoomStatus.BANNED) throw new Error('Your are banned from this room');
       else if (specificMember.status === RoomStatus.MUTED) {
-        const splitDur = specificMember.mutedDuration.split(' ');
-        const arr: string[] = ['days', 'hours', 'minutes', 'seconds'];
-        if (arr.includes(splitDur[1])) {
-          const result = compareDateWithCurrent(addDates(specificMember.updatedAt, { [splitDur[1]]: parseInt(splitDur[0]) }));
-          if (result) throw new Error('Your are muted from this room');
-          else
-            await this.prisma.chatRoomMember.update({
-              where: { userId_chatRoomId: { userId: user.id, chatRoomId: chatRoom.id } },
-              data: {
-                status: RoomStatus.NORMAL,
-                mutedDuration: null,
-              }
-            });
-        }
+        const result = compareDateWithCurrent(addDates(specificMember.updatedAt, Number(specificMember.mutedDuration)));
+        if (result) throw new Error('Your are muted from this room');
+        else
+          await this.prisma.chatRoomMember.update({
+            where: { userId_chatRoomId: { userId: user.id, chatRoomId: chatRoom.id } },
+            data: {
+              status: RoomStatus.NORMAL,
+              mutedDuration: null,
+            }
+          });
       }
     }
     const msg = await this.prisma.message.create({
@@ -99,6 +96,7 @@ export class MsgService {
         createdAt: true,
         senderId: true,
         chatRoomId: true,
+        type: true,
         sender: {
           select: {
             id: true,
@@ -253,21 +251,11 @@ export class MsgService {
 }
 // add two dates
 
-function addDates(date: Date, duration: duration): Date {
-  if (!duration)
-    return date;
-  if (duration.hasOwnProperty('days'))
-    date.setDate(date.getDate() + duration.days);
-  if (duration.hasOwnProperty('hours'))
-    date.setHours(date.getHours() + duration.hours);
-  if (duration.hasOwnProperty('minutes'))
-    date.setMinutes(date.getMinutes() + duration.minutes);
-  if (duration.hasOwnProperty('seconds'))
-    date.setSeconds(date.getSeconds() + duration.seconds);
-  return date;
+function addDates(date: Date, duration: number): number {
+  return date.getTime() + duration;
 }
 
-function compareDateWithCurrent(date1: Date): boolean {
+function compareDateWithCurrent(date1: number): boolean {
   const date2 = new Date();
-  return date1.getTime() > date2.getTime();
+  return date1 > date2.getTime();
 }
