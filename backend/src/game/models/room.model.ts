@@ -1,6 +1,6 @@
 import { Server } from 'socket.io';
 import { Player } from './player.model';
-import { State, Mode } from './state.model';
+import { State } from './state.model';
 import { Ball } from './ball.model';
 import { GameService } from '../services/game.service';
 
@@ -10,15 +10,13 @@ export class Room {
   private height = 1146;
   id: string;
   state: State;
-  mode: Mode
-  invitedId: number;
+  Password: string;
   players: Array<Player> = new Array<Player>();
   ball: Ball = new Ball(this.width);
-  constructor(id: string, mode: Mode) {
+  constructor(id: string) {
     this.id = id;
     this.state = State.WAITING;
-    this.mode = mode;
-    this.invitedId = 0;
+    this.Password = '';
   }
 
   addPlayer(player: Player): void {
@@ -198,8 +196,8 @@ export class Room {
     });
   }
 
-  setInvitedId(id: number): void {
-    this.invitedId = id;
+  setPassword(password: string): void {
+    this.Password = password;
   }
 
   endGame(): void {

@@ -1,9 +1,8 @@
 import { Body, Controller, Post, Sse, UseGuards } from '@nestjs/common';
 import { GameService } from '../services/game.service';
-import { PlayerDto } from '../dto/player.dto';
+import { PlayerDto, PassDto } from '../dto/player.dto';
 import { JwtGuard } from 'src/auth/guard';
 import { Observable, startWith } from 'rxjs';
-import { Mode } from '../models/state.model';
 
 type Statistics = {
   gameMatches: number;
@@ -34,19 +33,19 @@ export class GameController {
 
   @Post('api/rooms')
   createRoom(): { roomId: string } {
-    const room = this.game.roomWithAvailableSlots() || this.game.createRoom(Mode.NORMAL);
+    const room = this.game.roomWithAvailableSlots() || this.game.createRoom();
     return { roomId: room.id };
   }
 
   @Post('api/rooms-challenge')
-  createChallengeRoom(@Body() id: PlayerDto): { roomId: string } {
-    const { playerId } = id;
-    console.log('playerId', playerId);
-    const room = this.game.createRoom(Mode.CHALLENGE);
-    room.setInvitedId(playerId);
+  createChallengeRoom(@Body() pass: PassDto): { roomId: string } {
+    const { password } = pass;
+    console.log('password', password);
+    const room = this.game.createChallengeRoom();
+    room.setPassword(password);
     return { roomId: room.id };
   }
-  
+
   @Post('api/statistics')
   async getStatistics(
     @Body() id: PlayerDto,

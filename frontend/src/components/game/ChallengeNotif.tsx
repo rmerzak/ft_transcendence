@@ -1,17 +1,18 @@
 import React, { useContext } from "react";
 import GameSwiper from "./GameSwiper";
 import OutsideClickHandler from "react-outside-click-handler";
-import { ContextGlobal } from "@/context/contex";
 import { useRouter } from "next/navigation";
+import { Mode, modeAtom } from "./atoms";
+import { useSetAtom } from "jotai";
 
 
 const ChallengeNotif = ( { openAl, gameId }: {openAl: any, gameId: string} ) => {
 
     const router = useRouter();
-    const {  socket  } : any = useContext(ContextGlobal);
+    const setMode = useSetAtom(modeAtom);
 
     const challenge = () => {
-        // socket?.emit('challengeGame', playerId);
+        setMode(Mode.challenge);
         router.push(`/dashboard/game/${gameId}`, { scroll: false });
     }
 

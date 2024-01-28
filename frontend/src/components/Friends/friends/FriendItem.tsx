@@ -15,6 +15,7 @@ const FriendItem = ({ friend } : { friend: Friendship }) => {
   const {  profile, socket  } : any = useContext(ContextGlobal);
   const [status, setStatus] = useState<string>();
   const [openAlert, setOpenAlert] = useState<boolean>(false);
+  const [ isPlaying, setIsPlaying ] = useState(false);
   const handleFriend = (status:boolean) => {
     if(status){
       
@@ -25,7 +26,32 @@ const FriendItem = ({ friend } : { friend: Friendship }) => {
         socket?.emit('blockFriend', profile?.id === friend.sender.id ? friend.receiver.id : friend.sender.id);
         // setFriends((prev:any) => prev.filter((item:any) => item.senderId !== friend.senderId));
     }
-}
+  }
+
+  useEffect(() => {
+    const eventSource = new EventSource(`${process.env.API_BASE_URL}/api/is-playing`, {
+      withCredentials: true,
+    });
+
+    eventSource.onmessage = (event) => {
+        try {
+            const parsedData = JSON.parse(event.data);
+            parsedData.forEach((player: { playerId: number, isPlaying: boolean }) => {
+                if (player.isPlaying) {
+                    setIsPlaying(true);
+                } else if (!player.isPlaying) {
+                    setIsPlaying(false);
+                }
+            });
+        } catch {}
+    };
+
+    return () => {
+      eventSource.close();
+    };
+
+  }, [profile.id]);
+
 
   useEffect(() => {
     if (profile?.id === friend.sender.id) {
@@ -51,8 +77,8 @@ const FriendItem = ({ friend } : { friend: Friendship }) => {
           <MessagesSquare />
         </button>
         {
-          status === 'INGAME' ? null :
-        <button className="md:px-2 px-1">
+          !isPlaying &&
+        <button  className="md:px-2 px-1">
           <Gamepad2 onClick={()=> setOpenAlert(!openAlert)}/>
         </button>
         } {

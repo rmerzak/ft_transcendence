@@ -3,8 +3,3 @@ export enum State {
   PLAYING,
   FINISHED,
 }
-
-export enum Mode {
-  NORMAL,
-  CHALLENGE,
-}
