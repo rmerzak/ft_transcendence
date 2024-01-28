@@ -11,7 +11,7 @@ import { Socket } from 'socket.io';
 import { MsgService } from '../services/msg/msg.service';
 import { SocketAuthMiddleware } from 'src/auth/middleware/ws.mw';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { ChatRoom, Message, MessageStatus, Recent, RoomVisibility } from '@prisma/client';
+import { ChatRoom, ChatRoomMember, Message, MessageStatus, Recent, RoomStatus, RoomVisibility } from '@prisma/client';
 import { RoomService } from '../services/room/room.service';
 
 @WebSocketGateway({
@@ -107,10 +107,10 @@ export class GatewayGateway
   }
   @SubscribeMessage('new-member')
   async handleMemberRoom(_client: Socket, payload: ChatRoom) {
-    console.log("payload: ", payload);
+    // console.log("payload: ", payload);
     try {
       const room = await this.roomService.addMemberToRoom(_client, payload);
-      
+
       const msgData = {
         chatRoomId: room.id,
         text: `${_client['user'].username} has joined the room`,
@@ -120,15 +120,15 @@ export class GatewayGateway
 
       const msg = await this.chatService.addMessage(msgData, _client['user'].id);
 
-      // this.roomService.connectedClients.forEach((sockets, userId) => {
-      //   if (userId === _client['user'].id) {
-      //     sockets.forEach(socket => {
-      //       socket.emit('ownedRoom', room);
-      //     });
-      //   }
-      // });
+      this.roomService.connectedClients.forEach((sockets, userId) => {
+        if (userId === _client['user'].id) {
+          sockets.forEach(socket => {
+            socket.emit('ownedRoom', room);
+          });
+        }
+      });
       this.server.to(room.id.toString()).emit('receive-message', msg);
-      
+
     } catch (error) {
       _client.emit('error', error.message);
     }
@@ -143,7 +143,130 @@ export class GatewayGateway
       _client.emit('error', error.message);
     }
   }
+  //==============================================================================================================
+  // handle room ban user mute user kick user and add admin unadmin
+  @SubscribeMessage('ban-user')
+  async handleBanUser(_client: Socket, payload: { roomId: number, userId: number }) {
+    try {
+      const roomMem = await this.roomService.getChatRoomMember(payload.userId, payload.roomId);
+      if (!roomMem) throw new Error('User is not a member of the room');
 
+      const tmp: ChatRoomMember = {
+        userId: payload.userId,
+        chatRoomId: payload.roomId,
+        status: RoomStatus.BANNED,
+        mutedDuration: roomMem.mutedDuration,
+        is_admin: roomMem.is_admin,
+        joinedAt: roomMem.joinedAt,
+        leftAt: roomMem.leftAt,
+        updatedAt: roomMem.updatedAt,
+      }
+      const updatedRoom = await this.roomService.updatechatRoomMember(_client['user'].id, tmp);
+      if (updatedRoom) {
+        const user = await this.prisma.user.findUnique({ where: { id: payload.userId } });
+        const msgData = {
+          chatRoomId: updatedRoom.chatRoomId,
+          text: `${_client['user'].username} has banned ${user.username} from the room`,
+          senderId: _client['user'].id,
+          type: MessageStatus.ANNOUCEMENT,
+        } as Message;
+        const msg = await this.chatService.addMessage(msgData, _client['user'].id);
+        this.server.to(roomMem.chatRoomId.toString()).emit('receive-message', msg);
+      }
+      this.server.to(roomMem.chatRoomId.toString()).emit('banned-user', updatedRoom);
+    } catch (error) {
+      _client.emit('error', error.message);
+    }
+  }
+  @SubscribeMessage('mute-user')
+  async handleMuteUser(_client: Socket, payload: { roomId: number, userId: number, duration: number }) {
+    try {
+      const roomMem = await this.roomService.getChatRoomMember(payload.userId, payload.roomId);
+      if (!roomMem) throw new Error('User is not a member of the room');
+
+      const tmp: ChatRoomMember = {
+        userId: payload.userId,
+        chatRoomId: payload.roomId,
+        status: RoomStatus.MUTED,
+        mutedDuration: BigInt(payload.duration),
+        is_admin: roomMem.is_admin,
+        joinedAt: roomMem.joinedAt,
+        leftAt: roomMem.leftAt,
+        updatedAt: roomMem.updatedAt,
+      }
+      const updatedRoom = await this.roomService.updatechatRoomMember(_client['user'].id, tmp);
+      if (updatedRoom) {
+        const user = await this.prisma.user.findUnique({ where: { id: payload.userId } });
+        const msgData = {
+          chatRoomId: updatedRoom.chatRoomId,
+          text: `${_client['user'].username} has muted ${user.username} from the room`,
+          senderId: _client['user'].id,
+          type: MessageStatus.ANNOUCEMENT,
+        } as Message;
+        const msg = await this.chatService.addMessage(msgData, _client['user'].id);
+        this.server.to(roomMem.chatRoomId.toString()).emit('receive-message', msg);
+      }
+      this.server.to(roomMem.chatRoomId.toString()).emit('muted-user', updatedRoom);
+    } catch (error) {
+      _client.emit('error', error.message);
+    }
+  }
+  @SubscribeMessage('kick-user')
+  async handleKickUser(_client: Socket, payload: { roomId: number, userId: number }) {
+    try {
+      const deletedRoomMem = await this.roomService.deletechatRoomMember(payload.userId, payload.roomId);
+      if (deletedRoomMem) {
+        const user = await this.prisma.user.findUnique({ where: { id: payload.userId } });
+        const msgData = {
+          chatRoomId: deletedRoomMem.chatRoomId,
+          text: `${_client['user'].username} has kicked ${user.username} from the room`,
+          senderId: _client['user'].id,
+          type: MessageStatus.ANNOUCEMENT,
+        } as Message;
+        const msg = await this.chatService.addMessage(msgData, _client['user'].id);
+        this.server.to(deletedRoomMem.chatRoomId.toString()).emit('receive-message', msg);
+      }
+      this.server.to(deletedRoomMem.chatRoomId.toString()).emit('kicked-user', deletedRoomMem);
+    } catch (error) {
+      _client.emit('error', error.message);
+    }
+  }
+  @SubscribeMessage('admin-user')
+  async handleAddAdmin(_client: Socket, payload: { roomId: number, userId: number }) {
+    // try {
+      console.log('add-user ', payload);
+      const roomMem = await this.roomService.getChatRoomMember(payload.userId, payload.roomId);
+      if (!roomMem) throw new Error('User is not a member of the room');
+      if (roomMem.is_admin) throw new Error('User is already admin');
+      const tmp: ChatRoomMember = {
+        joinedAt: roomMem.joinedAt,
+        status: roomMem.status,
+        mutedDuration: roomMem.mutedDuration,
+        leftAt: roomMem.leftAt,
+        updatedAt: roomMem.updatedAt,
+        userId: payload.userId,
+        chatRoomId: payload.roomId,
+        is_admin: true,
+      }
+      console.log('add-user ', tmp);
+      const updatedRoom = await this.roomService.updatechatRoomMember(_client['user'].id, tmp);
+      if (updatedRoom) {
+        const user = await this.prisma.user.findUnique({ where: { id: payload.userId } });
+        const msgData = {
+          chatRoomId: updatedRoom.chatRoomId,
+          text: `${_client['user'].username} has added ${user.username} as admin`,
+          senderId: _client['user'].id,
+          type: MessageStatus.ANNOUCEMENT,
+        } as Message;
+        const msg = await this.chatService.addMessage(msgData, _client['user'].id);
+        this.server.to(roomMem.chatRoomId.toString()).emit('receive-message', msg);
+      }
+      this.server.to(roomMem.chatRoomId.toString()).emit('added-admin', updatedRoom);
+    // } catch (error) {
+      // _client.emit('error', error.message);
+    // }
+  }
+  //==============================================================================================================
   handleDisconnect(_client: Socket) {
     console.log('disconnected chat id: ' + _client.id);
   }

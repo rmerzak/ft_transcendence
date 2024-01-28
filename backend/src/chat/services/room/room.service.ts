@@ -316,7 +316,8 @@ export class RoomService {
     }
 
     // update user chatroom
-    async updatechatRoomMember(fromUserI: number, onUser: number, chatRoomMemData: ChatRoomMember): Promise<ChatRoomMember | null> {
+    async updatechatRoomMember(fromUserI: number, chatRoomMemData: ChatRoomMember): Promise<ChatRoomMember | null> {
+        console.log('chatRoomMemData: ', chatRoomMemData);
         const user = await this.prisma.user.findUnique({
             where: { id: fromUserI },
         });
@@ -325,7 +326,7 @@ export class RoomService {
             where: { id: chatRoomMemData.chatRoomId },
         });
         if (!chatRoom) throw new Error('Chat room not found');
-        const chatRoomMember = await this.prisma.chatRoomMember.findUnique({
+        const chatRoomOwner = await this.prisma.chatRoomMember.findUnique({
             where: {
                 userId_chatRoomId: { userId: user.id, chatRoomId: chatRoom.id },
             },
@@ -343,17 +344,18 @@ export class RoomService {
                 },
             },
         });
-        if (!chatRoomMember) throw new Error('User not in chat room');
-        if (chatRoomMember.chatRoom.owner !== user.id || !chatRoomMember.is_admin) throw new Error('User not allowed to update chat room member');
-        const userToUpdate = await this.prisma.user.findUnique({ where: { id: onUser } });
+        if (!chatRoomOwner) throw new Error('User not in chat room');
+        if (chatRoomOwner.chatRoom.owner !== user.id || !chatRoomOwner.is_admin) throw new Error('User not allowed to update chat room member');
+        const userToUpdate = await this.prisma.user.findUnique({ where: { id: chatRoomMemData.userId} });
         if (!userToUpdate) throw new Error('User not found');
-        if (chatRoomMember.userId === userToUpdate.id) throw new Error('User not allowed to update himself');
-        const isexist = await this.prisma.chatRoomMember.findUnique({
+        if (chatRoomOwner.userId === userToUpdate.id) throw new Error('Owner or Admin not allowed to update himself');
+        const chatRoomMember = await this.prisma.chatRoomMember.findUnique({
             where: { userId_chatRoomId: { userId: userToUpdate.id, chatRoomId: chatRoom.id } },
         });
-        if (chatRoomMember.chatRoom.owner === isexist.userId || isexist.is_admin) throw new Error('You can not update admin or owner');
-        return await this.prisma.chatRoomMember.update({
-            where: { userId_chatRoomId: { userId: user.id, chatRoomId: chatRoom.id } },
+        if (!chatRoomMember) throw new Error('User not in chat room');
+        if (chatRoomOwner.chatRoom.owner !== user.id && chatRoomMember.is_admin) throw new Error('you are not allowed to update admin');
+        const a = await this.prisma.chatRoomMember.update({
+            where: { userId_chatRoomId: { userId: userToUpdate.id, chatRoomId: chatRoom.id } },
             data: {
                 is_admin: chatRoomMemData.is_admin,
                 leftAt: chatRoomMemData.leftAt,
@@ -361,6 +363,8 @@ export class RoomService {
                 mutedDuration: chatRoomMemData.mutedDuration,
             },
         });
+        console.log('a: ', a);
+        return a;
     }
 
 
