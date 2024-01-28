@@ -47,7 +47,7 @@ const RoomHeader: React.FC<roomHeaderProps> = ({ chatRoom }) => {
                         </button>
                         {
                             openUserList && (
-                                <RoomUsers handleUserListClick={handleUserListClick} chatRoom={chatRoom}/>
+                                <RoomUsers handleUserListClick={handleUserListClick} chatRoomId={chatRoom?.id}/>
                             )
                         }
                         {
@@ -57,7 +57,7 @@ const RoomHeader: React.FC<roomHeaderProps> = ({ chatRoom }) => {
                         }
                         {
                             leave && (
-                                <LeavePopup handleLeaveClick={handleLeaveClick} />
+                                <LeavePopup handleLeaveClick={handleLeaveClick} chatRoom={chatRoom}/>
                             )
                         }
                         <div className="dropdown dropdown-left">

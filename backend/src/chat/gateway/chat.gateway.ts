@@ -147,7 +147,15 @@ export class GatewayGateway
   async handleLeaveRoom(_client: Socket, payload: ChatRoom) {
     console.log("payload = ", payload);
     try {
+      const msgData = {
+        chatRoomId: payload.id,
+        text: `${_client['user'].username} has left the chat`,
+        senderId: _client['user'].id,
+        type: MessageStatus.ANNOUCEMENT,
+      } as Message;
+      const msg = await this.chatService.addMessage(msgData, _client['user'].id);
       const room = await this.roomService.leaveMemberFromRoom(_client, payload);
+      
       this.roomService.connectedClients.forEach((sockets, userId) => {
         if (userId === _client['user'].id) {
           sockets.forEach(socket => {
@@ -156,7 +164,7 @@ export class GatewayGateway
           });
         }
       });
-      //this.server.to(room.id.toString()).emit('updated-room', room);
+      this.server.to(room.id.toString()).emit('receive-message', msg);
     } catch (error) {
       _client.emit('error', error.message);
     }

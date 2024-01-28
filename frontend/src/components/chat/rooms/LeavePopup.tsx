@@ -1,12 +1,22 @@
-import React, { useState } from "react";
+import { ContextGlobal } from "@/context/contex";
+import { ChatRoom } from "@/interfaces";
+import React, { useContext, useState } from "react";
 
 interface PopupProps {
     handleLeaveClick: () => void;
+    chatRoom?: ChatRoom;
 }
 
 
-const LeavePopup : React.FC<PopupProps> = ({handleLeaveClick})  => {
+const LeavePopup : React.FC<PopupProps> = ({handleLeaveClick,chatRoom})  => {
+    const {
+        chatSocket,
+      } = useContext(ContextGlobal);
     const handleNoClick = () => {
+        handleLeaveClick();
+    };
+    const handleLeaveChannel = () => {
+        chatSocket?.emit("leave-room", chatRoom);
         handleLeaveClick();
     };
 
@@ -15,7 +25,7 @@ const LeavePopup : React.FC<PopupProps> = ({handleLeaveClick})  => {
              <div className=" bg-[#311150]/60 w-[30%] h-[100px] rounded-2xl shadow-lg font-light mx-2">
                 <h1 className="text-gray-300 opacity-70 font-thin md:text-[15px] text-[12px]  text-center m-4">are you sure you want to exit?</h1>
                 <div className="flex justify-evenly">
-                    <div className="bg-green-500 rounded-2xl px-3 py-1 hover:transform hover:scale-105" onClick={() => console.log("No clicked")}>Yes</div>
+                    <div className="bg-green-500 rounded-2xl px-3 py-1 hover:transform hover:scale-105" onClick={handleLeaveChannel}>Yes</div>
                     <div className="bg-red-500 rounded-2xl px-4 py-1 hover:transform hover:scale-105" onClick={handleNoClick}>No</div>
                 </div>
              </div>

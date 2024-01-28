@@ -1,23 +1,27 @@
 'use client'
 
-import { getChatRoomMemberByRoomId, getChatRoomMembers } from "@/api/chat/chat.api"
+import { getChatRoomById, getChatRoomMemberByRoomId, getChatRoomMembers } from "@/api/chat/chat.api"
 import { User, X } from "lucide-react"
 import { useEffect, useState } from "react"
 import OutsideClickHandler from "react-outside-click-handler"
 import RoomUserItem from "./roomUserItem"
 
-function RoomUsers({ handleUserListClick, chatRoom }: { handleUserListClick: any, chatRoom: any }) {
+function RoomUsers({ handleUserListClick, chatRoomId }: { handleUserListClick: any, chatRoomId: number | undefined}) {
     const [users, setUsers] = useState<any>([])
     const [profileRoomStatus, setProfileRoomStatus] = useState<any>({})
+    const [chatRoom, setChatRoom] = useState<any>({})
     useEffect(() => {
-        if(chatRoom) {
-            getChatRoomMembers(chatRoom.id).then((res) => {
+        if(chatRoomId) {
+            getChatRoomById(chatRoomId).then((res) => {
+                setChatRoom(res.data);
+            }).catch((err) => {});
+            getChatRoomMembers(chatRoomId).then((res) => {
                 setUsers(res.data)
                 console.log(res.data)
             }).catch((err) => {
                 console.log(err);
             });
-            getChatRoomMemberByRoomId(chatRoom.id).then((res) => {
+            getChatRoomMemberByRoomId(chatRoomId).then((res) => {
                 console.log(res.data);
                 if(res.data)
                     setProfileRoomStatus(res.data)
