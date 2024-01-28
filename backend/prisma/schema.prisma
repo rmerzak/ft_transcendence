@@ -26,7 +26,7 @@ enum RoomStatus {
 
 enum MessageStatus {
   NORMAL
-  ANNOCEMENT
+  ANNOUCEMENT
 }
 
 enum InviteRoomStatus {
@@ -158,14 +158,14 @@ model ChatRoomMember {
   // Foreign keys
   userId Int
   chatRoomId Int
+  joinedAt DateTime @default(now())
   updatedAt DateTime? @updatedAt
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   chatRoom ChatRoom @relation(fields: [chatRoomId], references: [id], onDelete: Cascade)
-  joinedAt DateTime @default(now())
   is_admin Boolean @default(false)
   leftAt DateTime?
   status RoomStatus? @default(NORMAL)
-  mutedDuration String?
+  mutedDuration BigInt?
   @@id([userId, chatRoomId])
 }
 model RoomReqJoin {
@@ -186,6 +186,7 @@ model Message {
   sender User @relation(name: "SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
   chatRoom ChatRoom @relation(fields: [chatRoomId], references: [id], onDelete: Cascade)
   text String
+  type MessageStatus @default(NORMAL)
 }
 
 model Recent {

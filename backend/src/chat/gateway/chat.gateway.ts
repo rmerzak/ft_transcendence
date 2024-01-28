@@ -11,7 +11,7 @@ import { Socket } from 'socket.io';
 import { MsgService } from '../services/msg/msg.service';
 import { SocketAuthMiddleware } from 'src/auth/middleware/ws.mw';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { ChatRoom, Message, Recent, RoomVisibility } from '@prisma/client';
+import { ChatRoom, Message, MessageStatus, Recent, RoomVisibility } from '@prisma/client';
 import { RoomService } from '../services/room/room.service';
 
 @WebSocketGateway({
@@ -31,25 +31,29 @@ export class GatewayGateway
   constructor(private chatService: MsgService, private roomService: RoomService, private prisma: PrismaService) { }
 
   async handleConnection(_client: Socket) {
-    const user = await this.prisma.user.findUnique({ where: { id: _client['payload']['sub'] } });
-    if (user) {
-      _client['user'] = user;
-    } else {
-      _client.disconnect();
+    try {
+      const user = await this.prisma.user.findUnique({ where: { id: _client['payload']['sub'] } });
+      if (user) {
+        _client['user'] = user;
+      } else {
+        _client.disconnect();
+      }
+      if (!_client.rooms.has('1_public')) {
+        _client.join('1_public');
+      }
+      if (!this.roomService.connectedClients.has(user.id)) {
+        this.roomService.connectedClients.set(user.id, []);
+      }
+      this.roomService.connectedClients.get(user.id).push(_client);
+      console.log('connected chat id1: ' + _client.id);
+    } catch (error) {
+      throw new Error(error.message);
     }
-    if (!_client.rooms.has('1_public')) {
-      _client.join('1_public');
-    }
-    if (!this.roomService.connectedClients.has(user.id)) {
-      this.roomService.connectedClients.set(user.id, []);
-    }
-    this.roomService.connectedClients.get(user.id).push(_client);
-    console.log('connected chat id1: ' + _client.id);
   }
 
   @SubscribeMessage('send-message')
   async handleMessage(_client: Socket, payload: msgRecent) {
-    // console.log(payload);
+    console.log(payload);
     try {
       if (payload.hasOwnProperty('recentData')) {
         payload.recentData.map(async (recent, index) => {
@@ -100,20 +104,31 @@ export class GatewayGateway
     } catch (error) {
       _client.emit('error', error.message);
     }
-    //_client.emit('receive-room', room);
   }
   @SubscribeMessage('new-member')
   async handleMemberRoom(_client: Socket, payload: ChatRoom) {
     console.log("payload: ", payload);
     try {
       const room = await this.roomService.addMemberToRoom(_client, payload);
-      this.roomService.connectedClients.forEach((sockets, userId) => {
-        if (userId === _client['user'].id) {
-          sockets.forEach(socket => {
-            socket.emit('ownedRoom', room);
-          });
-        }
-      });
+      
+      const msgData = {
+        chatRoomId: room.id,
+        text: `${_client['user'].username} has joined the room`,
+        senderId: _client['user'].id,
+        type: MessageStatus.ANNOUCEMENT,
+      } as Message;
+
+      const msg = await this.chatService.addMessage(msgData, _client['user'].id);
+
+      // this.roomService.connectedClients.forEach((sockets, userId) => {
+      //   if (userId === _client['user'].id) {
+      //     sockets.forEach(socket => {
+      //       socket.emit('ownedRoom', room);
+      //     });
+      //   }
+      // });
+      this.server.to(room.id.toString()).emit('receive-message', msg);
+      
     } catch (error) {
       _client.emit('error', error.message);
     }
@@ -121,7 +136,6 @@ export class GatewayGateway
 
   @SubscribeMessage('update-room')
   async handleUpdateRoom(_client: Socket, payload: ChatRoom) {
-    // console.log("payload: ", payload);
     try {
       const room = await this.roomService.updateChatRoom(_client['user'].id, payload);
       this.server.to('1_public').emit('updated-room', room);

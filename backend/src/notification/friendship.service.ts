@@ -10,18 +10,22 @@ export class FriendshipService {
     public readonly connectedClients: Map<number, Socket[]> = new Map(); // must change to private its just for testing
 
     async handleConnection(socket: Socket): Promise<void> {
-        const clientId = socket.id;
-        let payload = socket['payload'];
-        let user = await this.prisma.user.findUnique({ where: { email: payload['email'] } });
-        const userId = user?.id;
-        let updatedUser = await this.prisma.user.update({where:{id:userId},data:{status:UserStatus.ONLINE}});
-        if (!this.connectedClients.has(userId)) {
-            this.connectedClients.set(userId, []);
+        try{
+            const clientId = socket.id;
+            let payload = socket['payload'];
+            let user = await this.prisma.user.findUnique({ where: { email: payload['email'] } });
+            const userId = user?.id;
+            let updatedUser = await this.prisma.user.update({where:{id:userId},data:{status:UserStatus.ONLINE}});
+            if (!this.connectedClients.has(userId)) {
+                this.connectedClients.set(userId, []);
+            }
+    
+            this.connectedClients.get(userId).push(socket);
+            // print socket id
+            console.log('connected notification id : ' + clientId);
+        } catch(error) {
+            throw new Error(error.message);
         }
-
-        this.connectedClients.get(userId).push(socket);
-        // print socket id
-        console.log('connected notification id : ' + clientId);
     }
 
     async handleDisconnect(socket: Socket): Promise<void> {
