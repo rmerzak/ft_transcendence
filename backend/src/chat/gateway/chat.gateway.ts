@@ -119,14 +119,13 @@ export class GatewayGateway
       } as Message;
 
       const msg = await this.chatService.addMessage(msgData, _client['user'].id);
-
-      // this.roomService.connectedClients.forEach((sockets, userId) => {
-      //   if (userId === _client['user'].id) {
-      //     sockets.forEach(socket => {
-      //       socket.emit('ownedRoom', room);
-      //     });
-      //   }
-      // });
+      this.roomService.connectedClients.forEach((sockets, userId) => {
+        if (userId === _client['user'].id) {
+          sockets.forEach(socket => {
+            socket.emit('ownedRoom', room);
+          });
+        }
+      });
       this.server.to(room.id.toString()).emit('receive-message', msg);
       
     } catch (error) {
@@ -139,6 +138,25 @@ export class GatewayGateway
     try {
       const room = await this.roomService.updateChatRoom(_client['user'].id, payload);
       this.server.to('1_public').emit('updated-room', room);
+    } catch (error) {
+      _client.emit('error', error.message);
+    }
+  }
+
+  @SubscribeMessage('leave-room')
+  async handleLeaveRoom(_client: Socket, payload: ChatRoom) {
+    console.log("payload = ", payload);
+    try {
+      const room = await this.roomService.leaveMemberFromRoom(_client, payload);
+      this.roomService.connectedClients.forEach((sockets, userId) => {
+        if (userId === _client['user'].id) {
+          sockets.forEach(socket => {
+            socket.emit('ownedRoom', room);
+            socket.emit('create-room', room);
+          });
+        }
+      });
+      //this.server.to(room.id.toString()).emit('updated-room', room);
     } catch (error) {
       _client.emit('error', error.message);
     }
