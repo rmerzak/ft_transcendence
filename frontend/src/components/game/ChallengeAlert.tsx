@@ -18,6 +18,7 @@ const ChallengeAlert = ({
 	const { socket }: any = useContext(ContextGlobal);
 	const createChallengeRoom = async () => {
 		try {
+			console.log("challenge", playerId);
 			setMode(Mode.challenge);
 			const res = await fetch(
 				`${process.env.API_BASE_URL}/api/rooms-challenge`,
@@ -30,7 +31,6 @@ const ChallengeAlert = ({
 				}
 			);
 			const data = await res.json();
-
 			if (data.roomId) {
 				socket?.emit("challengeGame", {
 					playerId: playerId,

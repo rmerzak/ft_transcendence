@@ -10,7 +10,6 @@ export class Room {
   private height = 1146;
   id: string;
   state: State;
-  timerId: NodeJS.Timeout;
   players: Array<Player> = new Array<Player>();
   ball: Ball = new Ball(this.width);
   constructor(id: string) {

@@ -66,7 +66,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       room.players.some((player) => player.socketId === client.id),
     );
 
-    console.log('targetRoom', targetRoom);
+    // console.log('targetRoom', targetRoom);
 
     try {
       if (targetRoom) {
@@ -99,7 +99,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         this.game.leaveRoom(targetRoom.id, client.id, client);
       }
 
-      console.log('targetRoom', targetRoom);
+      // console.log('targetRoom', targetRoom);
     } catch {}
 
     // console.log('first', this.game.rooms)
@@ -171,7 +171,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     try {
       // console.log(payload);
       console.log('resign');
-      console.log('first', this.game.rooms);
       if (payload.mode === 0) {
         const room = this.game.rooms.find((room) => room.id === payload.roomId);
         if (room) {
@@ -209,6 +208,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
         // update statistics
       } else if (payload.mode === 1) {
+        console.log('first', this.game.challenge);
         const room = this.game.challenge.find(
           (room) => room.id === payload.roomId,
         );
@@ -242,11 +242,11 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
               this.server.to(player.socketId).emit('winByResign');
             }
           });
-          this.game.leaveRoom(payload.roomId, client.id, client);
+          this.game.leaveChallengeRoom(payload.roomId, client.id, client);
           //
         }
+        console.log('second', this.game.challenge);
       }
-      console.log('second', this.game.rooms);
     } catch {}
   }
 

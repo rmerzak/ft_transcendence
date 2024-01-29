@@ -159,8 +159,7 @@ export class GameService {
           room.state = State.PLAYING;
         }
       }
-      if (room.players.length === 2) {
-        room.ball.color = 'white';
+      if (room && room.state === State.PLAYING) {
         server.to(room.id).emit('roomIsFull', true);
         setTimeout(() => {
           server.to(room.id).emit('startedGame', room.id);
@@ -214,8 +213,8 @@ export class GameService {
         }
       }
       // Start the 3-minute timer for room removal
-      const timerId = setTimeout(() => {
-        if (room.players == undefined || room.players.length < 2) {
+      setTimeout(() => {
+        if (room && room.state === State.WAITING) {
           // remove the room if note filled within 3 minutes
           const roomIndex = this.challenge.findIndex(
             (room) => room.id === payload,
@@ -225,9 +224,8 @@ export class GameService {
           }
           server.to(room.id).emit('timeOut');
         }
-      }, 180000);
-      room.timerId = timerId;
-      if (room.players.length === 2) {
+      }, 30000); // 180000 = 3 minutes 30000 = 30 seconds
+      if (room && room.state === State.PLAYING) {
         server.to(room.id).emit('roomIsFull', true);
         setTimeout(() => {
           server.to(room.id).emit('startedGame', room.id);
@@ -238,6 +236,7 @@ export class GameService {
     }
     return room.id;
   }
+  
   // this method is called when a player moves
   // the position of the player is updated
   move(payload: any, server: Server) {
@@ -298,7 +297,6 @@ export class GameService {
         const player = room.players[playerIndex];
         room.removePlayer(player);
         this.stopPlaying(player.user.id);
-        // clearInterval(room.timerId);
 
         if (room.players.length === 1) {
           this.challenge.splice(roomIndex, 1);

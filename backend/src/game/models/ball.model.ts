@@ -4,7 +4,6 @@ export class Ball {
   position: Position;
   velocity: Position;
   radius: number;
-  color: string;
   speed: number;
   top: number;
   bottom: number;
@@ -20,7 +19,6 @@ export class Ball {
       y: 5,
     };
     this.radius = 20;
-    this.color = 'white';
     this.speed = 10;
     this.top = 0;
     this.bottom = 0;
