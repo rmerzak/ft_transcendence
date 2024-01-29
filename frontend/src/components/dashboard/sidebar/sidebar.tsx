@@ -33,8 +33,8 @@ const Sidebar = () => {
   const [expanded, setExpanded] = useState(true);
   const currentRoute = usePathname();
   return (
-    <aside className={`fixed border h-screen shadow-2xl backdrop-blur-lg bg-[#311150]/80 md:w-44 w-12`}>
-      <nav className={` h-full flex flex-col border`}>
+    <aside className={`h-[1500px] shadow-2xl backdrop-blur-lg bg-[#311150]/80 md:w-44 w-12`}>
+      <nav className={`  flex flex-col `}>
         <div className='flex items-center space-x-3 mt-8 mb-32 scroll-pl-6 md:mx-6 mx-2'>
           <img src="/pingsvg.svg" alt="42" className={`overflow-hidden transition-all md:w-10`} />
           <span className={`text-white text-xl md:w-50 md:block hidden `}>PingPong</span>

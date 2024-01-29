@@ -16,7 +16,7 @@ import { ChatRoom } from '@/interfaces';
 
 const Layout = ({children} : any) => {
   return (
-      <div className="flex login-gradient border h-[1550px]">
+      <div className="flex login-gradient h-[1500px]">
         <ContextProvider>
             <div className="flex-1">
                 <Sidebar />
