@@ -1,5 +1,5 @@
 'user client'
-import React, { useContext, useState, KeyboardEvent } from 'react'
+import React, { useContext, useState, KeyboardEvent, ChangeEvent } from 'react'
 import Image from 'next/image';
 import { ContextGlobal } from '@/context/contex';
 import { Messages, Recent } from '@/interfaces';
@@ -18,7 +18,17 @@ const SendMsgRm: React.FC<SendchatmsgProps> = ({ chatRoomId, isblocked, friendId
     const [message, setMessage] = useState<string>('');
     const [showEmojiPicker, setShowEmojiPicker] = useState<boolean>(false);
 
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        let newValue = e.target.value.replace(/(.{10})/g, "$1\n");
+        setMessage(newValue);
+    };    
+
     const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Enter' && e.shiftKey) {
+            e.preventDefault();
+            setMessage((prev: string) => prev + '\n');
+            return;
+        }
         if (e.key === 'Enter') {
             e.preventDefault();
             addMsg();
@@ -27,7 +37,7 @@ const SendMsgRm: React.FC<SendchatmsgProps> = ({ chatRoomId, isblocked, friendId
 
     const showEmogieTable = () => {
         setShowEmojiPicker(!showEmojiPicker);
-      }; 
+    };
 
     function addMsg() {
         chatSocket?.emit('join-room', { roomId: chatRoomId });
@@ -38,7 +48,7 @@ const SendMsgRm: React.FC<SendchatmsgProps> = ({ chatRoomId, isblocked, friendId
             text: message,
         };
 
-        chatSocket?.emit('send-message', {msgData: messageData});
+        chatSocket?.emit('send-message', { msgData: messageData });
         setMessage('');
     }
 
@@ -53,12 +63,12 @@ const SendMsgRm: React.FC<SendchatmsgProps> = ({ chatRoomId, isblocked, friendId
                 !isblocked &&
                 <div className={` flex justify-center items-center space-x-2 my-3`}>
                     <div className=" bg-gray-300 text-black flex justify-center items-center w-[30%] h-10 rounded-3xl font-light">
-                    <div className='relative flex ml-1'>
-                        <button onClick={showEmogieTable}>
-                    <SmilePlus size={24} strokeWidth={2} />
-                                </button>
-              {showEmojiPicker &&  (<div className='absolute bottom-[100%] left-0 '> 
-                <Picker theme="dark" data={data} onEmojiSelect={(emoji: { native: string; }) => setMessage((prev: string) => prev + emoji.native)} />
+                        <div className='relative flex ml-1'>
+                            <button onClick={showEmogieTable}>
+                                <SmilePlus size={24} strokeWidth={2} />
+                            </button>
+                            {showEmojiPicker && (<div className='absolute bottom-[100%] left-0 '>
+                                <Picker theme="dark" data={data} onEmojiSelect={(emoji: { native: string; }) => setMessage((prev: string) => prev + emoji.native)} />
                             </div>
                             )}
                         </div>
@@ -67,12 +77,12 @@ const SendMsgRm: React.FC<SendchatmsgProps> = ({ chatRoomId, isblocked, friendId
                             name='message'
                             placeholder="Please Be nice in the chat"
                             className="w-full h-full border-none focus:ring-0 bg-transparent"
-                            onChange={(e) => setMessage(e.target.value)}
+                            onChange={(e) => handleInputChange(e)}
                             value={message}
                             onKeyDown={(e) => handleKeyDown(e)}
                         />
                         <button onClick={() => { addMsg() }} className="cursor-pointer mr-1" draggable={false} >
-                               <SendHorizontal  size={22} strokeWidth={2} />
+                            <SendHorizontal size={22} strokeWidth={2} />
                         </button>
                     </div>
                 </div>

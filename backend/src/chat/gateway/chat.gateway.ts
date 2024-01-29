@@ -53,7 +53,7 @@ export class GatewayGateway
 
   @SubscribeMessage('send-message')
   async handleMessage(_client: Socket, payload: msgRecent) {
-    console.log(payload);
+    // console.log(payload);
     try {
       if (payload.hasOwnProperty('recentData')) {
         payload.recentData.map(async (recent, index) => {
@@ -173,7 +173,7 @@ export class GatewayGateway
         const msg = await this.chatService.addMessage(msgData, _client['user'].id);
         this.server.to(roomMem.chatRoomId.toString()).emit('receive-message', msg);
       }
-      this.server.to(roomMem.chatRoomId.toString()).emit('banned-user', updatedRoom);
+      this.server.to(roomMem.chatRoomId.toString()).emit('update_chat_room_member', updatedRoom);
     } catch (error) {
       _client.emit('error', error.message);
     }
@@ -206,7 +206,7 @@ export class GatewayGateway
         const msg = await this.chatService.addMessage(msgData, _client['user'].id);
         this.server.to(roomMem.chatRoomId.toString()).emit('receive-message', msg);
       }
-      this.server.to(roomMem.chatRoomId.toString()).emit('muted-user', updatedRoom);
+      this.server.to(roomMem.chatRoomId.toString()).emit('update_chat_room_member', updatedRoom);
     } catch (error) {
       _client.emit('error', error.message);
     }
@@ -226,15 +226,15 @@ export class GatewayGateway
         const msg = await this.chatService.addMessage(msgData, _client['user'].id);
         this.server.to(deletedRoomMem.chatRoomId.toString()).emit('receive-message', msg);
       }
-      this.server.to(deletedRoomMem.chatRoomId.toString()).emit('kicked-user', deletedRoomMem);
+      this.server.to(deletedRoomMem.chatRoomId.toString()).emit('update_chat_room_member', deletedRoomMem);
     } catch (error) {
       _client.emit('error', error.message);
     }
   }
+  
   @SubscribeMessage('admin-user')
   async handleAddAdmin(_client: Socket, payload: { roomId: number, userId: number }) {
-    // try {
-      console.log('add-user ', payload);
+    try {
       const roomMem = await this.roomService.getChatRoomMember(payload.userId, payload.roomId);
       if (!roomMem) throw new Error('User is not a member of the room');
       if (roomMem.is_admin) throw new Error('User is already admin');
@@ -248,7 +248,6 @@ export class GatewayGateway
         chatRoomId: payload.roomId,
         is_admin: true,
       }
-      console.log('add-user ', tmp);
       const updatedRoom = await this.roomService.updatechatRoomMember(_client['user'].id, tmp);
       if (updatedRoom) {
         const user = await this.prisma.user.findUnique({ where: { id: payload.userId } });
@@ -261,35 +260,47 @@ export class GatewayGateway
         const msg = await this.chatService.addMessage(msgData, _client['user'].id);
         this.server.to(roomMem.chatRoomId.toString()).emit('receive-message', msg);
       }
-      this.server.to(roomMem.chatRoomId.toString()).emit('added-admin', updatedRoom);
-    // } catch (error) {
-      // _client.emit('error', error.message);
-    // }
+      this.server.to(roomMem.chatRoomId.toString()).emit('update_chat_room_member', updatedRoom);
+    } catch (error) {
+      _client.emit('error', error.message);
+    }
+  }
+
+  @SubscribeMessage('unadmin-user')
+  async handleRemoveAdmin(_client: Socket, payload: { roomId: number, userId: number }) {
+    try {
+      const roomMem = await this.roomService.getChatRoomMember(payload.userId, payload.roomId);
+      if (!roomMem) throw new Error('User is not a member of the room');
+      if (!roomMem.is_admin) throw new Error('User is not admin');
+      const tmp: ChatRoomMember = {
+        joinedAt: roomMem.joinedAt,
+        status: roomMem.status,
+        mutedDuration: roomMem.mutedDuration,
+        leftAt: roomMem.leftAt,
+        updatedAt: roomMem.updatedAt,
+        userId: payload.userId,
+        chatRoomId: payload.roomId,
+        is_admin: false,
+      }
+      const updatedRoom = await this.roomService.updatechatRoomMember(_client['user'].id, tmp);
+      if (updatedRoom) {
+        const user = await this.prisma.user.findUnique({ where: { id: payload.userId } });
+        const msgData = {
+          chatRoomId: updatedRoom.chatRoomId,
+          text: `${_client['user'].username} has removed ${user.username} from admin`,
+          senderId: _client['user'].id,
+          type: MessageStatus.ANNOUCEMENT,
+        } as Message;
+        const msg = await this.chatService.addMessage(msgData, _client['user'].id);
+        this.server.to(roomMem.chatRoomId.toString()).emit('receive-message', msg);
+      }
+      this.server.to(roomMem.chatRoomId.toString()).emit('update_chat_room_member', updatedRoom);
+    } catch (error) {
+      _client.emit('error', error.message);
+    }
   }
   //==============================================================================================================
   handleDisconnect(_client: Socket) {
     console.log('disconnected chat id: ' + _client.id);
   }
 }
-
-// @SubscribeMessage('leave-room')
-// handleLeaveRoom(_client: Socket, payload: { roomId: number }) {
-//   if (!payload.hasOwnProperty('roomId') || !_client.rooms.has(payload.roomId.toString())) return;
-//   _client.leave(payload.roomId.toString());
-//   this.server.to(payload.roomId.toString()).emit('has-left');
-// }
-
-// @SubscribeMessage('add-recent')
-// async handleAddRecent(_client: Socket, payload: Recent[]) {
-//   payload.map(async (recent, index) => {
-//     try {
-//       await this.chatService.addRecent(recent);
-//     }
-//     catch (error) {
-//       _client.emit('error', error.message);
-//     }
-//     if (payload.length === index + 1) {
-//       this.server.to(recent.chatRoomId.toString()).emit('receive-recent');
-//     }
-//   });
-// }

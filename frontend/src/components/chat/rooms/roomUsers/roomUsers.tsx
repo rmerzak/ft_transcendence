@@ -1,31 +1,46 @@
 'use client'
-
 import { getChatRoomMemberByRoomId, getChatRoomMembers } from "@/api/chat/chat.api"
-import { User, X } from "lucide-react"
-import { useEffect, useState } from "react"
+import { X } from "lucide-react"
+import { use, useContext, useEffect, useState } from "react"
 import OutsideClickHandler from "react-outside-click-handler"
 import RoomUserItem from "./roomUserItem"
+import { ContextGlobal } from "@/context/contex"
 
 function RoomUsers({ handleUserListClick, chatRoom }: { handleUserListClick: any, chatRoom: any }) {
     const [users, setUsers] = useState<any>([])
     const [profileRoomStatus, setProfileRoomStatus] = useState<any>({})
+    const { chatSocket } = useContext(ContextGlobal)
     useEffect(() => {
-        if(chatRoom) {
+        if (chatRoom) {
             getChatRoomMembers(chatRoom.id).then((res) => {
                 setUsers(res.data)
-                console.log(res.data)
             }).catch((err) => {
                 console.log(err);
             });
             getChatRoomMemberByRoomId(chatRoom.id).then((res) => {
-                console.log(res.data);
-                if(res.data)
+                if (res.data)
                     setProfileRoomStatus(res.data)
             }).catch((err) => {
                 //throw err; must ask about the catch error what to do
             });
         }
-    },[])
+    }, [chatRoom]);
+
+    useEffect(() => {
+        chatSocket?.on('update_chat_room_member', () => {
+            getChatRoomMembers(chatRoom.id).then((res) => {
+                setUsers(res.data)
+            }).catch((err) => {
+                console.log(err);
+            });
+            getChatRoomMemberByRoomId(chatRoom.id).then((res) => {
+                if (res.data)
+                    setProfileRoomStatus(res.data)
+            }).catch((err) => {
+                //throw err; must ask about the catch error what to do
+            });
+        })
+    }, [chatSocket]);
     return (
         <>
             <div className="fixed top-0 left-0 w-screen h-screen bg-[#000000]/50 z-50 flex justify-center items-center font-inter">
@@ -39,8 +54,8 @@ function RoomUsers({ handleUserListClick, chatRoom }: { handleUserListClick: any
                                 </button>
                             </div>
                             {
-                                users.map((user: any) => (
-                                    <RoomUserItem chatRoom={chatRoom} profileRoomStatus={profileRoomStatus} chatRoomMember={user} chatRoomRole={user.user.id === chatRoom.owner ? "owner" : user.is_admin === true ? "admin" : "member"} />
+                                users.map((user: any, index:number) => (
+                                    <RoomUserItem key={index} chatRoom={chatRoom} profileRoomStatus={profileRoomStatus} chatRoomMember={user} chatRoomRole={user.user.id === chatRoom.owner ? "owner" : user.is_admin === true ? "admin" : "member"} />
                                 ))
                             }
 
