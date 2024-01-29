@@ -109,7 +109,7 @@ function Play()
                     </div>
                 {/* </div> */}
 
-                <div  className='w-3/4 bg-gradient-to-r from-slate-500/40 to-yellow-100/30 rounded-3xl shadow-2xl flex flex-col min-[2560px]:justify-around min-[2560px]:h-[596px]  items-center pb-6 bg-red-500'>
+                <div  className='w-3/4 bg-gradient-to-r from-slate-500/40 to-yellow-100/30 rounded-3xl shadow-2xl flex flex-col min-[2560px]:justify-around min-[2560px]:h-[596px]  items-center pb-6'>
                     <h1 className='inline-block font-sans text-sm sm:text-xl p-4 border-b-[1px] text-[#ffffff]/80'>
                         Maps
                     </h1>

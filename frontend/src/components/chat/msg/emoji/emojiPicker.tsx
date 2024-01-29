@@ -89,7 +89,7 @@ const EmojiPicker: React.FC<EmojiPickerProps> = ({ setMessage }) => {
             <button onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
                 <span className='text-2xl'>&#128512;</span>
             </button>
-            {showEmojiPicker &&
+            {showEmojiPicker &&  
                 <div className="absolute bottom-[9%] right-[39.48%] z-10 w-[11%] overflow-y-auto rounded-lg bg-[#311150]/40 border">
                     <div className="flex flex-wrap justify-center max-h-80">
                         {emojis.map((emoji, index) => (
@@ -109,4 +109,4 @@ const EmojiPicker: React.FC<EmojiPickerProps> = ({ setMessage }) => {
     );
 };
 
-export default EmojiPicker;
+export default EmojiPicker;  

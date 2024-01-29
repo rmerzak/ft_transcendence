@@ -3,30 +3,33 @@
 import User from "@/components/game/User";
 import { ContextGlobal } from "@/context/contex";
 import { ChatRoom, ChatRoomMember } from "@/interfaces";
-import { User2Icon } from "lucide-react";
-import Link from "next/link";
-import { useContext, useEffect, useState } from "react";
-import  ChannelSettingPopup  from "../ChannelSettingPopup";
-
+import { useContext, useState } from "react";
+import ChannelSettingPopup from "../ChannelSettingPopup";
+import { FaUserFriends } from "react-icons/fa";
+import RoomUsers from "../roomUsers/roomUsers";
+import LeavePopup from "../LeavePopup";
 interface roomHeaderProps {
     chatRoom?: ChatRoom;
 }
 
 const RoomHeader: React.FC<roomHeaderProps> = ({ chatRoom }) => {
     const [isPopupVisible, setPopupVisible] = useState(false);
+    const [openUserList, setOpenUserList] = useState(false);
+    const [leave, setLeave] = useState(false);
+    const { profile } = useContext(ContextGlobal);
+    
+    const handleSettingClick = () => {
+        setPopupVisible(!isPopupVisible);
+    };
 
-  const handleSettingClick = () => {
-    setPopupVisible(true);
-  };
+    const handleLeaveClick = () => {
+        setLeave(!leave);
+    }
 
-  const handleClosePopup = () => {
-    setPopupVisible(false);
-  };
+    function handleUserListClick() {
+        setOpenUserList(!openUserList);
+    }
 
-
-    const openChannelSettingPopup = () => {
-        ChannelSettingPopup;
-      };
     return (
         <>
             <div>
@@ -38,8 +41,25 @@ const RoomHeader: React.FC<roomHeaderProps> = ({ chatRoom }) => {
                         </div>
                         // : <div className="w-full flex justify-center items-center space-x-2"></div>
                     }
-                    <div className=" flex">
-                        <User2Icon />
+                    <div className=" flex items-center">
+                        <button onClick={handleUserListClick}>
+                            <FaUserFriends className="w-[30px] h-[30px]" />
+                        </button>
+                        {
+                            openUserList && (
+                                <RoomUsers handleUserListClick={handleUserListClick} chatRoomId={chatRoom?.id}/>
+                            )
+                        }
+                        {
+                            isPopupVisible && (
+                                <ChannelSettingPopup handleSettingClick={handleSettingClick} chatRoom={chatRoom} />
+                            )
+                        }
+                        {
+                            leave && (
+                                <LeavePopup handleLeaveClick={handleLeaveClick} chatRoom={chatRoom}/>
+                            )
+                        }
                         <div className="dropdown dropdown-left">
                             <svg
                                 role="button"
@@ -54,19 +74,16 @@ const RoomHeader: React.FC<roomHeaderProps> = ({ chatRoom }) => {
                                     className=""
                                 ></path>
                             </svg>
-                            <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-purplee rounded-box w-52">
+                            <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-purplee rounded-box w-40">
                                 <li>
-                                    <div className="flex items-center space-x-2 cursor-pointer">
+                                    <div className="flex items-center space-x-2 cursor-pointer" onClick={handleLeaveClick}>
                                         Leave
                                     </div>
                                 </li>
-                                <li>
-                                    <div className="flex items-center space-x-2 cursor-pointer">
-                                        <button onClick={handleSettingClick}>Setting</button>
+                                <li className= {profile?.id === chatRoom?.owner ? `block` : `hidden`}>
+                                    <div className="flex items-center space-x-2 cursor-pointer " onClick={handleSettingClick}>
+                                        Setting
                                     </div>
-                                    {isPopupVisible && (
-                                        <ChannelSettingPopup onClose={handleClosePopup} />
-                                    )}
                                 </li>
                             </ul>
                         </div>

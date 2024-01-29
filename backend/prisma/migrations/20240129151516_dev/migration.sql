@@ -2,6 +2,15 @@
 CREATE TYPE "RoomVisibility" AS ENUM ('PUBLIC', 'PRIVATE', 'PROTECTED');
 
 -- CreateEnum
+CREATE TYPE "RoomStatus" AS ENUM ('MUTED', 'BANNED', 'NORMAL');
+
+-- CreateEnum
+CREATE TYPE "MessageStatus" AS ENUM ('NORMAL', 'ANNOUCEMENT');
+
+-- CreateEnum
+CREATE TYPE "InviteRoomStatus" AS ENUM ('PENDING', 'ACCEPTED', 'DECLINED', 'BLOCKED');
+
+-- CreateEnum
 CREATE TYPE "UserStatus" AS ENUM ('ONLINE', 'OFFLINE', 'INGAME');
 
 -- CreateEnum
@@ -95,10 +104,23 @@ CREATE TABLE "ChatRoomMember" (
     "userId" INTEGER NOT NULL,
     "chatRoomId" INTEGER NOT NULL,
     "joinedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3),
     "is_admin" BOOLEAN NOT NULL DEFAULT false,
     "leftAt" TIMESTAMP(3),
+    "status" "RoomStatus" DEFAULT 'NORMAL',
+    "mutedDuration" BIGINT,
 
     CONSTRAINT "ChatRoomMember_pkey" PRIMARY KEY ("userId","chatRoomId")
+);
+
+-- CreateTable
+CREATE TABLE "RoomReqJoin" (
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "chatRoomId" INTEGER NOT NULL,
+    "senderId" INTEGER NOT NULL,
+    "status" "InviteRoomStatus" NOT NULL DEFAULT 'PENDING',
+
+    CONSTRAINT "RoomReqJoin_pkey" PRIMARY KEY ("senderId","chatRoomId")
 );
 
 -- CreateTable
@@ -108,6 +130,7 @@ CREATE TABLE "Message" (
     "senderId" INTEGER NOT NULL,
     "chatRoomId" INTEGER NOT NULL,
     "text" TEXT NOT NULL,
+    "type" "MessageStatus" NOT NULL DEFAULT 'NORMAL',
 
     CONSTRAINT "Message_pkey" PRIMARY KEY ("id")
 );
@@ -157,6 +180,12 @@ ALTER TABLE "ChatRoomMember" ADD CONSTRAINT "ChatRoomMember_userId_fkey" FOREIGN
 
 -- AddForeignKey
 ALTER TABLE "ChatRoomMember" ADD CONSTRAINT "ChatRoomMember_chatRoomId_fkey" FOREIGN KEY ("chatRoomId") REFERENCES "ChatRoom"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "RoomReqJoin" ADD CONSTRAINT "RoomReqJoin_chatRoomId_fkey" FOREIGN KEY ("chatRoomId") REFERENCES "ChatRoom"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "RoomReqJoin" ADD CONSTRAINT "RoomReqJoin_senderId_fkey" FOREIGN KEY ("senderId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Message" ADD CONSTRAINT "Message_senderId_fkey" FOREIGN KEY ("senderId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;

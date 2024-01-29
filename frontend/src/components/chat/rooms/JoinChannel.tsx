@@ -1,5 +1,5 @@
 import { ContextGlobal } from '@/context/contex';
-import { ChatRoom } from '@/interfaces';
+import { ChatRoom, RoomVisibility } from '@/interfaces';
 import { Key } from 'lucide-react';
 import React, { useContext, useState } from 'react'
 
@@ -38,7 +38,7 @@ function JoinChannel({channel, setOpenChannel}:{channel:ChatRoom, setOpenChannel
             <div className="flex justify-center items-center p-3">
               <h1 className="text-white md:text-lg">Join Channel {channel.name}</h1>
             </div>
-            <div className="flex justify-center items-center my-2 w-3/4 mx-auto text-black">
+            { channel.visibility === RoomVisibility.PROTECTED && <div className="flex justify-center items-center my-2 w-3/4 mx-auto text-black">
               <div className="relative w-[90%] h-full flex justify-center items-center bg-[#D9D9D9] rounded-lg">
                 <input
                   type="password"
@@ -53,7 +53,7 @@ function JoinChannel({channel, setOpenChannel}:{channel:ChatRoom, setOpenChannel
                 <div className="w-[10%] mr-2 md:mr-0">
                 </div>
               </div>
-            </div>
+            </div>}
             <div className="flex justify-center items-center mt-4 text-sm">
               <div className="flex justify-between w-[67.5%]">
               <button onClick={() => setOpenChannel(null)} className="w-[100px] h-9 md:h-[40px] rounded-xl text-white hover:bg-[#811B77]/100 border">
