@@ -33,15 +33,15 @@ const Sidebar = () => {
   const [expanded, setExpanded] = useState(true);
   const currentRoute = usePathname();
   return (
-    <aside className={`h-modal shadow-2xl backdrop-blur-lg bg-[#311150]/80 md:w-52`}>
-      <nav className={`h-full flex flex-col `}>
+    <aside className={`fixed border h-screen shadow-2xl backdrop-blur-lg bg-[#311150]/80 md:w-44 w-12`}>
+      <nav className={` h-full flex flex-col border`}>
         <div className='flex items-center space-x-3 mt-8 mb-32 scroll-pl-6 md:mx-6 mx-2'>
           <img src="/pingsvg.svg" alt="42" className={`overflow-hidden transition-all md:w-10`} />
           <span className={`text-white text-xl md:w-50 md:block hidden `}>PingPong</span>
         </div>
         {sidebarItems.map(({ icon, to, text }, index) => (
           <Link key={index} href={to}>
-            <li className={` ${currentRoute === to ? " bg-[#78196F]" : "text-white"} hover:bg-[#78196F]/30 hover:text-white"}  relative flex items-center py-2 px-3 my-2 font-medium rounded-md cursor-pointer transition-colors group text-white md:w-35 md:mx-3 w-15`}>
+            <li className={` ${currentRoute === to ? " bg-[#78196F]" : "text-white"} hover:bg-[#78196F]/30 hover:text-white"} relative flex items-center py-2 px-3 my-2 font-medium rounded-md cursor-pointer transition-colors group text-white md:w-35 md:mx-3 w-15`}>
               {icon}
               <span className={` overflow-hidden transition-all  md:w-35 md:ml-3 hidden md:block`}>
                 {text}
