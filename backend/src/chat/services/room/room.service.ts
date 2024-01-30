@@ -533,6 +533,7 @@ export class RoomService {
                 await this.prisma.chatRoom.delete({
                     where: { id: chatRoom.id },
                 });
+                return null;
             }
         }
         console.log('xxxxxxxxx = ', chatRoom);

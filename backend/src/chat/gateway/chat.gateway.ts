@@ -13,6 +13,7 @@ import { SocketAuthMiddleware } from 'src/auth/middleware/ws.mw';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ChatRoom, Message, MessageStatus, Recent, RoomVisibility } from '@prisma/client';
 import { RoomService } from '../services/room/room.service';
+import e from 'express';
 
 @WebSocketGateway({
   cors: { origin: 'http://localhost:8080', credentials: true },
@@ -145,7 +146,6 @@ export class GatewayGateway
 
   @SubscribeMessage('leave-room')
   async handleLeaveRoom(_client: Socket, payload: ChatRoom) {
-    console.log("payload = ", payload);
     try {
       const msgData = {
         chatRoomId: payload.id,
@@ -155,16 +155,28 @@ export class GatewayGateway
       } as Message;
       const msg = await this.chatService.addMessage(msgData, _client['user'].id);
       const room = await this.roomService.leaveMemberFromRoom(_client, payload);
-      
+      console.log("room = ", room);
       this.roomService.connectedClients.forEach((sockets, userId) => {
         if (userId === _client['user'].id) {
           sockets.forEach(socket => {
-            socket.emit('ownedRoom', room);
-            socket.emit('create-room', room);
+            if (room !== null) {
+              socket.emit('ownedRoom', room);
+              socket.emit('create-room', room);
+            } 
+            else {
+              socket.emit('deletedRoom', payload.name);
+            }
           });
+        } else {
+          if (room === null) {
+            sockets.forEach(socket => {
+              socket.emit('deletedRoom', payload.name);
+            });
+          }
         }
       });
-      this.server.to(room.id.toString()).emit('receive-message', msg);
+      if (room !== null)
+        this.server.to(room.id.toString()).emit('receive-message', msg);
     } catch (error) {
       _client.emit('error', error.message);
     }
