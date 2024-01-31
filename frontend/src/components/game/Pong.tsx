@@ -569,6 +569,31 @@ function Pong() {
             });
 		});
 
+		socket.on('refuseChallenge', () => {
+			Swal.fire({
+				title: "Refuse!",
+				text: "Your opponent refused your challenge!",
+				imageUrl: "/game/timeout.gif",
+				imageWidth: 400,
+				imageHeight: 200,
+				confirmButtonText: "Ok",
+				allowEscapeKey: false,
+				allowOutsideClick: false,
+				customClass: {
+					popup: "bg-gradient-to-r from-[#510546]/40 to-[#6958be]/40",
+				},
+			}).then((res) => {
+				if (res.isConfirmed) {
+					socket.emit("leave", {
+						roomId: roomID,
+						playerNo: playerNo,
+						mode: mode,
+					});
+					router.push("/dashboard/game");
+				}
+			});
+		});
+
 		return () => {
 			// reset theme
 			setTheme(-1);
@@ -593,13 +618,6 @@ function Pong() {
 			// Clear interval
 			clearInterval(intervalId);
 
-			const handleBeforeUnload = () => {
-				console.log("Emitting refresh event...");
-				socket.emit("resign", { roomId: roomID });
-			};
-
-			addEventListener("beforeunload", handleBeforeUnload);
-
 			// off event listener
 			socket.off("playerNo");
 			socket.off("roomIsFull");
@@ -607,6 +625,7 @@ function Pong() {
 			socket.off("updateGame");
 			socket.off("redirect");
 			socket.off("gameOver");
+			socket.off('')
 			socket.off("connect");
 
 			updateScores(0, 0);

@@ -110,6 +110,7 @@ export class FriendshipGateway {
       socket.emit('RequestError', { notification: null, friendship: null, status: false, error: error.message });
     }
   }
+
   @SubscribeMessage('challengeGame')
   async challengeGame(socket: Socket, payload: {playerId: number, gameId: string}) {
     try {
@@ -124,5 +125,11 @@ export class FriendshipGateway {
       socket.emit('RequestError', { notification: null, friendship: null, status: false, error: error.message });
     }
 
+  }
+
+  @SubscribeMessage('refuseChallenge')
+  refuse(socket: Socket, payload: string) {
+    const game = this.server.of('/game').to(payload);
+    game.emit('refuseChallenge');
   }
 }

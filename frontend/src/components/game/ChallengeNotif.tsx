@@ -4,16 +4,22 @@ import OutsideClickHandler from "react-outside-click-handler";
 import { useRouter } from "next/navigation";
 import { Mode, modeAtom } from "./atoms";
 import { useSetAtom } from "jotai";
+import { ContextGlobal } from "@/context/contex";
 
 
 const ChallengeNotif = ( { openAl, gameId }: {openAl: any, gameId: string} ) => {
 
     const router = useRouter();
     const setMode = useSetAtom(modeAtom);
+    const { socket } = useContext(ContextGlobal);
 
     const challenge = () => {
         setMode(Mode.challenge);
         router.push(`/dashboard/game/${gameId}`, { scroll: false });
+    }
+
+    const refuse = () => {
+        socket?.emit("refuseChallenge", gameId);
     }
 
   return (
@@ -27,7 +33,7 @@ const ChallengeNotif = ( { openAl, gameId }: {openAl: any, gameId: string} ) => 
                             <GameSwiper />
                         </div>
                         <div className="justify-evenly flex">
-                            <button className="btn btn-sm" onClick={openAl}>refuse</button>
+                            <button className="btn btn-sm" onClick={() => {openAl(); refuse()}}>refuse</button>
                             <button className="btn btn-sm btn-primary" onClick={() => {openAl(); challenge();}}>Accept</button>
                         </div>
                     </div>

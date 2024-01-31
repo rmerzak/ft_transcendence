@@ -236,7 +236,7 @@ export class GameService {
     }
     return room.id;
   }
-  
+
   // this method is called when a player moves
   // the position of the player is updated
   move(payload: any, server: Server) {

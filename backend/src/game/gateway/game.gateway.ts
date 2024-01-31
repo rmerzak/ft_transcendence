@@ -264,4 +264,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       console.log('leave');
     } catch {}
   }
+
+  // @SubscribeMessage('refuseChallenge')
+  // refuse(socket: Socket, payload: string) {
+  //   console.log('refuse');
+  // }
 }
