@@ -10,7 +10,7 @@ import { ChatRoom } from '@/interfaces';
 
 
 const Layout = ({ children }: any) => {
-  const { setChatSocket, setChatRoomsToJoin, setChatRoomsJoined, friends, profile } = useContext(ContextGlobal);
+  const { setChatSocket, setChatRoomsToJoin, setChatRoomsJoined, friends, profile, chatSocket } = useContext(ContextGlobal);
   const [privChat, setPrivChat] = useState<ChatRoom[]>([]);
   useEffect(() => {
     const sock = io("http://localhost:3000/chat", {
@@ -27,26 +27,22 @@ const Layout = ({ children }: any) => {
       console.log('Connected to the server');
     });
 
-    sock.on('leave-room', ({ roomId, userId }: { roomId: number, userId: number }) => {
-      if (profile && profile?.id > 0 && sock.id && userId === profile?.id) {
-        console.log('leave-room');
-        sock.emit('leave-room', { roomId });
-      }
-    });
+    
 
     sock.on('disconnect', () => {
       console.log('Disconnected from the server');
     });
 
     return () => {
-      console.log("Cleanup: Disconnecting socket cc");
-      sock.off('connect');
-      sock.off('disconnect');
-      sock.off('leave-room');
-      sock.disconnect();
+      if (sock.connected) {
+        console.log("Cleanup: Disconnecting socket cc");
+        sock.off('connect');
+        sock.off('disconnect');
+        sock.disconnect();
+      }
     };
-  }, [profile?.id]); 
-  
+  }, []);
+
   useEffect(() => {
     getChatRoomsJoined().then((res) => {
       if (res.data)
@@ -66,7 +62,8 @@ const Layout = ({ children }: any) => {
   }, []);
 
   useEffect(() => {
-    if (profile && friends)
+    if (profile && friends && chatSocket) {
+      console.log('profile ');
       friends.forEach((friend) => {
         const friendId = friend.senderId === profile.id ? friend.receiverId : friend.senderId;
         getChatRoomByName(profile?.id.toString(), friendId.toString()).then((res) => {
@@ -74,7 +71,22 @@ const Layout = ({ children }: any) => {
             setPrivChat((prev) => [...prev, res.data]);
         }).catch((err) => { console.log(err) });
       });
-  }, [friends, profile]);
+
+      if (profile?.id > 0) {
+        chatSocket.on('leave-room', ({ roomId, userId }: { roomId: number, userId: number }) => {
+          if (profile && profile?.id > 0 && chatSocket.id && userId === profile?.id) {
+            console.log('leave-room');
+            chatSocket.emit('leave-room', { roomId });
+          }
+        });
+      }
+    }
+    return () => {
+      if (chatSocket) {
+        chatSocket.off('leave-room');
+      }
+    }
+  }, [friends, profile, chatSocket]);
   return (
     <div className=" w-full h-screen bg-[#311251]/80 md:rounded-3xl rounded-t-md md:w-[95%] md:h-[90%] md:mt-6 md:overflow-auto md:mx-auto md:shadow-lg">
       <h1 className="text-white md:text-3xl text-lg md:font-bold text-center m-2 p-1 md:m-4 md:p-2 font-inter w-auto">

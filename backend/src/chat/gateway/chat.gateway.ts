@@ -71,6 +71,7 @@ export class GatewayGateway
       const msg = await this.chatService.addMessage(payload.msgData, _client['user'].id);
       this.server.to(payload.msgData.chatRoomId.toString()).emit('receive-message', msg);
     } catch (error) {
+      console.log("send-message ", error);
       _client.emit('error', error.message);
     }
   }
@@ -78,13 +79,15 @@ export class GatewayGateway
   @SubscribeMessage('join-room')
   handleJoinRoom(_client: Socket, payload: { roomId: number }) {
     try {
-      if (!payload.hasOwnProperty('roomId') || _client.rooms.has(payload.roomId.toString())) return;
-
-      const inRoom = this.roomService.getChatRoomMember(_client['user'].id, Number(payload.roomId));
-      if (!inRoom) return;
+      if (_client.hasOwnProperty('user') && _client['user'].hasOwnProperty('id')) {
+        if (!payload.hasOwnProperty('roomId') || _client.rooms.has(payload.roomId.toString())) return;
+        const inRoom = this.roomService.getChatRoomMember(_client['user'].id, Number(payload.roomId));
+        if (!inRoom) return;
         _client.join(payload.roomId.toString());
-      this.server.to(payload.roomId.toString()).emit('has-joined');
+        this.server.to(payload.roomId.toString()).emit('has-joined');
+      }
     } catch (error) {
+      console.log("join-room ", error);
       _client.emit('error', error.message);
     }
   }
@@ -108,6 +111,7 @@ export class GatewayGateway
       });
 
     } catch (error) {
+      console.log("create-room ", error);
       _client.emit('error', error.message);
     }
   }

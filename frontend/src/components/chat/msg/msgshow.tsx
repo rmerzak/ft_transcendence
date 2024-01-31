@@ -45,7 +45,9 @@ const MsgShow: React.FC<MsgShowProps> = ({ messages, chatId, error }) => {
   useEffect(() => {
     const targetMembers = state.chatRoomMembers.find((member) => member.user.id !== profile?.id);
     if (targetMembers) {
+      console.log('target ', targetMembers);
       const isblock = friends?.find((friend) => friend.receiver.id === targetMembers.user.id || friend.sender.id === targetMembers.user.id)?.block;
+      console.log('isblock ', isblock);
       setState(prevState => ({
         ...prevState,
         username: targetMembers.user.username,

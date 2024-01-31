@@ -12,21 +12,14 @@ interface ChatheaderProps {
 }
 
 const Chatheader: React.FC<ChatheaderProps> = ({ username, status, userId, friendBlock }) => {
-    const { socket } = useContext(ContextGlobal);
-    const [isblock, setIsblock] = useState<boolean>(false);
-    const handleUblock = () => {
+    const { profile, socket } = useContext(ContextGlobal);
+
+    const handleUnblock = () => {
         socket?.emit('unblockFriend', userId);
-        setIsblock(false);
     }
     const handleBlock = () => {
-            socket?.emit('blockFriend', userId);
-            setIsblock(true);
-            //setFriends((prev:any) => prev.filter((item:any) => item.senderId !== friend.senderId));
+        socket?.emit('blockFriend', userId);
     }
-    useEffect(() => {
-        if (friendBlock !== undefined)
-            setIsblock(friendBlock);
-    }, [friendBlock]);
     return (
         <>
             <div>
@@ -54,11 +47,9 @@ const Chatheader: React.FC<ChatheaderProps> = ({ username, status, userId, frien
                             </svg>
                             <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-purplee rounded-box w-52">
                                 <li><Link href={`/dashboard/profile/${username}`}>View profile</Link></li>
-                                {/* block icon */}
                                 <li>
-                                    <div onClick={isblock ? handleUblock : handleBlock} className="flex items-center space-x-2 cursor-pointer">
-                                        {/* <XOctagon /> */}
-                                        {(isblock ? 'Unblock' : 'Block') + ' ' + username}
+                                    <div onClick={friendBlock ? handleUnblock : handleBlock} className="flex items-center space-x-2 cursor-pointer">
+                                        {friendBlock ? 'Unblock ' : 'Block '}{username}
                                     </div>
                                 </li>
                             </ul>
