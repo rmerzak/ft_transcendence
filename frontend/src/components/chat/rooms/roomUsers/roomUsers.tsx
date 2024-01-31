@@ -24,7 +24,7 @@ function RoomUsers({ handleUserListClick, chatRoom }: { handleUserListClick: any
                 //throw err; must ask about the catch error what to do
             });
         }
-    }, [chatRoom]);
+    }, [chatRoom,chatSocket]);
 
     useEffect(() => {
         chatSocket?.on('update_chat_room_member', () => {

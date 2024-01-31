@@ -21,7 +21,7 @@ const SendMsgRm: React.FC<SendchatmsgProps> = ({ chatRoomId, isblocked, friendId
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         let newValue = e.target.value.replace(/(.{10})/g, "$1\n");
         setMessage(newValue);
-    };    
+    };
 
     const handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === 'Enter' && e.shiftKey) {
@@ -40,7 +40,6 @@ const SendMsgRm: React.FC<SendchatmsgProps> = ({ chatRoomId, isblocked, friendId
     };
 
     function addMsg() {
-        chatSocket?.emit('join-room', { roomId: chatRoomId });
         if (!message || message.length === 0) return;
         const messageData: Messages = {
             senderId: Number(profile?.id),
@@ -49,6 +48,18 @@ const SendMsgRm: React.FC<SendchatmsgProps> = ({ chatRoomId, isblocked, friendId
         };
 
         chatSocket?.emit('send-message', { msgData: messageData });
+        let isError = new Promise((resolve) => {
+            chatSocket?.on('error', (err: string) => {
+                if (err !== '')
+                    resolve(true);
+                resolve(false);
+            });
+        });
+
+        isError.then((result) => {
+            if (!result)
+                chatSocket?.emit('join-room', { roomId: chatRoomId });
+        });
         setMessage('');
     }
 

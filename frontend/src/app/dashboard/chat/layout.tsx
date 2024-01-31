@@ -2,7 +2,7 @@
 import Channels from '@/components/chat/rooms/channels'
 import UserOnline from '@/components/chat/user/userOnline'
 import Recent from "@/components/chat/recent/recent";
-import { use, useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import { ContextGlobal } from '@/context/contex';
 import { getChatRoomByName, getChatRoomsJoined, getChatRoomsNotJoined } from '@/api/chat/chat.api';
@@ -10,7 +10,7 @@ import { ChatRoom } from '@/interfaces';
 
 
 const Layout = ({ children }: any) => {
-  const { setChatSocket ,setChatRoomsToJoin,setChatRoomsJoined, friends, profile } = useContext(ContextGlobal);
+  const { setChatSocket, setChatRoomsToJoin, setChatRoomsJoined, friends, profile } = useContext(ContextGlobal);
   const [privChat, setPrivChat] = useState<ChatRoom[]>([]);
   useEffect(() => {
     const sock = io("http://localhost:3000/chat", {
@@ -27,28 +27,38 @@ const Layout = ({ children }: any) => {
       console.log('Connected to the server');
     });
 
+    sock.on('leave-room', ({ roomId, userId }: { roomId: number, userId: number }) => {
+      if (profile && profile?.id > 0 && sock.id && userId === profile?.id) {
+        console.log('leave-room');
+        sock.emit('leave-room', { roomId });
+      }
+    });
+
     sock.on('disconnect', () => {
       console.log('Disconnected from the server');
     });
+
     return () => {
       console.log("Cleanup: Disconnecting socket cc");
       sock.off('connect');
       sock.off('disconnect');
+      sock.off('leave-room');
       sock.disconnect();
     };
-  }, []); ///
+  }, [profile?.id]); 
+  
   useEffect(() => {
-      getChatRoomsJoined().then((res) => {
-        if (res.data)
-          setChatRoomsJoined(res.data);
-      }).catch((err) => { console.log(err) });
+    getChatRoomsJoined().then((res) => {
+      if (res.data)
+        setChatRoomsJoined(res.data);
+    }).catch((err) => { console.log(err) });
 
-      getChatRoomsNotJoined().then((res) => {
-        if (res.data)
-          setChatRoomsToJoin(res.data);
-      }).catch((err) => { console.log(err) });
+    getChatRoomsNotJoined().then((res) => {
+      if (res.data)
+        setChatRoomsToJoin(res.data);
+    }).catch((err) => { console.log(err) });
     friends.forEach((friend) => {
-      getChatRoomByName(profile?.id.toString() , friend.id.toString()).then((res) => {
+      getChatRoomByName(profile?.id.toString(), friend.id.toString()).then((res) => {
         if (res.data)
           setPrivChat((prev) => [...prev, res.data]);
       }).catch((err) => { console.log(err) });
@@ -59,7 +69,7 @@ const Layout = ({ children }: any) => {
     if (profile && friends)
       friends.forEach((friend) => {
         const friendId = friend.senderId === profile.id ? friend.receiverId : friend.senderId;
-        getChatRoomByName(profile?.id.toString() , friendId.toString()).then((res) => {
+        getChatRoomByName(profile?.id.toString(), friendId.toString()).then((res) => {
           if (res.data)
             setPrivChat((prev) => [...prev, res.data]);
         }).catch((err) => { console.log(err) });
