@@ -218,7 +218,7 @@ export class RoomService {
             else
                 chatRoomData.passwordHash = null;
         } else if (room.visibility === RoomVisibility.PROTECTED) {
-            
+
             if (chatRoomData.visibility === RoomVisibility.PROTECTED && (chatRoomData.passwordHash === null
                 || chatRoomData.passwordHash === '' || chatRoomData.visibility === undefined)) {
                 chatRoomData.passwordHash = room.passwordHash;
@@ -405,15 +405,15 @@ export class RoomService {
         return chatRoom;
     }
 
-    async getChatRoomMemberByRoomId(userId :number ,id: number): Promise<ChatRoomMember | null> {
-        const user = await this.prisma.user.findUnique({where: { id: userId }});
-        if(!user) throw new Error('User not found');
-        const chatRoom = await this.prisma.chatRoom.findUnique({where: { id: id }});
-        if(!chatRoom) throw new Error('Chat room not found');
+    async getChatRoomMemberByRoomId(userId: number, id: number): Promise<ChatRoomMember | null> {
+        const user = await this.prisma.user.findUnique({ where: { id: userId } });
+        if (!user) throw new Error('User not found');
+        const chatRoom = await this.prisma.chatRoom.findUnique({ where: { id: id } });
+        if (!chatRoom) throw new Error('Chat room not found');
         const chatRoomMember = await this.prisma.chatRoomMember.findUnique({
             where: { userId_chatRoomId: { userId: user.id, chatRoomId: chatRoom.id } },
         });
-        if(!chatRoomMember) throw new Error('User not in chat room');
+        if (!chatRoomMember) throw new Error('User not in chat room');
         console.log('chatRoomMember: ', chatRoomMember)
         return chatRoomMember;
     }
@@ -484,6 +484,64 @@ export class RoomService {
         return await this.prisma.roomReqJoin.delete({
             where: { senderId_chatRoomId: { senderId, chatRoomId } },
         });
+    }
+
+    async leaveMemberFromRoom(_client: Socket, payload: ChatRoom): Promise<any> {
+
+        const chatRoom = await this.prisma.chatRoom.findUnique({
+            where: { name: payload.name },
+        });
+
+        if (!chatRoom) throw new Error('Chat room not found');
+        const chatRoomMember = await this.prisma.chatRoomMember.findUnique({
+            where: { userId_chatRoomId: { userId: _client['user'].id, chatRoomId: chatRoom.id } },
+        });
+
+        if (!chatRoomMember) throw new Error('User not in chat room');
+
+        if ((chatRoomMember.is_admin && chatRoom.owner !== _client['user'].id) || !chatRoomMember.is_admin) {
+            await this.prisma.chatRoomMember.delete({
+                where: { userId_chatRoomId: { userId: _client['user'].id, chatRoomId: chatRoom.id } },
+            });
+            return chatRoom;
+        }
+        if (chatRoom.owner === chatRoomMember.userId) {
+            const FirstAdminMember = await this.prisma.chatRoomMember.findFirst({
+                where: { chatRoomId: chatRoom.id, userId: { not: _client['user'].id }, is_admin: true },
+                orderBy: { joinedAt: 'asc' },
+            });
+            if (FirstAdminMember) {
+                await this.prisma.chatRoom.update({
+                    where: { id: chatRoom.id },
+                    data: { owner: FirstAdminMember.userId },
+                });
+            }
+            const FirstMember = await this.prisma.chatRoomMember.findFirst({
+                where: { chatRoomId: chatRoom.id, userId: { not: _client['user'].id }, is_admin: false },
+                orderBy: { joinedAt: 'asc' },
+            });
+            if (FirstMember && !FirstAdminMember) {
+                await this.prisma.chatRoom.update({
+                    where: { id: chatRoom.id },
+                    data: { owner: FirstMember.userId },
+                });
+                await this.prisma.chatRoomMember.update({
+                    where: { userId_chatRoomId: { userId: FirstMember.userId, chatRoomId: chatRoom.id } },
+                    data: { is_admin: true },
+                });
+            }
+            await this.prisma.chatRoomMember.delete({
+                where: { userId_chatRoomId: { userId: _client['user'].id, chatRoomId: chatRoom.id } },
+            });
+            if (!FirstMember && !FirstAdminMember) {
+                await this.prisma.chatRoom.delete({
+                    where: { id: chatRoom.id },
+                });
+                return null;
+            }
+        }
+        console.log('xxxxxxxxx = ', chatRoom);
+        return chatRoom;
     }
 }
 

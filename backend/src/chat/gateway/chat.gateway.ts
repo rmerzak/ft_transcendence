@@ -13,6 +13,7 @@ import { SocketAuthMiddleware } from 'src/auth/middleware/ws.mw';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ChatRoom, ChatRoomMember, Message, MessageStatus, Recent, RoomStatus, RoomVisibility } from '@prisma/client';
 import { RoomService } from '../services/room/room.service';
+import e from 'express';
 
 @WebSocketGateway({
   cors: { origin: 'http://localhost:8080', credentials: true },
@@ -315,7 +316,7 @@ export class GatewayGateway
   }
   //==============================================================================================================
   @SubscribeMessage('leave-room')
-  async handleLeaveRoom(_client: Socket, payload: { roomId: number }) {
+  async handleLeaveRoomSocket(_client: Socket, payload: { roomId: number }) {
     try {
       _client.leave(payload.roomId.toString());
     } catch (error) {
@@ -324,7 +325,45 @@ export class GatewayGateway
     }
   }
 
+  @SubscribeMessage('leave-room')
+  async handleLeaveRoom(_client: Socket, payload: ChatRoom) {
+    try {
+      const msgData = {
+        chatRoomId: payload.id,
+        text: `${_client['user'].username} has left the chat`,
+        senderId: _client['user'].id,
+        type: MessageStatus.ANNOUCEMENT,
+      } as Message;
+      const msg = await this.chatService.addMessage(msgData, _client['user'].id);
+      const room = await this.roomService.leaveMemberFromRoom(_client, payload);
+      console.log("room = ", room);
+      this.roomService.connectedClients.forEach((sockets, userId) => {
+        if (userId === _client['user'].id) {
+          sockets.forEach(socket => {
+            if (room !== null) {
+              socket.emit('ownedRoom', room);
+              socket.emit('create-room', room);
+            } 
+            else {
+              socket.emit('deletedRoom', payload.name);
+            }
+          });
+        } else {
+          if (room === null) {
+            sockets.forEach(socket => {
+              socket.emit('deletedRoom', payload.name);
+            });
+          }
+        }
+      });
+      if (room !== null)
+        this.server.to(room.id.toString()).emit('receive-message', msg);
+    } catch (error) {
+      _client.emit('error', error.message);
+    }
+  }
+
   handleDisconnect(_client: Socket) {
-    console.log('disconnected chat id: ' + _client.id);
+    console.log('disconnected chat id: ' + _client.id); // must fix this
   }
 }

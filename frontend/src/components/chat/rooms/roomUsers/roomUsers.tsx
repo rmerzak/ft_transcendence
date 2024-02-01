@@ -1,31 +1,38 @@
 'use client'
-import { getChatRoomMemberByRoomId, getChatRoomMembers } from "@/api/chat/chat.api"
-import { X } from "lucide-react"
-import { use, useContext, useEffect, useState } from "react"
+import { use, useContext  } from "react"
+import { getChatRoomById, getChatRoomMemberByRoomId, getChatRoomMembers } from "@/api/chat/chat.api"
+import {  X } from "lucide-react"
+import { useEffect, useState } from "react"
 import OutsideClickHandler from "react-outside-click-handler"
 import RoomUserItem from "./roomUserItem"
 import { ContextGlobal } from "@/context/contex"
 
-function RoomUsers({ handleUserListClick, chatRoom }: { handleUserListClick: any, chatRoom: any }) {
+function RoomUsers({ handleUserListClick, chatRoomId }: { handleUserListClick: any, chatRoomId: number | undefined}) {
     const [users, setUsers] = useState<any>([])
     const [profileRoomStatus, setProfileRoomStatus] = useState<any>({})
+    const [chatRoom, setChatRoom] = useState<any>({})
     const { chatSocket } = useContext(ContextGlobal)
     useEffect(() => {
-        if (chatRoom) {
-            getChatRoomMembers(chatRoom.id).then((res) => {
+        if(chatRoomId) {
+            getChatRoomById(chatRoomId).then((res) => {
+                setChatRoom(res.data);
+            }).catch((err) => {});
+            getChatRoomMembers(chatRoomId).then((res) => {
                 setUsers(res.data)
+                console.log(res.data)
             }).catch((err) => {
                 console.log(err);
             });
-            getChatRoomMemberByRoomId(chatRoom.id).then((res) => {
-                if (res.data)
+            getChatRoomMemberByRoomId(chatRoomId).then((res) => {
+                console.log(res.data);
+                if(res.data)
                     setProfileRoomStatus(res.data)
             }).catch((err) => {
                 //throw err; must ask about the catch error what to do
             });
         }
-    }, [chatRoom,chatSocket]);
-
+    },[chatRoom,chatSocket])
+    
     useEffect(() => {
         chatSocket?.on('update_chat_room_member', () => {
             getChatRoomMembers(chatRoom.id).then((res) => {

@@ -7,6 +7,7 @@ import { useContext, useState } from "react";
 import ChannelSettingPopup from "../ChannelSettingPopup";
 import { FaUserFriends } from "react-icons/fa";
 import RoomUsers from "../roomUsers/roomUsers";
+import LeavePopup from "../LeavePopup";
 interface roomHeaderProps {
     chatRoom?: ChatRoom;
 }
@@ -14,10 +15,16 @@ interface roomHeaderProps {
 const RoomHeader: React.FC<roomHeaderProps> = ({ chatRoom }) => {
     const [isPopupVisible, setPopupVisible] = useState(false);
     const [openUserList, setOpenUserList] = useState(false);
+    const [leave, setLeave] = useState(false);
     const { profile } = useContext(ContextGlobal);
+    
     const handleSettingClick = () => {
         setPopupVisible(!isPopupVisible);
     };
+
+    const handleLeaveClick = () => {
+        setLeave(!leave);
+    }
 
     function handleUserListClick() {
         setOpenUserList(!openUserList);
@@ -40,12 +47,17 @@ const RoomHeader: React.FC<roomHeaderProps> = ({ chatRoom }) => {
                         </button>
                         {
                             openUserList && (
-                                <RoomUsers handleUserListClick={handleUserListClick} chatRoom={chatRoom}/>
+                                <RoomUsers handleUserListClick={handleUserListClick} chatRoomId={chatRoom?.id}/>
                             )
                         }
                         {
                             isPopupVisible && (
                                 <ChannelSettingPopup handleSettingClick={handleSettingClick} chatRoom={chatRoom} />
+                            )
+                        }
+                        {
+                            leave && (
+                                <LeavePopup handleLeaveClick={handleLeaveClick} chatRoom={chatRoom}/>
                             )
                         }
                         <div className="dropdown dropdown-left">
@@ -64,7 +76,7 @@ const RoomHeader: React.FC<roomHeaderProps> = ({ chatRoom }) => {
                             </svg>
                             <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-purplee rounded-box w-40">
                                 <li>
-                                    <div className="flex items-center space-x-2 cursor-pointer">
+                                    <div className="flex items-center space-x-2 cursor-pointer" onClick={handleLeaveClick}>
                                         Leave
                                     </div>
                                 </li>
