@@ -49,13 +49,13 @@ function NotificationItem({item,setOpen}: {item: Notification,setOpen: any}) {
             
             {
                 item.RequestType === 'FRIENDSHIP' ?
-                <div className='flex'>
-                <p className="ml-2 text-white">{item?.content}</p>
-                    <button className="bg-[#78196F] p-1  rounded text-[14px] text-white" onClick={handleButtonClick}>Check</button>
+                <div className='flex items-center justify-between px-2 w-full'>
+                    <p className="ml-2 text-white">{item?.content}</p>
+                    <button className="bg-[#78196F] px-4 py-2 rounded-xl border border-white text-[14px] text-white" onClick={handleButtonClick}>Check</button>
                 </div>:
-                <div className='flex items-center'>
-                    <p className="ml-2 text-white">your friend is challenging you</p>
-                    <button className="bg-[#78196F] p-1  rounded text-[14px] text-white" onClick={() => setOpenAlert(!openAlert)}>Check</button>
+                <div className='flex items-center justify-between px-2 w-full'>
+                    <p className="ml-2 text-white">Your friend is challenging you</p>
+                    <button className="bg-[#78196F] px-4 py-2 rounded-xl border border-white text-[14px] text-white" onClick={() => setOpenAlert(!openAlert)}>Check</button>
                     { openAlert && <ChallengeNotif openAl={() => {setOpenAlert(!openAlert);}} gameId={ item.content } />}
                 </div>
             }

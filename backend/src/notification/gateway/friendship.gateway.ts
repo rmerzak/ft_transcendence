@@ -33,7 +33,7 @@ export class FriendshipGateway {
     try {
       const emitClient = this.friendship.getSocketsByUser(Number(payload));
       const request = await this.friendship.CreateFriendRequest(socket, Number(payload));
-      const notification = await this.friendship.CreateNotification(socket, Number(payload), 'friendRequest', 'you have a friend request', request,'FRIENDSHIP');
+      const notification = await this.friendship.CreateNotification(socket, Number(payload), 'friendRequest', 'You have a friend request', request,'FRIENDSHIP');
       emitClient.forEach((socket) => {
         socket.emit('friendRequest', { notification: notification, friendship: request, status: true, error: null });
       });

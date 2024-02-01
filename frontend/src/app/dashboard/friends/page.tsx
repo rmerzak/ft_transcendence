@@ -51,7 +51,7 @@ const Friends = () => {
   }, [profile, socket]);
   
   return (
-    <div className="bg-profile py-4 px-2 mx-4 h-screen ">
+    <div className="bg-profile py-4 px-2 mx-4 ">
       <h1 className="text-white font-bold text-3xl text-center mb-4">Friends</h1>
       <div className="flex md:flex-row flex-col">
         <ListOfFriends friends={friends} />

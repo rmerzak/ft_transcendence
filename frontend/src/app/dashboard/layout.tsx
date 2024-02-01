@@ -19,10 +19,10 @@ const Layout = ({children} : any) => {
       <div className="flex login-gradient">
         <ContextProvider>
           <JotaiProvider>
-              <div className="flex-1">
+              {/* <div className="flex-1 bg-red-500"> */}
                   <Sidebar />
-              </div> 
-              <div className="flex-[10] ">
+              {/* </div>  */}
+              <div className="flex-[10] pb-28 ">
                   <Navbar />
                   {children}
               </div>
