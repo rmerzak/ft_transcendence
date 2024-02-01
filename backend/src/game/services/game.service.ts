@@ -75,17 +75,6 @@ export class GameService {
     return null;
   }
 
-  // this method is checking if there is a room with an available slot and challenge mode
-  // if there is a room with an available slot and challenge mode, the id of that room is returned
-  // if there is no room with an available slot and challenge mode, 0 is returned
-  roomWithAvailableSlotsAndChallengeMode(): Room | null {
-    const room = this.challenge.find((room) => room.players.length < 2);
-    if (room) {
-      return room;
-    }
-    return null;
-  }
-
   // this method call when status of player change
   // if player status is undefined, set status to true
   onPlayerStatusChange(
@@ -292,15 +281,11 @@ export class GameService {
       const playerIndex = room.players.findIndex(
         (player) => player.socketId === playerId,
       );
-
       if (playerIndex !== -1) {
         const player = room.players[playerIndex];
         room.removePlayer(player);
         this.stopPlaying(player.user.id);
-
-        if (room.players.length === 1) {
-          this.challenge.splice(roomIndex, 1);
-        }
+        this.challenge.splice(roomIndex, 1);
       }
     }
   }
