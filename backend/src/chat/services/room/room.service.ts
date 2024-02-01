@@ -7,6 +7,7 @@ import * as argon from 'argon2';
 
 @Injectable()
 export class RoomService {
+   
     constructor(private readonly prisma: PrismaService) { }
 
     // start chat room
@@ -540,9 +541,95 @@ export class RoomService {
                 return null;
             }
         }
-        console.log('xxxxxxxxx = ', chatRoom);
         return chatRoom;
     }
+    async getChatRoomInvitedUsers(id: number, roomId: number) : Promise<RoomReqJoin[] | null> {
+        const room = await this.prisma.chatRoom.findUnique({
+            where: { id: roomId },
+        });
+        if (!room) throw new Error('Chat room not found');
+        if(room.owner !== id) throw new Error('You are not the owner of this chat room');
+        const invitedUsers = await this.prisma.roomReqJoin.findMany({
+            where: { chatRoomId: roomId },
+            select: {
+                createdAt: true,
+                chatRoomId: true,
+                senderId: true,
+                status: true,
+                sender: {
+                    select: {
+                        id: true,
+                        username: true,
+                        image: true,
+                    },
+                },
+            },
+        });
+        return invitedUsers;
+      }
+      async requestJoinRoom(_client: Socket, name: string): Promise<RoomReqJoin | null> {
+        const chatRoom = await this.prisma.chatRoom.findUnique({where: { name: name }});
+        
+        if (!chatRoom) throw new Error('Chat room not found');
+        
+        if (chatRoom.visibility !== 'PRIVATE') throw new Error('Chat room is not private');
+
+        const existingReqToJoinChatRoom = await this.prisma.roomReqJoin.findUnique({
+            where: { senderId_chatRoomId: { senderId: _client['user'].id, chatRoomId: chatRoom.id } },
+        });
+        if (existingReqToJoinChatRoom) throw new Error('User already send request to join chat room');
+        
+        return await this.prisma.roomReqJoin.create({
+            data: {
+                sender: { connect: { id: _client['user'].id } },
+                chatRoom: { connect: { id: chatRoom.id } },
+            }
+        });
+      }
+      async acceptJoinRoom(_client: Socket, payload: { roomId: number, userId: number }): Promise<ChatRoomMember | null> {
+        const chatRoom = await this.prisma.chatRoom.findUnique({where: { id: payload.roomId }});
+        if (!chatRoom) throw new Error('Chat room not found');
+        if (chatRoom.visibility !== 'PRIVATE') throw new Error('Chat room is not private');
+        if (chatRoom.owner !== _client['user'].id) throw new Error('You are not the owner of this chat room');
+        const user = await this.prisma.user.findUnique({where: { id: payload.userId }});
+        if (!user) throw new Error('User not found');
+        const chatRoomMember = await this.prisma.chatRoomMember.findUnique({
+            where: { userId_chatRoomId: { userId: user.id, chatRoomId: chatRoom.id } },
+        });
+        if (chatRoomMember) throw new Error('User already in chat room');
+        const requestToJoinChatRoom = await this.prisma.roomReqJoin.findUnique({
+            where: { senderId_chatRoomId: { senderId: user.id, chatRoomId: chatRoom.id } },
+        });
+        if (!requestToJoinChatRoom) throw new Error('Request to join chat room not found');
+        if (requestToJoinChatRoom.status !== 'PENDING') throw new Error('Request to join chat room already accepted or rejected');
+        await this.prisma.roomReqJoin.update({
+            where: { senderId_chatRoomId: { senderId: user.id, chatRoomId: chatRoom.id } },
+            data: { status: 'ACCEPTED' },
+        });
+        return await this.prisma.chatRoomMember.create({
+            data: {
+                user: { connect: { id: user.id } },
+                chatRoom: { connect: { id: chatRoom.id } },
+                is_admin: false,
+            }
+        });
+      }
+      async rejectJoinRoom(_client: Socket, payload: { roomId: number, userId: number }): Promise<RoomReqJoin | null> {
+        const chatRoom = await this.prisma.chatRoom.findUnique({where: { id: payload.roomId }});
+        if (!chatRoom) throw new Error('Chat room not found');
+        if (chatRoom.visibility !== 'PRIVATE') throw new Error('Chat room is not private');
+        if (chatRoom.owner !== _client['user'].id) throw new Error('You are not the owner of this chat room');
+        const user = await this.prisma.user.findUnique({where: { id: payload.userId }});
+        if (!user) throw new Error('User not found');
+        const requestToJoinChatRoom = await this.prisma.roomReqJoin.findUnique({
+            where: { senderId_chatRoomId: { senderId: user.id, chatRoomId: chatRoom.id } },
+        });
+        if (!requestToJoinChatRoom) throw new Error('Request to join chat room not found');
+        if (requestToJoinChatRoom.status !== 'PENDING') throw new Error('Request to join chat room already accepted or rejected');
+        return await this.prisma.roomReqJoin.delete({
+            where: { senderId_chatRoomId: { senderId: user.id, chatRoomId: chatRoom.id } }
+        });
+      }
 }
 
 // fuctions helpers
