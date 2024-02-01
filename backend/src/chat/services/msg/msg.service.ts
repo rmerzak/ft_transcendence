@@ -52,7 +52,7 @@ export class MsgService {
   }
   // add user message
   async addMessage(messageData: Message, userId: number): Promise<Message> {
-    console.log("message data ",messageData);
+    // console.log("message data ",messageData);
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
     });

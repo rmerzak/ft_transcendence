@@ -33,8 +33,8 @@ export interface Notification {
   senderImage: string;
 }
 export enum Blocker {
-  'SENDER',
-  'RECEIVER'
+  SENDER = 'SENDER',
+  RECEIVER = 'RECEIVER'
 }
 export interface Friendship {
   id: number;

@@ -5,12 +5,14 @@ import { Messages } from '@/interfaces';
 import { ContextGlobal } from '@/context/contex';
 import { getChatRoomMessages } from '@/api/chat/chat.api';
 import MsgRmShow from '@/components/chat/rooms/msgShow/msgRmShow';
+import { useRouter } from 'next/navigation';
 
 const Room = () => {
-  const { chatSocket } = useContext(ContextGlobal);
-  const {roomId} = useParams()
+  const { chatSocket, profile } = useContext(ContextGlobal);
+  const { roomId } = useParams()
   const [messages, setMessages] = useState<Messages[]>([]);
   const [error, setError] = useState<string>('');
+  const router = useRouter();
 
   useEffect(() => {
     if (chatSocket && roomId) {
@@ -26,13 +28,16 @@ const Room = () => {
       }
       chatSocket.emit('join-room', { roomId: roomId });
       chatSocket.on('receive-message', (message) => {
-        console.log("i m here")
-        console.log("message", message);
         setMessages((messages) => [...messages, message]);
+      });
+      chatSocket.on('leaveRoom', (data) => {
+        if (data.userId === profile?.id)
+          router.push('/dashboard/chat');
       });
     }
     return () => {
       chatSocket?.off('receive-message');
+      chatSocket?.off('leaveRoom');
     };
   }, [roomId, chatSocket]);
 

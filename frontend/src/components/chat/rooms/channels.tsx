@@ -101,6 +101,17 @@ const Channels: React.FC<Channel> = ({ header }) => {
           }).catch((err) => { console.log(err) });
         }
       });
+      chatSocket?.on("update_chat_room_member", () => {
+        getChatRoomsJoined().then((res) => {
+          if (res.data) {
+            setChatRoomsJoined(res.data);
+          }
+        }).catch((err) => { console.log(err); });
+        getChatRoomsNotJoined().then((res) => {
+          if (res.data)
+            setChatRoomsToJoin(res.data);
+        }).catch((err) => { console.log(err) });
+      });
       chatSocket?.on("deletedRoom", (data) => {
         console.log('deletedRoom', data);
         if (data) {
