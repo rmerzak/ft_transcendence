@@ -1,4 +1,4 @@
-import { Position } from './player.model';
+import { Position } from './player';
 
 export class Ball {
   position: Position;

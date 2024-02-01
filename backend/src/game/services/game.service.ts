@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { Room } from '../models/room.model';
-import { Player } from '../models/player.model';
-import { State } from '../models/state.model';
+import { Room } from '../classes/room';
+import { Player } from '../classes/player';
+import { State } from '../classes/state';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Socket, Server } from 'socket.io';
 import { v4 as uuidv4 } from 'uuid';
@@ -68,7 +68,7 @@ export class GameService {
   // if there is a room with an available slot, the id of that room is returned
   // if there is no room with an available slot, 0 is returned
   roomWithAvailableSlots(): Room | null {
-    const room = this.rooms.find((room) => room.players.length < 2);
+    const room = this.rooms.find((room) => room.state === State.WAITING);
     if (room) {
       return room;
     }
@@ -246,7 +246,9 @@ export class GameService {
 
     if (roomIndex !== -1) {
       const room = this.rooms[roomIndex];
-      room.state = State.WAITING;
+      if (room.players.length === 1) {
+        room.state = State.WAITING;
+      }
       room.endGame();
       client.leave(roomId);
 
@@ -356,6 +358,7 @@ export class GameService {
         gameWins: true,
         gameLoses: true,
         gameElo: true,
+        gameRank: true,
       },
     });
     return user;
@@ -387,5 +390,46 @@ export class GameService {
       },
     });
     return matchHistory;
+  }
+
+  // get Leaderboard
+  async getLeaderboard() {
+    // Fetch the leaderboard without updating ranks
+    const users = await this.prisma.user.findMany({
+      select: {
+        id: true,
+        gameRank: true,
+      },
+      orderBy: {
+        gameWins: 'desc',
+      },
+    });
+  
+    // Update gameRank for each user based on their position in the list
+    for (let i = 0; i < users.length; i++) {
+      const user = users[i];
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: { gameRank: i + 1 },
+      });
+    }
+  
+    // Fetch the updated leaderboard
+    const updatedUsers = await this.prisma.user.findMany({
+      select: {
+        id: true,
+        gameRank: true,
+        username: true,
+        image: true,
+        gameElo: true,
+        gameMatches: true,
+        gameWins: true,
+      },
+      orderBy: {
+        gameWins: 'desc',
+      },
+    });
+  
+    return updatedUsers;
   }
 }

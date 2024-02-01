@@ -1,7 +1,7 @@
 import { Server } from 'socket.io';
-import { Player } from './player.model';
-import { State } from './state.model';
-import { Ball } from './ball.model';
+import { Player } from './player';
+import { State } from './state';
+import { Ball } from './ball';
 import { GameService } from '../services/game.service';
 
 export class Room {

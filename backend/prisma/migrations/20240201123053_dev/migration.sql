@@ -40,6 +40,7 @@ CREATE TABLE "User" (
     "gameMatches" INTEGER NOT NULL DEFAULT 0,
     "gameLoses" INTEGER NOT NULL DEFAULT 0,
     "gameElo" INTEGER NOT NULL DEFAULT 800,
+    "gameRank" INTEGER NOT NULL DEFAULT 0,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );

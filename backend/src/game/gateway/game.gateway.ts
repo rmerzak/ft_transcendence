@@ -9,7 +9,7 @@ import {
 import { Socket, Server } from 'socket.io';
 import { GameService } from '../services/game.service';
 import { SocketAuthMiddleware } from 'src/auth/middleware/ws.mw';
-import { Player } from '../models/player.model';
+import { Player } from '../classes/player';
 import { UserStatus } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 
