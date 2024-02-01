@@ -72,10 +72,10 @@ const Layout = ({ children }: any) => {
       });
 
       if (profile?.id > 0) {
-        chatSocket.on('leave-room', ({ roomId, userId }: { roomId: number, userId: number }) => {
+        chatSocket.on('leaveRoom', ({ roomId, userId }: { roomId: number, userId: number }) => {
           if (profile && profile?.id > 0 && chatSocket.id && userId === profile?.id) {
             console.log('leave-room');
-            chatSocket.emit('leave-room', { roomId });
+            chatSocket.emit('leaveRoom', { roomId });
           }
         });
       }

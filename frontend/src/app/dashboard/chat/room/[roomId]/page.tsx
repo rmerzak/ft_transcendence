@@ -30,14 +30,14 @@ const Room = () => {
       chatSocket.on('receive-message', (message) => {
         setMessages((messages) => [...messages, message]);
       });
-      chatSocket.on('leave-room', (data) => {
+      chatSocket.on('leaveRoom', (data) => {
         if (data.userId === profile?.id)
           router.push('/dashboard/chat');
       });
     }
     return () => {
       chatSocket?.off('receive-message');
-      chatSocket?.off('leave-room');
+      chatSocket?.off('leaveRoom');
     };
   }, [roomId, chatSocket]);
 

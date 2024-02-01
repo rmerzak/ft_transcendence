@@ -187,6 +187,7 @@ export class GatewayGateway
         const msg = await this.chatService.addMessage(msgData, _client['user'].id);
         this.server.to(roomMem.chatRoomId.toString()).emit('receive-message', msg);
         this.server.to(roomMem.chatRoomId.toString()).emit('update_chat_room_member', updatedRoom);
+        this.server.to(roomMem.chatRoomId.toString()).emit('leaveRoom', { roomId: roomMem.chatRoomId, userId: user.id });
       }
     } catch (error) {
       _client.emit('error', error.message);
@@ -228,21 +229,22 @@ export class GatewayGateway
   @SubscribeMessage('kick-user')
   async handleKickUser(_client: Socket, payload: { roomId: number, userId: number }) {
     try {
+      const user = await this.prisma.user.findUnique({ where: { id: payload.userId } });
+      const msgData = {
+        chatRoomId: payload.roomId,
+        text: `${_client['user'].username} has kicked ${user.username} from the room`,
+        senderId: _client['user'].id,
+        type: MessageStatus.ANNOUCEMENT,
+      } as Message;
+      const msg = await this.chatService.addMessage(msgData, _client['user'].id);
       const deletedRoomMem = await this.roomService.deletechatRoomMember(payload.userId, payload.roomId);
       if (deletedRoomMem) {
-        const user = await this.prisma.user.findUnique({ where: { id: payload.userId } });
-        const msgData = {
-          chatRoomId: deletedRoomMem.chatRoomId,
-          text: `${_client['user'].username} has kicked ${user.username} from the room`,
-          senderId: _client['user'].id,
-          type: MessageStatus.ANNOUCEMENT,
-        } as Message;
-        const msg = await this.chatService.addMessage(msgData, _client['user'].id);
         this.server.to(deletedRoomMem.chatRoomId.toString()).emit('receive-message', msg);
         this.server.to(deletedRoomMem.chatRoomId.toString()).emit('update_chat_room_member', deletedRoomMem);
-        this.server.to(deletedRoomMem.chatRoomId.toString()).emit('leave-room', { roomId: deletedRoomMem.chatRoomId, userId: payload.userId });
+        this.server.to(deletedRoomMem.chatRoomId.toString()).emit('leaveRoom', { roomId: deletedRoomMem.chatRoomId, userId: payload.userId });
       }
     } catch (error) {
+      console.log("kick-user ", error);
       _client.emit('error', error.message);
     }
   }
@@ -315,7 +317,7 @@ export class GatewayGateway
     }
   }
   //==============================================================================================================
-  @SubscribeMessage('leave-room')
+  @SubscribeMessage('leaveRoom')
   async handleLeaveRoomSocket(_client: Socket, payload: { roomId: number }) {
     try {
       _client.leave(payload.roomId.toString());
@@ -347,6 +349,7 @@ export class GatewayGateway
             else {
               socket.emit('deletedRoom', payload.name);
             }
+            ///////
           });
         } else {
           if (room === null) {
@@ -356,8 +359,10 @@ export class GatewayGateway
           }
         }
       });
-      if (room !== null)
+      if (room !== null){
         this.server.to(room.id.toString()).emit('receive-message', msg);
+      }
+      this.server.to(payload.id.toString()).emit('leaveRoom', { roomId: payload.id, userId: _client['user'].id });
     } catch (error) {
       _client.emit('error', error.message);
     }
