@@ -63,7 +63,6 @@ const Layout = ({ children }: any) => {
 
   useEffect(() => {
     if (profile && friends && chatSocket) {
-      console.log('profile ');
       friends.forEach((friend) => {
         const friendId = friend.senderId === profile.id ? friend.receiverId : friend.senderId;
         getChatRoomByName(profile?.id.toString(), friendId.toString()).then((res) => {

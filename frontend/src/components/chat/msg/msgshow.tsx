@@ -19,6 +19,7 @@ interface State {
   friendId: number;
   status: string;
   isblock: boolean;
+  blockByMe?: number
   chatRoomMembers: ChatRoomUsers[];
 }
 
@@ -29,6 +30,7 @@ const MsgShow: React.FC<MsgShowProps> = ({ messages, chatId, error }) => {
     friendId: 0,
     status: '',
     isblock: false,
+    blockByMe: 0,
     chatRoomMembers: [],
   });
 
@@ -43,27 +45,37 @@ const MsgShow: React.FC<MsgShowProps> = ({ messages, chatId, error }) => {
   }, [chatId]);
 
   useEffect(() => {
-    const targetMembers = state.chatRoomMembers.find((member) => member.user.id !== profile?.id);
-    if (targetMembers) {
-      console.log('target ', targetMembers);
-      const isblock = friends?.find((friend) => friend.receiver.id === targetMembers.user.id || friend.sender.id === targetMembers.user.id)?.block;
-      console.log('isblock ', isblock);
-      setState(prevState => ({
-        ...prevState,
-        username: targetMembers.user.username,
-        status: targetMembers.user.status,
-        friendId: targetMembers.user.id,
-        isblock: isblock ? isblock : false,
-      }));
+    if (state.chatRoomMembers.length > 0 && profile && profile?.id > 0 && friends) {
+      const targetMembers = state.chatRoomMembers.find((member) => member.user.id !== profile?.id);
+      if (targetMembers) {
+        const friendship = friends?.find((friend) => friend.receiver.id === targetMembers.user.id || friend.sender.id === targetMembers.user.id);
+        if (friendship && friendship.block) {
+          if (friendship.blockBy === Blocker.SENDER && friendship.sender.id === profile?.id) {
+            setState(prevState => ({ ...prevState, isblock: true, blockByMe: profile?.id }));
+          } else if (friendship.blockBy === Blocker.RECEIVER && friendship.receiver.id === profile?.id) {
+            setState(prevState => ({ ...prevState, isblock: true, blockByMe: profile?.id }));
+          } else {
+            setState(prevState => ({ ...prevState, isblock: true, blockByMe: targetMembers.user.id }));
+          }
+        } else {
+          setState(prevState => ({ ...prevState, isblock: false, blockByMe: 0}));
+        }
+        setState(prevState => ({
+          ...prevState,
+          username: targetMembers.user.username,
+          status: targetMembers.user.status,
+          friendId: targetMembers.user.id,
+        }));
+      }
     }
-  }, [state.chatRoomMembers, profile, friends]);
+  }, [state.chatRoomMembers, profile?.id, friends]);
 
   return (
     <>
       <div className="bg-[#5D5959]/40 w-[66%] text-white h-[1030px] rounded-3xl p-4 hidden md:block">
         {error === '' ? (
           <>
-            <Chatheader username={state.username} status={state.status} userId={state.friendId} friendBlock={state.isblock} />
+            <Chatheader username={state.username} status={state.status} userId={state.friendId} friendBlock={state.isblock} blockByMe={state.blockByMe} />
             <div className='mt-6 h-[88%]'>
               <Chat messages={messages} />
             </div>
