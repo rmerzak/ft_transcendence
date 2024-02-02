@@ -114,3 +114,11 @@ export interface Recent {
     }[];
   }
 };
+
+export interface ChatRoomInvitedMembers {
+  chatRoomId: number;
+  senderId: number;
+  status: string;
+  sender: User;
+  createdAt: string;
+}

@@ -564,7 +564,7 @@ export class ChatController {
     }
   }
 
-  @Get('room/invitedusers/:id')
+  @Get('/room/invited/:id')
   async getChatRoomInvitedUsers(@Req() req: Request, @Param('id') id: string): Promise<RoomReqJoin[] | null> {
     try {
       checkIfNumber(id.toString(), 'Chat room id must be a number');

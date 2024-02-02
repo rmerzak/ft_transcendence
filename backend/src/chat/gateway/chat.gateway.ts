@@ -387,15 +387,15 @@ export class GatewayGateway
       _client.emit('error', error.message);
     }
   }
-  @SubscribeMessage('reject-join-room')
-  async handleRejectJoinRoom(_client: Socket, payload: { roomId: number, userId: number }) {
-    try {
-      const request = await this.roomService.rejectJoinRoom(_client, payload);
-      console.log("request = ", request);
-    } catch (error) {
-      _client.emit('error', error.message);
-    }
-  }
+  // @SubscribeMessage('reject-join-room')
+  // async handleRejectJoinRoom(_client: Socket, payload: { roomId: number, userId: number }) {
+  //   try {
+  //     const request = await this.roomService.rejectJoinRoom(_client, payload);
+  //     console.log("request = ", request);
+  //   } catch (error) {
+  //     _client.emit('error', error.message);
+  //   }
+  // }
   handleDisconnect(_client: Socket) {
     console.log('disconnected chat id: ' + _client.id); // must fix this
   }

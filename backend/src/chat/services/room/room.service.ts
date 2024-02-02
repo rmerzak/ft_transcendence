@@ -548,7 +548,8 @@ export class RoomService {
             where: { id: roomId },
         });
         if (!room) throw new Error('Chat room not found');
-        if(room.owner !== id) throw new Error('You are not the owner of this chat room');
+        // if(room.owner !== id) throw new Error('You are not the owner of this chat room');
+        // if (room.visibility !== 'PRIVATE') throw new Error('Chat room is not private');
         const invitedUsers = await this.prisma.roomReqJoin.findMany({
             where: { chatRoomId: roomId },
             select: {
@@ -590,7 +591,7 @@ export class RoomService {
         const chatRoom = await this.prisma.chatRoom.findUnique({where: { id: payload.roomId }});
         if (!chatRoom) throw new Error('Chat room not found');
         if (chatRoom.visibility !== 'PRIVATE') throw new Error('Chat room is not private');
-        if (chatRoom.owner !== _client['user'].id) throw new Error('You are not the owner of this chat room');
+        if (chatRoom.owner !== _client['payload']['sub']) throw new Error('You are not the owner of this chat room');
         const user = await this.prisma.user.findUnique({where: { id: payload.userId }});
         if (!user) throw new Error('User not found');
         const chatRoomMember = await this.prisma.chatRoomMember.findUnique({

@@ -20,7 +20,7 @@ CREATE TYPE "FriendshipStatus" AS ENUM ('PENDING', 'ACCEPTED', 'BLOCKED');
 CREATE TYPE "Blocker" AS ENUM ('SENDER', 'RECEIVER');
 
 -- CreateEnum
-CREATE TYPE "RequestType" AS ENUM ('FRIENDSHIP', 'GAME');
+CREATE TYPE "RequestType" AS ENUM ('FRIENDSHIP', 'GAME', 'CHAT');
 
 -- CreateTable
 CREATE TABLE "User" (

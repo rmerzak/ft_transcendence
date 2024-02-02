@@ -6,11 +6,12 @@ import { Logger } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { User } from '@prisma/client';
 import { UserDto } from '../Dto';
+import { RoomService } from 'src/chat/services/room/room.service';
 /// dont forget to add the userin the socket using the methode socket.data = user
 
 @WebSocketGateway({ cors: { origin: 'http://localhost:8080', credentials: true, namespace: '/profile' } })
 export class FriendshipGateway {
-  constructor(private readonly friendship: FriendshipService) { }
+  constructor(private readonly friendship: FriendshipService,private roomService: RoomService) { }
   @WebSocketServer()
   server: Server;
 
@@ -125,6 +126,33 @@ export class FriendshipGateway {
     } catch (error) {
       socket.emit('RequestError', { notification: null, friendship: null, status: false, error: error.message });
     }
+  }
+  @SubscribeMessage('accept-join-room')
+  async handleAcceptJoinRoom(socket: Socket, payload: { roomId: number, userId: number }) {
+    try {
+      const emitClient = this.friendship.getSocketsByUser(Number(payload.userId));
+      const request = await this.roomService.acceptJoinRoom(socket, payload);
+      emitClient.forEach((socket) => {
+        socket.emit('accept-join-room', { notification: request, friendship: null, status: true, error: null });
+      });
+      socket.emit('accept-join-room', { notification: null, friendship: null, status: true, error: null });
 
+    } catch (error) {
+      socket.emit('error', error.message);
+    }
+  }
+  @SubscribeMessage('reject-join-room')
+  async handleRejectJoinRoom(socket: Socket, payload: { roomId: number, userId: number }) {
+    try {
+      const emitClient = this.friendship.getSocketsByUser(Number(payload.userId));
+      const request = await this.roomService.rejectJoinRoom(socket, payload);
+      emitClient.forEach((socket) => {
+        socket.emit('accept-join-room', { notification: null, friendship: null, status: true, error: null });
+      });
+      socket.emit('accept-join-room', { notification: null, friendship: null, status: true, error: null });
+
+    } catch (error) {
+      socket.emit('error', error.message);
+    }
   }
 }

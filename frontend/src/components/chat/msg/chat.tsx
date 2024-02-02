@@ -8,7 +8,7 @@ interface ChatProps {
   messages?: Messages[];
 }
 
-const formatDate = (timestamp: string) => {
+export const formatDate = (timestamp: string) => {
   if (!timestamp || timestamp.length === 0) return "";
   const originalDate = new Date(timestamp);
   const month = originalDate.toLocaleString('default', { month: 'short' });

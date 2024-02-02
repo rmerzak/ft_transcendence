@@ -1,16 +1,19 @@
 'use client'
 import { use, useContext  } from "react"
-import { getChatRoomById, getChatRoomMemberByRoomId, getChatRoomMembers } from "@/api/chat/chat.api"
+import { getChatRoomById, getChatRoomInvitedMembers, getChatRoomMemberByRoomId, getChatRoomMembers } from "@/api/chat/chat.api"
 import {  X } from "lucide-react"
 import { useEffect, useState } from "react"
 import OutsideClickHandler from "react-outside-click-handler"
 import RoomUserItem from "./roomUserItem"
 import { ContextGlobal } from "@/context/contex"
+import { ChatRoom, ChatRoomInvitedMembers, RoomVisibility } from "@/interfaces"
+import RoomInvitedUserItem from "./RoomInvitedUserItem"
 
 function RoomUsers({ handleUserListClick, chatRoomId }: { handleUserListClick: any, chatRoomId: number | undefined}) {
     const [users, setUsers] = useState<any>([])
     const [profileRoomStatus, setProfileRoomStatus] = useState<any>({})
-    const [chatRoom, setChatRoom] = useState<any>({})
+    const [chatRoom, setChatRoom] = useState<ChatRoom>({})
+    const [InvitedMembers, setInvitedMembers] = useState<ChatRoomInvitedMembers[]>([])
     const { chatSocket } = useContext(ContextGlobal)
     useEffect(() => {
         if(chatRoomId) {
@@ -30,8 +33,13 @@ function RoomUsers({ handleUserListClick, chatRoomId }: { handleUserListClick: a
             }).catch((err) => {
                 //throw err; must ask about the catch error what to do
             });
+            getChatRoomInvitedMembers(chatRoomId).then((res) => {
+                if (res.data)
+                    setInvitedMembers(res.data)
+                console.log("req = ",res.data)
+            }).catch((err) => {});
         }
-    },[chatRoom,chatSocket])
+    },[chatRoomId,chatSocket]) // check with he team members
     
     useEffect(() => {
         chatSocket?.on('update_chat_room_member', () => {
@@ -65,7 +73,16 @@ function RoomUsers({ handleUserListClick, chatRoomId }: { handleUserListClick: a
                                     <RoomUserItem key={index} chatRoom={chatRoom} profileRoomStatus={profileRoomStatus} chatRoomMember={user} chatRoomRole={user.user.id === chatRoom.owner ? "owner" : user.is_admin === true ? "admin" : "member"} />
                                 ))
                             }
-
+                        </div>
+                        <div>
+                            <div className="flex justify-between items-center px-4 py-2">
+                                <h1 className="text-xl">Invited Members</h1>
+                            </div>
+                            {
+                                InvitedMembers.map((invited: ChatRoomInvitedMembers, index:number) => (
+                                    <RoomInvitedUserItem key={index} chatRoom={chatRoom} RoomInvitedMember={invited}/>
+                                ))
+                            }
                         </div>
                     </div>
                 </OutsideClickHandler>

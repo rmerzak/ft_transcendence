@@ -17,3 +17,4 @@ export const getRecentMessages = async () => apiInstance.get(`/chat/recent`);
 export const addRecentMessage = async (messageData: Recent) => apiInstance.post(`/chat/recent`, messageData);
 export const deleteRecentMessage = async (roomId: number) => apiInstance.delete(`/chat/recent?roomId=${roomId}`);
 export const getChatRoomMemberByRoomId = async (roomId: number) => apiInstance.get(`/chat/room/user/${roomId}`);
+export const getChatRoomInvitedMembers = async (roomId: number) => apiInstance.get(`/chat/room/invited/${roomId}`);
