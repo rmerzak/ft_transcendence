@@ -43,8 +43,8 @@ function RoomUsers({ handleUserListClick, chatRoomId }: { handleUserListClick: a
                                 </button>
                             </div>
                             {
-                                users.map((user: any) => (
-                                    <RoomUserItem chatRoom={chatRoom} profileRoomStatus={profileRoomStatus} chatRoomMember={user} chatRoomRole={user.user.id === chatRoom.owner ? "owner" : user.is_admin === true ? "admin" : "member"} />
+                                users.map((user: any, index: number) => (
+                                    <RoomUserItem key={index} chatRoom={chatRoom} profileRoomStatus={profileRoomStatus} chatRoomMember={user} chatRoomRole={user.user.id === chatRoom.owner ? "owner" : user.is_admin === true ? "admin" : "member"} />
                                 ))
                             }
 

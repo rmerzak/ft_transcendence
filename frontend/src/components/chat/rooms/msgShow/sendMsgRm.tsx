@@ -33,6 +33,7 @@ const SendMsgRm: React.FC<SendchatmsgProps> = ({ chatRoomId, isblocked, friendId
         chatSocket?.emit('join-room', { roomId: chatRoomId });
         if (!message || message.length === 0) return;
         const messageData: Messages = {
+            type: 'NORMAL',
             senderId: Number(profile?.id),
             chatRoomId: chatRoomId,
             text: message,

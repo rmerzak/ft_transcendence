@@ -45,10 +45,11 @@ radial-gradient(at 0% 100%, hsla(5,88%,55%,1) 0px, transparent 50%);
     background: 
         url('/background.jpg'); /* Replace 'your-image.jpg' with the path to your image file */
     
-    background-blend-mode: overlay, color-burn, multiply, difference, difference, normal;
-    background-size: cover; /* Adjust the size to cover the entire element */
+    /* background-blend-mode: overlay, color-burn, multiply, difference, difference, normal; */
+    background-size: cover; /*Adjust the size to cover the entire element */
+    background-position: center;
+    /* background-size: 100vh 100vw; Adjust the size to cover the entire element */
 }
-
 
 .gradient-02 {
     position: absolute;
