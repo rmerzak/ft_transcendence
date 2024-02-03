@@ -354,7 +354,7 @@ export class RoomService {
         });
         if (!chatRoomMember) throw new Error('User not in chat room');
         if (chatRoomOwner.chatRoom.owner !== user.id && chatRoomMember.is_admin) throw new Error('you are not allowed to update admin');
-        const a = await this.prisma.chatRoomMember.update({
+        return await this.prisma.chatRoomMember.update({
             where: { userId_chatRoomId: { userId: userToUpdate.id, chatRoomId: chatRoom.id } },
             data: {
                 is_admin: chatRoomMemData.is_admin,
@@ -363,8 +363,6 @@ export class RoomService {
                 mutedDuration: chatRoomMemData.mutedDuration,
             },
         });
-        console.log('a: ', a);
-        return a;
     }
 
 
@@ -448,8 +446,7 @@ export class RoomService {
             });
             return requestToJoinChatRoom;
         } catch (error) {
-            console.log(error);
-            return null;
+           throw new Error(error.message);
         }
     }
     // create request to join chat room

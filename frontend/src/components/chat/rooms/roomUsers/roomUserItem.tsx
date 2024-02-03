@@ -9,15 +9,57 @@ import { FaBan } from "react-icons/fa";
 import { FaCheck } from "react-icons/fa";
 import { MdOutlineCancel } from "react-icons/md";
 
+const secondsToTime = (seconds: number): string => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const remainingSeconds = seconds % 60;
+    return `${String(hours).padStart(2, '0') + 'h'}:${String(minutes).padStart(2, '0') + 'm'}:${String(remainingSeconds).padStart(2, '0') + 's'}`;
+};
+
+const timeToSeconds = (timeString: string): number => {
+
+    const [hours, minutes, seconds] = timeString.split(':').map(String);
+    if (hours === undefined || minutes === undefined || seconds === undefined)
+        return -1;
+    if (hours.length === 0 || minutes.length === 0 || seconds.length === 0)
+        return -1;
+    const hoursInt = parseInt(hours, 10);
+    const minutesInt = parseInt(minutes, 10);
+    const secondsInt = parseInt(seconds, 10);
+    if (isNaN(hoursInt) || isNaN(minutesInt) || isNaN(secondsInt) || hoursInt < 0 || minutesInt < 0 || secondsInt < 0 || minutesInt > 59 || secondsInt > 59) {
+        return -1;
+    }
+    return hoursInt * 3600 + minutesInt * 60 + secondsInt;
+};
+
 function RoomUserItem({ chatRoomMember, profileRoomStatus, chatRoom, chatRoomRole }: { chatRoomMember: ChatRoomMember, chatRoom: any, chatRoomRole: string, profileRoomStatus: any }) {
     const { chatSocket } = useContext(ContextGlobal);
     const [OpenSelect, setOpenSelect] = useState(false);
-    const [rangeValue, setRangeValue] = useState(0);
+    const [muteDuration, setMuteDuration] = useState(0);
+    const [error, setError] = useState('');
+
 
     const handleRangeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = parseInt(event.target.value, 10);
-        setRangeValue(value);
-        console.log(value);
+        setMuteDuration(value);
+    };
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        const seconds = timeToSeconds(value);
+        console.log(seconds);
+        if (seconds === -1)
+            return setError('Invalid time format');
+        if (seconds > 86400)
+            return setError('muted time must be less than 24 hours');
+        setError('');
+        setMuteDuration(seconds);
+    };
+
+    const handleConfirm = () => {
+        // console.log('hhhh', timeSelected);
+        chatSocket?.emit('mute-user', { roomId: chatRoom.id, userId: chatRoomMember.user.id, duration: muteDuration });
+        setOpenSelect(!OpenSelect);
+        // return chatSocket?.off('mute-user');
     };
     // hendle ban user
     const handleBan = () => {
@@ -76,24 +118,43 @@ function RoomUserItem({ chatRoomMember, profileRoomStatus, chatRoom, chatRoomRol
                         <button onClick={() => { handleBan() }} className="bg-[#A1A1A1] rounded-full px-2 py-1">
                             <FaBan />
                         </button>
-                        <button onClick={() => { setOpenSelect(!OpenSelect) }} className="bg-[#A1A1A1] rounded-full px-2 py-1">
+                        <button onClick={() => { setOpenSelect(!OpenSelect); }} className="bg-[#A1A1A1] rounded-full px-2 py-1">
                             <RiChatOffFill />
                         </button>
-                        {
-                            OpenSelect &&
+                        {OpenSelect && (
                             <div className='flex items-center space-x-1'>
-                                <input type="range"
-                                    value={rangeValue}
-                                    onChange={handleRangeChange}
-                                    min="0" max="100" className="range bg-white h-[15px]" />
-                                <button onClick={() => alert("")}>
+                                <div className='group relative flex justify-center items-center'>
+                                    <input
+                                        type="range"
+                                        value={muteDuration}
+                                        onChange={handleRangeChange}
+                                        min="0"
+                                        max="86400" // 1 day in seconds (24 hours * 60 minutes * 60 seconds)
+                                        step="1"
+                                        className="range bg-white h-[15px]"
+                                    />
+                                    <div
+                                        className={`absolute right-28 -top-20 rounded-md px-2 py-1  bg-indigo-100 text-indigo-800 text-sm invisible opacity-20 -translate-x-3 transition-all group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-10`}
+                                    >
+                                        {error && <span className='p-1 text-red-500'>{error}</span> ||
+                                            <p className='p-1'>{secondsToTime(muteDuration)}</p>
+                                        }
+                                        <input
+                                            type="text"
+                                            className="bg-indigo-100 focus:ring-0 text-indigo-800 text-sm rounded-lg"
+                                            placeholder='00:00:00'
+                                            onChange={(e) => handleInputChange(e)}
+                                        />
+                                    </div>
+                                </div>
+                                <button onClick={handleConfirm}>
                                     <FaCheck color='green' size={18} className='border rounded-full border-green-400' />
                                 </button>
                                 <button>
-                                    <MdOutlineCancel color='red' size={20} className='' onClick={() => setOpenSelect(!OpenSelect)} />
+                                    <MdOutlineCancel color='red' size={20} onClick={() => setOpenSelect(!OpenSelect)} />
                                 </button>
                             </div>
-                        }
+                        )}
                     </div>
 
                 )

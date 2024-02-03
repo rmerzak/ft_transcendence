@@ -85,22 +85,19 @@ const Channels: React.FC<Channel> = ({ header }) => {
             console.log(err);
           });
       });
-      chatSocket?.on('updated-room', (room: ChatRoom) => {
-        // console.log('updated-room', room);
-        if (room) {
-          getChatRoomsJoined().then((res) => {
-            // console.log('joined', res.data);
-            if (res.data) {
-              setChatRoomsJoined(res.data);
-            }
-          }).catch((err) => { console.log(err); });
-          getChatRoomsNotJoined().then((res) => {
-            // console.log('not joined', res.data);
-            if (res.data)
-              setChatRoomsToJoin(res.data);
-          }).catch((err) => { console.log(err) });
-        }
-      });
+      // chatSocket?.on('updated-room', (room: ChatRoom) => {
+      //   if (room) {
+      //     getChatRoomsJoined().then((res) => {
+      //       if (res.data) {
+      //         setChatRoomsJoined(res.data);
+      //       }
+      //     }).catch((err) => { console.log(err); });
+      //     getChatRoomsNotJoined().then((res) => {
+      //       if (res.data)
+      //         setChatRoomsToJoin(res.data);
+      //     }).catch((err) => { console.log(err) });
+      //   }
+      // });
       chatSocket?.on("update_chat_room_member", () => {
         getChatRoomsJoined().then((res) => {
           if (res.data) {
@@ -137,7 +134,8 @@ const Channels: React.FC<Channel> = ({ header }) => {
       chatSocket?.off("create-room");
       chatSocket?.off("ownedRoom");
       chatSocket?.off("error");
-      chatSocket?.off("updated-room");
+      chatSocket?.off("update_chat_room_member");
+      chatSocket?.off("deletedRoom");
     };
   }, [chatSocket]);
   return (

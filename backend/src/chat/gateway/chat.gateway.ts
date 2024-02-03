@@ -14,6 +14,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { ChatRoom, ChatRoomMember, Message, MessageStatus, Recent, RoomStatus, RoomVisibility } from '@prisma/client';
 import { RoomService } from '../services/room/room.service';
 import e from 'express';
+import { type } from 'os';
 
 @WebSocketGateway({
   cors: { origin: 'http://localhost:8080', credentials: true },
@@ -151,7 +152,7 @@ export class GatewayGateway
   async handleUpdateRoom(_client: Socket, payload: ChatRoom) {
     try {
       const room = await this.roomService.updateChatRoom(_client['user'].id, payload);
-      this.server.to('1_public').emit('updated-room', room);
+      this.server.to('1_public').emit('update_chat_room_member', room);
     } catch (error) {
       _client.emit('error', error.message);
     }
@@ -203,7 +204,7 @@ export class GatewayGateway
         userId: payload.userId,
         chatRoomId: payload.roomId,
         status: RoomStatus.MUTED,
-        mutedDuration: BigInt(payload.duration),
+        mutedDuration: (payload.duration * 1000).toString(),
         is_admin: roomMem.is_admin,
         joinedAt: roomMem.joinedAt,
         leftAt: roomMem.leftAt,
@@ -223,6 +224,7 @@ export class GatewayGateway
         this.server.to(roomMem.chatRoomId.toString()).emit('update_chat_room_member', updatedRoom);
       }
     } catch (error) {
+      // console.log("mute-user ", error);
       _client.emit('error', error.message);
     }
   }
@@ -349,7 +351,6 @@ export class GatewayGateway
             else {
               socket.emit('deletedRoom', payload.name);
             }
-            ///////
           });
         } else {
           if (room === null) {

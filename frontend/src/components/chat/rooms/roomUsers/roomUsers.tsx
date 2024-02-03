@@ -1,22 +1,23 @@
 'use client'
-import { use, useContext  } from "react"
+import { use, useContext } from "react"
 import { getChatRoomById, getChatRoomMemberByRoomId, getChatRoomMembers } from "@/api/chat/chat.api"
-import {  X } from "lucide-react"
+import { X } from "lucide-react"
 import { useEffect, useState } from "react"
 import OutsideClickHandler from "react-outside-click-handler"
 import RoomUserItem from "./roomUserItem"
 import { ContextGlobal } from "@/context/contex"
+import { ChatRoom } from "@/interfaces"
 
-function RoomUsers({ handleUserListClick, chatRoomId }: { handleUserListClick: any, chatRoomId: number | undefined}) {
+function RoomUsers({ handleUserListClick, chatRoomId }: { handleUserListClick: any, chatRoomId: number | undefined }) {
     const [users, setUsers] = useState<any>([])
     const [profileRoomStatus, setProfileRoomStatus] = useState<any>({})
-    const [chatRoom, setChatRoom] = useState<any>({})
+    const [chatRoom, setChatRoom] = useState<ChatRoom>({})
     const { chatSocket } = useContext(ContextGlobal)
     useEffect(() => {
-        if(chatRoomId) {
+        if (chatRoomId) {
             getChatRoomById(chatRoomId).then((res) => {
                 setChatRoom(res.data);
-            }).catch((err) => {});
+            }).catch((err) => { });
             getChatRoomMembers(chatRoomId).then((res) => {
                 setUsers(res.data)
                 console.log(res.data)
@@ -25,29 +26,48 @@ function RoomUsers({ handleUserListClick, chatRoomId }: { handleUserListClick: a
             });
             getChatRoomMemberByRoomId(chatRoomId).then((res) => {
                 console.log(res.data);
-                if(res.data)
-                    setProfileRoomStatus(res.data)
-            }).catch((err) => {
-                //throw err; must ask about the catch error what to do
-            });
-        }
-    },[chatRoom,chatSocket])
-    
-    useEffect(() => {
-        chatSocket?.on('update_chat_room_member', () => {
-            getChatRoomMembers(chatRoom.id).then((res) => {
-                setUsers(res.data)
-            }).catch((err) => {
-                console.log(err);
-            });
-            getChatRoomMemberByRoomId(chatRoom.id).then((res) => {
                 if (res.data)
                     setProfileRoomStatus(res.data)
             }).catch((err) => {
                 //throw err; must ask about the catch error what to do
             });
-        })
-    }, [chatSocket]);
+            chatSocket?.on('update_chat_room_member', () => {
+                if (chatRoomId !== undefined)
+                {
+                    getChatRoomMembers(chatRoomId).then((res) => {
+                        setUsers(res.data)
+                    }).catch((err) => {
+                        console.log(err);
+                    });
+                    getChatRoomMemberByRoomId(chatRoomId).then((res) => {
+                        if (res.data)
+                            setProfileRoomStatus(res.data)
+                    }).catch((err) => {
+                        console.log(err);
+                    });
+                }
+            })
+        }
+    }, [chatRoomId, chatSocket])
+
+    // useEffect(() => {
+    //     chatSocket?.on('update_chat_room_member', () => {
+    //         if (chatRoom.id !== undefined)
+    //         {
+    //             getChatRoomMembers(chatRoom.id).then((res) => {
+    //                 setUsers(res.data)
+    //             }).catch((err) => {
+    //                 console.log(err);
+    //             });
+    //             getChatRoomMemberByRoomId(chatRoom.id).then((res) => {
+    //                 if (res.data)
+    //                     setProfileRoomStatus(res.data)
+    //             }).catch((err) => {
+    //                 console.log(err);
+    //             });
+    //         }
+    //     })
+    // }, [chatSocket, chatRoom.id]);
     return (
         <>
             <div className="fixed top-0 left-0 w-screen h-screen bg-[#000000]/50 z-50 flex justify-center items-center font-inter">
@@ -61,7 +81,7 @@ function RoomUsers({ handleUserListClick, chatRoomId }: { handleUserListClick: a
                                 </button>
                             </div>
                             {
-                                users.map((user: any, index:number) => (
+                                users.map((user: any, index: number) => (
                                     <RoomUserItem key={index} chatRoom={chatRoom} profileRoomStatus={profileRoomStatus} chatRoomMember={user} chatRoomRole={user.user.id === chatRoom.owner ? "owner" : user.is_admin === true ? "admin" : "member"} />
                                 ))
                             }
