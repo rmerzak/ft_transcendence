@@ -13,7 +13,7 @@ interface roomHeaderProps {
     chatRoom?: ChatRoom;
 }
 
-const RoomHeader: React.FC<roomHeaderProps> = ({ chatRoom }) => {
+const RoomHeader: React.FC<roomHeaderProps> = ({ chatRoom}) => {
     const [isPopupVisible, setPopupVisible] = useState(false);
     const [openUserList, setOpenUserList] = useState(false);
     const [leave, setLeave] = useState(false);
