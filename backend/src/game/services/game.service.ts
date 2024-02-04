@@ -6,6 +6,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { Socket, Server } from 'socket.io';
 import { v4 as uuidv4 } from 'uuid';
 import { Subject } from 'rxjs';
+import { Achievements } from '../types/types';
 
 @Injectable()
 export class GameService {
@@ -431,5 +432,40 @@ export class GameService {
     });
   
     return updatedUsers;
+  }
+
+  // get Achievements
+  async getAchievements(playerId: number) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: playerId },
+      select: {
+        gameMatches: true,
+        gameWins: true,
+      },
+    });
+  
+    const achievements = [];
+    if (user.gameMatches >= 1) {
+      achievements.push(Achievements.FIRST_GAME);
+    }
+    if (user.gameWins >= 5) {
+      achievements.push(Achievements.WOOD);
+    }
+    if (user.gameWins >= 10) {
+      achievements.push(Achievements.BRONZE);
+    }
+    if (user.gameWins >= 20) {
+      achievements.push(Achievements.SILVER);
+    }
+    if (user.gameWins >= 30) {
+      achievements.push(Achievements.GOLD);
+    }
+    if (user.gameWins >= 40) {
+      achievements.push(Achievements.RUBY);
+    }
+    if (user.gameWins >= 50) {
+      achievements.push(Achievements.DIAMOND);
+    }
+    return achievements;
   }
 }

@@ -65,6 +65,16 @@ export class GameController {
     return { leaderboard };
   }
 
+  // api for get achievements
+  @Post('api/achievements')
+  async getAchievements(
+    @Body() id: PlayerDto,
+  ): Promise<{ achievements: string[] }> {
+    const { playerId } = id;
+    const achievements = await this.game.getAchievements(playerId);
+    return { achievements };
+  }
+
   // api for check if player playing
   @Sse('api/is-playing')
   sse(): Observable<string> {

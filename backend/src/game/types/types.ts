@@ -30,3 +30,14 @@ export type Leaderboard = {
     gameMatches: number;
     gameWins: number;
   };
+
+export enum Achievements {
+    FIRST_GAME = 'First Game',
+    WOOD = 'Wood',
+    BRONZE = 'Bronze',
+    SILVER = 'Silver',
+    GOLD = 'Gold',
+    RUBY = 'Ruby',
+    DIAMOND = 'Diamond',
+  }
+  

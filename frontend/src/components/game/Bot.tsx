@@ -7,8 +7,7 @@ import { botThemeAtom } from './atoms';
 import { useAtomValue } from 'jotai';
 import { useSetAtom } from 'jotai';
 
-function Bot()
-{
+function Bot() {
     // theme
     const theme = useAtomValue(botThemeAtom);
     const setTheme = useSetAtom(botThemeAtom);
@@ -18,7 +17,7 @@ function Bot()
 
     // canvas    
     const gameRef = useRef<HTMLCanvasElement>(null);
-    
+
     // route
     const router = useRouter();
 
@@ -53,7 +52,7 @@ function Bot()
         }
 
         // com paddle
-        const com:{
+        const com: {
             x: number;
             y: number;
             width: number;
@@ -77,7 +76,7 @@ function Bot()
             color: string;
             speed: number;
             velocityX: number;
-            velocityY: number;    
+            velocityY: number;
         } = {
             x: canvas.width / 2,
             y: canvas.height / 2,
@@ -98,16 +97,16 @@ function Bot()
             ["rgb(139, 69, 19)", "rgb(160, 82, 45)", "rgb(205, 133, 63)", "rgb(244, 164, 96)", "rgb(210, 105, 30)", "rgb(139, 69, 19)", "rgb(165, 42, 42)"],
             ["rgb(193, 63, 45)", "rgb(199, 74, 58)", "rgb(205, 85, 71)", "rgb(211, 96, 84)", "rgb(217, 107, 97)", "rgb(223, 118, 110)", "rgb(229, 129, 123)"],
             ["rgb(0, 0, 255)", "rgb(30, 144, 255)", "rgb(70, 130, 180)", "rgb(0, 191, 255)", "rgb(135, 206, 250)", "rgb(70, 130, 180)", "rgb(100, 149, 237)"]
-          ];
+        ];
 
-          function getRandomInt(min: number, max: number) {
+        function getRandomInt(min: number, max: number) {
             return Math.round(Math.random() * (max - min)) + min;
         }
-        
+
         function easeOutQuart(x: number) {
             return 1 - Math.pow(1 - x, 4);
         }
-        
+
         function drawBalls() {
             for (let i = 0; i < balls.length; i++) {
                 balls[i].update();
@@ -116,19 +115,19 @@ function Bot()
         }
 
         class Balls {
-            start: {x: number, y: number, size: number};
-            end: {x: number, y: number};
+            start: { x: number, y: number, size: number };
+            end: { x: number, y: number };
             x: number;
             y: number;
             size: number;
             style: string;
             time: number;
             ttl: number;
-            constructor(ball: {x: number, y: number}) {
+            constructor(ball: { x: number, y: number }) {
                 this.start = {
-                    x:  ball.x + getRandomInt(-15, 15),
-                    y:  ball.y + getRandomInt(-15, 15),
-                    size: getRandomInt(10,25)
+                    x: ball.x + getRandomInt(-15, 15),
+                    y: ball.y + getRandomInt(-15, 15),
+                    size: getRandomInt(10, 25)
                 }
                 this.end = {
                     x: this.start.x + getRandomInt(-200, 200),
@@ -174,7 +173,7 @@ function Bot()
         }
 
         // function to draw a circle
-        function drawCircle(x:number, y:number, r:number, color:string) {
+        function drawCircle(x: number, y: number, r: number, color: string) {
             if (!ctx) return;
             ctx.fillStyle = color;
             ctx.beginPath();
@@ -185,39 +184,39 @@ function Bot()
 
         // render the game
         function render() {
-        
-        if (!ctx || !canvas) return;
-        
-        // clear the rect
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (!ctx || !canvas) return;
+
+            // clear the rect
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 
-        // draw the side line
-        drawRect(0, 0, 10, canvas.height, colors[theme]);
-        drawRect(canvas.width - 10, 0, 10, canvas.height, colors[theme]);
+            // draw the side line
+            drawRect(0, 0, 10, canvas.height, colors[theme]);
+            drawRect(canvas.width - 10, 0, 10, canvas.height, colors[theme]);
 
-        // drae the top and bottom line
-        drawRect(0, 0, canvas.width, 10,  colors[theme]);
-        drawRect(0, canvas.height - 10, canvas.width, 10,  colors[theme]);
+            // drae the top and bottom line
+            drawRect(0, 0, canvas.width, 10, colors[theme]);
+            drawRect(0, canvas.height - 10, canvas.width, 10, colors[theme]);
 
-        // draw the user and com paddle
-        drawRect(user.x, user.y, user.width, user.height, user.color);
-        drawRect(com.x, com.y, com.width, com.height, com.color);
+            // draw the user and com paddle
+            drawRect(user.x, user.y, user.width, user.height, user.color);
+            drawRect(com.x, com.y, com.width, com.height, com.color);
 
-        // draw the ball
-        drawCircle(ball.x, ball.y, ball.radius, ball.color);
+            // draw the ball
+            drawCircle(ball.x, ball.y, ball.radius, ball.color);
 
-        // draw the effect
-        ctx.globalCompositeOperation = 'lighter';
-        drawBalls();
+            // draw the effect
+            ctx.globalCompositeOperation = 'lighter';
+            drawBalls();
 
-        let temp = [];
-        for (let i = 0; i < balls.length; i++) {
-            if (balls[i].time <= balls[i].ttl) {
-                temp.push(balls[i]);
+            let temp = [];
+            for (let i = 0; i < balls.length; i++) {
+                if (balls[i].time <= balls[i].ttl) {
+                    temp.push(balls[i]);
+                }
             }
-        }
-        balls = temp;
+            balls = temp;
 
         }
 
@@ -245,19 +244,19 @@ function Bot()
             const ballCenterY = b.y;
             const paddleCenterX = p.x + p.width / 2;
             const paddleCenterY = p.y + p.height / 2;
-        
+
             const deltaX = ballCenterX - Math.max(p.x, Math.min(ballCenterX, p.x + p.width));
             const deltaY = ballCenterY - Math.max(p.y, Math.min(ballCenterY, p.y + p.height));
-        
+
             return (deltaX ** 2 + deltaY ** 2) < (b.radius ** 2);
         }
 
         function resetBall() {
             if (!canvas) return;
-            
+
             ball.x = canvas.width / 2;
             ball.y = canvas.height / 2;
-            
+
             ball.speed = 10;
             if (ball.velocityX < 0) {
                 ball.velocityX = 5;
@@ -274,16 +273,16 @@ function Bot()
 
         // update function, include some logic
         function update() {
-            
+
             if (!canvas) return;
-            
+
             ball.x += ball.velocityX;
             ball.y += ball.velocityY;
-            
+
             for (let i = 0; i < 3; i++) {
                 balls.push(new Balls(ball));
             }
-            
+
             // simple AI to control the com paddle
             let computerLevel = 0.1;
             let targetY = ball.y - com.height / 2;
@@ -293,38 +292,38 @@ function Bot()
 
             // Ensure the com paddle stays within the canvas boundaries
             com.y = Math.max(0, Math.min(canvas.height - com.height, com.y));
-            
+
             const borderSize = 10; // Adjust the border size as needed
             if (
-            ball.y + ball.radius > canvas.height - borderSize ||
-            ball.y - ball.radius < borderSize
+                ball.y + ball.radius > canvas.height - borderSize ||
+                ball.y - ball.radius < borderSize
             ) {
                 ball.velocityY = - ball.velocityY;
             }
-            
+
             let player = (ball.x < canvas.width / 2) ? user : com;
-            
+
             if (collision(ball, player)) {
-            // where the ball hit the player
-            let collidePoint = ball.y - (player.y + player.height / 2);
-            
-            // normalization
-            collidePoint = collidePoint / (player.height / 2);
-            
-            // calculate angle in radian
-            let angleRad = collidePoint * Math.PI / 4;
-            
-            // X direction of the ball when it's hit
-            let direction = (ball.x < canvas.width / 2) ? 1 : -1;
-            
-            // change velocity X and Y
-            ball.velocityX = direction * ball.speed * Math.cos(angleRad);
-            ball.velocityY = ball.speed * Math.sin(angleRad);
-            
-            // every time the ball hit a paddle, we increase its speed
-            ball.speed += 0.5;
+                // where the ball hit the player
+                let collidePoint = ball.y - (player.y + player.height / 2);
+
+                // normalization
+                collidePoint = collidePoint / (player.height / 2);
+
+                // calculate angle in radian
+                let angleRad = collidePoint * Math.PI / 4;
+
+                // X direction of the ball when it's hit
+                let direction = (ball.x < canvas.width / 2) ? 1 : -1;
+
+                // change velocity X and Y
+                ball.velocityX = direction * ball.speed * Math.cos(angleRad);
+                ball.velocityY = ball.speed * Math.sin(angleRad);
+
+                // every time the ball hit a paddle, we increase its speed
+                ball.speed += 0.5;
             }
-            
+
             // update the score
             if (ball.x - ball.radius < 0) {
                 com.score++;
@@ -335,7 +334,7 @@ function Bot()
                 updateScores(user.score, com.score);
                 resetBall();
             }
-            if (user.score == 5000 || com.score == 5000) {
+            if (user.score == 5 || com.score == 5) {
                 clearInterval(intervalId);
                 Swal.fire({
                     title: 'Game Over',
@@ -352,10 +351,10 @@ function Bot()
                     router.push('/dashboard/game');
                 });
             }
-    }
+        }
         // game init
         function game() {
-            
+
             update();
             render();
         }
@@ -382,18 +381,18 @@ function Bot()
 
     const themes = ['b0', 'b1', 'b2', 'b3', 'b4', 'b5']
 
-return (
-    <>
-        <div className='flex justify-center items-center w-[80%] shadow-md'>
-            <canvas
-                ref={gameRef}
-                className={styles.game_canvas}
-                style={ { backgroundImage: `url(/game/${themes[theme]}.png)` } }
+    return (
+        <>
+            <div className='flex justify-center items-center w-[80%] shadow-md'>
+                <canvas
+                    ref={gameRef}
+                    className={styles.game_canvas}
+                    style={{ backgroundImage: `url(/game/${themes[theme]}.png)` }}
                 >
-            </canvas>
-        </div>
-    </>
-);
+                </canvas>
+            </div>
+        </>
+    );
 }
 
 export default Bot;
