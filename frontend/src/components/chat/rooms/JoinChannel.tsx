@@ -28,7 +28,7 @@ function JoinChannel({channel, setOpenChannel}:{channel:ChatRoom, setOpenChannel
         password: "",
       });
     } else {
-      //chatSocket?.emit("request-join-room", { roomId: channel.id, password: formData.password });
+      chatSocket?.emit("request-join-room", channel);
     }
       setValidationError(null);
     };

@@ -391,6 +391,9 @@ export class RoomService {
             console.log('isPasswordValid: ', isPasswordValid);
             if (!isPasswordValid) throw new Error('Invalid password');
         }
+        if (chatRoom.visibility === 'PRIVATE') {
+            throw new Error('Chat room is private');
+        }
         const chatRoomMember = await this.prisma.chatRoomMember.findUnique({
             where: { userId_chatRoomId: { userId: _client['user'].id, chatRoomId: chatRoom.id } },
         });

@@ -371,6 +371,7 @@ export class GatewayGateway
   async handleRequestJoinRoom(_client: Socket, payload: ChatRoom) {
     try {
      const request = await this.roomService.requestJoinRoom(_client, payload.name);
+     console.log("request-join-room ", request);
      this.roomService.connectedClients.forEach((sockets, userId) => {
         if (userId === payload.owner) {
           sockets.forEach(socket => {

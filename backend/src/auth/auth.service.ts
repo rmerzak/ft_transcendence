@@ -5,7 +5,7 @@ import * as argon from 'argon2'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from '@nestjs/config';
-import { Prisma } from '@prisma/client';
+import { Prisma, UserStatus } from '@prisma/client';
 import { v2 as cloudinary, UploadApiResponse, UploadApiErrorResponse } from "cloudinary";
 const streamifier = require('streamifier');
 @Injectable()
@@ -20,8 +20,10 @@ export class AuthService {
     async signup(dto: AuthDto): Promise<any> {
         try {
             let user = await this.prisma.user.findUnique({ where: { email: dto.email } });
-            if (user)
+            if (user){
+                await this.prisma.user.update({where:{id:user.id},data:{status:UserStatus.ONLINE}});
                 return user;
+            }
             user = await this.prisma.user.create({
                 data: {
                     id: dto.id,

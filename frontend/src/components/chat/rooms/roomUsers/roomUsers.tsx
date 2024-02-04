@@ -54,6 +54,10 @@ function RoomUsers({ handleUserListClick, chatRoomId }: { handleUserListClick: a
             chatSocket?.on('reject-join-room', () => {
                 updateComponent(chatRoomId);
             })
+            console.log("chatRoomId = ", chatRoomId)
+            console.log("chatSocket = ", chatSocket)
+            console.log("profileRoomStatus = ", profileRoomStatus)
+
         }
         return () => {
             chatSocket?.off('update_chat_room_member');
@@ -75,6 +79,16 @@ function RoomUsers({ handleUserListClick, chatRoomId }: { handleUserListClick: a
                             {
                                 users.map((user: any, index: number) => (
                                     <RoomUserItem key={index} chatRoom={chatRoom} profileRoomStatus={profileRoomStatus} chatRoomMember={user} chatRoomRole={user.user.id === chatRoom.owner ? "owner" : user.is_admin === true ? "admin" : "member"} />
+                                ))
+                            }
+                        </div>
+                        <div>
+                            <div className="flex justify-between items-center px-4 py-2">
+                                <h1 className="text-xl">Invited Members</h1>
+                            </div>
+                            {
+                                InvitedMembers.map((invited: ChatRoomInvitedMembers, index: number) => (
+                                    <RoomInvitedUserItem key={index} chatRoom={chatRoom} RoomInvitedMember={invited} />
                                 ))
                             }
                         </div>

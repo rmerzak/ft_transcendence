@@ -548,7 +548,7 @@ export class ChatController {
     checkIfNumber(id.toString(), 'Chat room id must be a number');
     return await this.roomService.getChatRoomMembers(Number(id));
   }
-  @Get('room/user/status/:id')
+  @Get('room/user/:id')
   async getChatRoomMemberByRoomId(@Req() req: Request, @Param('id') id: string): Promise<ChatRoomMember | null> {
     try {
       checkIfNumber(id.toString(), 'User id must be a number');

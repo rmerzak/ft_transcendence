@@ -39,7 +39,7 @@ function RoomUserItem({ chatRoomMember, profileRoomStatus, chatRoom, chatRoomRol
     const handleUnAdmin = () => {
         chatSocket?.emit('unadmin-user', { userId: chatRoomMember.user.id, roomId: chatRoom.id });
     }
-
+    console.log("profile = ",profileRoomStatus);
 
     return (
         <div className="flex items-center space-x-2">
