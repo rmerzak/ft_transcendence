@@ -349,7 +349,6 @@ export class GatewayGateway
             else {
               socket.emit('deletedRoom', payload.name);
             }
-            ///////
           });
         } else {
           if (room === null) {
@@ -372,8 +371,13 @@ export class GatewayGateway
   async handleRequestJoinRoom(_client: Socket, payload: ChatRoom) {
     try {
      const request = await this.roomService.requestJoinRoom(_client, payload.name);
-     console.log("request = ", request);
-     _client
+     this.roomService.connectedClients.forEach((sockets, userId) => {
+        if (userId === payload.owner) {
+          sockets.forEach(socket => {
+            socket.emit('request-join-room', request);
+          });
+        }
+     });
     } catch (error) {
       _client.emit('error', error.message);
     }
@@ -382,20 +386,41 @@ export class GatewayGateway
   async handleAcceptJoinRoom(_client: Socket, payload: { roomId: number, userId: number }) {
     try {
       const request = await this.roomService.acceptJoinRoom(_client, payload);
-      console.log("request = ", request);
+      const user = await this.prisma.user.findUnique({ where: { id: payload.userId } });
+      const msgData = {
+        chatRoomId: payload.roomId,
+        text: `${user.username} has joined the room`,
+        senderId: _client['user'].id,
+        type: MessageStatus.ANNOUCEMENT,
+      } as Message;
+      const msg = await this.chatService.addMessage(msgData, _client['user'].id);
+      this.roomService.connectedClients.forEach((sockets, userId) => {
+        sockets.forEach(socket => {
+          socket.emit('accept-join-room', request);
+        });
+      });
+      this.server.to(payload.roomId.toString()).emit('receive-message', msg);
+    } catch (error) {
+      console.log("accept-join-room ", error);
+      _client.emit('error', error.message);
+    }
+  }
+  @SubscribeMessage('reject-join-room')
+  async handleRejectJoinRoom(_client: Socket, payload: { roomId: number, userId: number }) {
+    try {
+      const request = await this.roomService.rejectJoinRoom(_client, payload);
+      const room = await this.prisma.chatRoom.findUnique({ where: { id: payload.roomId } });
+      this.roomService.connectedClients.forEach((sockets, userId) => {
+        if(userId === room.owner) {
+          sockets.forEach(socket => {
+            socket.emit('reject-join-room', request);
+          });
+        }
+      });
     } catch (error) {
       _client.emit('error', error.message);
     }
   }
-  // @SubscribeMessage('reject-join-room')
-  // async handleRejectJoinRoom(_client: Socket, payload: { roomId: number, userId: number }) {
-  //   try {
-  //     const request = await this.roomService.rejectJoinRoom(_client, payload);
-  //     console.log("request = ", request);
-  //   } catch (error) {
-  //     _client.emit('error', error.message);
-  //   }
-  // }
   handleDisconnect(_client: Socket) {
     console.log('disconnected chat id: ' + _client.id); // must fix this
   }

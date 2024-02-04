@@ -7,12 +7,12 @@ import { ContextGlobal } from "@/context/contex";
 import { useContext } from "react";
 
 function RoomInvitedUserItem({ RoomInvitedMember, chatRoom }: { RoomInvitedMember: ChatRoomInvitedMembers, chatRoom: any }) {
-    const { socket } = useContext(ContextGlobal);
+    const { chatSocket } = useContext(ContextGlobal);
     function HandleAcceptUser() {
-        console.log("accept user")
+        chatSocket?.emit('accept-join-room', { roomId: chatRoom.id, userId: RoomInvitedMember.sender.id })
     }
     function HandleRefuseUser() {
-        console.log("refuse user")
+        chatSocket?.emit('reject-join-room', { roomId: chatRoom.id, userId: RoomInvitedMember.sender.id })
     }
     return (
         <div className="flex items-center space-x-2">

@@ -7,12 +7,17 @@ export class UserService {
         
     }
 
-    async searchUser(username: string, name:string) {
+    async searchUser(targetUsername: string, currentUsername: string) {
+        const lowercasedTargetUsername = targetUsername.toLowerCase();
+    
         const users = await this.prismaService.user.findMany({
             where: {
+                NOT: {
+                    username: { equals: currentUsername }
+                },
                 OR: [
-                    { username: { equals: username } },
-                    { username: { contains: username } },
+                    { username: { equals: lowercasedTargetUsername } },
+                    { username: { contains: lowercasedTargetUsername } },
                 ],
             },
             select: {
@@ -20,8 +25,8 @@ export class UserService {
                 username: true,
             },
         });
-        const filteredUsers = users.filter(user => user.username !== name);
-        return filteredUsers;
+    
+        return users;
     }
     async getUserProfile(username: string, name: string) {
         const user = await this.prismaService.user.findUnique({

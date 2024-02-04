@@ -9,7 +9,7 @@ import { MdOutlineKey } from "react-icons/md";
 import { MdAddLink } from "react-icons/md";
 import { getChatRoomsJoined, getChatRoomsNotJoined } from "@/api/chat/chat.api";
 import OutsideClickHandler from "react-outside-click-handler";
-import { Search } from "lucide-react";
+import { Link, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import JoinChannel from "./JoinChannel";
@@ -30,6 +30,7 @@ const Channels: React.FC<Channel> = ({ header }) => {
   const [newChannel, setNewChannel] = useState<boolean>(false);
   const router = useRouter();
 
+  const [searched, setSearched] = useState<ChatRoom[]>([]);
   const [open, setOpen] = useState<boolean>(false);
   const [openChannel, setOpenChannel] = useState<ChatRoom | null>(null);
   const [isPrompetVisible, setIsPrompetVisible] = useState<boolean>(false);
@@ -150,9 +151,16 @@ const Channels: React.FC<Channel> = ({ header }) => {
             className="bg-gray-300 text-black border-none  rounded-l-xl focus:ring-0 h-10 md:w-[70%] focus:outline-none"
             placeholder="channel name"
           />
-          <button className="pr-1 bg-gray-300 text-black rounded-r-xl  md:w-1/7 focus:outline-none ">
+          <div className="pr-1 flex items-center justify-center bg-gray-300 text-black rounded-r-xl  md:w-1/7 focus:outline-none ">
             <Search size={24} strokeWidth={2.5} />
-          </button>
+          </div>
+          <div className="z-10 absolute bg-search rounded-b-lg">
+                    {open && searched.map((room :any, index :any)  => (
+                            <div>
+                              sss
+                            </div>
+                    ))}
+                </div>
         </div>
       </div>
 

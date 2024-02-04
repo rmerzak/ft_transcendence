@@ -19,6 +19,7 @@ import { isAlpha } from 'class-validator';
 import { Request } from 'express';
 import { JwtGuard } from 'src/auth/guard';
 import { ChatRoomUsers } from './interfaces/interfaces';
+import { get } from 'http';
 
 @Controller('chat')
 @UseGuards(JwtGuard)
@@ -570,6 +571,20 @@ export class ChatController {
       checkIfNumber(id.toString(), 'Chat room id must be a number');
       const user = req.user as User;
       return await this.roomService.getChatRoomInvitedUsers(user.id, Number(id));
+    } catch (error) {
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: error.message,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+  @Get('/room/search/:name')
+  async getChatRoomsByName(@Req() req: Request, @Param('name') name: string): Promise<ChatRoom[] | null> {
+    try {
+      return this.roomService.getChatRoomsByName(name);
     } catch (error) {
       throw new HttpException(
         {

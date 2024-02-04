@@ -551,7 +551,10 @@ export class RoomService {
         // if(room.owner !== id) throw new Error('You are not the owner of this chat room');
         // if (room.visibility !== 'PRIVATE') throw new Error('Chat room is not private');
         const invitedUsers = await this.prisma.roomReqJoin.findMany({
-            where: { chatRoomId: roomId },
+            where: { 
+                chatRoomId: roomId,
+                status: 'PENDING'
+            },
             select: {
                 createdAt: true,
                 chatRoomId: true,
@@ -570,7 +573,7 @@ export class RoomService {
       }
       async requestJoinRoom(_client: Socket, name: string): Promise<RoomReqJoin | null> {
         const chatRoom = await this.prisma.chatRoom.findUnique({where: { name: name }});
-        
+        console.log('chatRoom: ', chatRoom);
         if (!chatRoom) throw new Error('Chat room not found');
         
         if (chatRoom.visibility !== 'PRIVATE') throw new Error('Chat room is not private');
@@ -617,6 +620,7 @@ export class RoomService {
       }
       async rejectJoinRoom(_client: Socket, payload: { roomId: number, userId: number }): Promise<RoomReqJoin | null> {
         const chatRoom = await this.prisma.chatRoom.findUnique({where: { id: payload.roomId }});
+        
         if (!chatRoom) throw new Error('Chat room not found');
         if (chatRoom.visibility !== 'PRIVATE') throw new Error('Chat room is not private');
         if (chatRoom.owner !== _client['user'].id) throw new Error('You are not the owner of this chat room');
@@ -629,6 +633,15 @@ export class RoomService {
         if (requestToJoinChatRoom.status !== 'PENDING') throw new Error('Request to join chat room already accepted or rejected');
         return await this.prisma.roomReqJoin.delete({
             where: { senderId_chatRoomId: { senderId: user.id, chatRoomId: chatRoom.id } }
+        });
+      }
+      async getChatRoomsByName(name: string): Promise<ChatRoom[]> {
+        return await this.prisma.chatRoom.findMany({
+            where: {
+                name: {
+                    contains: name,
+                },
+            },
         });
       }
 }
