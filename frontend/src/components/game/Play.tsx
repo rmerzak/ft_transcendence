@@ -2,26 +2,17 @@
 import Image from 'next/image'
 import Link from 'next/link';
 import React, { useContext, useEffect, useState } from 'react';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { EffectCoverflow, Pagination } from 'swiper/modules';
 import { useRouter } from 'next/navigation';
-import { themeAtom } from './theme';
-import { botThemeAtom } from './theme';
+import { themeAtom } from './atoms';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { ContextGlobal } from '@/context/contex';
-import 'swiper/css';
-import 'swiper/css/effect-coverflow';
-import 'swiper/css/pagination';
-import './styles.css';
 import { toast } from 'react-toastify';
-
-
-const img : string[] = ['t0', 't1', 't2', 't3', 't4', 't5'];
+import GameSwiper from './GameSwiper';
 
 function Play()
 {
     const { profile }: any = useContext(ContextGlobal);
-    const [isPlaying, setIsPlaying] = useState(false);
+    const [ isPlaying, setIsPlaying ] = useState(false);
 
     const router = useRouter();
     const createRoom = async () => {
@@ -41,7 +32,6 @@ function Play()
     }
     
     const setTheme = useSetAtom(themeAtom);
-    const setBotTheme = useSetAtom(botThemeAtom);
     const theme = useAtomValue(themeAtom);
     useEffect(() => {
         const eventSource = new EventSource(`${process.env.API_BASE_URL}/api/is-playing`, {
@@ -119,42 +109,11 @@ function Play()
                     </div>
                 {/* </div> */}
 
-                <div  className='w-3/4 bg-gradient-to-r from-slate-500/40 to-yellow-100/30 rounded-3xl shadow-2xl flex flex-col min-[2560px]:justify-around min-[2560px]:h-[596px]  items-center pb-6 bg-red-500'>
+                <div  className='w-3/4 bg-gradient-to-r from-slate-500/40 to-yellow-100/30 rounded-3xl shadow-2xl flex flex-col min-[2560px]:justify-around min-[2560px]:h-[596px]  items-center pb-6'>
                     <h1 className='inline-block font-sans text-sm sm:text-xl p-4 border-b-[1px] text-[#ffffff]/80'>
                         Maps
                     </h1>
-
-                    <Swiper
-                        onSlideChange={ (swiper) => { setTheme(swiper.realIndex); setBotTheme(swiper.realIndex) } }
-                        effect={'coverflow'}
-                        grabCursor={true}
-                        centeredSlides={true}
-                        slidesPerView={'auto'}
-                        coverflowEffect={{
-                            rotate: 50,
-                            stretch: 0,
-                            depth: 100,
-                            modifier: 1,
-                            slideShadows: true,
-                        }}
-                        pagination={false}
-                        modules={[EffectCoverflow, Pagination]}
-                        className="mySwiper"
-                        initialSlide={1}
-                    >
-                        {img.map((item, index) => (
-                            <SwiperSlide key={index}>
-                                <Image
-                                    src={`/game/${item}.png`}
-                                    alt={item}
-                                    width={300}
-                                    height={300}
-                                    priority={true}
-                                    draggable={false}
-                                />
-                            </SwiperSlide>
-                        ))}
-                    </Swiper>
+                    <GameSwiper />
                 </div>
             </div>
         </>

@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import Popup from "./popup";
-import { useContext, useEffect, useState, KeyboardEvent } from "react";
+import { useContext, useEffect, useState, KeyboardEvent, useRef } from "react";
 import { ContextGlobal } from "@/context/contex";
 import { ChatRoom } from "@/interfaces";
 import { IoIosExit } from "react-icons/io";
@@ -14,6 +14,9 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import JoinChannel from "./JoinChannel";
 import { Plus } from "lucide-react";
+import axios from "axios";
+import { useDebouncedCallback } from 'use-debounce';
+import ChannelItem from "./ChannelItem";
 
 interface Channel {
   header: string;
@@ -29,19 +32,33 @@ const Channels: React.FC<Channel> = ({ header }) => {
   } = useContext(ContextGlobal);
   const [newChannel, setNewChannel] = useState<boolean>(false);
   const router = useRouter();
-
-  const [searched, setSearched] = useState<ChatRoom[]>([]);
+  const handleBlur = (e:any) => {
+    if (inputRef.current && !inputRef.current.contains(e.relatedTarget)) {
+            setSearch('');
+    }
+};
+  const [searched, setSearched] = useState<any>([]);
   const [open, setOpen] = useState<boolean>(false);
   const [openChannel, setOpenChannel] = useState<ChatRoom | null>(null);
   const [isPrompetVisible, setIsPrompetVisible] = useState<boolean>(false);
   const [invalue, setinValue] = useState<string>("");
   const [selectedChannel, setSelectedChannel] = useState<ChatRoom | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const suggestedRef =useRef<HTMLDivElement | null>(null);
+  const [search, setSearch] = useState<string>('');
+  async function searchProfile(search: string) {
+    const response = await axios.get(`http://localhost:3000/chat/room/search/${search}`, { withCredentials: true }).then((res) => { setSearched(res.data); console.log(res.data); });
+    console.log("searched", searched);
+  }
+  const debouncedSearchBackend = useDebouncedCallback(searchProfile, 500);
 
   const handleClick = (ChatRoom: ChatRoom) => {
-    console.log("User entered:");
     setOpen(true);
     setOpenChannel(ChatRoom);
   };
+  function HandleOpen() {
+    setOpen(!open);
+  }
 
   const handleKeyDown = (e: KeyboardEvent) => {
     if (e.key === "Enter") {
@@ -64,6 +81,20 @@ const Channels: React.FC<Channel> = ({ header }) => {
   function handleNewChannel() {
     setNewChannel(!newChannel);
   }
+
+  useEffect(() => {
+    const handleMouseDown: (e: MouseEvent) => void = (e: MouseEvent) => {
+      if (suggestedRef.current && !suggestedRef.current.contains(e.target as Node)) {
+        setOpen(false);
+        setSearched([]);
+        setSearch('');
+      }
+    }
+
+    document.addEventListener("mousedown", handleMouseDown);
+
+    return () =>  document.removeEventListener("mousedown", handleMouseDown); }  
+    ,[]);
 
   useEffect(() => {
     if (chatSocket) {
@@ -134,34 +165,41 @@ const Channels: React.FC<Channel> = ({ header }) => {
         }
       });
     }
+    if (search) {
+      console.log("search", search);
+      debouncedSearchBackend(search);
+    }
     return () => {
       chatSocket?.off("create-room");
       chatSocket?.off("ownedRoom");
       chatSocket?.off("error");
       chatSocket?.off("updated-room");
     };
-  }, [chatSocket]);
+  }, [chatSocket,search]);
+
   return (
     <>
-      <div className=" my-3 mx-auto w-[90%]">
+      <div className=" relative flex flex-col items-center justify-center my-3 mx-auto w-[90%] ">
         <div className="flex justify-center">
           <input
             id="channelName"
             type="text"
             className="bg-gray-300 text-black border-none  rounded-l-xl focus:ring-0 h-10 md:w-[70%] focus:outline-none"
             placeholder="channel name"
+            onAuxClickCapture={() =>{setOpen(false),setSearched(null),setSearch('')}} onBlur={handleBlur} onMouseDown={() => { setOpen(true); }}
+            ref={(input) => { inputRef.current = input; }} onChange={(e) => {setSearch(e.target.value);setOpen(true);}}
           />
           <div className="pr-1 flex items-center justify-center bg-gray-300 text-black rounded-r-xl  md:w-1/7 focus:outline-none ">
             <Search size={24} strokeWidth={2.5} />
           </div>
-          <div className="z-10 absolute bg-search rounded-b-lg">
-                    {open && searched.map((room :any, index :any)  => (
-                            <div>
-                              sss
-                            </div>
-                    ))}
-                </div>
         </div>
+          <div ref={suggestedRef} className="right-[65px] z-10 top-[40px] border-cyan-900 absolute bg-search rounded-b-lg border ">
+            {open && searched.map((room: ChatRoom, index: any) => (
+              <div key={index}>
+                <ChannelItem channel={room} HandleOpen={HandleOpen} />
+              </div>
+            ))}
+          </div>
       </div>
 
       <div className="flex flex-col rounded-md md:w-[90%] w-[90%] mx-auto h-[69%] ">
@@ -184,11 +222,6 @@ const Channels: React.FC<Channel> = ({ header }) => {
                   <p>#{channel.name}</p>
                 </div>
                 <div className="flex items-center">
-                  {/* <Mail
-                    size={24}
-                    strokeWidth={2.5}
-                    onClick={() => handleJoinRoom(Number(channel.id))}
-                  /> */}
                   <IoIosExit
                     size={28}
                     strokeWidth={2.5}

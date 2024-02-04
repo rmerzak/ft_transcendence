@@ -10,6 +10,7 @@ import { getUserInfo } from '@/api/user/user';
 import Profile from '@/app/dashboard/profile/page';
 import { get } from 'http';
 import { getChatRoomsJoined, getChatRoomsNotJoined } from '@/api/chat/chat.api';
+import ChallengeAlert from '@/components/game/ChallengeAlert';
 
 interface contextProps {
   profile: User | null;
@@ -120,7 +121,10 @@ export const ContextProvider = ({ children }: { children: any }) => {
     setGameSocket,
   };
 
-  return <ContextGlobal.Provider value={providerValue} > {children} </ContextGlobal.Provider>;
+  return <ContextGlobal.Provider value={providerValue} >
+    {/* <ChallengeAlert /> */}
+  {children}
+  </ContextGlobal.Provider>;
 };
 
 // export const ContextGlobal = createContext({

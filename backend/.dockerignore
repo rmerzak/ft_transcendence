@@ -1,0 +1,4 @@
+dest
+data
+prisma/migrations
+node_modules

@@ -34,7 +34,7 @@ export class FriendshipGateway {
     try {
       const emitClient = this.friendship.getSocketsByUser(Number(payload));
       const request = await this.friendship.CreateFriendRequest(socket, Number(payload));
-      const notification = await this.friendship.CreateNotification(socket, Number(payload), 'friendRequest', 'you have a friend request', request,'FRIENDSHIP');
+      const notification = await this.friendship.CreateNotification(socket, Number(payload), 'friendRequest', 'You have a friend request', request,'FRIENDSHIP');
       emitClient.forEach((socket) => {
         socket.emit('friendRequest', { notification: notification, friendship: request, status: true, error: null });
       });
@@ -111,15 +111,14 @@ export class FriendshipGateway {
       socket.emit('RequestError', { notification: null, friendship: null, status: false, error: error.message });
     }
   }
+
   @SubscribeMessage('challengeGame')
-  async challengeGame(socket: Socket, payload: number) {
-    console.log("challengeGame", payload)
+  async challengeGame(socket: Socket, payload: {playerId: number, gameId: string}) {
     try {
-      const emitClient = this.friendship.getSocketsByUser(Number(payload));
+      const emitClient = this.friendship.getSocketsByUser(payload.playerId);
       // you must creaet a room or a game logic here
       // const rooom = await this.friendship.CreateRoom(socket, Number(payload));
-      const gameNotification = await this.friendship.CreateNotification(socket, Number(payload), 'challengeGame', '343123455-5613232-654313-654321312', null,'GAME');
-      console.log("gameNotification", gameNotification)
+      const gameNotification = await this.friendship.CreateNotification(socket, payload.playerId, 'challengeGame', payload.gameId , null,'GAME');
       emitClient.forEach((socket) => {
         socket.emit('challengeGame', { notification: gameNotification , friendship: null, status: true, error: null });
       });
@@ -127,31 +126,10 @@ export class FriendshipGateway {
       socket.emit('RequestError', { notification: null, friendship: null, status: false, error: error.message });
     }
   }
-  // @SubscribeMessage('accept-join-room')
-  // async handleAcceptJoinRoom(socket: Socket, payload: { roomId: number, userId: number }) {
-  //   try {
-  //     const emitClient = this.friendship.getSocketsByUser(Number(payload.userId));
-  //     const request = await this.roomService.acceptJoinRoom(socket, payload);
-  //     const notification = await this.friendship.CreateNotification(socket, Number(payload.userId), 'accept-join-room', 'your request to join the room has been accepted', null,'CHAT');
-  //     emitClient.forEach((socket) => {
-  //       socket.emit('accept-join-room', { notification: notification, friendship: null, status: true, error: null });
-  //     });
-  //   } catch (error) {
-  //     socket.emit('error', error.message);
-  //   }
-  // }
-  // @SubscribeMessage('reject-join-room')
-  // async handleRejectJoinRoom(socket: Socket, payload: { roomId: number, userId: number }) {
-  //   try {
-  //     const emitClient = this.friendship.getSocketsByUser(Number(payload.userId));
-  //     const request = await this.roomService.rejectJoinRoom(socket, payload);
-  //     emitClient.forEach((socket) => {
-  //       socket.emit('accept-join-room', { notification: null, friendship: null, status: true, error: null });
-  //     });
-  //     socket.emit('accept-join-room', { notification: null, friendship: null, status: true, error: null });
 
-  //   } catch (error) {
-  //     socket.emit('error', error.message);
-  //   }
-  // }
+  @SubscribeMessage('refuseChallenge')
+  refuse(socket: Socket, payload: string) {
+    const game = this.server.of('/game').to(payload);
+    game.emit('refuseChallenge');
+  }
 }

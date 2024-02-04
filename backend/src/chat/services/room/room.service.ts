@@ -644,6 +644,15 @@ export class RoomService {
             },
         });
       }
+      async getChatRoomMembershipStatus(userId: number, chatRoomId: number): Promise<ChatRoomMember | null> {
+      
+        const membersip =  await this.prisma.chatRoomMember.findUnique({
+            where: { userId_chatRoomId: { userId, chatRoomId } },
+        });
+        if (!membersip) return null;
+        return membersip;
+      
+    }
 }
 
 // fuctions helpers

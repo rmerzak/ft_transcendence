@@ -78,16 +78,6 @@ function RoomUsers({ handleUserListClick, chatRoomId }: { handleUserListClick: a
                                 ))
                             }
                         </div>
-                        <div>
-                            <div className="flex justify-between items-center px-4 py-2">
-                                <h1 className="text-xl">Invited Members</h1>
-                            </div>
-                            {
-                                InvitedMembers.map((invited: ChatRoomInvitedMembers, index: number) => (
-                                    <RoomInvitedUserItem key={index} chatRoom={chatRoom} RoomInvitedMember={invited} />
-                                ))
-                            }
-                        </div>
                     </div>
                 </OutsideClickHandler>
             </div>

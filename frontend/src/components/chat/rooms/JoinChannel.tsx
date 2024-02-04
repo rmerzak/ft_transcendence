@@ -16,17 +16,20 @@ function JoinChannel({channel, setOpenChannel}:{channel:ChatRoom, setOpenChannel
   
     const handleNewMember = (e:any) => {
       e.preventDefault();
+      if (channel.visibility !== RoomVisibility.PRIVATE) {
       const { password } = formData;
       const channelData = {
         name: channel.name,
         passwordHash: password,
       };
-    console.log("Channel Data:", channelData);
     chatSocket?.emit("new-member", channelData);
     setFormData({
         name: "",
         password: "",
       });
+    } else {
+      //chatSocket?.emit("request-join-room", { roomId: channel.id, password: formData.password });
+    }
       setValidationError(null);
     };
   

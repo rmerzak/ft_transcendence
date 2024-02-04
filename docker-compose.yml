@@ -1,58 +1,60 @@
-version: '3'
+version: '3.8'
 services:
-  api:
-    build:
-      context: .
-      dockerfile: ./backend/Dockerfile
+
+  backend:
+    build: ./backend/
+    container_name: nest_backend
     ports:
       - "3000:3000"
     volumes:
-      - ./backend:/backend
-      - ./upload/:/upload
+      - ./backend:/usr/src/app
+    env_file:
+      - ./backend/.env
     networks:
-      - webapp
-      - database
+      - ft_transcendence
     restart: always
-    container_name: backend
-  webapp:
-    build:
-      context: .
-      dockerfile: ./frontend/Dockerfile
-    ports:
-      - "3030:3030"
-    volumes:
-      - ./frontend:/frontend
-    networks:
-      - webapp
-    restart: always
-    container_name: frontend
-  db:
+    depends_on:
+      - db-postgres
+    entrypoint: sh -c "
+                      if [ ! -d /app/prisma/migrations ]; 
+                          then npx prisma migrate dev --name init --preview-feature;
+                      fi; npm run start:dev;"
+
+  db-postgres:
     image: postgres
+    container_name: db-postgres
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: database
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123
+      - POSTGRES_DB=nest
+    # env_file:
+    #   - ./backend/.env
     ports:
-      - "31415:5432"
+      - 5432:5432
+    networks:
+      - ft_transcendence
     volumes:
-      - ./database-data:/var/lib/postgresql/data
-    networks:
-      - database
+      - pgdata:/var/lib/postgresql/data
     restart: always
-    container_name: db_app
-  pgadmin:
-    image: dpage/pgadmin4
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: root
+
+  frontend:
+    build: ./frontend/
+    container_name: next_frontend
     ports:
-      - "5050:80"
+      - "8080:8080"
+    volumes:
+      - ./frontend:/usr/src/app
+    env_file:
+      - ./frontend/.env
     networks:
-      - database
+      - ft_transcendence
     restart: always
-    container_name: pgadmin
+    depends_on:
+      - backend
+
 networks:
-  webapp:
+  ft_transcendence:
     driver: bridge
-  database:
-    driver: bridge
+
+volumes:
+  pgdata:

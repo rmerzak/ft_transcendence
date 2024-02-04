@@ -12,9 +12,9 @@ export const getChatRoomMessages = async (id: number) => apiInstance.get(`/chat/
 export const addMessage = async (messageData: Messages) => apiInstance.post(`/chat/user`, messageData);
 export const updateMessage = async (messageData: any) => apiInstance.put(`/chat`, messageData);
 export const deleteMessage = async (id: number) => apiInstance.delete(`/chat?id=${id}`);
-// recent messages
 export const getRecentMessages = async () => apiInstance.get(`/chat/recent`);
 export const addRecentMessage = async (messageData: Recent) => apiInstance.post(`/chat/recent`, messageData);
 export const deleteRecentMessage = async (roomId: number) => apiInstance.delete(`/chat/recent?roomId=${roomId}`);
 export const getChatRoomMemberByRoomId = async (roomId: number) => apiInstance.get(`/chat/room/user/${roomId}`);
 export const getChatRoomInvitedMembers = async (roomId: number) => apiInstance.get(`/chat/room/invited/${roomId}`);
+export const getChatRoomMembershipStatus = async (roomId: number | undefined) => apiInstance.get(`/chat/room/membership/${roomId}`);
