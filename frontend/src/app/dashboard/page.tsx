@@ -19,7 +19,17 @@ type LesderboardEntry = {
 const Dashboard = () => {
 
   const { profile }: any = useContext(ContextGlobal);
-  const [leaderboardData, setLeaderboardData] = useState<LesderboardEntry[]>([]);
+  const [leaderboardData, setLeaderboardData] = useState<LesderboardEntry[]>([
+    {
+      gameElo: 0,
+      gameMatches: 0,
+      gameRank: 0,
+      gameWins: 0,
+      id: 0,
+      image: '/avatar.jpeg',
+      username: 'username',
+    },
+  ]);
   const [rank, setRank] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -36,22 +46,22 @@ const Dashboard = () => {
       });
       const data = await res.json();
       setLeaderboardData(data.leaderboard);
-      data.leaderboard.forEach((entry: LesderboardEntry) => {
-        if (entry.id === profile.id) {
-          setRank(entry.gameRank);
-        }
-      });
     } catch {}
     finally {
       setLoading(false);
     }
   }
-
+  
   useEffect(() => {
     if (profile.id !== -1) {
       fetchLeaderboardData();
+      leaderboardData.forEach((entry: LesderboardEntry) => {
+        if (entry.id === profile.id) {
+          setRank(entry.gameRank);
+        }
+      });
     }
-  }, [profile.id]);
+  }, [profile.id, leaderboardData.length]);
 
   return (
     <div className="bg-profile h-screen m-4 py-4 pl-4 md:pr-0 pr-2 backdrop-blur-md">
@@ -83,7 +93,13 @@ const Dashboard = () => {
         ))}
         </div>
         </div>
-        {/* <RankEntre rank={rank} avatarSrcWinner={!loading ? leaderboardData[0].image : ''} avatarSrcSecond={!loading ? leaderboardData[1].image : ''} avatarSrcThird='/rabi.png' bestRank={1}/> */}
+        <RankEntre
+          rank={rank}
+          avatarSrcWinner={leaderboardData.length > 0 ? leaderboardData[0].image : '/avatar.jpeg'}
+          avatarSrcSecond={leaderboardData.length > 1 ? leaderboardData[1].image : '/avatar.jpeg'}
+          avatarSrcThird={leaderboardData.length > 2 ? leaderboardData[2].image : '/avatar.jpeg'}
+          bestRank={1}
+        />
      </div>
     </div>
   )

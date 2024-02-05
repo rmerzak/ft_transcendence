@@ -1,6 +1,6 @@
 import Swal from "sweetalert2"
 
-const Loading = ({isLoading}: {isLoading: boolean}) => {
+const Loading = ({ isLoading }: {isLoading: boolean}) => {
   if (isLoading) {
     Swal.fire({
       didOpen: () => {

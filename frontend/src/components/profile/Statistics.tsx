@@ -1,4 +1,47 @@
+import { ContextGlobal } from '@/context/contex';
+import React, { useContext, useEffect, useState } from 'react'
+
+type StatisticsEntry = {
+    gameElo: number;
+    gameWins: number;
+    gameLoses: number;
+    gameMatches: number;
+    gameRank: number;
+}
+
 const Statistics = () => {
+
+    const { profile }: any = useContext(ContextGlobal);
+    const [statistics, setStatistics] = useState<StatisticsEntry>({
+        gameElo: 0,
+        gameWins: 0,
+        gameLoses: 0,
+        gameMatches: 0,
+        gameRank: 0,
+    });
+
+    const fetchStatistics = async () => {
+        // fetch statistics
+        try {
+            const req = await fetch(`${process.env.API_BASE_URL}/api/statistics`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({ playerId: profile.id }),
+            });
+            const data = await req.json();
+            setStatistics(data.statistics);
+        } catch {}
+    }
+
+    useEffect(() => {
+        if (profile.id !== -1) {
+            fetchStatistics();
+        }
+    }, [profile.id]);
+
     return (
         <>
             <div className="text-gray-400 text-[19px] font-thin w-full flex items-center justify-center pt-5">
@@ -7,27 +50,23 @@ const Statistics = () => {
             <div className="text-[18px] px-4">
                 <div className="flex w-full items-center justify-between">
                     <div className="text-white font-thin">Matches</div>
-                    <div className="text-white text-opacity-50">1000</div>
+                    <div className="text-white text-opacity-50">{statistics.gameMatches}</div>
                 </div>
                 <div className="flex w-full items-center justify-between">
                     <div className="text-white font-thin">Wins</div>
-                    <div className="text-white text-opacity-50">500</div>
+                    <div className="text-white text-opacity-50">{statistics.gameWins}</div>
                 </div>
                 <div className="flex w-full items-center justify-between">
                     <div className="text-white font-thin">Loses</div>
-                    <div className="text-white text-opacity-50">400</div>
+                    <div className="text-white text-opacity-50">{statistics.gameLoses}</div>
                 </div>
                 <div className="flex w-full items-center justify-between">
-                    <div className="text-white font-thin">Draws</div>
-                    <div className="text-white text-opacity-50">100</div>
-                </div>
-                <div className="flex w-full items-center justify-between">
-                    <div className="text-white font-thin">Ratio</div>
-                    <div className="text-white text-opacity-50">60%</div>
+                    <div className="text-white font-thin">Score</div>
+                    <div className="text-white text-opacity-50">{statistics.gameElo}</div>
                 </div>
                 <div className="flex w-full items-center justify-between">
                     <div className="text-white font-thin">Rank</div>
-                    <div className="text-white text-opacity-50">#70</div>
+                    <div className="text-white text-opacity-50">#{statistics.gameRank}</div>
                 </div>
             </div>
         </>
