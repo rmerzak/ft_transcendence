@@ -102,7 +102,7 @@ const MatchHistory = ({ data, head }: { data: MatchHistoryItemInterface[]; head:
                 </div>
                 <div className="flex justify-center text-gray-300 mb-4">
                 <button onClick={redirectToAnotherPage} className="bg-achievements2 w-[26%] py-1 border">
-                    game</button>
+                    play</button>
                 </div>
                 </>
             );
