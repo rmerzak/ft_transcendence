@@ -317,6 +317,7 @@ export class RoomService {
 
     // update user chatroom
     async updatechatRoomMember(fromUserI: number, chatRoomMemData: ChatRoomMember): Promise<ChatRoomMember | null> {
+        // console.log('chatRoomMemData: update update', chatRoomMemData);
         const user = await this.prisma.user.findUnique({
             where: { id: fromUserI },
         });
@@ -360,6 +361,7 @@ export class RoomService {
                 leftAt: chatRoomMemData.leftAt,
                 status: chatRoomMemData.status,
                 mutedDuration: chatRoomMemData.mutedDuration,
+                mutedDate: chatRoomMemData.mutedDate,
             },
         });
     }
@@ -367,9 +369,37 @@ export class RoomService {
 
     // remove user from chat room
     async deletechatRoomMember(
+        operatorId: number,
         userId: number,
         chatRoomId: number,
     ): Promise<ChatRoomMember | null> {
+        const user = await this.prisma.user.findUnique({
+            where: { id: operatorId },
+        });
+        if (!user) throw new Error('User not found');
+        const chatRoom = await this.prisma.chatRoom.findUnique({
+            where: { id: chatRoomId },
+        });
+        if (!chatRoom) throw new Error('Chat room not found');
+        const chatRoomOwner = await this.prisma.chatRoomMember.findUnique({
+            where: {
+                userId_chatRoomId: { userId: user.id, chatRoomId: chatRoom.id },
+            },
+            select: {
+                is_admin: true,
+                chatRoomId: true,
+                userId: true,
+                chatRoom: {
+                    select: {
+                        owner: true,
+                    },
+                },
+            },
+        });
+        if (!chatRoomOwner) throw new Error('User not in chat room');
+        if (chatRoomOwner.chatRoom.owner !== user.id ) throw new Error('User not allowed to remove chat room member');
+        const userToRemove = await this.prisma.user.findUnique({ where: { id: userId} });
+        if (!userToRemove) throw new Error('User not found');
         return await this.prisma.chatRoomMember.delete({
             where: { userId_chatRoomId: { userId, chatRoomId } },
         });
@@ -410,7 +440,7 @@ export class RoomService {
         const chatRoomMember = await this.prisma.chatRoomMember.findUnique({
             where: { userId_chatRoomId: { userId: user.id, chatRoomId: chatRoom.id } },
         });
-        if (!chatRoomMember) throw new Error('User not in chat room');
+        // if (!chatRoomMember) throw new Error('User not in chat room');
         // console.log('chatRoomMember: ', chatRoomMember)
         return chatRoomMember;
     }

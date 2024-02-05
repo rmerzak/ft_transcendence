@@ -177,6 +177,7 @@ export class ChatController {
         status: 'NORMAL',
         mutedDuration: undefined,
         updatedAt: undefined,
+        mutedDate: undefined,
       });
 
       await this.roomService.addUserToChatRoom({
@@ -188,6 +189,7 @@ export class ChatController {
         status: 'NORMAL',
         mutedDuration: undefined,
         updatedAt: undefined,
+        mutedDate: undefined,
       });
 
       return newChatRoom;

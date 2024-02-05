@@ -167,6 +167,7 @@ model ChatRoomMember {
   is_admin Boolean @default(false)
   leftAt DateTime?
   status RoomStatus? @default(NORMAL)
+  mutedDate DateTime?
   mutedDuration String?
   @@id([userId, chatRoomId])
 }

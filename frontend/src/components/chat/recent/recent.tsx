@@ -36,8 +36,10 @@ const Recent: React.FC<RecentProps> = ({ rooms }) => {
 
   useEffect(() => {
     if (rooms) {
+      // console.log("rooms size", rooms.length);
       rooms.forEach((room) => {
-        isNumber(room.id) ? chatSocket?.emit('join-room', { roomId: room.id }) : null;
+        // console.log("room id", room.id);
+        isNumber(room.id) ? chatSocket?.emit('join-room', { roomId: room.id}) : null;
       });
     }
   }, [rooms]);
@@ -45,6 +47,7 @@ const Recent: React.FC<RecentProps> = ({ rooms }) => {
   useEffect(() => {
     if (chatSocket) {
       chatSocket.on('receive-recent', () => {
+        // console.log("Received recent");
         getRecentMessages().then((res) => {
           setRecent(res.data);
         }).catch((err) => {

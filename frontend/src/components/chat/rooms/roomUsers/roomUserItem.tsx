@@ -56,10 +56,8 @@ function RoomUserItem({ chatRoomMember, profileRoomStatus, chatRoom, chatRoomRol
     };
 
     const handleConfirm = () => {
-        // console.log('hhhh', timeSelected);
         chatSocket?.emit('mute-user', { roomId: chatRoom.id, userId: chatRoomMember.user.id, duration: muteDuration });
         setOpenSelect(!OpenSelect);
-        // return chatSocket?.off('mute-user');
     };
     // hendle ban user
     const handleBan = () => {
@@ -68,10 +66,6 @@ function RoomUserItem({ chatRoomMember, profileRoomStatus, chatRoom, chatRoomRol
     // hendle kick user
     const handleKick = () => {
         chatSocket?.emit('kick-user', { userId: chatRoomMember.user.id, roomId: chatRoom.id });
-    }
-    // hendle mute user
-    const handleMute = () => {
-        chatSocket?.emit('mute-user', { userId: chatRoomMember.user.id, roomId: chatRoom.id });
     }
     // hendle admin and unadmin user
     const handleAdmin = () => {

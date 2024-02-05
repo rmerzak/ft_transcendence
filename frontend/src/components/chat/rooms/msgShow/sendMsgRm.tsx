@@ -82,22 +82,18 @@ const SendMsgRm: React.FC<SendchatmsgProps> = ({ chatRoomId }) => {
 
     useEffect(() => {
         if (chatRoomMember && profile?.id && chatSocket) {
-            // const user = chatRoomMembers.find((mem) => mem.user.id === profile?.id);
-            // console.log('user', chatRoomMember);
             if (chatRoomMember && chatRoomMember.status === 'MUTED') {
-                console.log('user is muted');
                 setIsMuted(true);
-                chatSocket?.emit('muteTimeOut', chatRoomMember);
             }
             chatSocket?.on('muted', (data) => {
-                if (data.isMuted === true && data.mem.userId === profile?.id) {
-                    console.log('here');
+                if (data.mem.status === 'MUTED' && data.mem.userId === profile?.id && data.mem.chatRoomId === chatRoomId) {
+                    console.log('here in muted event sendMsgInput', data.mem);
                     setIsMuted(true);
                     chatSocket?.emit('muteTimeOut', data.mem);
                 }
             });
             chatSocket.on('mute_apdate_sendMsgInput', (data: ChatRoomMember) => {
-                console.log('data', data);
+                console.log('data', data, chatSocket.id);
                 if (data.userId === profile?.id && data.status === 'NORMAL') {
                     setIsMuted(false);
                 }

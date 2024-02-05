@@ -7,7 +7,7 @@ import { FriendshipService } from 'src/notification/friendship.service';
 @Injectable()
 export class MsgService {
   constructor(private readonly prisma: PrismaService, private readonly Friends: FriendshipService) { }
-
+  
   // get all messages of room
   async getChatRoomMessages(
     chatRoomId: number,
@@ -73,16 +73,16 @@ export class MsgService {
     } else {
       if (specificMember.status === RoomStatus.BANNED) throw new Error('Your are banned from this room');
       else if (specificMember.status === RoomStatus.MUTED) {
-        const result = compareDateWithCurrent(addDates(specificMember.updatedAt, Number(specificMember.mutedDuration)));
+        const result = compareDateWithCurrent(addDates(specificMember.mutedDate, Number(specificMember.mutedDuration)));
         if (result) throw new Error('Your are muted from this room');
-        else
-          await this.prisma.chatRoomMember.update({
-            where: { userId_chatRoomId: { userId: user.id, chatRoomId: chatRoom.id } },
-            data: {
-              status: RoomStatus.NORMAL,
-              mutedDuration: null,
-            }
-          });
+        // console.log("result in add Message", result);
+        await this.prisma.chatRoomMember.update({
+          where: { userId_chatRoomId: { userId: user.id, chatRoomId: chatRoom.id } },
+          data: {
+            status: RoomStatus.NORMAL,
+            mutedDuration: null,
+          }
+        });
       }
     }
     const msg = await this.prisma.message.create({

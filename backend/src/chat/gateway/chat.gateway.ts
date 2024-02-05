@@ -79,6 +79,7 @@ export class GatewayGateway
   @SubscribeMessage('join-room')
   handleJoinRoom(_client: Socket, payload: { roomId: number }) {
     try {
+      // console.log("join-room ", payload);
       if (_client.hasOwnProperty('user') && _client['user'].hasOwnProperty('id')) {
         if (!payload.hasOwnProperty('roomId') || _client.rooms.has(payload.roomId.toString())) return;
         const inRoom = this.roomService.getChatRoomMember(_client['user'].id, Number(payload.roomId));
@@ -97,18 +98,21 @@ export class GatewayGateway
 
     try {
       const room = await this.roomService.createChatRoom(_client, payload);
-      this.roomService.connectedClients.forEach((sockets, userId) => {
-        if (userId !== _client['user'].id) {
-          sockets.forEach(socket => {
-            socket.emit('create-room', room);
-          });
-        }
-        if (userId === _client['user'].id) {
-          sockets.forEach(socket => {
-            socket.emit('ownedRoom', room);
-          });
-        }
-      });
+      if (room) {
+        _client.join(room.id.toString());
+        this.roomService.connectedClients.forEach((sockets, userId) => {
+          if (userId !== _client['user'].id) {
+            sockets.forEach(socket => {
+              socket.emit('create-room', room);
+            });
+          }
+          if (userId === _client['user'].id) {
+            sockets.forEach(socket => {
+              socket.emit('ownedRoom', room);
+            });
+          }
+        });
+      }
 
     } catch (error) {
       console.log("create-room ", error);
@@ -149,8 +153,19 @@ export class GatewayGateway
   @SubscribeMessage('update-room')
   async handleUpdateRoom(_client: Socket, payload: ChatRoom) {
     try {
+      // console.log("update-room ", payload);
       const room = await this.roomService.updateChatRoom(_client['user'].id, payload);
-      this.server.to('1_public').emit('update_chat_room_member', room);
+      if (room) {
+        const msgData = {
+          chatRoomId: room.id,
+          text: `Owner has updated the room`,
+          senderId: _client['user'].id,
+          type: MessageStatus.ANNOUCEMENT,
+        } as Message;
+        const msg = await this.chatService.addMessage(msgData, _client['user'].id);
+        this.server.to(room.id.toString()).emit('receive-message', msg);
+        this.server.to('1_public').emit('update-room', room);
+      }
     } catch (error) {
       _client.emit('error', error.message);
     }
@@ -172,6 +187,7 @@ export class GatewayGateway
         is_admin: roomMem.is_admin,
         joinedAt: roomMem.joinedAt,
         leftAt: roomMem.leftAt,
+        mutedDate: roomMem.mutedDate,
         updatedAt: roomMem.updatedAt,
       }
       const updatedRoom = await this.roomService.updatechatRoomMember(_client['user'].id, tmp);
@@ -195,9 +211,9 @@ export class GatewayGateway
   @SubscribeMessage('mute-user')
   async handleMuteUser(_client: Socket, payload: { roomId: number, userId: number, duration: number }) {
     try {
+      // console.log("payload2: ", payload);
       const roomMem = await this.roomService.getChatRoomMember(payload.userId, payload.roomId);
       if (!roomMem) throw new Error('User is not a member of the room');
-
       const tmp: ChatRoomMember = {
         userId: payload.userId,
         chatRoomId: payload.roomId,
@@ -206,10 +222,12 @@ export class GatewayGateway
         is_admin: roomMem.is_admin,
         joinedAt: roomMem.joinedAt,
         leftAt: roomMem.leftAt,
+        mutedDate: new Date(),
         updatedAt: roomMem.updatedAt,
       }
       const updatedRoomMem = await this.roomService.updatechatRoomMember(_client['user'].id, tmp);
       if (updatedRoomMem) {
+        // console.log("updatedRoomMem: ", updatedRoomMem);
         const user = await this.prisma.user.findUnique({ where: { id: payload.userId } });
         const msgData = {
           chatRoomId: updatedRoomMem.chatRoomId,
@@ -219,11 +237,12 @@ export class GatewayGateway
         } as Message;
         const msg = await this.chatService.addMessage(msgData, _client['user'].id);
         this.server.to(roomMem.chatRoomId.toString()).emit('receive-message', msg);
-        this.server.to(roomMem.chatRoomId.toString()).emit('muted', { mem: updatedRoomMem, isMuted: true });
+        console.log("updatedRoomMem: ", updatedRoomMem);
+        this.server.to(roomMem.chatRoomId.toString()).emit('muted', { mem: updatedRoomMem });
         this.server.to(roomMem.chatRoomId.toString()).emit('update_chat_room_member', updatedRoomMem);
       }
     } catch (error) {
-      // console.log("mute-user ", error);
+      console.log("mute-user ", error);
       _client.emit('error', error.message);
     }
   }
@@ -239,27 +258,29 @@ export class GatewayGateway
         is_admin: payload.is_admin,
         joinedAt: payload.joinedAt,
         leftAt: payload.leftAt,
+        mutedDate: null,
         updatedAt: payload.updatedAt,
       }
       const chatRoom = await this.prisma.chatRoom.findUnique({ where: { id: payload.chatRoomId } });
       if (!chatRoom) throw new Error('Chat room not found');
-      const updatedRoomMem = await this.roomService.updatechatRoomMember(chatRoom.owner, tmp);
-
-      if (!compareDateWithCurrent(addDates(new Date(payload.updatedAt), Number(payload.mutedDuration)))) {
-        console.log("here");
-        const updatedRoomMem = await this.roomService.updatechatRoomMember(chatRoom.owner, tmp);
-        if (updatedRoomMem) {
-          console.log("updatedRoomMem: ", updatedRoomMem);
-          _client.emit('mute_apdate_sendMsgInput', updatedRoomMem);
-        }
-      } else {
-        console.log("payload: ", payload);
+      
+      // if (!compareDateWithCurrent(addDates(new Date(payload.mutedDate), Number(payload.mutedDuration)))) {
+      //   console.log("updatedRoomMem: jjjjjj");
+      //   const updatedRoomMem = await this.roomService.updatechatRoomMember(chatRoom.owner, tmp);
+      //   if (updatedRoomMem) {
+      //     _client.emit('mute_apdate_sendMsgInput', updatedRoomMem);
+      //   }
+      // } else {
+        // console.log("payload: ", restDuration(addDates(new Date(payload.mutedDate), Number(payload.mutedDuration))));
+        
         setTimeout(async () => {
-          if (updatedRoomMem) {
+          const updatedRoomMem = await this.roomService.updatechatRoomMember(chatRoom.owner, tmp);
+          if (updatedRoomMem) {  
             this.server.to(payload.chatRoomId.toString()).emit('mute_apdate_sendMsgInput', updatedRoomMem);
           }
         }, restDuration(addDates(new Date(payload.updatedAt), Number(payload.mutedDuration))));
-      }
+        // clearTimeout(timeOutId);
+      // }
     } catch (error) {
       console.log("mute-user ", error);
       _client.emit('error', error.message);
@@ -271,15 +292,15 @@ export class GatewayGateway
   async handleKickUser(_client: Socket, payload: { roomId: number, userId: number }) {
     try {
       const user = await this.prisma.user.findUnique({ where: { id: payload.userId } });
-      const msgData = {
-        chatRoomId: payload.roomId,
-        text: `${_client['user'].username} has kicked ${user.username} from the room`,
-        senderId: _client['user'].id,
-        type: MessageStatus.ANNOUCEMENT,
-      } as Message;
-      const msg = await this.chatService.addMessage(msgData, _client['user'].id);
-      const deletedRoomMem = await this.roomService.deletechatRoomMember(payload.userId, payload.roomId);
+      const deletedRoomMem = await this.roomService.deletechatRoomMember(_client['user'].id, payload.userId, payload.roomId);
       if (deletedRoomMem) {
+        const msgData = {
+          chatRoomId: payload.roomId,
+          text: `${_client['user'].username} has kicked ${user.username} from the room`,
+          senderId: _client['user'].id,
+          type: MessageStatus.ANNOUCEMENT,
+        } as Message;
+        const msg = await this.chatService.addMessage(msgData, _client['user'].id);
         this.server.to(deletedRoomMem.chatRoomId.toString()).emit('receive-message', msg);
         this.server.to(deletedRoomMem.chatRoomId.toString()).emit('update_chat_room_member', deletedRoomMem);
         this.server.to(deletedRoomMem.chatRoomId.toString()).emit('leaveRoom', { roomId: deletedRoomMem.chatRoomId, userId: payload.userId });
@@ -304,6 +325,7 @@ export class GatewayGateway
         updatedAt: roomMem.updatedAt,
         userId: payload.userId,
         chatRoomId: payload.roomId,
+        mutedDate: roomMem.mutedDate,
         is_admin: true,
       }
       const updatedRoom = await this.roomService.updatechatRoomMember(_client['user'].id, tmp);
@@ -338,6 +360,7 @@ export class GatewayGateway
         updatedAt: roomMem.updatedAt,
         userId: payload.userId,
         chatRoomId: payload.roomId,
+        mutedDate: roomMem.mutedDate,
         is_admin: false,
       }
       const updatedRoom = await this.roomService.updatechatRoomMember(_client['user'].id, tmp);
@@ -361,6 +384,7 @@ export class GatewayGateway
   @SubscribeMessage('leaveRoom')
   async handleLeaveRoomSocket(_client: Socket, payload: { roomId: number }) {
     try {
+      console.log("leave-room ", payload);
       _client.leave(payload.roomId.toString());
     } catch (error) {
       console.log("leave-room ", error);
@@ -410,6 +434,7 @@ export class GatewayGateway
 
   handleDisconnect(_client: Socket) {
     console.log('disconnected chat id: ' + _client.id); // must fix this
+  console.log('rooms: ' + _client.rooms);
   }
 }
 
