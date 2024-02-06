@@ -1,6 +1,6 @@
 import { Body, Controller, Post, Sse, UseGuards } from '@nestjs/common';
 import { GameService } from '../services/game.service';
-import { PlayerDto, PlayerNameDto, RoomDto } from '../dto/game.dto';
+import { PlayerNameDto, RoomDto } from '../dto/game.dto';
 import { JwtGuard } from 'src/auth/guard';
 import { Observable, startWith } from 'rxjs';
 import { Leaderboard, MatchHistory, Statistics } from '../types/types';
@@ -50,11 +50,10 @@ export class GameController {
   // api for get match history
   @Post('api/match-history')
   async getMatchHistory(
-    @Body() id: PlayerDto,
+    @Body() username: PlayerNameDto,
   ): Promise<{ matchHistory: MatchHistory[] }> {
-    console.log('id', id);
-    const { playerId } = id;
-    const matchHistory = await this.game.getMatchHistory(playerId);
+    const { playerName } = username;
+    const matchHistory = await this.game.getMatchHistory(playerName);
     return { matchHistory };
   }
 

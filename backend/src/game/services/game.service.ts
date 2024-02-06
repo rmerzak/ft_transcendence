@@ -366,10 +366,21 @@ export class GameService {
   }
 
   // get Match History
-  async getMatchHistory(playerId: number) {
+  async getMatchHistory(playerName: string) {
+
+    const user = await this.prisma.user.findUnique({
+      where: { username: playerName },
+      select: {
+        id: true,
+      },
+    });
+
+    if (!user) {
+      return [];
+    }
     const matchHistory = await this.prisma.game.findMany({
       where: {
-        OR: [{ userPlayerId: playerId }, { userOpponentId: playerId }],
+        OR: [{ userPlayerId: user.id }, { userOpponentId: user.id }],
       },
       select: {
         userPlayerId: true,
@@ -397,9 +408,10 @@ export class GameService {
   async getLeaderboard() {
     // Fetch the leaderboard without updating ranks
     const users = await this.prisma.user.findMany({
-      select: {
-        id: true,
-        gameRank: true,
+      where: {
+        gameMatches: {
+          gt: 0,
+        },
       },
       orderBy: {
         gameWins: 'desc',
@@ -425,6 +437,11 @@ export class GameService {
         gameElo: true,
         gameMatches: true,
         gameWins: true,
+      },
+      where: {
+        gameMatches: {
+          gt: 0,
+        },
       },
       orderBy: {
         gameWins: 'desc',
