@@ -1,12 +1,14 @@
 import { ContextGlobal } from "@/context/contex";
+import { usePathname } from "next/navigation";
 import React, { useContext, useEffect, useState } from "react";
 
 const Achievements = () => {
 
   const [ ach, setAch ] = useState([]);
   const { profile }: any = useContext(ContextGlobal);
+  const profileName = usePathname().split("/")[3];
 
-  const fetchAchievenebts = async () => {
+  const fetchAchievenebts = async (username: string) => {
     // fetch achievements
     try {
       const req = await fetch(`${process.env.API_BASE_URL}/api/achievements`, {
@@ -15,7 +17,7 @@ const Achievements = () => {
           "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify({ playerId: profile.id }),
+        body: JSON.stringify({ playerName: username }),
       });
       const data = await req.json();
       setAch(data.achievements);
@@ -24,7 +26,7 @@ const Achievements = () => {
 
   useEffect(() => {
     if (profile.id !== -1) {
-      fetchAchievenebts();
+      fetchAchievenebts(profileName || profile.username);
     }
   }, [profile.id]);
 

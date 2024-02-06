@@ -351,9 +351,9 @@ export class GameService {
   }
 
   // get Statistics
-  async getStatistics(playerId: number) {
+  async getStatistics(playerName: string) {
     const user = await this.prisma.user.findUnique({
-      where: { id: playerId },
+      where: { username: playerName },
       select: {
         gameMatches: true,
         gameWins: true,
@@ -435,9 +435,9 @@ export class GameService {
   }
 
   // get Achievements
-  async getAchievements(playerId: number) {
+  async getAchievements(playerName: string) {
     const user = await this.prisma.user.findUnique({
-      where: { id: playerId },
+      where: { username: playerName },
       select: {
         gameMatches: true,
         gameWins: true,

@@ -12,3 +12,8 @@ export class RoomDto {
   @IsNumber()
   roomMode: number;
 }
+
+export class PlayerNameDto {
+  @IsString()
+  playerName: string;
+}

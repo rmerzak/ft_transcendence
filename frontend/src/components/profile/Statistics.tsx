@@ -1,4 +1,5 @@
 import { ContextGlobal } from '@/context/contex';
+import { usePathname } from 'next/navigation';
 import React, { useContext, useEffect, useState } from 'react'
 
 type StatisticsEntry = {
@@ -19,8 +20,9 @@ const Statistics = () => {
         gameMatches: 0,
         gameRank: 0,
     });
+    const profileName = usePathname().split("/")[3];
 
-    const fetchStatistics = async () => {
+    const fetchStatistics = async (username: string) => {
         // fetch statistics
         try {
             const req = await fetch(`${process.env.API_BASE_URL}/api/statistics`, {
@@ -29,7 +31,7 @@ const Statistics = () => {
                     'Content-Type': 'application/json',
                 },
                 credentials: 'include',
-                body: JSON.stringify({ playerId: profile.id }),
+                body: JSON.stringify({ playerName: username }),
             });
             const data = await req.json();
             setStatistics(data.statistics);
@@ -38,7 +40,7 @@ const Statistics = () => {
 
     useEffect(() => {
         if (profile.id !== -1) {
-            fetchStatistics();
+            fetchStatistics(profileName || profile.username);
         }
     }, [profile.id]);
 

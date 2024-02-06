@@ -1,6 +1,6 @@
 import { Body, Controller, Post, Sse, UseGuards } from '@nestjs/common';
 import { GameService } from '../services/game.service';
-import { PlayerDto, RoomDto } from '../dto/player.dto';
+import { PlayerDto, PlayerNameDto, RoomDto } from '../dto/game.dto';
 import { JwtGuard } from 'src/auth/guard';
 import { Observable, startWith } from 'rxjs';
 import { Leaderboard, MatchHistory, Statistics } from '../types/types';
@@ -40,10 +40,10 @@ export class GameController {
   // api for get statistics
   @Post('api/statistics')
   async getStatistics(
-    @Body() id: PlayerDto,
+    @Body() username: PlayerNameDto,
   ): Promise<{ statistics: Statistics }> {
-    const { playerId } = id;
-    const statistics = await this.game.getStatistics(playerId);
+    const { playerName } = username;
+    const statistics = await this.game.getStatistics(playerName);
     return { statistics };
   }
 
@@ -68,10 +68,10 @@ export class GameController {
   // api for get achievements
   @Post('api/achievements')
   async getAchievements(
-    @Body() id: PlayerDto,
+    @Body() username: PlayerNameDto,
   ): Promise<{ achievements: string[] }> {
-    const { playerId } = id;
-    const achievements = await this.game.getAchievements(playerId);
+    const { playerName } = username;
+    const achievements = await this.game.getAchievements(playerName);
     return { achievements };
   }
 

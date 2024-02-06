@@ -4,6 +4,7 @@ import { MatchHistoryItemInterface } from "@/interfaces";
 import MatchHistoryItem from "./MatchHistoryItem";
 import { ContextGlobal } from "@/context/contex";
 import Loading from "../game/Loading";
+import { usePathname } from "next/navigation";
 
 type MatchHistoryEntry = {
     userPlayerId: number;
@@ -42,6 +43,7 @@ const MatchHistory = ({ data, head}: { data: MatchHistoryItemInterface[]; head: 
         }
     ]);
 
+    const profileName = usePathname().split("/")[3];
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     // let currentData = data.slice(startIndex, endIndex);
@@ -84,7 +86,7 @@ const MatchHistory = ({ data, head}: { data: MatchHistoryItemInterface[]; head: 
         return pageNumbers;
     };
 
-    const fetchMatchHistory = async () => {
+    const fetchMatchHistory = async (username: string) => {
         // fetch match history
         try {
             setLoading(true);
@@ -94,7 +96,7 @@ const MatchHistory = ({ data, head}: { data: MatchHistoryItemInterface[]; head: 
                     "Content-Type": "application/json",
                 },
                 credentials: "include",
-                body: JSON.stringify({ playerId: profile.id }),
+                body: JSON.stringify({ playerName: username }),
             });
             const data = await req.json();
             setCurrentData(data.matchHistory);
@@ -106,7 +108,7 @@ const MatchHistory = ({ data, head}: { data: MatchHistoryItemInterface[]; head: 
 
     useEffect(() => {
         if (profile.id !== -1) {
-            fetchMatchHistory();
+            fetchMatchHistory(profileName || profile.username);
         }
     }, [profile.id, currentData.length]);
 
