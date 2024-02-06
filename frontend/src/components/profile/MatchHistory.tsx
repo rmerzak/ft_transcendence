@@ -96,7 +96,7 @@ const MatchHistory = ({ data, head}: { data: MatchHistoryItemInterface[]; head: 
                     "Content-Type": "application/json",
                 },
                 credentials: "include",
-                body: JSON.stringify({ playerName: username }),
+                body: JSON.stringify({ playerName: username}),
             });
             const data = await req.json();
             setCurrentData(data.matchHistory);

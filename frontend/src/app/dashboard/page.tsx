@@ -5,6 +5,7 @@ import { Eye } from 'lucide-react';
 import LeaderboardEntry from '@/components/LeaderBoard/LeaderBorditem';
 import RankEntre from '@/components/LeaderBoard/RankEntre';
 import Loading from '@/components/game/Loading';
+import PlayPopup from '@/components/game/PlayPopup';
 
 type LesderboardEntry = {
   gameElo: number;
@@ -32,6 +33,7 @@ const Dashboard = () => {
   ]);
   const [rank, setRank] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
+  const [openAl, setOpenAl] = useState<boolean>(false);
 
   const fetchLeaderboardData = async () => {
     try {
@@ -46,6 +48,11 @@ const Dashboard = () => {
       });
       const data = await res.json();
       setLeaderboardData(data.leaderboard);
+      data.leaderboard.forEach((entry: LesderboardEntry) => {
+        if (entry.id === profile.id) {
+          setRank(entry.gameRank);
+        }
+      });
     } catch {}
     finally {
       setLoading(false);
@@ -55,15 +62,12 @@ const Dashboard = () => {
   useEffect(() => {
     if (profile.id !== -1) {
       fetchLeaderboardData();
-      leaderboardData.forEach((entry: LesderboardEntry) => {
-        if (entry.id === profile.id) {
-          setRank(entry.gameRank);
-        }
-      });
     }
   }, [profile.id, leaderboardData.length]);
-
+  
   return (
+    <>
+      { openAl && <PlayPopup openAl={() => setOpenAl(!openAl)} />}
     <div className="bg-profile h-screen m-4 py-4 pl-4 md:pr-0 pr-2 backdrop-blur-md">
       <Loading isLoading={loading} />
      <h1 className="text-white font-bold text-3xl text-center mt-6 mb-8">LeaderBoard</h1>
@@ -78,7 +82,7 @@ const Dashboard = () => {
           <h1>Profile</h1>
         </div>
         <div className='h-[720px] overflow-auto w-full'>
-        {leaderboardData.map((entry, index) => (
+        {leaderboardData.length > 0 ? leaderboardData.map((entry, index) => (
           <LeaderboardEntry
             key={index}
             rank={entry.gameRank}
@@ -90,7 +94,15 @@ const Dashboard = () => {
             score={entry.gameElo}
             profile={entry.username}
           />
-        ))}
+        )) : 
+        <div className='flex flex-col justify-center items-center'>
+          <h1 className='text-white font-inter text-center mt-5 text-3xl'>No player is registered in the leaderboard</h1>
+          <h2 className='text-white font-inter text-center mt-5 text-3xl'><span className='text-[#BC51BE] text-bold'>Play</span> and you'll be here</h2>
+          <button onClick={() => setOpenAl(!openAl)} className='btn mt-5 w-20 text-white bg-[#BC51BE]/50'>
+            Play
+          </button>
+        </div>
+        }
         </div>
         </div>
         <RankEntre
@@ -102,6 +114,7 @@ const Dashboard = () => {
         />
      </div>
     </div>
+    </>
   )
 }
 
