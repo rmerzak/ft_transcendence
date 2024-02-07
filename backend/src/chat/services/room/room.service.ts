@@ -12,6 +12,7 @@ export class RoomService {
     // start chat room
     // get chat room for user
     public readonly connectedClients: Map<number, Socket[]> = new Map(); // must change to private its just for testing
+
     async getChatRoomsForUser(userId: number): Promise<ChatRoom[]> {
         const user = await this.prisma.user.findUnique({
             where: { id: userId },
@@ -38,11 +39,27 @@ export class RoomService {
             },
         }) as ChatRoom[];
 
-        const filteredChatRooms = chatRooms.filter(room => {
+        // felter rooms that is banned from it or are begin with number
+        // const filteredChatRooms = chatRooms.filter(async room => {
+        //     const firstChar = room.name.charAt(0);
+        //     const roomMember = await this.prisma.chatRoomMember.findUnique({
+        //         where: { userId_chatRoomId: { userId: user.id, chatRoomId: room.id } },
+        //     });
+        //     console.log('firstChar: ', firstChar, 'roomMember: ', roomMember);
+        //     return isNaN(parseInt(firstChar, 10)) && roomMember.status !== RoomStatus.BANNED;
+        // });
+        // return filteredChatRooms;
+        const filteredChatRooms = await Promise.all(chatRooms.map(async room => {
             const firstChar = room.name.charAt(0);
-            return isNaN(parseInt(firstChar, 10));
-        });
-        return filteredChatRooms;
+            const roomMember = await this.prisma.chatRoomMember.findUnique({
+                where: { userId_chatRoomId: { userId: user.id, chatRoomId: room.id } },
+            });
+            // console.log('firstChar: ', firstChar, 'roomMember: ', roomMember);
+            return isNaN(parseInt(firstChar, 10)) && roomMember.status !== RoomStatus.BANNED;
+        }));
+        
+        const finalFilteredChatRooms = chatRooms.filter((_, index) => filteredChatRooms[index]);
+        return finalFilteredChatRooms;
     }
 
     // get chat room Not for user
@@ -272,6 +289,12 @@ export class RoomService {
             where: { chatRoomId: chatRoomId },
             select: {
                 is_admin: true,
+                leftAt: true,
+                status: true,
+                mutedDuration: true,
+                mutedDate: true,
+                chatRoomId: true,
+                userId: true,
                 user: {
                     select: {
                         id: true,
@@ -284,7 +307,7 @@ export class RoomService {
             orderBy: {
                 joinedAt: 'asc',
             }
-        }) as ChatRoomUsers[];
+        });
     }
 
 

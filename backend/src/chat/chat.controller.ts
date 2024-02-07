@@ -333,11 +333,19 @@ export class ChatController {
             },
             HttpStatus.BAD_REQUEST,
           );
+        case 'Your are banned from this room':
+          throw new HttpException(
+            {
+              statusCode: HttpStatus.BAD_REQUEST,
+              message: 'Your are banned from this room',
+            },
+            HttpStatus.BAD_REQUEST,
+          );
         default:
           throw new HttpException(
             {
               statusCode: HttpStatus.BAD_REQUEST,
-              message: 'Error updating message',
+              message: 'Error getting message',
             },
             HttpStatus.BAD_REQUEST,
           );

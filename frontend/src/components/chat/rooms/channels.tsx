@@ -3,7 +3,7 @@ import Image from "next/image";
 import Popup from "./popup";
 import { useContext, useEffect, useState, KeyboardEvent, use } from "react";
 import { ContextGlobal } from "@/context/contex";
-import { ChatRoom } from "@/interfaces";
+import { ChatRoom, ChatRoomMember } from "@/interfaces";
 import { IoIosExit } from "react-icons/io";
 import { MdOutlineKey } from "react-icons/md";
 import { MdAddLink } from "react-icons/md";
@@ -58,11 +58,6 @@ const Channels = () => {
     setNewChannel(!newChannel);
   }
 
-  // useEffect(() => {
-  //   if (chatRoomsJoined.length > 0) {
-  //     chatRoomsJoined.map((room) => {chatSocket?.emit("join-room", { roomId: Number(room.id), test:'channels' });});
-  //   }
-  // }, [chatRoomsJoined]);
   useEffect(() => {
     if (chatSocket) {
       chatSocket?.on("create-room", (room: ChatRoom) => {
@@ -84,7 +79,8 @@ const Channels = () => {
             console.log(err);
           });
       });
-      chatSocket?.on("update_chat_room_member", () => {
+      chatSocket?.on("update_chat_room_member", (roomMem:ChatRoomMember) => {
+        if (roomMem) {
         getChatRoomsJoined().then((res) => {
           if (res.data) {
             setChatRoomsJoined(res.data);
@@ -94,6 +90,7 @@ const Channels = () => {
           if (res.data)
             setChatRoomsToJoin(res.data);
         }).catch((err) => { console.log(err) });
+      }
       });
       chatSocket?.on("update-room", () => {
         getChatRoomsJoined().then((res) => {
@@ -120,7 +117,15 @@ const Channels = () => {
           }).catch((err) => { console.log(err) });
         }
       });
-
+      chatSocket?.on("unban_from_room_getData", (data:ChatRoomMember) => {
+        if (data)
+          console.log('unban_from_room channel', data);
+          getChatRoomsJoined().then((res) => {
+            if (res.data) {
+              setChatRoomsJoined(res.data);
+            }
+          }).catch((err) => { console.log(err); });
+      });
       chatSocket?.on("error", (data) => {
         if (data) {
           toast.error(data);
@@ -134,6 +139,7 @@ const Channels = () => {
       chatSocket?.off("update_chat_room_member");
       chatSocket?.off("update-room");
       chatSocket?.off("deletedRoom");
+      chatSocket?.off("unban_from_room_getData");
     };
   }, [chatSocket]);
   return (

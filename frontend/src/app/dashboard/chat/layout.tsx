@@ -6,7 +6,7 @@ import { useContext, useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import { ContextGlobal } from '@/context/contex';
 import { getChatRoomByName, getChatRoomsJoined, getChatRoomsNotJoined } from '@/api/chat/chat.api';
-import { ChatRoom } from '@/interfaces';
+import { ChatRoom, ChatRoomMember } from '@/interfaces';
 import { useRouter } from 'next/navigation';
 
 
@@ -50,8 +50,10 @@ const Layout = ({ children }: any) => {
       if (res.data) {
         setChatRoomsJoined(res.data);
         res.data.forEach((room: ChatRoom) => {
-          if (chatSocket)
-            chatSocket.emit('join-room', { roomId: Number(room.id)});
+          if (chatSocket){
+            console.log('Joining room', room.id);
+            chatSocket.emit('join-room', { roomId: Number(room.id) });
+          }
         });
       }
     }).catch((err) => { console.log(err) });
@@ -80,11 +82,18 @@ const Layout = ({ children }: any) => {
             router.push('/dashboard/chat');
           }
         });
+        chatSocket.on('unban_from_room', (res: ChatRoomMember) => {
+          if (res.userId === profile.id) {
+            console.log('unban_from_room', res);
+            chatSocket.emit('join-room', { roomId: res.chatRoomId , test: 'test'});
+          }
+        });
       }
-    }
-    return () => {
-      if (chatSocket) {
-        chatSocket.off('leaveRoom');
+      return () => {
+        if (chatSocket) {
+          chatSocket.off('leaveRoom');
+          chatSocket.off('unban_from_room');
+        }
       }
     }
   }, [friends, profile, chatSocket]);

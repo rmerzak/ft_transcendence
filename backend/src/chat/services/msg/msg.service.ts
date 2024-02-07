@@ -7,7 +7,7 @@ import { FriendshipService } from 'src/notification/friendship.service';
 @Injectable()
 export class MsgService {
   constructor(private readonly prisma: PrismaService, private readonly Friends: FriendshipService) { }
-  
+
   // get all messages of room
   async getChatRoomMessages(
     chatRoomId: number,
@@ -25,6 +25,7 @@ export class MsgService {
       where: { userId_chatRoomId: { userId: user.id, chatRoomId: chatRoom.id } },
     });
     if (!chatRoomMember) throw new Error('User not in chat room');
+    if (chatRoomMember.status === RoomStatus.BANNED) throw new Error('Your are banned from this room');
     return await this.prisma.message.findMany({
       where: {
         chatRoomId: chatRoomId,

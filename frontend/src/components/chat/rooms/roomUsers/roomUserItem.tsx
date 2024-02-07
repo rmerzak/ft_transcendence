@@ -8,6 +8,7 @@ import { RiChatOffFill } from "react-icons/ri";
 import { FaBan } from "react-icons/fa";
 import { FaCheck } from "react-icons/fa";
 import { MdOutlineCancel } from "react-icons/md";
+import { MessageSquare } from 'lucide-react';
 
 const secondsToTime = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600);
@@ -34,34 +35,46 @@ const timeToSeconds = (timeString: string): number => {
 
 function RoomUserItem({ chatRoomMember, profileRoomStatus, chatRoom, chatRoomRole }: { chatRoomMember: ChatRoomMember, chatRoom: any, chatRoomRole: string, profileRoomStatus: any }) {
     const { chatSocket } = useContext(ContextGlobal);
-    const [OpenSelect, setOpenSelect] = useState(false);
-    const [muteDuration, setMuteDuration] = useState(0);
-    const [error, setError] = useState('');
-
+    const [status, setStatus] = useState({
+        openSelect: false,
+        muteDuration: 0,
+        error: '',
+    });
 
     const handleRangeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = parseInt(event.target.value, 10);
-        setMuteDuration(value);
+        // setMuteDuration(value);
+        setStatus({ ...status, muteDuration: value });
     };
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         const seconds = timeToSeconds(value);
         console.log(seconds);
         if (seconds === -1)
-            return setError('Invalid time format');
+            setStatus({ ...status, error: 'Invalid time format' });
         if (seconds > 86400)
-            return setError('muted time must be less than 24 hours');
-        setError('');
-        setMuteDuration(seconds);
+            setStatus({ ...status, error: 'muted time must be less than 24 hours' });
+        setStatus({ ...status, error: '' });
+        setStatus({ ...status, muteDuration: seconds });
     };
 
+    // handle mute user and unmute user
     const handleConfirm = () => {
-        chatSocket?.emit('mute-user', { roomId: chatRoom.id, userId: chatRoomMember.user.id, duration: muteDuration });
-        setOpenSelect(!OpenSelect);
+        chatSocket?.emit('mute-user', { roomId: chatRoom.id, userId: chatRoomMember.user.id, duration: status.muteDuration });
+        setStatus({ ...status, openSelect: !status.openSelect, muteDuration: 0 });
+    };
+    const handleUnMute = () => {
+        chatSocket?.emit('unmute-user', { roomId: chatRoom.id, userId: chatRoomMember.user.id });
+        // setStatus({ ...status, isMuted: false });
     };
     // hendle ban user
     const handleBan = () => {
         chatSocket?.emit('ban-user', { userId: chatRoomMember.user.id, roomId: chatRoom.id });
+        // setStatus({ ...status, isBan: true });
+    }
+    const handleUnBan = () => {
+        chatSocket?.emit('unban-user', { userId: chatRoomMember.user.id, roomId: chatRoom.id });
+        // setStatus({ ...status, isBan: false });
     }
     // hendle kick user
     const handleKick = () => {
@@ -109,18 +122,29 @@ function RoomUserItem({ chatRoomMember, profileRoomStatus, chatRoom, chatRoomRol
                         <button onClick={() => { handleKick() }} className="bg-[#A1A1A1] rounded-full px-2 py-1">
                             <GiBootKick />
                         </button>
-                        <button onClick={() => { handleBan() }} className="bg-[#A1A1A1] rounded-full px-2 py-1">
-                            <FaBan />
-                        </button>
-                        <button onClick={() => { setOpenSelect(!OpenSelect); }} className="bg-[#A1A1A1] rounded-full px-2 py-1">
-                            <RiChatOffFill />
-                        </button>
-                        {OpenSelect && (
+                        {chatRoomMember.status === 'NORMAL' ?
+                            <button onClick={() => { handleBan() }} className="bg-[#A1A1A1] rounded-full px-2 py-1">
+                                <FaBan />
+                            </button> :
+                            <button onClick={() => { handleUnBan() }} className="bg-[#A1A1A1] rounded-full px-2 py-1">
+                                <FaCheck />
+                            </button>
+                        }
+                        {
+                           chatRoomMember.status === 'MUTED' ?
+                            <button onClick={() => { handleUnMute() }} className="bg-[#A1A1A1] rounded-full px-[6px] py-[2px]">
+                                <MessageSquare className='w-5 h-5' />
+                            </button> :
+                            <button onClick={() => { setStatus({ ...status, openSelect: !status.openSelect }) }} className="bg-[#A1A1A1] rounded-full px-2 py-1">
+                                <RiChatOffFill />
+                            </button>
+                        }
+                        {status.openSelect && (
                             <div className='flex items-center space-x-1'>
                                 <div className='group relative flex justify-center items-center'>
                                     <input
                                         type="range"
-                                        value={muteDuration}
+                                        value={status.muteDuration}
                                         onChange={handleRangeChange}
                                         min="0"
                                         max="86400" // 1 day in seconds (24 hours * 60 minutes * 60 seconds)
@@ -130,8 +154,8 @@ function RoomUserItem({ chatRoomMember, profileRoomStatus, chatRoom, chatRoomRol
                                     <div
                                         className={`absolute right-28 -top-20 rounded-md px-2 py-1  bg-indigo-100 text-indigo-800 text-sm invisible opacity-20 -translate-x-3 transition-all group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-10`}
                                     >
-                                        {error && <span className='p-1 text-red-500'>{error}</span> ||
-                                            <p className='p-1'>{secondsToTime(muteDuration)}</p>
+                                        {status.error && <span className='p-1 text-red-500'>{status.error}</span> ||
+                                            <p className='p-1'>{secondsToTime(status.muteDuration)}</p>
                                         }
                                         <input
                                             type="text"
@@ -145,7 +169,7 @@ function RoomUserItem({ chatRoomMember, profileRoomStatus, chatRoom, chatRoomRol
                                     <FaCheck color='green' size={18} className='border rounded-full border-green-400' />
                                 </button>
                                 <button>
-                                    <MdOutlineCancel color='red' size={20} onClick={() => setOpenSelect(!OpenSelect)} />
+                                    <MdOutlineCancel color='red' size={20} onClick={() => { setStatus({ ...status, openSelect: !status.openSelect }) }} />
                                 </button>
                             </div>
                         )}
