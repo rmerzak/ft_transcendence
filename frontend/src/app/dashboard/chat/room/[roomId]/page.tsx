@@ -12,17 +12,20 @@ const Room = () => {
   const { roomId } = useParams()
   const [messages, setMessages] = useState<Messages[]>([]);
   const [error, setError] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     if (chatSocket && roomId) {
       if (messages.length === 0) {
-        getChatRoomMessages(Number(roomId))
+        getChatRoomMessages(Number(roomId), 'room')
           .then((res) => {
-            setMessages(res.data);
+            if (res.data) {
+              setMessages(res.data); 
+              setLoading(false);
+            }
           })
           .catch((err) => {
-            console.log("err", err);
-            setError("Can't get messages");
+            setError(err.response.data.message);
           });
       }
       // chatSocket.emit('join-room', { roomId: Number(roomId) });
@@ -37,7 +40,22 @@ const Room = () => {
 
   return (
     <>
-      <MsgRmShow messages={messages} roomId={Number(roomId)} error={error} />
+      {error === '' && !loading && <MsgRmShow messages={messages} roomId={Number(roomId)} />}
+      {
+        error === '' && loading &&
+        <div className={`flex justify-center items-center text-2xl bg-[#5D5959]/40 w-[66%]  h-[1030px] rounded-3xl`}>
+          <p>
+            Loading...
+          </p>
+        </div>
+      }
+      {error !== '' &&
+        <div className="flex justify-center items-center text-2xl bg-[#5D5959]/40 w-[66%]  h-[1030px] rounded-3xl">
+          <p>
+            {error}
+          </p>
+        </div>
+      }
     </>
   );
 };

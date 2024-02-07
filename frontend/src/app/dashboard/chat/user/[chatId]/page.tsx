@@ -17,7 +17,7 @@ const Chat = () => {
   useEffect(() => {
     if (chatSocket && chatId) {
       if (messages.length === 0) {
-        getChatRoomMessages(Number(chatId))
+        getChatRoomMessages(Number(chatId), 'user')
           .then((res) => {
             // console.log("message data", res.data);
             setMessages(res.data);

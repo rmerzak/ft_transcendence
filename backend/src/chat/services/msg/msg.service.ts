@@ -12,6 +12,7 @@ export class MsgService {
   async getChatRoomMessages(
     chatRoomId: number,
     userId: number,
+    from: string
   ): Promise<Message[]> {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
@@ -21,6 +22,8 @@ export class MsgService {
       where: { id: chatRoomId },
     });
     if (!chatRoom) throw new Error('Chat room not found');
+    if (from === 'room' && !/[a-zA-Z]/.test(chatRoom.name.charAt(0)))
+      throw new Error('Invalid chat room');
     const chatRoomMember = await this.prisma.chatRoomMember.findUnique({
       where: { userId_chatRoomId: { userId: user.id, chatRoomId: chatRoom.id } },
     });

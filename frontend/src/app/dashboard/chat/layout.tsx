@@ -107,7 +107,7 @@ const Layout = ({ children }: any) => {
           <UserOnline />
           <Channels />
           <Recent rooms={privChat} />
-        </div>
+        </div >
         {children}
       </div>
     </div>
