@@ -62,7 +62,7 @@ const Dashboard = () => {
     if (profile.id !== -1) {
       fetchLeaderboardData();
     }
-  }, [profile.id, leaderboardData.length]);
+  }, [profile.id, leaderboardData?.length]);
   
   return (
     <>

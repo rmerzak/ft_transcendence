@@ -14,7 +14,7 @@ const Friends = () => {
       if (res.data)
         setFriends(res.data);
       console.log("friends inside 1", friends);
-    }).catch((err) => { console.log(err) });
+    }).catch((err) => {  });
   }
   useEffect(() => {
     getFriends(profile?.id);
