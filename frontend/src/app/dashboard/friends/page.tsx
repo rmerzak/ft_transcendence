@@ -2,7 +2,6 @@
 import React, { use, useContext, useEffect } from "react";
 import { getFriendList } from "@/api/friendship/friendship.api";
 import { ContextGlobal } from "@/context/contex";
-import { get } from "https";
 import ListOfFriends from "@/components/Friends/friends/ListOfFriends";
 import InviteFriends from "@/components/Friends/invitefriend/InviteFriends";
 import BlackList from "@/components/Friends/blockedFriends/BlackList";

@@ -243,6 +243,7 @@ export class GameService {
 
   // this method is called when a player leaves a room
   leaveRoom(roomId: string, playerId: string, client: Socket): void {
+    console.log('hello');
     const roomIndex = this.rooms.findIndex((room) => room.id === roomId);
 
     if (roomIndex !== -1) {
@@ -413,9 +414,15 @@ export class GameService {
           gt: 0,
         },
       },
-      orderBy: {
-        gameWins: 'desc',
-      },
+      orderBy: 
+      [
+        {
+          gameElo: 'desc',
+        },
+        {
+          gameWins: 'desc',
+        },
+      ],
     });
   
     // Update gameRank for each user based on their position in the list
@@ -443,9 +450,15 @@ export class GameService {
           gt: 0,
         },
       },
-      orderBy: {
-        gameWins: 'desc',
-      },
+      orderBy:
+      [
+        {
+          gameElo: 'desc',
+        },
+        {
+          gameWins: 'desc',
+        },
+      ],
     });
   
     return updatedUsers;

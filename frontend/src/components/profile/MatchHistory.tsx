@@ -5,6 +5,7 @@ import MatchHistoryItem from "./MatchHistoryItem";
 import { ContextGlobal } from "@/context/contex";
 import Loading from "../game/Loading";
 import { usePathname } from "next/navigation";
+import PlayPopup from "../game/PlayPopup";
 
 type MatchHistoryEntry = {
     userPlayerId: number;
@@ -26,6 +27,7 @@ const MatchHistory = ({ data, head}: { data: MatchHistoryItemInterface[]; head: 
     const itemsPerPage = 6;
     const [currentPage, setCurrentPage] = useState(1);
     const [loading, setLoading] = useState(false);
+    const [openAl, setOpenAl] = useState<boolean>(false);
     const [currentData, setCurrentData] = useState<[MatchHistoryEntry]>([
         {
             userPlayerId: 0,
@@ -114,25 +116,41 @@ const MatchHistory = ({ data, head}: { data: MatchHistoryItemInterface[]; head: 
 
     return (
         <>
+            { openAl && <PlayPopup openAl={() => setOpenAl(!openAl)} />}
             <Loading isLoading={loading} />
-            <div className="flex items-center justify-between h-[40px] bg-head text-white text-[14px] md:text-[16px]">
+            {currentData.length > 0 ? <div className="flex items-center justify-between h-[40px] bg-head text-white text-[14px] md:text-[16px]">
                 {head.map((item, index) => (
                     <div className="w-1/2 flex items-center justify-center" key={index}>
                         {item}
                     </div>
                 ))}
+            </div> : null}
+            {
+                currentData.length > 0 ? ( currentData.map((item, index) => (
+                    <MatchHistoryItem
+                        key={index}
+                        playerOne={item.user.username}
+                        playerTwo={item.opponent.username}
+                        ImgPlayerOne={item.user.image}
+                        ImgPlayerTwo={item.opponent.image}
+                        result={`${item.userScore}-${item.oppScore}`}
+                    />
+                )) 
+            ) : ( 
+            <div className="flex flex-col items-center">
+                {profile.username === profileName || profileName === undefined ? (
+                <>
+                    <h1 className="text-white font-inter text-3xl text-center mt-10"><span className="text-[#BC51BE]">Play</span> to save the history</h1>
+                    <button onClick={() => setOpenAl(!openAl)} className='btn mt-5 w-32 text-white bg-[#BC51BE]/50'>
+                        Play
+                    </button>
+                </>
+                ) : (
+                    <h1 className="text-white font-inter text-3xl text-center mt-10">No match history found</h1> 
+                )}
             </div>
-            {currentData.map((item, index) => (
-                <MatchHistoryItem
-                    key={index}
-                    playerOne={item.user.username}
-                    playerTwo={item.opponent.username}
-                    ImgPlayerOne={item.user.image}
-                    ImgPlayerTwo={item.opponent.image}
-                    result={`${item.userScore}-${item.oppScore}`}
-                />
-            ))}
-            <div className="pagination flex items-center justify-center text-white bg-achievements3">{renderPageNumbers()}</div>
+            )}
+            {/* <div className="pagination flex items-center justify-center text-white bg-achievements3">{renderPageNumbers()}</div> */}
         </>
     );
 };

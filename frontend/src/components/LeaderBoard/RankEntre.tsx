@@ -36,7 +36,7 @@ const RankEntre: React.FC<{
             <div className='relative'>
               <img src="/trophy.png" alt="avatar" className="md:w-[140px] md:h-[140px] w-[42px] h-[40px]"/>
               <div className='absolute md:top-10 top-3 left-1/2 transform -translate-x-1/2 -translate-y-1/2'>
-                <p className='text-gray-500 font-bold md:text-3xl text-[10px]'>{rank !== 0 ? '#' + rank : ''}</p>
+                <p className='text-gray-500 font-bold md:text-3xl text-[10px]'>#{rank !== 0 ? rank : '?'}</p>
               </div>
             </div>
           </div>

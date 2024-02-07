@@ -60,39 +60,41 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       where: { id: userId },
       data: { status: UserStatus.ONLINE },
     });
-
-    const targetRoom = this.game.rooms.find((room) =>
-      room.players.some((player) => player.socketId === client.id),
-    );
-
+    
     try {
+      const targetRoom = this.game.rooms.find((room) =>
+        room.players.some((player) => player.socketId === client.id),
+      );
       if (targetRoom) {
-        if (targetRoom.players[0].socketId === client.id) {
-          this.game.createMatchHistory(
-            targetRoom.players[0].user.id,
-            targetRoom.players[1].user.id,
-            0,
-            5,
-          );
-          this.game.updateStatistics(targetRoom.players[1].user.id, 5, 0);
-          this.game.updateStatistics(targetRoom.players[0].user.id, 0, 5);
-        }
-        if (targetRoom.players[1].socketId === client.id) {
-          this.game.createMatchHistory(
-            targetRoom.players[0].user.id,
-            targetRoom.players[1].user.id,
-            5,
-            0,
-          );
-          this.game.updateStatistics(targetRoom.players[0].user.id, 5, 0);
-          this.game.updateStatistics(targetRoom.players[1].user.id, 0, 5);
-        }
-        targetRoom.players.forEach((player) => {
-          // Check if the player is not the disconnected player
-          if (player.socketId !== client.id) {
-            this.server.to(player.socketId).emit('winByResign');
+        if (targetRoom.players.length > 1) {
+          if (targetRoom.players[0].socketId === client.id) {
+            this.game.createMatchHistory(
+              targetRoom.players[0].user.id,
+              targetRoom.players[1].user.id,
+              0,
+              5,
+            );
+            this.game.updateStatistics(targetRoom.players[1].user.id, 5, 0);
+            this.game.updateStatistics(targetRoom.players[0].user.id, 0, 5);
           }
-        });
+          if (targetRoom.players[1].socketId === client.id) {
+            this.game.createMatchHistory(
+              targetRoom.players[0].user.id,
+              targetRoom.players[1].user.id,
+              5,
+              0,
+            );
+            this.game.updateStatistics(targetRoom.players[0].user.id, 5, 0);
+            this.game.updateStatistics(targetRoom.players[1].user.id, 0, 5);
+          }
+          targetRoom.players.forEach((player) => {
+            // Check if the player is not the disconnected player
+            if (player.socketId !== client.id) {
+              this.server.to(player.socketId).emit('winByResign');
+            }
+          });
+        }
+        console.log('targetRoom', targetRoom);
         this.game.leaveRoom(targetRoom.id, client.id, client);
       }
 
@@ -101,32 +103,34 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       );
 
       if (targetChallengeRoom) {
-        if (targetChallengeRoom.players[0].socketId === client.id) {
-          this.game.createMatchHistory(
-            targetChallengeRoom.players[0].user.id,
-            targetChallengeRoom.players[1].user.id,
-            0,
-            5,
-          );
-          this.game.updateStatistics(targetChallengeRoom.players[1].user.id, 5, 0);
-          this.game.updateStatistics(targetChallengeRoom.players[0].user.id, 0, 5);
-        }
-        if (targetChallengeRoom.players[1].socketId === client.id) {
-          this.game.createMatchHistory(
-            targetChallengeRoom.players[0].user.id,
-            targetChallengeRoom.players[1].user.id,
-            5,
-            0,
-          );
-          this.game.updateStatistics(targetChallengeRoom.players[0].user.id, 5, 0);
-          this.game.updateStatistics(targetChallengeRoom.players[1].user.id, 0, 5);
-        }
-        targetChallengeRoom.players.forEach((player) => {
-          // Check if the player is not the disconnected player
-          if (player.socketId !== client.id) {
-            this.server.to(player.socketId).emit('winByResign');
+        if (targetChallengeRoom.players.length > 1) {
+          if (targetChallengeRoom.players[0].socketId === client.id) {
+            this.game.createMatchHistory(
+              targetChallengeRoom.players[0].user.id,
+              targetChallengeRoom.players[1].user.id,
+              0,
+              5,
+            );
+            this.game.updateStatistics(targetChallengeRoom.players[1].user.id, 5, 0);
+            this.game.updateStatistics(targetChallengeRoom.players[0].user.id, 0, 5);
           }
-        });
+          if (targetChallengeRoom.players[1].socketId === client.id) {
+            this.game.createMatchHistory(
+              targetChallengeRoom.players[0].user.id,
+              targetChallengeRoom.players[1].user.id,
+              5,
+              0,
+            );
+            this.game.updateStatistics(targetChallengeRoom.players[0].user.id, 5, 0);
+            this.game.updateStatistics(targetChallengeRoom.players[1].user.id, 0, 5);
+          }
+          targetChallengeRoom.players.forEach((player) => {
+            // Check if the player is not the disconnected player
+            if (player.socketId !== client.id) {
+              this.server.to(player.socketId).emit('winByResign');
+            }
+          });
+        }
         this.game.leaveChallengeRoom(targetChallengeRoom.id, client.id, client);
       }
     } catch { }

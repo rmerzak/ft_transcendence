@@ -1,7 +1,9 @@
 import React from "react";
-import GameSwiper from "./GameSwiper";
+// import GameSwiper from "./GameSwiper";
 import OutsideClickHandler from "react-outside-click-handler";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
+const GameSwiper = dynamic(() => import('./GameSwiper'), { ssr: false });
 
 function PlayPopup({ openAl }: { openAl: () => void}) {
     const router = useRouter();

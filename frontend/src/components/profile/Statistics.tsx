@@ -68,7 +68,7 @@ const Statistics = () => {
                 </div>
                 <div className="flex w-full items-center justify-between">
                     <div className="text-white font-thin">Rank</div>
-                    <div className="text-white text-opacity-50">#{statistics.gameRank}</div>
+                    <div className="text-white text-opacity-50">#{statistics.gameRank !== 0 ? statistics.gameRank : '?'}</div>
                 </div>
             </div>
         </>

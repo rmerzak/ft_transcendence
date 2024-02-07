@@ -14,7 +14,6 @@ export class GameController {
   @Post('api/rooms')
   createRoom(): { roomId: string } {
     const room = this.game.roomWithAvailableSlots() || this.game.createRoom();
-    console.log('room', room);
     return { roomId: room.id };
   }
 

@@ -1,7 +1,6 @@
 'use client'
 import { ContextGlobal } from '@/context/contex';
-import React, { use, useContext, useEffect, useState } from 'react'
-import { Eye } from 'lucide-react';
+import React, { useContext, useEffect, useState } from 'react'
 import LeaderboardEntry from '@/components/LeaderBoard/LeaderBorditem';
 import RankEntre from '@/components/LeaderBoard/RankEntre';
 import Loading from '@/components/game/Loading';
@@ -73,14 +72,14 @@ const Dashboard = () => {
      <h1 className="text-white font-bold text-3xl text-center mt-6 mb-8">LeaderBoard</h1>
      <div className='flex flex-row'>
      <div className='w-[70%]'>
-        <div className=" w-[99%] mb-3 p-2 text-white font-bold md:text-[15px] text-[10px]  flex justify-between  bg-[#FFFFFF]/30 ml-1 rounded-xl">
+        {leaderboardData.length > 0 && <div className=" w-[99%] mb-3 p-2 text-white font-bold md:text-[15px] text-[10px]  flex justify-between  bg-[#FFFFFF]/30 ml-1 rounded-xl">
           <h1 className=''>Rank</h1>
           <h1>Player</h1>
           <h1>Matches</h1>
           <h1>Wins</h1>
           <h1>Score</h1>
           <h1>Profile</h1>
-        </div>
+        </div>}
         <div className='h-[720px] overflow-auto w-full'>
         {leaderboardData.length > 0 ? leaderboardData.map((entry, index) => (
           <LeaderboardEntry

@@ -7,7 +7,9 @@ import { themeAtom } from './atoms';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { ContextGlobal } from '@/context/contex';
 import { toast } from 'react-toastify';
-import GameSwiper from './GameSwiper';
+import dynamic from 'next/dynamic';
+// import GameSwiper from './GameSwiper';
+const GameSwiper = dynamic(() => import('./GameSwiper'), { ssr: false });
 
 function Play()
 {
