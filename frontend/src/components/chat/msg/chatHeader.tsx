@@ -22,6 +22,9 @@ const Chatheader: React.FC<ChatheaderProps> = ({ username, status, userId, frien
     const handleBlock = () => {
         socket?.emit('blockFriend', userId);
     }
+    useEffect(() => {
+        console.log('isblocked:header ', friendBlock, 'blockByMe: ', blockByMe);
+    }, [friendBlock, blockByMe]);
     return (
         <>
             <div>

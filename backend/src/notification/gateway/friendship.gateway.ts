@@ -84,6 +84,7 @@ export class FriendshipGateway {
   @SubscribeMessage('blockFriend')
   async blockFriend(socket: Socket, payload: number) {
     try {
+      console.log("blockFriend", payload)
       const emitClient = this.friendship.getSocketsByUser(Number(payload));
       const friendshipBlock = await this.friendship.BlockFriend(socket, Number(payload));
       if(friendshipBlock){
@@ -100,6 +101,7 @@ export class FriendshipGateway {
   @SubscribeMessage('unblockFriend')
   async unblockFriend(socket: Socket, payload: number) {
     try {
+      console.log("unblockFriend", payload)
       const emitClient = this.friendship.getSocketsByUser(Number(payload));
       const friendshipUnblock = await this.friendship.UnBlockFriend(socket, Number(payload));
       emitClient.forEach((socket) => {

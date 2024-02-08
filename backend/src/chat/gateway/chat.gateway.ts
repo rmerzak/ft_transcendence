@@ -80,7 +80,7 @@ export class GatewayGateway
   handleJoinRoom(_client: Socket, payload: { roomId: number }) {
     try {
       if (_client.hasOwnProperty('user') && _client['user'].hasOwnProperty('id')) {
-        // console.log("join-room ", payload);
+        console.log("join-room ", payload);
         if (!payload.hasOwnProperty('roomId') || _client.rooms.has(payload.roomId.toString())) return;
         const inRoom = this.roomService.getChatRoomMember(_client['user'].id, Number(payload.roomId));
         if (!inRoom) return;
@@ -100,6 +100,7 @@ export class GatewayGateway
       const room = await this.roomService.createChatRoom(_client, payload);
       if (room) {
         _client.join(room.id.toString());
+        this.server.to('1_public').emit('join-room-socket', { userId: _client['user'].id, chatRoomId: room.id });
         this.roomService.connectedClients.forEach((sockets, userId) => {
           if (userId !== _client['user'].id) {
             sockets.forEach(socket => {
@@ -122,7 +123,6 @@ export class GatewayGateway
 
   @SubscribeMessage('new-member')
   async handleMemberRoom(_client: Socket, payload: ChatRoom) {
-    // console.log("payload: ", payload);
     try {
       const room = await this.roomService.addMemberToRoom(_client, payload);
 
@@ -144,6 +144,7 @@ export class GatewayGateway
       });
       this.server.to(room.id.toString()).emit('receive-message', msg);
       this.server.to(room.id.toString()).emit('update_chat_room_member', room);
+      this.server.to('1_public').emit('join-room-socket', { userId: _client['user'].id, chatRoomId: room.id });
 
     } catch (error) {
       _client.emit('error', error.message);

@@ -28,7 +28,6 @@ const Room = () => {
             setError(err.response.data.message);
           });
       }
-      // chatSocket.emit('join-room', { roomId: Number(roomId) });
       chatSocket.on('receive-message', (message) => {
         setMessages((messages) => [...messages, message]);
       });

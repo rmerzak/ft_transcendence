@@ -46,6 +46,7 @@ const MsgShow: React.FC<MsgShowProps> = ({ messages, chatId, error }) => {
 
   useEffect(() => {
     if (state.chatRoomMembers.length > 0 && profile && profile?.id > 0 && friends) {
+      console.log('here msgshow');
       const targetMembers = state.chatRoomMembers.find((member) => member.user.id !== profile?.id);
       if (targetMembers) {
         const friendship = friends?.find((friend) => friend.receiver.id === targetMembers.user.id || friend.sender.id === targetMembers.user.id);

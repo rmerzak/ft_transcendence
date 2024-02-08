@@ -1,5 +1,5 @@
 'user client'
-import React, { useContext, useState, KeyboardEvent, ChangeEvent } from 'react'
+import React, { useContext, useState, KeyboardEvent, ChangeEvent, use, useEffect } from 'react'
 import Image from 'next/image';
 import { ContextGlobal } from '@/context/contex';
 import { Messages, Recent } from '@/interfaces';
@@ -21,7 +21,10 @@ const Sendchatmsg: React.FC<SendchatmsgProps> = ({ chatRoomId, isblocked, friend
     const { profile, chatSocket } = useContext(ContextGlobal);
     const [message, setMessage] = useState<string>('');
     const [showEmojiPicker, setShowEmojiPicker] = useState<boolean>(false);
-
+    
+    useEffect(() => {
+        console.log('isblocked: ', isblocked);
+    }, [isblocked]);
     const handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === 'Enter') {
             e.preventDefault();

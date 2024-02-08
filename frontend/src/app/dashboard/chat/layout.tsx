@@ -88,11 +88,18 @@ const Layout = ({ children }: any) => {
             chatSocket.emit('join-room', { roomId: res.chatRoomId , test: 'test'});
           }
         });
+        chatSocket.on('join-room-socket', (res: ChatRoomMember) => {
+          if (res.userId === profile.id) {
+            console.log('join-room-socket', res);
+            chatSocket.emit('join-room', { roomId: res.chatRoomId });
+          }
+        });
       }
       return () => {
         if (chatSocket) {
           chatSocket.off('leaveRoom');
           chatSocket.off('unban_from_room');
+          chatSocket.off('join-room-socket');
         }
       }
     }
