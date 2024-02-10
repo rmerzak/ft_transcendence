@@ -6,11 +6,12 @@ import { Logger } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { User } from '@prisma/client';
 import { UserDto } from '../Dto';
+import { RoomService } from 'src/chat/services/room/room.service';
 /// dont forget to add the userin the socket using the methode socket.data = user
 
 @WebSocketGateway({ cors: { origin: 'http://localhost:8080', credentials: true, namespace: '/profile' } })
 export class FriendshipGateway {
-  constructor(private readonly friendship: FriendshipService) { }
+  constructor(private readonly friendship: FriendshipService,private roomService: RoomService) { }
   @WebSocketServer()
   server: Server;
 
@@ -33,7 +34,7 @@ export class FriendshipGateway {
     try {
       const emitClient = this.friendship.getSocketsByUser(Number(payload));
       const request = await this.friendship.CreateFriendRequest(socket, Number(payload));
-      const notification = await this.friendship.CreateNotification(socket, Number(payload), 'friendRequest', 'you have a friend request', request,'FRIENDSHIP');
+      const notification = await this.friendship.CreateNotification(socket, Number(payload), 'friendRequest', 'You have a friend request', request,'FRIENDSHIP');
       emitClient.forEach((socket) => {
         socket.emit('friendRequest', { notification: notification, friendship: request, status: true, error: null });
       });
@@ -119,21 +120,25 @@ export class FriendshipGateway {
       socket.emit('RequestError', { notification: null, friendship: null, status: false, error: error.message });
     }
   }
+
   @SubscribeMessage('challengeGame')
-  async challengeGame(socket: Socket, payload: number) {
-    console.log("challengeGame", payload)
+  async challengeGame(socket: Socket, payload: {playerId: number, gameId: string}) {
     try {
-      const emitClient = this.friendship.getSocketsByUser(Number(payload));
+      const emitClient = this.friendship.getSocketsByUser(payload.playerId);
       // you must creaet a room or a game logic here
       // const rooom = await this.friendship.CreateRoom(socket, Number(payload));
-      const gameNotification = await this.friendship.CreateNotification(socket, Number(payload), 'challengeGame', '343123455-5613232-654313-654321312', null,'GAME');
-      console.log("gameNotification", gameNotification)
+      const gameNotification = await this.friendship.CreateNotification(socket, payload.playerId, 'challengeGame', payload.gameId , null,'GAME');
       emitClient.forEach((socket) => {
         socket.emit('challengeGame', { notification: gameNotification , friendship: null, status: true, error: null });
       });
     } catch (error) {
       socket.emit('RequestError', { notification: null, friendship: null, status: false, error: error.message });
     }
+  }
 
+  @SubscribeMessage('refuseChallenge')
+  refuse(socket: Socket, payload: string) {
+    const game = this.server.of('/game').to(payload);
+    game.emit('refuseChallenge');
   }
 }

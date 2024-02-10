@@ -26,12 +26,13 @@ const PreAuthForm = ({ exit }: { exit: boolean }) => {
       const response = await axios.get('http://localhost:3000/auth/2fa/generate', {
         withCredentials: true,
       });
-      console.log(response.data);
+      if (!response.data)
+        toast.error("Error generating QR code");
       const imageUrl = response.data.uri;
       setQrCodeImage(imageUrl);
       setSecret(response.data.secret);
     } catch (error) {
-      console.error('Error fetching QR code:', error);
+      toast.error("Error generating QR code");
     }
   };
 
@@ -64,9 +65,18 @@ const PreAuthForm = ({ exit }: { exit: boolean }) => {
         formData.append("upload_preset", "ping_users");
         ii = await CloudinaryAPIService.ImageName(formData);
       }
+      if (newUsername && !/^[a-zA-Z]+$/.test(newUsername)) {
+        toast.error('Please enter a valid username');
+        return;
+      }
       const response = await axios.post('http://localhost:3000/auth/finish-auth', { image: ii, username: newUsername }, {
         withCredentials: true,
       });
+      if(!response.data) {
+        toast.error("Error updating profile");
+        return;
+      }
+
       if (response.data.isVerified === true) {
         setProfile(response.data); // must find the error here
         if(exit == true)
@@ -76,10 +86,10 @@ const PreAuthForm = ({ exit }: { exit: boolean }) => {
         }
           
       }
-      else
-        router.push("/");
     } catch (error) {
-      console.log(error);
+      if (error.response.status === 401) {
+        toast.error("Error updating profile");
+      }
     }
   }
 

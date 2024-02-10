@@ -6,7 +6,8 @@ import { io } from "socket.io-client";
 import { getUnreadNotification } from "@/api/notifications/notifications.api";
 import { data } from "@/data/MatchHistory";
 import NotificationItem from "./NotificationItem";
-import OutsideClickHandler from 'react-outside-click-handler';
+import OutsideClickHandler from 'react-outside-click-handler'
+
 const Notification = () => {
     const { setSocket, notification ,setNotification}: any = useContext(ContextGlobal);
     const [open, setOpen] = useState<boolean>(false);
@@ -33,6 +34,7 @@ const Notification = () => {
             }
         });
         socket?.on('challengeGame', (data: any) => {
+            console.log('here', data.notification);
             if(data.notification){
                 setNotification((prev: Notification[]) => [data.notification, ...prev]);
                 toast.success('Your friend challenged you to a game');
@@ -48,12 +50,13 @@ const Notification = () => {
             socket?.off('friendRequest');
             socket?.off('friendAcceptRequest');
             socket?.off('RequestError');
+            socket?.off('challengeGame');
             socket.disconnect();
         };
     }, []);
     return (
         <div className="relative">
-        <div className="flex relative " onClick={() => setOpen(!open)}>
+        <div className="flex relative cursor-pointer" onClick={() => setOpen(!open)}>
             <Bell color="#ffff" className="color-red-500" size={30}  />
             <span className="text-white bg-red-500 flex items-center justify-center font-bold text-[12px] rounded-full  w-[16px] h-[16px]  absolute top-0 left-4">{notification.length}</span>
         </div>

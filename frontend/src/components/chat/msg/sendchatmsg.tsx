@@ -9,8 +9,6 @@ import data from '@emoji-mart/data'
 import Picker from '@emoji-mart/react'
 import { SmilePlus } from 'lucide-react';
 
-
-
 interface SendchatmsgProps {
     chatRoomId: number;
     isblocked?: boolean;
@@ -97,6 +95,7 @@ const Sendchatmsg: React.FC<SendchatmsgProps> = ({ chatRoomId, isblocked, friend
                         <input
                             type="text"
                             name='message'
+                            id='message'
                             placeholder="Please Be nice in the chat"
                             className="w-full h-full border-none focus:ring-0 bg-transparent"
                             onChange={(e) => handleInputChange(e)}

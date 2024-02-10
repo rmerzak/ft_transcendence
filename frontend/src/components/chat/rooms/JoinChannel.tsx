@@ -16,28 +16,30 @@ function JoinChannel({ channel, setOpenChannel }: { channel: ChatRoom, setOpenCh
 
 
 
-  const handleNewMember = (e: any) => {
-    e.preventDefault();
-    const { password } = formData;
-    const channelData = {
-      name: channel.name,
-      passwordHash: password,
-    };
-    console.log("Channel Data:", channelData);
-    router.push(`/dashboard/chat/room/${channel.id}`);
-    chatSocket?.emit("join-room", { roomId: Number(channel?.id) });
+  
+    const handleNewMember = (e:any) => {
+      e.preventDefault();
+      if (channel.visibility !== RoomVisibility.PRIVATE) {
+      const { password } = formData;
+      const channelData = {
+        name: channel.name,
+        passwordHash: password,
+      };
     chatSocket?.emit("new-member", channelData);
     setFormData({
-      name: "",
-      password: "",
-    });
-    setValidationError(null);
-  };
-
-  return (
-    <>
-      <div className=" fixed top-0 left-0 w-screen h-screen bg-[#000000]/50 z-50 flex justify-center items-center font-inter">
-        <form onSubmit={handleNewMember}>
+        name: "",
+        password: "",
+      });
+    } else {
+      chatSocket?.emit("request-join-room", channel);
+    }
+      setValidationError(null);
+    };
+  
+    return (
+      <>
+        <div className=" fixed top-0 left-0 w-screen h-screen bg-[#000000]/50 z-50 flex justify-center items-center font-inter">
+          <form onSubmit={handleNewMember}>
           <div className="bg-[#311150]/80 w-[550px] h-[200px] rounded-3xl shadow-lg font-light mx-2">
             <div className="flex justify-center items-center p-3">
               <h1 className="text-white md:text-lg">Join Channel {channel.name}</h1>

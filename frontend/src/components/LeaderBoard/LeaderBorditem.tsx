@@ -1,5 +1,6 @@
 import React from 'react';
 import { Eye } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 const LeaderboardEntry: React.FC<{
   rank: number;
@@ -8,8 +9,10 @@ const LeaderboardEntry: React.FC<{
   username: string;
   matchesPlayed: number;
   wins: number;
-  ratio: string;
-}> = ({ rank, avatarSrc, smallAvatarSrc, username, matchesPlayed, wins, ratio }) => {
+  score: number;
+  profile: string;
+}> = ({ rank, avatarSrc, smallAvatarSrc, username, matchesPlayed, wins, score, profile }) => {
+  const router = useRouter();
   return (
     <div className='w-full bg-[#FFFFFF]/10 my-2 rounded-xl py-1  px-2 flex justify-between'>
       <div className='flex items-center'>
@@ -33,11 +36,11 @@ const LeaderboardEntry: React.FC<{
         <h1 className='text-gray-300 font-thin md:text-[12px] text-[10px] mx-1 flex items-bottom '>Wins</h1>
       </div>
       <div className='flex flex-col space-y-3 relative md:right-5 right-2'>
-        <h1 className='text-white font-semibold md:text-[16px] text-[12px] flex items-top mx-1 '>{ratio}</h1>
-        <h1 className='text-gray-300 font-thin md:text-[12px] text-[10px] mx-1 flex items-bottom '>Ratio</h1>
+        <h1 className='text-white font-semibold md:text-[16px] text-[12px] flex items-top mx-1 '>{score}</h1>
+        <h1 className='text-gray-300 font-thin md:text-[12px] text-[10px] mx-1 flex items-bottom '>Elo</h1>
       </div>
       <div>
-        <button className=' h-full text-white flex items-center md:mr-2 mr-1'> <Eye size={24} strokeWidth={2.5}/></button>
+        <button className=' h-full text-white flex items-center md:mr-2 mr-1'> <Eye size={24} strokeWidth={2.5} onClick={() => {router.push(`/dashboard/profile/${profile}`)}}/></button>
       </div>
     </div>
   );

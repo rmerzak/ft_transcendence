@@ -34,7 +34,7 @@ const Room = () => {
         // console.log("message", message);
         if (message.hasOwnProperty('userId') && profile?.id === message.userId )
           router.push('/dashboard/chat');
-        if (message.chatRoomId === Number(roomId)) {
+        else if (message.chatRoomId === Number(roomId)) {
           getChatRoomMessages(Number(roomId), 'room').then((res) => {
             if (res.data.length > messages.length)
               setMessages(res.data);

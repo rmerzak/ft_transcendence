@@ -11,8 +11,10 @@ function SearchBar() {
     const [open, setOpen] = useState<boolean>(false);
     const inputRef = useRef<HTMLInputElement | null>(null);
     async function searchProfile(search : string) {
+        if (search && !/^[a-zA-Z]+$/.test(search)) {
+            return;
+          }
         const response = await axios.get(`http://localhost:3000/users/search/${search}`,{withCredentials:true}).then((res) => {setSearched(res.data); console.log(res.data);});
-        console.log("searched",searched);
     }
     const debouncedSearchBackend = useDebouncedCallback(searchProfile, 500);
     useEffect(() => {

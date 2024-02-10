@@ -70,6 +70,7 @@ model User {
   gameMatches Int @default(0)
   gameLoses Int @default(0)
   gameElo Int @default(800)
+  gameRank Int @default(0)
   
   uGames Game[] @relation(name: "userGame")
   oGames Game[] @relation(name: "oppGame")
@@ -123,6 +124,7 @@ model Friendship {
 enum RequestType {
   FRIENDSHIP
   GAME
+  CHAT
 }
 model Notification {
   id Int @id @default(autoincrement())

@@ -13,7 +13,11 @@ const TwoFa = () => {
   const [code, setCode] = useState<string>("");
   async function handleSubmit(event: any) {
     event.preventDefault();
-    const response = await axios.get(`http://localhost:3000/auth/2fa/check/` + code, {
+    if (!/^\d+$/.test(code)) {
+      toast.error('Please enter a valid numeric code');
+      return;
+    }
+    await axios.get(`http://localhost:3000/auth/2fa/check/` + code, {
       withCredentials: true,
     }).then((res) => {
 
@@ -23,7 +27,9 @@ const TwoFa = () => {
       } else {
         toast('invalid code');
       }
-    }).catch((err) => { router.push("/");});
+    }).catch((err) => { 
+      router.push("/");
+    });
   }
 
 

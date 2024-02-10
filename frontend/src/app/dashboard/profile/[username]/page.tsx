@@ -16,7 +16,7 @@ import UserNotFound from '@/components/profile/UserNotFound'
 function Page() {
 
   const { username } = useParams();
-  const [user, setUser] = useState<any>();
+  const [user, setUser] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const { profile }:any = useContext(ContextGlobal);
   const [loading, setLoading] = useState(true);
@@ -26,10 +26,10 @@ function Page() {
       const fetchProfile = async () => {
           try {
               const response = await axios.get(`http://localhost:3000/users/profile/${username}`, { withCredentials: true });
-              const  user  = response.data;
-              setUser(user);
+              if (response.data) {
+                setUser(response.data);
+              }
             } catch (error) {
-              console.error('Error fetching profile:', error);
               setError('Error fetching profile');
             } finally {
               setLoading(false);
@@ -40,7 +40,7 @@ function Page() {
 }, [username, profile]);
   return (
     loading ? <Loading /> :
-    error ? <UserNotFound /> :
+    (error || !user) ? <UserNotFound /> :
       <div className="p-4 mx-2 bg-profile">
         <h1 className="text-white font-bold text-3xl text-center mb-7 mt-2">Profile</h1>
         <div className="w-full h-[250px] border-spacing-1 mb-3 border-[#ffff]">

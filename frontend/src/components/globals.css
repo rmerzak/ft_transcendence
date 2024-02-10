@@ -58,6 +58,7 @@
 
 .login-gradient {
   background: url("/background.jpg"); /* Replace 'your-image.jpg' with the path to your image file */
+  background-attachment: fixed;
 
   background-blend-mode: overlay, color-burn, multiply, difference, difference,
     normal;

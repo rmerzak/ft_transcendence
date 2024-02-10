@@ -35,23 +35,13 @@ const nextConfig = {
 
     },
     images: {
-      //domains: ['res.cloudinary.com','cdn.intra.42.fr','i.pravatar.cc'],
-      remotePatterns: [{
-        protocol: 'https',
-        hostname: 'res.cloudinary.com',
-        pathname: '**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'cdn.intra.42.fr',
-        pathname: '**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'i.pravatar.cc',
-        pathname: '**',
-      },
-    ]
+      domains: ['res.cloudinary.com','cdn.intra.42.fr','i.pravatar.cc'],
+    //   remotePatterns: [{
+    //     protocol: 'https',
+    //     hostname: '**',
+    //     pathname: '**',
+    //   },
+    // ]
     },
     reactStrictMode: false,
   };

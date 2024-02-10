@@ -1,15 +1,17 @@
 // FriendItem.js
 'use client'
-import React, { use, useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { MessagesSquare, Gamepad2, XOctagon, UserMinus } from 'lucide-react';
-import { Friendship, User } from '@/interfaces';
-import { getUserInfoById } from '@/api/user/user';
+import { Friendship } from '@/interfaces';
 import { ContextGlobal } from '@/context/contex';
-import { stat } from 'fs';
+import ChallengeAlert from '@/components/game/ChallengeAlert';
+
 
 const FriendItem = ({ friend } : { friend: Friendship }) => {
   const {  profile, socket  } : any = useContext(ContextGlobal);
   const [status, setStatus] = useState<string>();
+  const [openAlert, setOpenAlert] = useState<boolean>(false);
+  const [ isPlaying, setIsPlaying ] = useState(false);
   const handleFriend = (status:boolean) => {
     if(status){
       
@@ -18,12 +20,35 @@ const FriendItem = ({ friend } : { friend: Friendship }) => {
     } 
     else {
         socket?.emit('blockFriend', profile?.id === friend.sender.id ? friend.receiver.id : friend.sender.id);
-        //setFriends((prev:any) => prev.filter((item:any) => item.senderId !== friend.senderId));
+        // setFriends((prev:any) => prev.filter((item:any) => item.senderId !== friend.senderId));
     }
-}
-const handleChalenge = () => {
-  socket?.emit('challengeGame', profile?.id === friend.sender.id ? friend.receiver.id : friend.sender.id);
-}
+  }
+
+  useEffect(() => {
+    const eventSource = new EventSource(`${process.env.API_BASE_URL}/api/is-playing`, {
+      withCredentials: true,
+    });
+
+    eventSource.onmessage = (event) => {
+        try {
+            const parsedData = JSON.parse(event.data);
+            parsedData.forEach((player: { playerId: number, isPlaying: boolean }) => {
+                if (player.isPlaying && player.playerId === profile.id) {
+                    setIsPlaying(true);
+                } else if (!player.isPlaying && player.playerId === profile.id) {
+                    setIsPlaying(false);
+                }
+            });
+        } catch {}
+    };
+
+    return () => {
+      eventSource.close();
+    };
+
+  }, [profile.id]);
+
+
   useEffect(() => {
     if (profile?.id === friend.sender.id) {
       setStatus(friend.receiver.status);
@@ -48,10 +73,12 @@ const handleChalenge = () => {
           <MessagesSquare />
         </button>
         {
-          status === 'INGAME' ? null :
-        <button className="md:px-2 px-1">
-          <Gamepad2 onClick={()=> handleChalenge()}/>
+          !isPlaying &&
+        <button  className="md:px-2 px-1">
+          <Gamepad2 onClick={()=> setOpenAlert(!openAlert)}/>
         </button>
+        } {
+          openAlert && <ChallengeAlert openAl={() => {setOpenAlert(!openAlert);}} playerId={profile?.id === friend.sender.id ? friend.receiver.id : friend.sender.id} />
         }
         <button className="md:px-2 px-1">
           <XOctagon  onClick={()=> handleFriend(false)} />

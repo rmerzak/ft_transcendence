@@ -16,22 +16,22 @@ import { ChatRoom } from '@/interfaces';
 
 const Layout = ({ children }: any) => {
   return (
-    <div className="flex login-gradient">
-      <ContextProvider>
-        <JotaiProvider>
-
-          <div className="flex-1">
-            <Sidebar />
-          </div>
-          <div className="flex-[10] ">
-            <Navbar />
-            {children}
-          </div>
-          <ToastContainer />
-        </JotaiProvider>
-      </ContextProvider>
-    </div>
-  )
-}
-
-export default Layout
+      <div className="flex login-gradient h-full">
+        <ContextProvider>
+          <JotaiProvider>
+              {/* <div className="flex-1 bg-red-500"> */}
+                  <Sidebar />
+              {/* </div>  */}
+              <div className="flex-[10] pb-28 ">
+                  <Navbar />
+                  {children}
+              </div>
+              <ToastContainer />
+          </JotaiProvider>
+        </ContextProvider>
+      </div>
+    )
+  }
+  
+  export default Layout
+  

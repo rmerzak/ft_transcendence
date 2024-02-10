@@ -9,12 +9,13 @@ import { getFriendList } from "@/api/friendship/friendship.api";
 
 const InviteFriendsItem = ({ friend } : { friend: Friendship }) => {
     const {  profile,socket,setFriends,friends  } : any = useContext(ContextGlobal);
-    function getFriends() {
-        getFriendList().then((res) => {
-          if (res.data)
-            setFriends((prev:any) => prev = res.data);
+    function getFriends(number: number) {
+        getFriendList().then((res: AxiosResponse<any>) => {
+            if (res.data) {
+                setFriends((prev: any) => prev = res.data);
+            }
         }).catch((err) => { console.log(err) });
-      }
+    }
     const handleAcceptFriend = (status:boolean) => {
         if(status){
             socket?.emit('friendAcceptRequest', friend.senderId);
