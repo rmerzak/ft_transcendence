@@ -182,7 +182,7 @@ const Channels: React.FC<Channel> = ({ header }) => {
 
   return (
     <>
-      <div className=" relative flex flex-col items-center justify-center my-3 mx-auto w-[90%] ">
+      <div className="relative flex flex-col items-center justify-center my-3 mx-auto w-[90%]">
         <div className="flex justify-center">
           <input
             id="channelName"
@@ -196,7 +196,7 @@ const Channels: React.FC<Channel> = ({ header }) => {
             <Search size={24} strokeWidth={2.5} />
           </div>
         </div>
-          <div ref={suggestedRef} className="right-[65px] z-10 top-[40px] border-cyan-900 absolute bg-search rounded-b-lg border ">
+          <div ref={suggestedRef} className="right-1/5 z-10 top-[42px] border-cyan-900 absolute bg-search rounded-b-lg overflow-auto h-[180px]">
             {open && searched.map((room: ChatRoom, index: any) => (
               <div key={index}>
                 <ChannelItem channel={room} HandleOpen={HandleOpen} />
@@ -205,7 +205,7 @@ const Channels: React.FC<Channel> = ({ header }) => {
           </div>
       </div>
 
-      <div className="flex flex-col rounded-md md:w-[90%] w-[90%] mx-auto h-[69%] ">
+      <div className="flex flex-col rounded-md md:w-[90%] w-[90%] mx-auto h-[69%]">
         <h1 className="mt-3 text-white md:text-xl text-center">
           Joined Channels
         </h1>

@@ -4,7 +4,13 @@ import { Key } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useContext, useState } from 'react'
 
-function JoinChannel({ channel, setOpenChannel }: { channel: ChatRoom, setOpenChannel: React.Dispatch<React.SetStateAction<ChatRoom | null>> }) {
+interface PopupProps {
+  channel: ChatRoom
+  setOpenChannel: React.Dispatch<React.SetStateAction<ChatRoom | null>>
+  Handlepopup(): void
+}
+
+function JoinChannel({ channel, setOpenChannel, Handlepopup }: PopupProps) {
   const { chatSocket } = useContext(ContextGlobal);
   const [Validationerror, setValidationError] = useState<string | null>(null);
   const router = useRouter();
@@ -34,8 +40,9 @@ function JoinChannel({ channel, setOpenChannel }: { channel: ChatRoom, setOpenCh
       chatSocket?.emit("request-join-room", channel);
     }
       setValidationError(null);
+      Handlepopup();
     };
-  
+
     return (
       <>
         <div className=" fixed top-0 left-0 w-screen h-screen bg-[#000000]/50 z-50 flex justify-center items-center font-inter">
