@@ -10,53 +10,37 @@ import { ContextGlobal } from '@/context/contex';
 interface MsgShowProps {
   messages?: Messages[];
   roomId: number;
-  error?: string;
 }
 
-const MsgRmShow: React.FC<MsgShowProps> = ({ messages, roomId, error }) => {
+const MsgRmShow: React.FC<MsgShowProps> = ({ messages, roomId }) => {
   const [room, setRoom] = useState<ChatRoom>();
   const { chatSocket } = useContext(ContextGlobal);
 
   useEffect(() => {
     if (roomId) {
       getChatRoomById(roomId).then((res) => {
-          // console.log('getChatRoomById', res.data);
-          setRoom(res.data);
-        }).catch((err) => {
-          console.log(err);
-        });
+        setRoom(res.data);
+      }).catch((err) => {
+        console.log(err);
+      });
     }
     if (chatSocket) {
-      chatSocket.on('updated-room', (room) => {
-        // console.log('updated-room msgShow', room);
+      chatSocket.on('update-room', (room) => {
         setRoom(room);
       });
     }
     return () => {
-      chatSocket?.off('updated-room');
+      chatSocket?.off('update-room');
     };
   }, [roomId, chatSocket]);
   return (
-    <>
-      <div className="bg-[#5D5959]/40 w-[66%] text-white h-[1030px] rounded-3xl p-4 hidden md:block">
-        {error === '' ? (
-          <>
-            <RoomHeader  chatRoom={room} />
-            
-            <div className='mt-6 h-[88%]'>
-              <Chat messages={messages} />
-            </div>
-            <SendMsgRm chatRoomId={roomId} />
-          </>
-        ) : (
-          <div className="flex justify-center items-center h-full text-2xl">
-            <p>
-              {error}
-            </p>
-          </div>
-        )}
+    <div className="bg-[#5D5959]/40 w-[66%] text-white h-[1030px] rounded-3xl p-4 hidden md:block">
+      <RoomHeader chatRoom={room} />
+      <div className='mt-6 h-[88%]'>
+        <Chat messages={messages} />
       </div>
-    </>
+      <SendMsgRm chatRoomId={roomId} />
+    </div>
   )
 };
 export default MsgRmShow;

@@ -83,6 +83,7 @@ model User {
   sendNotification Notification[] @relation("Sender")
   user Recent[] @relation("recent")
   senderReqJoin RoomReqJoin[] @relation(name: "senderReqJoin")
+  // bannedUser roomBan[] @relation(name: "bannedUser")
 }
 
 model Game {
@@ -152,6 +153,7 @@ model ChatRoom {
   messages Message[]
   recent Recent[] @relation("chatrecent")
   reqJoin RoomReqJoin[] @relation(name: "RedJoin")
+  // banRoom roomBan[] @relation(name: "banRoom")
 }
 
 model ChatRoomMember {
@@ -165,7 +167,8 @@ model ChatRoomMember {
   is_admin Boolean @default(false)
   leftAt DateTime?
   status RoomStatus? @default(NORMAL)
-  mutedDuration BigInt?
+  mutedDate DateTime?
+  mutedDuration String?
   @@id([userId, chatRoomId])
 }
 model RoomReqJoin {
@@ -202,3 +205,14 @@ model Recent {
   @@id([userId, chatRoomId])
 }
 
+// model roomBan {
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+//   userId Int
+//   chatRoomId Int
+//   user User @relation(name: "bannedUser", fields: [userId], references: [id], onDelete: Cascade)
+//   chatRoom ChatRoom @relation(name: "banRoom",fields: [chatRoomId], references: [id], onDelete: Cascade)
+//   reason String
+//   duration BigInt
+//   @@id([userId, chatRoomId])
+// }

@@ -33,8 +33,8 @@ export interface Notification {
   senderImage: string;
 }
 export enum Blocker {
-  'SENDER',
-  'RECEIVER'
+  SENDER = 'SENDER',
+  RECEIVER = 'RECEIVER'
 }
 export interface Friendship {
   id: number;
@@ -72,7 +72,9 @@ export interface ChatRoomMember {
   is_admin: boolean;
   leftAt: string;
   user: User;
+  status: string;
   chatRoom: ChatRoom;
+  mutedDuration: String;
 }
 
 export interface Messages {

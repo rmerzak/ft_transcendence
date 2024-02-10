@@ -12,6 +12,7 @@ export class MsgService {
   async getChatRoomMessages(
     chatRoomId: number,
     userId: number,
+    from: string
   ): Promise<Message[]> {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
@@ -21,11 +22,26 @@ export class MsgService {
       where: { id: chatRoomId },
     });
     if (!chatRoom) throw new Error('Chat room not found');
+    if (from === 'room' && !/[a-zA-Z]/.test(chatRoom.name.charAt(0)))
+      throw new Error('Invalid chat room');
     const chatRoomMember = await this.prisma.chatRoomMember.findUnique({
       where: { userId_chatRoomId: { userId: user.id, chatRoomId: chatRoom.id } },
     });
     if (!chatRoomMember) throw new Error('User not in chat room');
-    return await this.prisma.message.findMany({
+    if (chatRoomMember.status === RoomStatus.BANNED) throw new Error('Your are banned from this room');
+    const Friends = await this.prisma.friendship.findMany({
+      where: {
+        OR: [
+          {
+            senderId: userId,
+          },
+          {
+            receiverId: userId,
+          },
+        ],
+      },
+    });
+    const msgs = await this.prisma.message.findMany({
       where: {
         chatRoomId: chatRoomId,
       },
@@ -49,10 +65,18 @@ export class MsgService {
         }
       }
     });
+    if (from === 'user')
+      return msgs;
+    const filteredMsgs = msgs.filter((msg) => {
+      if (msg.senderId === userId) return true;
+      return !Friends.some((friend) => friend.block && (friend.senderId === msg.senderId || friend.receiverId === msg.senderId));
+    });
+  
+    return filteredMsgs;
   }
   // add user message
   async addMessage(messageData: Message, userId: number): Promise<Message> {
-    console.log("message data ",messageData);
+    // console.log("message data ",messageData);
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
     });
@@ -73,16 +97,16 @@ export class MsgService {
     } else {
       if (specificMember.status === RoomStatus.BANNED) throw new Error('Your are banned from this room');
       else if (specificMember.status === RoomStatus.MUTED) {
-        const result = compareDateWithCurrent(addDates(specificMember.updatedAt, Number(specificMember.mutedDuration)));
+        const result = compareDateWithCurrent(addDates(specificMember.mutedDate, Number(specificMember.mutedDuration)));
         if (result) throw new Error('Your are muted from this room');
-        else
-          await this.prisma.chatRoomMember.update({
-            where: { userId_chatRoomId: { userId: user.id, chatRoomId: chatRoom.id } },
-            data: {
-              status: RoomStatus.NORMAL,
-              mutedDuration: null,
-            }
-          });
+        // console.log("result in add Message", result);
+        await this.prisma.chatRoomMember.update({
+          where: { userId_chatRoomId: { userId: user.id, chatRoomId: chatRoom.id } },
+          data: {
+            status: RoomStatus.NORMAL,
+            mutedDuration: null,
+          }
+        });
       }
     }
     const msg = await this.prisma.message.create({

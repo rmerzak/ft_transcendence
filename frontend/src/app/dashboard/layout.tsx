@@ -14,22 +14,24 @@ import JotaiProvider from '@/app/dashboard/game/context/jotai';
 import ChannelPopup from '@/components/chat/rooms/ChannelPopup';
 import { ChatRoom } from '@/interfaces';
 
-const Layout = ({children} : any) => {
+const Layout = ({ children }: any) => {
   return (
-      <div className="flex login-gradient h-[1500px]">
-        <ContextProvider>
-            <div className="flex-1">
-                <Sidebar />
-            </div> 
-            <div className="flex-[10] ">
-                <Navbar />
-                {children}
-            </div>
-            <ToastContainer />
-        </ContextProvider>
-      </div>
-    )
-  }
-  
-  export default Layout
-  
+    <div className="flex login-gradient">
+      <ContextProvider>
+        <JotaiProvider>
+
+          <div className="flex-1">
+            <Sidebar />
+          </div>
+          <div className="flex-[10] ">
+            <Navbar />
+            {children}
+          </div>
+          <ToastContainer />
+        </JotaiProvider>
+      </ContextProvider>
+    </div>
+  )
+}
+
+export default Layout
