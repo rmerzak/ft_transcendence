@@ -92,7 +92,7 @@ const Channels = () => {
         }).catch((err) => { console.log(err) });
       }
       });
-      chatSocket?.on("update-room", () => {
+      chatSocket?.on("update-room_channel", () => {
         getChatRoomsJoined().then((res) => {
           if (res.data) {
             setChatRoomsJoined(res.data);
@@ -137,7 +137,7 @@ const Channels = () => {
       chatSocket?.off("ownedRoom");
       chatSocket?.off("error");
       chatSocket?.off("update_chat_room_member");
-      chatSocket?.off("update-room");
+      chatSocket?.off("update-room_channel");
       chatSocket?.off("deletedRoom");
       chatSocket?.off("unban_from_room_getData");
     };

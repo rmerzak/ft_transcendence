@@ -65,7 +65,7 @@ export class GatewayGateway
             _client.emit('error', error.message);
           }
           if (payload.recentData.length === index + 1) {
-            this.server.to(recent.chatRoomId.toString()).emit('receive-recent');
+            this.server.to('1_public').emit('receive-recent');
           }
         });
       }
@@ -145,6 +145,8 @@ export class GatewayGateway
       this.server.to(room.id.toString()).emit('receive-message', msg);
       this.server.to(room.id.toString()).emit('update_chat_room_member', room);
       this.server.to('1_public').emit('join-room-socket', { userId: _client['user'].id, chatRoomId: room.id });
+      _client.join(room.id.toString());
+      _client.emit('push', msg);
 
     } catch (error) {
       _client.emit('error', error.message);
@@ -165,8 +167,10 @@ export class GatewayGateway
         } as Message;
         const msg = await this.chatService.addMessage(msgData, _client['user'].id);
         this.server.to(room.id.toString()).emit('receive-message', msg);
-        this.server.to('1_public').emit('update-room', room);
+        this.server.to('1_public').emit('update-room_channel', room);
+        this.server.to('1_public').emit('update-room_msgRm', room);
       }
+      
     } catch (error) {
       _client.emit('error', error.message);
     }

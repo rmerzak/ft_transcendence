@@ -24,14 +24,22 @@ function JoinChannel({ channel, setOpenChannel }: { channel: ChatRoom, setOpenCh
       passwordHash: password,
     };
     console.log("Channel Data:", channelData);
-    router.push(`/dashboard/chat/room/${channel.id}`);
-    chatSocket?.emit("join-room", { roomId: Number(channel?.id) });
+    // router.push(`/dashboard/chat/room/${channel.id}`);
+    // chatSocket?.emit("join-room", { roomId: Number(channel?.id) });
     chatSocket?.emit("new-member", channelData);
     setFormData({
       name: "",
       password: "",
     });
+    chatSocket?.on("push", (data) => {
+      if (data) {
+        router.push(`/dashboard/chat/room/${channel.id}`);
+      }
+    });
     setValidationError(null);
+    return () => {
+      chatSocket?.off("push");
+    };
   };
 
   return (
