@@ -47,6 +47,9 @@ const Channels: React.FC<Channel> = ({ header }) => {
   const suggestedRef =useRef<HTMLDivElement | null>(null);
   const [search, setSearch] = useState<string>('');
   async function searchProfile(search: string) {
+    if (search && !/^[a-zA-Z0-9]+$/.test(search)) {
+      return;
+    }
     const response = await axios.get(`http://localhost:3000/chat/room/search/${search}`, { withCredentials: true }).then((res) => { setSearched(res.data); console.log(res.data); });
     console.log("searched", searched);
   }

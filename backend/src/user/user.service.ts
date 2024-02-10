@@ -46,8 +46,9 @@ export class UserService {
                 status: true,
             },
         });
+        console.log("user =",user);
         if (!user)
-            throw new BadRequestException('User not found');
+            null;
         return user;
     }
     async getUserProfileById(id: number) {

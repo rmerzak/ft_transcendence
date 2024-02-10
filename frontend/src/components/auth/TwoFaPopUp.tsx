@@ -15,7 +15,6 @@ const TwoFaPopUp = ({ open, onClose, image, secret }: any) => {
         const response = await axios.post('http://localhost:3000/auth/2fa/verify', {code: code, secret: secret}, {
             withCredentials: true,
         });
-        console.log(response);
         if (response.data === true) {
             onClose();
             setProfile({...profile, twoFactorEnabled: true});

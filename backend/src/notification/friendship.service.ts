@@ -15,7 +15,7 @@ export class FriendshipService {
             let payload = socket['payload'];
             let user = await this.prisma.user.findUnique({ where: { email: payload['email'] } });
             const userId = user?.id;
-            await this.prisma.user.update({where:{id:userId},data:{status:UserStatus.ONLINE}});
+            // await this.prisma.user.update({where:{id:userId},data:{status:UserStatus.ONLINE}});
             if (!this.connectedClients.has(userId)) {
                 this.connectedClients.set(userId, []);
             }
@@ -29,6 +29,7 @@ export class FriendshipService {
     }
 
     async handleDisconnect(socket: Socket): Promise<void> {
+        try{
         const userId = socket['payload']['sub'];
         const sockets = this.connectedClients.get(userId);
         if (sockets) {
@@ -40,6 +41,8 @@ export class FriendshipService {
                 await this.prisma.user.update({where:{id:userId},data:{status:UserStatus.OFFLINE}});
                 this.connectedClients.delete(userId);
             }
+        }} catch(error) {
+            throw new Error(error.message);
         }
     }
     getSocketsByUser(userId: number): any {
