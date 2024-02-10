@@ -1,8 +1,4 @@
 import React from "react";
-import { PlusCircle } from "lucide-react";
-import { MessagesSquare } from 'lucide-react';
-import { Gamepad2 } from 'lucide-react';
-import { XOctagon } from 'lucide-react';
 
 
 import { Friendship } from "@/interfaces";

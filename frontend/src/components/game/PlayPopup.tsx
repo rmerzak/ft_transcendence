@@ -1,59 +1,36 @@
-import React, { useContext } from "react";
+import React from "react";
 // import GameSwiper from "./GameSwiper";
 import OutsideClickHandler from "react-outside-click-handler";
-import { ContextGlobal } from "@/context/contex";
 import { useRouter } from "next/navigation";
-import { Mode, modeAtom } from "./atoms";
-import { useSetAtom } from "jotai";
 import dynamic from "next/dynamic";
 const GameSwiper = dynamic(() => import('./GameSwiper'), { ssr: false });
 
-const ChallengeAlert = ({
-	openAl,
-	playerId,
-}: {
-	openAl: any;
-	playerId: number;
-}) => {
-	const router = useRouter();
-	const setMode = useSetAtom(modeAtom);
-	const { socket }: any = useContext(ContextGlobal);
-	const createChallengeRoom = async () => {
-		try {
-			setMode(Mode.challenge);
-			const res = await fetch(
-				`${process.env.API_BASE_URL}/api/rooms-challenge`,
-				{
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					credentials: "include",
-				}
-			);
-			const data = await res.json();
-			if (data.roomId) {
-				socket?.emit("challengeGame", {
-					playerId: playerId,
-					gameId: data.roomId,
-				});
-				router.push(`/dashboard/game/${data.roomId}`, { scroll: false });
-			}
-		} catch {}
-	};
+function PlayPopup({ openAl }: { openAl: () => void}) {
+    const router = useRouter();
+	const createRoom = async () => {
+        try {
+            const res = await fetch(`${process.env.API_BASE_URL}/api/rooms`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+            });
+            const data = await res.json();
 
-	const challenge = () => {
-		createChallengeRoom();
-	};
+            if (data.roomId)
+                router.push(`/dashboard/game/${data.roomId}`, { scroll: false });
+        } catch {}
+    }
 
 	return (
 		<div className="fixed top-0 left-0 w-screen h-screen bg-black bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-30 z-50 flex justify-center items-center font-inter">
 			<div className="w-[30%]  rounded-3xl shadow-lg font-light mx-2">
 				<OutsideClickHandler onOutsideClick={openAl}>
 					<div role="alert" className="alert bg-transparent shadow-2xl border-0 flex">
-						<div className="flex flex-col ">
-							<div className="mb-8 rounded-2xl backdrop-blur-md bg-[#311150]/50 w-full ">
-								<h1 className="text-center font-inter text-sm sm:text-xl p-4 text-[#ffffff]/80">Challenge</h1>
+						<div className="flex flex-col">
+							<div className="mb-8 rounded-2xl backdrop-blur-md bg-[#311150]/50 w-full">
+								<h1 className="text-center font-inter text-sm sm:text-xl p-4 text-[#ffffff]/80">Play Online</h1>
 								<GameSwiper />
 								<h1 className='text-center font-inter text-sm sm:text-xl p-4 text-[#ffffff]/80 '>
                         			How to play
@@ -75,8 +52,8 @@ const ChallengeAlert = ({
 								<button className="btn w-32 h-10 font-inter text-white text-md bg-[#ffffff]/20" onClick={openAl}>
 									Cancel
 								</button>
-								<button className="btn w-32 h-10 font-inter text-white text-md bg-[#811B77]/50" onClick={challenge}>
-									Challenge
+								<button className="btn w-32 h-10 font-inter text-white text-md bg-[#811B77]/50" onClick={createRoom}>
+									Play
 								</button>
 							</div>
 						</div>
@@ -85,6 +62,6 @@ const ChallengeAlert = ({
 			</div>
 		</div>
 	);
-};
+}
 
-export default ChallengeAlert;
+export default PlayPopup

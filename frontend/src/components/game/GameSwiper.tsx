@@ -6,7 +6,7 @@ import './styles.css';
 import Image from 'next/image'
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { EffectCoverflow, Pagination } from 'swiper/modules';
-import { useAtomValue, useSetAtom } from 'jotai';
+import { useSetAtom } from 'jotai';
 import { themeAtom } from './atoms';
 import { botThemeAtom } from './atoms';
 

@@ -1,13 +1,9 @@
 // FriendItem.js
 'use client'
-import React, { use, useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { MessagesSquare, Gamepad2, XOctagon, UserMinus } from 'lucide-react';
-import { Friendship, User } from '@/interfaces';
-import { getUserInfoById } from '@/api/user/user';
+import { Friendship } from '@/interfaces';
 import { ContextGlobal } from '@/context/contex';
-import Swal from 'sweetalert2';
-import GameSwiper from '@/components/game/GameSwiper';
-import { renderToString } from 'react-dom/server';
 import ChallengeAlert from '@/components/game/ChallengeAlert';
 
 

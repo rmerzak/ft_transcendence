@@ -243,6 +243,7 @@ export class GameService {
 
   // this method is called when a player leaves a room
   leaveRoom(roomId: string, playerId: string, client: Socket): void {
+    console.log('hello');
     const roomIndex = this.rooms.findIndex((room) => room.id === roomId);
 
     if (roomIndex !== -1) {
@@ -351,9 +352,9 @@ export class GameService {
   }
 
   // get Statistics
-  async getStatistics(playerId: number) {
+  async getStatistics(playerName: string) {
     const user = await this.prisma.user.findUnique({
-      where: { id: playerId },
+      where: { username: playerName },
       select: {
         gameMatches: true,
         gameWins: true,
@@ -366,10 +367,21 @@ export class GameService {
   }
 
   // get Match History
-  async getMatchHistory(playerId: number) {
+  async getMatchHistory(playerName: string) {
+
+    const user = await this.prisma.user.findUnique({
+      where: { username: playerName },
+      select: {
+        id: true,
+      },
+    });
+
+    if (!user) {
+      return [];
+    }
     const matchHistory = await this.prisma.game.findMany({
       where: {
-        OR: [{ userPlayerId: playerId }, { userOpponentId: playerId }],
+        OR: [{ userPlayerId: user.id }, { userOpponentId: user.id }],
       },
       select: {
         userPlayerId: true,
@@ -397,13 +409,20 @@ export class GameService {
   async getLeaderboard() {
     // Fetch the leaderboard without updating ranks
     const users = await this.prisma.user.findMany({
-      select: {
-        id: true,
-        gameRank: true,
+      where: {
+        gameMatches: {
+          gt: 0,
+        },
       },
-      orderBy: {
-        gameWins: 'desc',
-      },
+      orderBy: 
+      [
+        {
+          gameElo: 'desc',
+        },
+        {
+          gameWins: 'desc',
+        },
+      ],
     });
   
     // Update gameRank for each user based on their position in the list
@@ -426,18 +445,29 @@ export class GameService {
         gameMatches: true,
         gameWins: true,
       },
-      orderBy: {
-        gameWins: 'desc',
+      where: {
+        gameMatches: {
+          gt: 0,
+        },
       },
+      orderBy:
+      [
+        {
+          gameElo: 'desc',
+        },
+        {
+          gameWins: 'desc',
+        },
+      ],
     });
   
     return updatedUsers;
   }
 
   // get Achievements
-  async getAchievements(playerId: number) {
+  async getAchievements(playerName: string) {
     const user = await this.prisma.user.findUnique({
-      where: { id: playerId },
+      where: { username: playerName },
       select: {
         gameMatches: true,
         gameWins: true,

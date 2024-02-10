@@ -1,6 +1,6 @@
 import { Body, Controller, Post, Sse, UseGuards } from '@nestjs/common';
 import { GameService } from '../services/game.service';
-import { PlayerDto, RoomDto } from '../dto/player.dto';
+import { PlayerNameDto, RoomDto } from '../dto/game.dto';
 import { JwtGuard } from 'src/auth/guard';
 import { Observable, startWith } from 'rxjs';
 import { Leaderboard, MatchHistory, Statistics } from '../types/types';
@@ -14,7 +14,6 @@ export class GameController {
   @Post('api/rooms')
   createRoom(): { roomId: string } {
     const room = this.game.roomWithAvailableSlots() || this.game.createRoom();
-    console.log('room', room);
     return { roomId: room.id };
   }
 
@@ -40,21 +39,20 @@ export class GameController {
   // api for get statistics
   @Post('api/statistics')
   async getStatistics(
-    @Body() id: PlayerDto,
+    @Body() username: PlayerNameDto,
   ): Promise<{ statistics: Statistics }> {
-    const { playerId } = id;
-    const statistics = await this.game.getStatistics(playerId);
+    const { playerName } = username;
+    const statistics = await this.game.getStatistics(playerName);
     return { statistics };
   }
 
   // api for get match history
   @Post('api/match-history')
   async getMatchHistory(
-    @Body() id: PlayerDto,
+    @Body() username: PlayerNameDto,
   ): Promise<{ matchHistory: MatchHistory[] }> {
-    console.log('id', id);
-    const { playerId } = id;
-    const matchHistory = await this.game.getMatchHistory(playerId);
+    const { playerName } = username;
+    const matchHistory = await this.game.getMatchHistory(playerName);
     return { matchHistory };
   }
 
@@ -68,10 +66,10 @@ export class GameController {
   // api for get achievements
   @Post('api/achievements')
   async getAchievements(
-    @Body() id: PlayerDto,
+    @Body() username: PlayerNameDto,
   ): Promise<{ achievements: string[] }> {
-    const { playerId } = id;
-    const achievements = await this.game.getAchievements(playerId);
+    const { playerName } = username;
+    const achievements = await this.game.getAchievements(playerName);
     return { achievements };
   }
 

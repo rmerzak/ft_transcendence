@@ -6,10 +6,6 @@ import Statistics from "@/components/profile/Statistics"
 import { data } from "@/data/MatchHistory"
 import { useContext } from "react"
 import { ContextGlobal } from "@/context/contex"
-import { useEffect } from "react"
-import { getUserInfo } from "@/api/user/user"
-import { User } from "@/interfaces"
-import { useParams } from "next/navigation"
 
 const Profile = () => {
   const { profile } : any = useContext(ContextGlobal);

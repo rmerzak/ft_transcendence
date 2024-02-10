@@ -1,67 +1,119 @@
 'use client'
 import { ContextGlobal } from '@/context/contex';
-import React, { useContext } from 'react'
-import { Eye } from 'lucide-react';
+import React, { useContext, useEffect, useState } from 'react'
 import LeaderboardEntry from '@/components/LeaderBoard/LeaderBorditem';
 import RankEntre from '@/components/LeaderBoard/RankEntre';
+import Loading from '@/components/game/Loading';
+import PlayPopup from '@/components/game/PlayPopup';
 
+type LesderboardEntry = {
+  gameElo: number;
+  gameMatches: number;
+  gameRank: number;
+  gameWins: number;
+  id: number;
+  image: string;
+  username: string;
+}
 
 const Dashboard = () => {
-  const leaderboardData = [
-    { rank: 1, avatarSrc: '/mberri.png', smallAvatarSrc: '/Pandora.png', username: 'UserGuest123', matchesPlayed: 100, wins: 500, ratio: '50%' },
-    { rank: 2, avatarSrc: '/rabi.png', smallAvatarSrc: '/commodor.png', username: 'UserGuest123', matchesPlayed: 100, wins: 500, ratio: '50%' },
-    { rank: 3, avatarSrc: '/people-01.png', smallAvatarSrc: '/freax.png', username: 'UserGuest123', matchesPlayed: 100, wins: 500, ratio: '50%' },
-    { rank: 4, avatarSrc: '/people-01.png', smallAvatarSrc: '/Bios.png', username: 'UserGuest123', matchesPlayed: 100, wins: 500, ratio: '50%' },
-    { rank: 5, avatarSrc: '/mberri.png', smallAvatarSrc: '/freax.png', username: 'UserGuest123', matchesPlayed: 100, wins: 500, ratio: '50%' },
-    { rank: 6, avatarSrc: '/people-02.png', smallAvatarSrc: '/Bios.png', username: 'UserGuest123', matchesPlayed: 100, wins: 500, ratio: '50%' },
-    { rank: 7, avatarSrc: '/people-01.png', smallAvatarSrc: '/freax.png', username: 'UserGuest123', matchesPlayed: 100, wins: 500, ratio: '50%' },
-    { rank: 8, avatarSrc: '/people-03.png', smallAvatarSrc: '/Pandora.png', username: 'UserGuest123', matchesPlayed: 100, wins: 500, ratio: '50%' },
-    { rank: 9, avatarSrc: '/people-02.png', smallAvatarSrc: '/freax.png', username: 'UserGuest123', matchesPlayed: 100, wins: 500, ratio: '50%' },
-    { rank: 10, avatarSrc: '/mberri.png', smallAvatarSrc: '/freax.png', username: 'UserGuest123', matchesPlayed: 100, wins: 500, ratio: '50%' },
-    { rank: 11, avatarSrc: '/mberri.png', smallAvatarSrc: '/Bios.png', username: 'UserGuest123', matchesPlayed: 100, wins: 500, ratio: '50%' },
-    { rank: 12, avatarSrc: '/people-01.png', smallAvatarSrc: '/freax.png', username: 'UserGuest123', matchesPlayed: 100, wins: 500, ratio: '50%' },
-    { rank: 13, avatarSrc: '/people-02.png', smallAvatarSrc: '/commodor.png', username: 'UserGuest123', matchesPlayed: 100, wins: 500, ratio: '50%' },
-    { rank: 14, avatarSrc: '/mberri.png', smallAvatarSrc: '/freax.png', username: 'UserGuest123', matchesPlayed: 100, wins: 500, ratio: '50%' },
-    { rank: 15, avatarSrc: '/people-03.png', smallAvatarSrc: '/Pandora.png', username: 'UserGuest123', matchesPlayed: 100, wins: 500, ratio: '50%' },
-    { rank: 16, avatarSrc: '/mberri.png', smallAvatarSrc: '/Bios.png', username: 'UserGuest123', matchesPlayed: 100, wins: 500, ratio: '50%' },
-    { rank: 17, avatarSrc: '/people-02.png', smallAvatarSrc: '/freax.png', username: 'UserGuest123', matchesPlayed: 100, wins: 500, ratio: '50%' },
-    { rank: 18, avatarSrc: '/people-03.png', smallAvatarSrc: '/freax.png', username: 'UserGuest123', matchesPlayed: 100, wins: 500, ratio: '50%' },
-    { rank: 19, avatarSrc: '/rabi.png', smallAvatarSrc: '/commodor.png', username: 'UserGuest123', matchesPlayed: 100, wins: 500, ratio: '50%' },
-    { rank: 20, avatarSrc: '/people-03.png', smallAvatarSrc: '/freax.png', username: 'UserGuest123', matchesPlayed: 100, wins: 500, ratio: '50%' },
-    { rank: 21, avatarSrc: '/mberri.png', smallAvatarSrc: '/Pandora.png', username: 'UserGuest123', matchesPlayed: 100, wins: 500, ratio: '50%' },
-    { rank: 22, avatarSrc: '/people-03.png', smallAvatarSrc: '/Bios.png', username: 'UserGuest123', matchesPlayed: 100, wins: 500, ratio: '50%' },
-  ];
+
+  const { profile }: any = useContext(ContextGlobal);
+  const [leaderboardData, setLeaderboardData] = useState<LesderboardEntry[]>([
+    {
+      gameElo: 0,
+      gameMatches: 0,
+      gameRank: 0,
+      gameWins: 0,
+      id: 0,
+      image: '/avatar.jpeg',
+      username: 'username',
+    },
+  ]);
+  const [rank, setRank] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [openAl, setOpenAl] = useState<boolean>(false);
+
+  const fetchLeaderboardData = async () => {
+    try {
+      setLoading(true);
+      // use fetch
+      const res = await fetch(`${process.env.API_BASE_URL}/api/leaderboard`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+      const data = await res.json();
+      setLeaderboardData(data.leaderboard);
+      data.leaderboard.forEach((entry: LesderboardEntry) => {
+        if (entry.id === profile.id) {
+          setRank(entry.gameRank);
+        }
+      });
+    } catch {}
+    finally {
+      setLoading(false);
+    }
+  }
+  
+  useEffect(() => {
+    if (profile.id !== -1) {
+      fetchLeaderboardData();
+    }
+  }, [profile.id, leaderboardData?.length]);
+  
   return (
+    <>
+      { openAl && <PlayPopup openAl={() => setOpenAl(!openAl)} />}
     <div className="bg-profile h-screen m-4 py-4 pl-4 md:pr-0 pr-2 backdrop-blur-md">
+      <Loading isLoading={loading} />
      <h1 className="text-white font-bold text-3xl text-center mt-6 mb-8">LeaderBoard</h1>
      <div className='flex flex-row'>
      <div className='w-[70%]'>
-        <div className=" w-[99%] mb-3 p-2 text-white font-bold md:text-[15px] text-[10px]  flex justify-between  bg-[#FFFFFF]/30 ml-1 rounded-xl">
+        {leaderboardData.length > 0 && <div className=" w-[99%] mb-3 p-2 text-white font-bold md:text-[15px] text-[10px]  flex justify-between  bg-[#FFFFFF]/30 ml-1 rounded-xl">
           <h1 className=''>Rank</h1>
           <h1>Player</h1>
           <h1>Matches</h1>
           <h1>Wins</h1>
-          <h1>Ratio</h1>
+          <h1>Score</h1>
           <h1>Profile</h1>
-        </div>
+        </div>}
         <div className='h-[720px] overflow-auto w-full'>
-        {leaderboardData.map((entry, index) => (
+        {leaderboardData.length > 0 ? leaderboardData.map((entry, index) => (
           <LeaderboardEntry
             key={index}
-            rank={entry.rank}
-            avatarSrc={entry.avatarSrc}
-            smallAvatarSrc={entry.smallAvatarSrc}
+            rank={entry.gameRank}
+            avatarSrc={entry.image}
+            smallAvatarSrc="/Pandora.png"
             username={entry.username}
-            matchesPlayed={entry.matchesPlayed}
-            wins={entry.wins}
-            ratio={entry.ratio}
+            matchesPlayed={entry.gameMatches}
+            wins={entry.gameWins}
+            score={entry.gameElo}
+            profile={entry.username}
           />
-        ))}
+        )) : 
+        <div className='flex flex-col justify-center items-center'>
+          <h1 className='text-white font-inter text-center mt-5 text-3xl'>No player is registered in the leaderboard</h1>
+          <h2 className='text-white font-inter text-center mt-5 text-3xl'><span className='text-[#BC51BE] text-bold'>Play</span> and you'll be here</h2>
+          <button onClick={() => setOpenAl(!openAl)} className='btn mt-5 w-20 text-white bg-[#BC51BE]/50'>
+            Play
+          </button>
+        </div>
+        }
         </div>
         </div>
-        <RankEntre rank={1} avatarSrcWinner='/mberri.png' avatarSrcSecond='/people-03.png' avatarSrcThird='/rabi.png' bestRank={1}/>
+        <RankEntre
+          rank={rank}
+          avatarSrcWinner={leaderboardData.length > 0 ? leaderboardData[0].image : '/avatar.jpeg'}
+          avatarSrcSecond={leaderboardData.length > 1 ? leaderboardData[1].image : '/avatar.jpeg'}
+          avatarSrcThird={leaderboardData.length > 2 ? leaderboardData[2].image : '/avatar.jpeg'}
+          bestRank={1}
+        />
      </div>
     </div>
+    </>
   )
 }
 

@@ -9,6 +9,7 @@ import Swal from 'sweetalert2';
 import { useRouter } from 'next/navigation';
 import { modeAtom } from '@/components/game/atoms';
 import { usePathname } from 'next/navigation';
+import AuthWrapper from '@/components/auth/AuthWrapper';
 
 
 const Game = () => {
@@ -61,31 +62,33 @@ const Game = () => {
     }, [router, theme, roomId, mode, check]);
     
     return (
-        <GameProvider>
-        {
-          theme !== -1 && check &&
-          <div className='w-[88%] mx-auto text-center p-[1%] shadow-md rounded-3xl bg-[#311251]/80 top-[50%]  -translate-y-[50%] absolute'>
+        <AuthWrapper>
+            <GameProvider>
+            {
+            theme !== -1 && check &&
+            <div className='w-[88%] mx-auto text-center p-[1%] shadow-md rounded-3xl bg-[#311251]/80 top-[50%]  -translate-y-[50%] absolute'>
 
-                <div className='text-3xl font-black text-white m-4'>
-                  <h1>Game</h1>
-                </div>
-
-                <div className="flex justify-around items-center bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-900/70 to-gray-600/70 rounded-3xl shadow-md p-[1%] rotate-[90deg] min-[1280px]:rotate-0">
-                    <div className="flex-none">
-                        <User id={UserEnum.USER}/>
+                    <div className='text-3xl font-black text-white m-4'>
+                    <h1>Game</h1>
                     </div>
 
-                    <div className="flex-grow flex items-center justify-center">
-                        <Pong />
-                    </div>
+                    <div className="flex justify-around items-center bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-900/70 to-gray-600/70 rounded-3xl shadow-md p-[1%] rotate-[90deg] min-[1280px]:rotate-0">
+                        <div className="flex-none">
+                            <User id={UserEnum.USER}/>
+                        </div>
 
-                    <div className="flex-none">
-                        <User id={UserEnum.OPPONENT}/>
+                        <div className="flex-grow flex items-center justify-center">
+                            <Pong />
+                        </div>
+
+                        <div className="flex-none">
+                            <User id={UserEnum.OPPONENT}/>
+                        </div>
                     </div>
-                </div>
-          </div>
-        }
-      </GameProvider>
+            </div>
+            }
+            </GameProvider>
+        </AuthWrapper>
   );
 };
 

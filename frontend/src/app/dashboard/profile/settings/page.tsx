@@ -1,7 +1,7 @@
 'use client'
 import PreAuthForm from '@/components/auth/PreAuthForm'
 import { ContextGlobal } from '@/context/contex';
-import React, { useContext, useState } from 'react'
+import React, { useContext } from 'react'
 import DisableTwoFa from '@/components/auth/DisableTwoFa';
 function Settings() {
     const { profile } : any = useContext(ContextGlobal);

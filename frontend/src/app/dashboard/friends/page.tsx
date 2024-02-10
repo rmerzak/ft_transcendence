@@ -2,10 +2,10 @@
 import React, { use, useContext, useEffect } from "react";
 import { getFriendList } from "@/api/friendship/friendship.api";
 import { ContextGlobal } from "@/context/contex";
-import { get } from "https";
 import ListOfFriends from "@/components/Friends/friends/ListOfFriends";
 import InviteFriends from "@/components/Friends/invitefriend/InviteFriends";
 import BlackList from "@/components/Friends/blockedFriends/BlackList";
+import AuthWrapper from "@/components/auth/AuthWrapper";
 
 const Friends = () => {
   const { profile, setProfile, setFriends, friends, socket }: any = useContext(ContextGlobal);
@@ -14,7 +14,7 @@ const Friends = () => {
       if (res.data)
         setFriends(res.data);
       console.log("friends inside 1", friends);
-    }).catch((err) => { console.log(err) });
+    }).catch((err) => {  });
   }
   useEffect(() => {
     getFriends(profile?.id);
@@ -51,14 +51,16 @@ const Friends = () => {
   }, [profile, socket]);
   
   return (
-    <div className="bg-profile py-4 px-2 mx-4 ">
-      <h1 className="text-white font-bold text-3xl text-center mb-4">Friends</h1>
-      <div className="flex md:flex-row flex-col">
-        <ListOfFriends friends={friends} />
-        <InviteFriends friends={friends} />
-        <BlackList friends={friends} />
+    <AuthWrapper>
+      <div className="bg-profile py-4 px-2 mx-4 ">
+        <h1 className="text-white font-bold text-3xl text-center mb-4">Friends</h1>
+        <div className="flex md:flex-row flex-col">
+          <ListOfFriends friends={friends} />
+          <InviteFriends friends={friends} />
+          <BlackList friends={friends} />
+        </div>
       </div>
-    </div>
+    </AuthWrapper>
   )
 }
 

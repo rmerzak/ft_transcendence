@@ -21,7 +21,7 @@ const RankEntre: React.FC<{
             <div className='relative'>
               <img src={avatarSrcWinner} alt="" className='md:w-[65px] md:h-[65px] w-[42px] h-[42px] rounded-full'/>
               <p className='text-white font-bold text-center'>#1</p>
-              <img src="/king.png" alt="avatar" className="absolute -top-3 left-1 md:-top-5 md:left-3 md:w-[30px] md:h-[30px] w-[20px] h-[20px]" style={{ filter: 'saturate(150%) brightness(120%)' }}/>
+              <img src="/king.png" alt="avatar" className="absolute -top-3 left-1 md:-top-7 md:left-[1rem] md:w-[30px] md:h-[30px] w-[20px] h-[20px]" style={{ filter: 'saturate(150%) brightness(120%)' }}/>
             </div>
             <div className='mt-16'>
               <img src={avatarSrcThird} alt="" className='md:w-[55px] md:h-[55px] w-[30px] h-[30px] rounded-full'/>
@@ -34,17 +34,17 @@ const RankEntre: React.FC<{
           </div>
           <div className='flex justify-center mb-4'>
             <div className='relative'>
-              <img src="/trophy.png" alt="avatar" className="md:w-[140px] md:h-[140px] w-[42px] h-[40px] rounded-full"/>
+              <img src="/trophy.png" alt="avatar" className="md:w-[140px] md:h-[140px] w-[42px] h-[40px]"/>
               <div className='absolute md:top-10 top-3 left-1/2 transform -translate-x-1/2 -translate-y-1/2'>
-                <p className='text-gray-500 font-bold md:text-3xl text-[10px]'>{`#` + rank}</p>
+                <p className='text-gray-500 font-bold md:text-3xl text-[10px]'>#{rank !== 0 ? rank : '?'}</p>
               </div>
             </div>
           </div>
-          <h1 className='text-gray-300 font-thin md:text-xl text-[10px] text-center mt-8' style={{ textShadow: '1px 1px 2px rgba(255, 255, 255, 0.3)' }}>Your Best Rank</h1>
+          {/* <h1 className='text-gray-300 font-thin md:text-xl text-[10px] text-center mt-8' style={{ textShadow: '1px 1px 2px rgba(255, 255, 255, 0.3)' }}>Your Best Rank</h1>
           <div className="flex justify-center mt-1">
               <div className="md:mb-4 mb-2 border-b border-white w-6 md:w-16"></div>
-          </div>
-          <p className='text-white font-bold text-center md:text-3xl'> {`#` + bestRank}</p>
+          </div> */}
+          {/* <p className='text-white font-bold text-center md:text-3xl'> {`#` + bestRank}</p> */}
      </div>
     )
 }
