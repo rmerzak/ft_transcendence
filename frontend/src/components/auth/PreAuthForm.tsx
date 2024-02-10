@@ -86,8 +86,8 @@ const PreAuthForm = ({ exit }: { exit: boolean }) => {
         }
           
       }
-    } catch (error) {
-      if (error.response.status === 401) {
+    } catch (error:any) {
+      if (error?.response?.status === 401) {
         toast.error("Error updating profile");
       }
     }
