@@ -24,7 +24,7 @@ interface State {
 }
 
 const MsgShow: React.FC<MsgShowProps> = ({ messages, chatId, error }) => {
-  const { profile, friends } = useContext(ContextGlobal);
+  const { profile, friends, socket } = useContext(ContextGlobal);
   const [state, setState] = useState<State>({
     username: '',
     friendId: 0,
@@ -39,14 +39,32 @@ const MsgShow: React.FC<MsgShowProps> = ({ messages, chatId, error }) => {
       getChatRoomMembers(chatId).then((res) => {
         setState(prevState => ({ ...prevState, chatRoomMembers: res.data }));
       }).catch((err) => {
-        console.log(err);
+        console.error(err);
       });
     }
   }, [chatId]);
 
   useEffect(() => {
+    if (socket) {
+      socket.on('blockFriendChat', (data: { isblock: boolean, blockByMe: number }) => {
+        // console.log('blockFriendChat', data);
+        setState(prevState => ({ ...prevState, isblock: data.isblock, blockByMe: data.blockByMe }));
+      });
+      socket.on('unblockFriendChat', (data: { isblock: boolean, blockByMe: number }) => {
+        // console.log('unblockFriendChat', data);
+        setState(prevState => ({ ...prevState, isblock: data.isblock, blockByMe: data.blockByMe }));
+      });
+    }
+    return () => {
+      if (socket) {
+        socket.off('blockFriendChat');
+        socket.off('unblockFriendChat');
+      }
+    };
+  }, [socket]);
+
+  useEffect(() => {
     if (state.chatRoomMembers.length > 0 && profile && profile?.id > 0 && friends) {
-      console.log('here msgshow');
       const targetMembers = state.chatRoomMembers.find((member) => member.user.id !== profile?.id);
       if (targetMembers) {
         const friendship = friends?.find((friend) => friend.receiver.id === targetMembers.user.id || friend.sender.id === targetMembers.user.id);
@@ -69,7 +87,7 @@ const MsgShow: React.FC<MsgShowProps> = ({ messages, chatId, error }) => {
         }));
       }
     }
-  }, [state.chatRoomMembers, profile?.id, friends]);
+  }, [state.chatRoomMembers, profile?.id, friends ]);
 
   return (
     <>

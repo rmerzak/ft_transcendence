@@ -29,7 +29,19 @@ export class MsgService {
     });
     if (!chatRoomMember) throw new Error('User not in chat room');
     if (chatRoomMember.status === RoomStatus.BANNED) throw new Error('Your are banned from this room');
-    return await this.prisma.message.findMany({
+    const Friends = await this.prisma.friendship.findMany({
+      where: {
+        OR: [
+          {
+            senderId: userId,
+          },
+          {
+            receiverId: userId,
+          },
+        ],
+      },
+    });
+    const msgs = await this.prisma.message.findMany({
       where: {
         chatRoomId: chatRoomId,
       },
@@ -53,6 +65,14 @@ export class MsgService {
         }
       }
     });
+    if (from === 'user')
+      return msgs;
+    const filteredMsgs = msgs.filter((msg) => {
+      if (msg.senderId === userId) return true;
+      return !Friends.some((friend) => friend.block && (friend.senderId === msg.senderId || friend.receiverId === msg.senderId));
+    });
+  
+    return filteredMsgs;
   }
   // add user message
   async addMessage(messageData: Message, userId: number): Promise<Message> {

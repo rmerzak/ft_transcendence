@@ -23,13 +23,19 @@ const Chat = () => {
             setChatRoomId(Number(chatId));
           })
           .catch((err) => {
-            console.log("err", err);
+            console.error(err);
             setError("Can't get messages");
           });
       }
       chatSocket.emit('join-room', { roomId: Number(chatId) });
       chatSocket.on('receive-message', (message) => {
-        setMessages((messages) => [...messages, message]);
+        if (message.chatRoomId === Number(chatId)) {
+          getChatRoomMessages(Number(chatId), 'user').then((res) => {
+            if (res.data.length > messages.length)
+            setMessages(res.data);
+          });
+        }
+        // setMessages((messages) => [...messages, message]);
       });
     }
     return () => {

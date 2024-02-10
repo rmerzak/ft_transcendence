@@ -22,9 +22,7 @@ const Chatheader: React.FC<ChatheaderProps> = ({ username, status, userId, frien
     const handleBlock = () => {
         socket?.emit('blockFriend', userId);
     }
-    useEffect(() => {
-        console.log('isblocked:header ', friendBlock, 'blockByMe: ', blockByMe);
-    }, [friendBlock, blockByMe]);
+    
     return (
         <>
             <div>
@@ -42,8 +40,8 @@ const Chatheader: React.FC<ChatheaderProps> = ({ username, status, userId, frien
                             </button>
                             <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-purplee rounded-box w-52">
                                 <li><Link href={`/dashboard/profile/${username}`}>View profile</Link></li>
-                                <li>
-                                    <div onClick={friendBlock ? handleUnblock : handleBlock} className={`flex items-center space-x-2 cursor-pointer ${blockByMe !== profile?.id && friendBlock ? 'hidden' : ''}`}>
+                                <li className={`${blockByMe !== profile?.id && friendBlock ? 'hidden' : ''}`}>
+                                    <div onClick={friendBlock ? handleUnblock : handleBlock} className={`flex items-center space-x-2 cursor-pointer `}>
                                         {friendBlock ? 'Unblock ' : 'Block '}{username}
                                     </div>
                                 </li>

@@ -22,9 +22,6 @@ const Sendchatmsg: React.FC<SendchatmsgProps> = ({ chatRoomId, isblocked, friend
     const [message, setMessage] = useState<string>('');
     const [showEmojiPicker, setShowEmojiPicker] = useState<boolean>(false);
     
-    useEffect(() => {
-        console.log('isblocked: ', isblocked);
-    }, [isblocked]);
     const handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === 'Enter') {
             e.preventDefault();
@@ -34,7 +31,7 @@ const Sendchatmsg: React.FC<SendchatmsgProps> = ({ chatRoomId, isblocked, friend
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         let newValue = e.target.value.replace(/(.{10})/g, "$1\n");
-        console.log("Updated value:", newValue);
+        // console.log("Updated value:", newValue);
         setMessage(newValue);
     };
 

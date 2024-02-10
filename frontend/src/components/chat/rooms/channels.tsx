@@ -35,7 +35,7 @@ const Channels = () => {
   const [selectedChannel, setSelectedChannel] = useState<ChatRoom | null>(null);
 
   const handleClick = (ChatRoom: ChatRoom) => {
-    console.log("User entered:");
+    // console.log("User entered:");
     setOpen(true);
     setOpenChannel(ChatRoom);
   };
@@ -47,7 +47,7 @@ const Channels = () => {
   };
 
   const handleInput = () => {
-    console.log("User entered:", invalue);
+    // console.log("User entered:", invalue);
     setIsPrompetVisible(false);
     chatSocket?.emit("join-channel", invalue);
     setSelectedChannel(null);
@@ -104,7 +104,7 @@ const Channels = () => {
         }).catch((err) => { console.log(err) });
       });
       chatSocket?.on("deletedRoom", (data) => {
-        console.log('deletedRoom', data);
+        // console.log('deletedRoom', data);
         if (data) {
           getChatRoomsJoined().then((res) => {
             if (res.data) {
@@ -119,7 +119,7 @@ const Channels = () => {
       });
       chatSocket?.on("unban_from_room_getData", (data:ChatRoomMember) => {
         if (data)
-          console.log('unban_from_room channel', data);
+          // console.log('unban_from_room channel', data);
           getChatRoomsJoined().then((res) => {
             if (res.data) {
               setChatRoomsJoined(res.data);

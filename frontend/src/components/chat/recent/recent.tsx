@@ -30,7 +30,7 @@ const Recent: React.FC<RecentProps> = ({ rooms }) => {
         setRecent(res.data);
       })
       .catch((err) => {
-        console.log("err", err);
+        console.error(err);
       });
   }, []);
 
@@ -51,7 +51,7 @@ const Recent: React.FC<RecentProps> = ({ rooms }) => {
         getRecentMessages().then((res) => {
           setRecent(res.data);
         }).catch((err) => {
-          console.log("err", err);
+          console.error(err);
         });
       });
     }
@@ -69,12 +69,12 @@ const Recent: React.FC<RecentProps> = ({ rooms }) => {
               setRecent(res.data);
             })
             .catch((err) => {
-              console.log("err", err);
+              console.error(err);
             });
         }
       })
       .catch((err) => {
-        console.log("err", err);
+        console.error(err);
       });
   }
 

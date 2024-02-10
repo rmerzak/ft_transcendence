@@ -21,6 +21,9 @@ const Layout = ({ children }: any) => {
       withCredentials: true,
     });
 
+    if (!sock.connected) {
+      sock.connect();
+    }
     const handleConnect = () => {
       setChatSocket(sock);
       console.log('Connected to the server');
@@ -33,9 +36,6 @@ const Layout = ({ children }: any) => {
     sock.on('connect', handleConnect);
     sock.on('disconnect', handleDisconnect);
 
-    if (!sock.connected) {
-      sock.connect();
-    }
 
     return () => {
       console.log("Cleanup: Disconnecting socket");
@@ -51,7 +51,7 @@ const Layout = ({ children }: any) => {
         setChatRoomsJoined(res.data);
         res.data.forEach((room: ChatRoom) => {
           if (chatSocket){
-            console.log('Joining room', room.id);
+            // console.log('Joining room', room.id);
             chatSocket.emit('join-room', { roomId: Number(room.id) });
           }
         });
@@ -77,20 +77,20 @@ const Layout = ({ children }: any) => {
       if (profile?.id > 0) {
         chatSocket.on('leaveRoom', ({ roomId, userId }: { roomId: number, userId: number }) => {
           if (profile && profile?.id > 0 && chatSocket.id && userId === profile?.id) {
-            console.log("Leaving room", roomId);
+            // console.log("Leaving room", roomId);
             chatSocket.emit('leaveRoom', { roomId });
             router.push('/dashboard/chat');
           }
         });
         chatSocket.on('unban_from_room', (res: ChatRoomMember) => {
           if (res.userId === profile.id) {
-            console.log('unban_from_room', res);
+            // console.log('unban_from_room', res);
             chatSocket.emit('join-room', { roomId: res.chatRoomId , test: 'test'});
           }
         });
         chatSocket.on('join-room-socket', (res: ChatRoomMember) => {
           if (res.userId === profile.id) {
-            console.log('join-room-socket', res);
+            // console.log('join-room-socket', res);
             chatSocket.emit('join-room', { roomId: res.chatRoomId });
           }
         });

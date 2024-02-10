@@ -5,11 +5,13 @@ import { Messages } from '@/interfaces';
 import { ContextGlobal } from '@/context/contex';
 import { getChatRoomMessages } from '@/api/chat/chat.api';
 import MsgRmShow from '@/components/chat/rooms/msgShow/msgRmShow';
+import { useRouter } from 'next/navigation';
 
 
 const Room = () => {
-  const { chatSocket } = useContext(ContextGlobal);
+  const { chatSocket, profile } = useContext(ContextGlobal);
   const { roomId } = useParams()
+  const router = useRouter();
   const [messages, setMessages] = useState<Messages[]>([]);
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
@@ -20,7 +22,7 @@ const Room = () => {
         getChatRoomMessages(Number(roomId), 'room')
           .then((res) => {
             if (res.data) {
-              setMessages(res.data); 
+              setMessages(res.data);
               setLoading(false);
             }
           })
@@ -29,7 +31,18 @@ const Room = () => {
           });
       }
       chatSocket.on('receive-message', (message) => {
-        setMessages((messages) => [...messages, message]);
+        // console.log("message", message);
+        if (message.hasOwnProperty('userId') && profile?.id === message.userId )
+          router.push('/dashboard/chat');
+        if (message.chatRoomId === Number(roomId)) {
+          getChatRoomMessages(Number(roomId), 'room').then((res) => {
+            if (res.data.length > messages.length)
+              setMessages(res.data);
+          }).catch((err) => {
+            console.error(err);
+            setError(err.response.data.message);
+          });
+        }
       });
     }
     return () => {

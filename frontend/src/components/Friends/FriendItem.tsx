@@ -17,7 +17,7 @@ const FriendItem = ({ friend } : { friend: Friendship }) => {
     }).catch((err) => { console.log(err) });
   }, [friend,friends]);
   return (
-    (friend.status === 'ACCEPTED' && !friend.blocked) ? (
+    (friend.status === 'ACCEPTED' && !friend.block) ? (
     <div className={`text-white bg-achievements1 flex items-center justify-between py-1 mx-3`}>
       <div className="flex items-center">
         <div className="relative w-[30px] h-[30px] md:w-[40px] md:h-[40px] ml-2 mb-2 rounded-full">

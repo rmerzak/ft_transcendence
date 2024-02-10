@@ -296,6 +296,7 @@ export class ChatController {
     const user = req.user as User;
     const Id = Number(id);
     if (isNaN(Id) || !Number.isInteger(Id) || Id <= 0) {
+      console.log('Id', Id);
       throw new HttpException(
         {
           statusCode: HttpStatus.BAD_REQUEST,
@@ -307,6 +308,7 @@ export class ChatController {
     try {
       return await this.chatService.getChatRoomMessages(Id, user.id, from);
     } catch (error) {
+      console.log('error', error);
       throw new HttpException(
         {
           statusCode: HttpStatus.BAD_REQUEST,

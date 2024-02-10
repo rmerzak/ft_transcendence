@@ -80,7 +80,7 @@ export class GatewayGateway
   handleJoinRoom(_client: Socket, payload: { roomId: number }) {
     try {
       if (_client.hasOwnProperty('user') && _client['user'].hasOwnProperty('id')) {
-        console.log("join-room ", payload);
+        // console.log("join-room ", payload);
         if (!payload.hasOwnProperty('roomId') || _client.rooms.has(payload.roomId.toString())) return;
         const inRoom = this.roomService.getChatRoomMember(_client['user'].id, Number(payload.roomId));
         if (!inRoom) return;
@@ -202,10 +202,11 @@ export class GatewayGateway
           type: MessageStatus.ANNOUCEMENT,
         } as Message;
         const msg = await this.chatService.addMessage(msgData, _client['user'].id);
-        this.server.to(roomMem.chatRoomId.toString()).emit('receive-message', msg);
         // this.server.to(roomMem.chatRoomId.toString()).emit('ban_from_room', updatedRoom);
         this.server.to(roomMem.chatRoomId.toString()).emit('update_chat_room_member', updatedRoomMem);
         this.server.to(roomMem.chatRoomId.toString()).emit('leaveRoom', { roomId: roomMem.chatRoomId, userId: user.id });
+
+        this.server.to(roomMem.chatRoomId.toString()).emit('receive-message', { ...msg, userId: payload.userId });
       }
     } catch (error) {
       _client.emit('error', error.message);
@@ -353,7 +354,7 @@ export class GatewayGateway
           type: MessageStatus.ANNOUCEMENT,
         } as Message;
         const msg = await this.chatService.addMessage(msgData, _client['user'].id);
-        this.server.to(deletedRoomMem.chatRoomId.toString()).emit('receive-message', msg);
+        this.server.to(deletedRoomMem.chatRoomId.toString()).emit('receive-message', { ...msg, userId: payload.userId });
         this.server.to(deletedRoomMem.chatRoomId.toString()).emit('update_chat_room_member', deletedRoomMem);
         this.server.to(deletedRoomMem.chatRoomId.toString()).emit('leaveRoom', { roomId: deletedRoomMem.chatRoomId, userId: payload.userId });
       }
@@ -478,7 +479,7 @@ export class GatewayGateway
         }
       });
       if (room !== null) {
-        this.server.to(room.id.toString()).emit('receive-message', msg);
+        this.server.to(room.id.toString()).emit('receive-message', { ...msg, userId: _client['user'].id });
       }
       this.server.to(payload.id.toString()).emit('leaveRoom', { roomId: payload.id, userId: _client['user'].id });
     } catch (error) {
