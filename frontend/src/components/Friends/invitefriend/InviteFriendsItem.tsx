@@ -37,6 +37,7 @@ const InviteFriendsItem = ({ friend } : { friend: Friendship }) => {
                 
                 <div className="text-white flex items-center justify-around w-full h-[50%]">
                 <button onClick={()=> handleAcceptFriend(true)}><ThumbsUp size={20} strokeWidth={3}/></button>
+                <div className="text-gray-200 text-[15px] font-thin">{profile?.id === friend.sender.id ? friend.receiver.username : friend.sender.username}</div>
                 <button onClick={()=> handleAcceptFriend(false)}><ThumbsDown size={20} strokeWidth={3}/></button>
                 </div>
             </div> : null)
