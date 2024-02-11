@@ -136,7 +136,7 @@ const Channels: React.FC<Channel> = ({ header }) => {
           }).catch((err) => { console.log(err) });
         }
       });
-      chatSocket?.on("update_chat_room_member", () => {
+      chatSocket?.on("update-room_channel", () => {
         getChatRoomsJoined().then((res) => {
           if (res.data) {
             setChatRoomsJoined(res.data);
@@ -176,7 +176,10 @@ const Channels: React.FC<Channel> = ({ header }) => {
       chatSocket?.off("create-room");
       chatSocket?.off("ownedRoom");
       chatSocket?.off("error");
-      chatSocket?.off("updated-room");
+      chatSocket?.off("update_chat_room_member");
+      chatSocket?.off("update-room_channel");
+      chatSocket?.off("deletedRoom");
+      chatSocket?.off("unban_from_room_getData");
     };
   }, [chatSocket,search]);
 
@@ -283,6 +286,7 @@ const Channels: React.FC<Channel> = ({ header }) => {
                           <JoinChannel
                             channel={channel}
                             setOpenChannel={setOpenChannel}
+                            Handlepopup={() => {}}
                           />
                         )}
                       </OutsideClickHandler>
@@ -314,6 +318,7 @@ const Channels: React.FC<Channel> = ({ header }) => {
                           <JoinChannel
                             channel={channel}
                             setOpenChannel={setOpenChannel}
+                            Handlepopup={() => {}}
                           />
                         )}
                       </OutsideClickHandler>

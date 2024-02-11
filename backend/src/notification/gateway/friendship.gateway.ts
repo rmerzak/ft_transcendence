@@ -95,10 +95,12 @@ export class FriendshipGateway {
         emitClient.forEach((socket) => {
           socket.emit('blockFriend', { notification: friendshipBlock, friendship: null, status: true, error: null });
           socket.emit('blockFriendChat', { isblock: true, blockByMe: blockByMe });
+          socket.emit('blockUserOnline', { isblock: true, blockByMe: blockByMe });
         });
         // console.log("blockFriendd", blockByMe)
         socket.emit('blockFriend', { notification: friendshipBlock, friendship: null, status: true, error: null });
         socket.emit('blockFriendChat', { isblock: true, blockByMe: blockByMe });
+        socket.emit('blockUserOnline', { isblock: true, blockByMe: blockByMe });
       }
       } catch (error) {
         socket.emit('RequestError', { notification: null, friendship: null, status: false, error: error.message });
@@ -113,9 +115,11 @@ export class FriendshipGateway {
       emitClient.forEach((socket) => {
         socket.emit('unblockFriend', { notification: friendshipUnblock, friendship: null, status: true, error: null });
         socket.emit('unblockFriendChat', { isblock: false, blockByMe: 0 });
+        socket.emit('unblockUserOnline', { isblock: false, blockByMe: 0 });
       });
       socket.emit('unblockFriend', { notification: friendshipUnblock, friendship: null, status: true, error: null });
       socket.emit('unblockFriendChat', { isblock: false, blockByMe: 0 });
+      socket.emit('unblockUserOnline', { isblock: false, blockByMe: 0 });
     } catch (error) {
       socket.emit('RequestError', { notification: null, friendship: null, status: false, error: error.message });
     }

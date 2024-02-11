@@ -25,12 +25,12 @@ const MsgRmShow: React.FC<MsgShowProps> = ({ messages, roomId }) => {
       });
     }
     if (chatSocket) {
-      chatSocket.on('update-room', (room) => {
+      chatSocket.on('update-room_msgRm', (room) => {
         setRoom(room);
       });
     }
     return () => {
-      chatSocket?.off('update-room');
+      chatSocket?.off('update-room_msgRm');
     };
   }, [roomId, chatSocket]);
   return (
