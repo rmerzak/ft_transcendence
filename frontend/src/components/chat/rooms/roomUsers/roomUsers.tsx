@@ -31,7 +31,7 @@ function RoomUsers({ handleUserListClick, chatRoomId }: { handleUserListClick: a
             }).catch((err) => {
                 //throw err; must ask about the catch error what to do
             });
-            chatSocket?.on('update_chat_room_member', (res) => {
+            chatSocket?.on('update_chat_room_member_roomUsers', (res) => {
                 if (chatRoomId && res.chatRoomId === chatRoomId)
                 {
                     getChatRoomMembers(chatRoomId).then((res) => {
@@ -63,6 +63,10 @@ function RoomUsers({ handleUserListClick, chatRoomId }: { handleUserListClick: a
             //         });
             //     }
             // })
+        }
+        return () => {
+            chatSocket?.off('update_chat_room_member_roomUsers');
+            // chatSocket?.off('ban_from_room');
         }
     }, [chatRoomId, chatSocket])
 

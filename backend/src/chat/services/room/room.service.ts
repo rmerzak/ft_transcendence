@@ -13,75 +13,78 @@ export class RoomService {
     // get chat room for user
     public readonly connectedClients: Map<number, Socket[]> = new Map(); // must change to private its just for testing
 
-    async getChatRoomsForUser(userId: number): Promise<ChatRoom[]> {
-        const user = await this.prisma.user.findUnique({
-            where: { id: userId },
-        });
-        if (!user) {
-            throw new Error('User not found');
-        }
+    async getChatRoomsForUser(userId: number): Promise<ChatRoom[] | null> {
+        try {
+            const user = await this.prisma.user.findUnique({
+                where: { id: userId },
+            });
+            // if (!user) {
+            //     throw new Error('User not found');
+            // }
+            if (!user) return null;
 
-        const chatRooms = await this.prisma.chatRoom.findMany({
-            where: {
-                users: {
-                    some: {
-                        userId: userId,
+            const chatRooms = await this.prisma.chatRoom.findMany({
+                where: {
+                    users: {
+                        some: {
+                            userId: userId,
+                        },
                     },
                 },
-            },
-            select: {
-                id: true,
-                name: true,
-                visibility: true,
-                owner: true,
-                createdAt: true,
-                updatedAt: true,
-            },
-        }) as ChatRoom[];
-
-        // felter rooms that is banned from it or are begin with number
-        // const filteredChatRooms = chatRooms.filter(async room => {
-        //     const firstChar = room.name.charAt(0);
-        //     const roomMember = await this.prisma.chatRoomMember.findUnique({
-        //         where: { userId_chatRoomId: { userId: user.id, chatRoomId: room.id } },
-        //     });
-        //     console.log('firstChar: ', firstChar, 'roomMember: ', roomMember);
-        //     return isNaN(parseInt(firstChar, 10)) && roomMember.status !== RoomStatus.BANNED;
-        // });
-        // return filteredChatRooms;
-        const filteredChatRooms = await Promise.all(chatRooms.map(async room => {
-            const firstChar = room.name.charAt(0);
-            const roomMember = await this.prisma.chatRoomMember.findUnique({
-                where: { userId_chatRoomId: { userId: user.id, chatRoomId: room.id } },
-            });
-            // console.log('firstChar: ', firstChar, 'roomMember: ', roomMember);
-            return isNaN(parseInt(firstChar, 10)) && roomMember.status !== RoomStatus.BANNED;
-        }));
-        
-        const finalFilteredChatRooms = chatRooms.filter((_, index) => filteredChatRooms[index]);
-        return finalFilteredChatRooms;
+                select: {
+                    id: true,
+                    name: true,
+                    visibility: true,
+                    owner: true,
+                    createdAt: true,
+                    updatedAt: true,
+                },
+            }) as ChatRoom[];
+            if (chatRooms.length === 0) return null;
+            const filteredChatRooms = await Promise.all(chatRooms.map(async room => {
+                const firstChar = room.name.charAt(0);
+                const roomMember = await this.prisma.chatRoomMember.findUnique({
+                    where: { userId_chatRoomId: { userId: user.id, chatRoomId: room.id } },
+                });
+                return isNaN(parseInt(firstChar, 10)) && roomMember.status !== RoomStatus.BANNED;
+            }));
+            if (filteredChatRooms.length === 0) return null;
+            const finalFilteredChatRooms = chatRooms.filter((_, index) => filteredChatRooms[index]);
+            if (finalFilteredChatRooms.length === 0) return null;
+            return finalFilteredChatRooms;
+        } catch (error) {
+            // console.error('Error getting chat rooms for user:', error.message);
+            return null;
+        }
     }
 
     // get chat room Not for user
-    async getChatRoomsNotForUser(userId: number): Promise<ChatRoom[]> {
-        const user = await this.prisma.user.findUnique({
-            where: { id: userId },
-        });
-        if (!user) throw new Error('User not found');
+    async getChatRoomsNotForUser(userId: number): Promise<ChatRoom[] | null> {
+        try {
+            const user = await this.prisma.user.findUnique({
+                where: { id: userId },
+            });
+            // if (!user) throw new Error('User not found');
+            if (!user) return null;
 
-        const chatRooms = await this.prisma.chatRoom.findMany({
-            where: {
-                users: {
-                    none: {
-                        userId: userId,
+            const chatRooms = await this.prisma.chatRoom.findMany({
+                where: {
+                    users: {
+                        none: {
+                            userId: userId,
+                        },
+                    },
+                    visibility: {
+                        in: [RoomVisibility.PUBLIC, RoomVisibility.PROTECTED],
                     },
                 },
-                visibility: {
-                    in: [RoomVisibility.PUBLIC, RoomVisibility.PROTECTED],
-                },
-            },
-        });
-        return chatRooms;
+            });
+            if (chatRooms.length === 0) return null;
+            return chatRooms;
+        } catch (error) {
+            // console.error('Error getting chat rooms not for user:', error.message);
+            return null;
+        }
     }
 
 
@@ -368,8 +371,8 @@ export class RoomService {
             },
         });
         if (!chatRoomOwner) throw new Error('User not in chat room');
-        if (chatRoomOwner.chatRoom.owner !== user.id || !chatRoomOwner.is_admin) throw new Error('User not allowed to update chat room member');
-        const userToUpdate = await this.prisma.user.findUnique({ where: { id: chatRoomMemData.userId} });
+        if (chatRoomOwner.chatRoom.owner !== user.id && !chatRoomOwner.is_admin) throw new Error('User not allowed to update chat room member');
+        const userToUpdate = await this.prisma.user.findUnique({ where: { id: chatRoomMemData.userId } });
         if (!userToUpdate) throw new Error('User not found');
         if (chatRoomOwner.userId === userToUpdate.id) throw new Error('Owner or Admin not allowed to update himself');
         const chatRoomMember = await this.prisma.chatRoomMember.findUnique({
@@ -420,8 +423,8 @@ export class RoomService {
             },
         });
         if (!chatRoomOwner) throw new Error('User not in chat room');
-        if (chatRoomOwner.chatRoom.owner !== user.id ) throw new Error('User not allowed to remove chat room member');
-        const userToRemove = await this.prisma.user.findUnique({ where: { id: userId} });
+        if (chatRoomOwner.chatRoom.owner !== user.id && !chatRoomOwner.is_admin) throw new Error('You are not allowed to remove user from chat room');
+        const userToRemove = await this.prisma.user.findUnique({ where: { id: userId } });
         if (!userToRemove) throw new Error('User not found');
         return await this.prisma.chatRoomMember.delete({
             where: { userId_chatRoomId: { userId, chatRoomId } },
@@ -498,7 +501,7 @@ export class RoomService {
             });
             return requestToJoinChatRoom;
         } catch (error) {
-           throw new Error(error.message);
+            throw new Error(error.message);
         }
     }
     // create request to join chat room

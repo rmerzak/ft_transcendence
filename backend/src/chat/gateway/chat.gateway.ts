@@ -85,7 +85,7 @@ export class GatewayGateway
         const inRoom = this.roomService.getChatRoomMember(_client['user'].id, Number(payload.roomId));
         if (!inRoom) return;
         _client.join(payload.roomId.toString());
-        this.server.to(payload.roomId.toString()).emit('has-joined');
+        // this.server.to(payload.roomId.toString()).emit('has-joined');
       }
     } catch (error) {
       console.log("join-room ", error);
@@ -143,7 +143,8 @@ export class GatewayGateway
         }
       });
       this.server.to(room.id.toString()).emit('receive-message', msg);
-      this.server.to(room.id.toString()).emit('update_chat_room_member', room);
+      this.server.to(room.id.toString()).emit('update_chat_room_member_channel', room);
+      this.server.to(room.id.toString()).emit('update_chat_room_member_roomUsers', room);
       this.server.to('1_public').emit('join-room-socket', { userId: _client['user'].id, chatRoomId: room.id });
       _client.join(room.id.toString());
       _client.emit('push', msg);
@@ -207,7 +208,8 @@ export class GatewayGateway
         } as Message;
         const msg = await this.chatService.addMessage(msgData, _client['user'].id);
         // this.server.to(roomMem.chatRoomId.toString()).emit('ban_from_room', updatedRoom);
-        this.server.to(roomMem.chatRoomId.toString()).emit('update_chat_room_member', updatedRoomMem);
+        this.server.to(roomMem.chatRoomId.toString()).emit('update_chat_room_member_channel', updatedRoomMem);
+        this.server.to(roomMem.chatRoomId.toString()).emit('update_chat_room_member_roomUsers', updatedRoomMem);
         this.server.to(roomMem.chatRoomId.toString()).emit('leaveRoom', { roomId: roomMem.chatRoomId, userId: user.id });
 
         this.server.to(roomMem.chatRoomId.toString()).emit('receive-message', { ...msg, userId: payload.userId });
@@ -246,7 +248,8 @@ export class GatewayGateway
         this.server.to(roomMem.chatRoomId.toString()).emit('receive-message', msg);
         this.server.to('1_public').emit('unban_from_room', updatedRoomMem);
         this.server.to('1_public').emit('unban_from_room_getData', updatedRoomMem);
-        this.server.to(roomMem.chatRoomId.toString()).emit('update_chat_room_member', updatedRoomMem);
+        this.server.to(roomMem.chatRoomId.toString()).emit('update_chat_room_member_channel', updatedRoomMem);
+        this.server.to(roomMem.chatRoomId.toString()).emit('update_chat_room_member_roomUsers', updatedRoomMem);
       }
     } catch (error) {
       _client.emit('error', error.message);
@@ -281,7 +284,8 @@ export class GatewayGateway
         } as Message;
         const msg = await this.chatService.addMessage(msgData, _client['user'].id);
         this.server.to(roomMem.chatRoomId.toString()).emit('receive-message', msg);
-        this.server.to(roomMem.chatRoomId.toString()).emit('update_chat_room_member', updatedRoomMem);
+        this.server.to(roomMem.chatRoomId.toString()).emit('update_chat_room_member_channel', updatedRoomMem);
+        this.server.to(roomMem.chatRoomId.toString()).emit('update_chat_room_member_roomUsers', updatedRoomMem);
         this.server.to(roomMem.chatRoomId.toString()).emit('mute_apdate_sendMsgInput', updatedRoomMem);
         setTimeout(async () => {
           const tmp: ChatRoomMember = {
@@ -336,7 +340,8 @@ export class GatewayGateway
         } as Message;
         const msg = await this.chatService.addMessage(msgData, _client['user'].id);
         this.server.to(roomMem.chatRoomId.toString()).emit('receive-message', msg);
-        this.server.to(roomMem.chatRoomId.toString()).emit('update_chat_room_member', updatedRoomMem);
+        this.server.to(roomMem.chatRoomId.toString()).emit('update_chat_room_member_channel', updatedRoomMem);
+        this.server.to(roomMem.chatRoomId.toString()).emit('update_chat_room_member_roomUsers', updatedRoomMem);
         this.server.to(roomMem.chatRoomId.toString()).emit('mute_apdate_sendMsgInput', updatedRoomMem);
       }
     } catch (error) {
@@ -359,7 +364,8 @@ export class GatewayGateway
         } as Message;
         const msg = await this.chatService.addMessage(msgData, _client['user'].id);
         this.server.to(deletedRoomMem.chatRoomId.toString()).emit('receive-message', { ...msg, userId: payload.userId });
-        this.server.to(deletedRoomMem.chatRoomId.toString()).emit('update_chat_room_member', deletedRoomMem);
+        this.server.to(deletedRoomMem.chatRoomId.toString()).emit('update_chat_room_member_channel', deletedRoomMem);
+        this.server.to(deletedRoomMem.chatRoomId.toString()).emit('update_chat_room_member_roomUsers', deletedRoomMem);
         this.server.to(deletedRoomMem.chatRoomId.toString()).emit('leaveRoom', { roomId: deletedRoomMem.chatRoomId, userId: payload.userId });
       }
     } catch (error) {
@@ -397,7 +403,8 @@ export class GatewayGateway
         } as Message;
         const msg = await this.chatService.addMessage(msgData, _client['user'].id);
         this.server.to(roomMem.chatRoomId.toString()).emit('receive-message', msg);
-        this.server.to(roomMem.chatRoomId.toString()).emit('update_chat_room_member', updatedRoom);
+        this.server.to(roomMem.chatRoomId.toString()).emit('update_chat_room_member_channel', updatedRoom);
+        this.server.to(roomMem.chatRoomId.toString()).emit('update_chat_room_member_roomUsers', updatedRoom);
       }
     } catch (error) {
       _client.emit('error', error.message);
@@ -433,7 +440,8 @@ export class GatewayGateway
         } as Message;
         const msg = await this.chatService.addMessage(msgData, _client['user'].id);
         this.server.to(roomMem.chatRoomId.toString()).emit('receive-message', msg);
-        this.server.to(roomMem.chatRoomId.toString()).emit('update_chat_room_member', updatedRoom);
+        this.server.to(roomMem.chatRoomId.toString()).emit('update_chat_room_member_channel', updatedRoom);
+        this.server.to(roomMem.chatRoomId.toString()).emit('update_chat_room_member_roomUsers', updatedRoom);
       }
     } catch (error) {
       _client.emit('error', error.message);
@@ -443,10 +451,10 @@ export class GatewayGateway
   @SubscribeMessage('leaveRoom')
   async handleLeaveRoomSocket(_client: Socket, payload: { roomId: number }) {
     try {
-      console.log("leave-room ", payload);
+      // console.log("leave-room ", payload);
       _client.leave(payload.roomId.toString());
     } catch (error) {
-      console.log("leave-room ", error);
+      // console.log("leave-room ", error);
       _client.emit('error', error.message);
     }
   }

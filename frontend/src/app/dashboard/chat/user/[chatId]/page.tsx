@@ -13,17 +13,21 @@ const Chat = () => {
   const [messages, setMessages] = useState<Messages[]>([]);
   const [chatRoomId, setChatRoomId] = useState<number>(0);
   const [error, setError] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     if (chatSocket && chatId) {
       if (messages.length === 0) {
         getChatRoomMessages(Number(chatId), 'user')
           .then((res) => {
-            setMessages(res.data);
+            if (res && Array.isArray(res.data)) {
+              setMessages(res.data);
+              setLoading(false);
+            }
+            else
+              setError(res.data);
             setChatRoomId(Number(chatId));
-          })
-          .catch((err) => {
-            console.error(err);
+          }).catch((err) => {
             setError("Can't get messages");
           });
       }
@@ -31,11 +35,13 @@ const Chat = () => {
       chatSocket.on('receive-message', (message) => {
         if (message.chatRoomId === Number(chatId)) {
           getChatRoomMessages(Number(chatId), 'user').then((res) => {
-            if (res.data.length > messages.length)
-            setMessages(res.data);
+            if (res && Array.isArray(res.data) && res.data.length > messages.length) {
+              setMessages(res.data);
+              // setLoading(false);
+            }else
+              setError(res.data);
           });
         }
-        // setMessages((messages) => [...messages, message]);
       });
     }
     return () => {
@@ -45,7 +51,22 @@ const Chat = () => {
 
   return (
     <>
-      <MsgShow messages={messages} chatId={Number(chatRoomId)} error={error} />
+      {error === '' && !loading && <MsgShow messages={messages} chatId={Number(chatRoomId)} />}
+      {
+        error === '' && loading &&
+        <div className={`flex justify-center items-center text-2xl bg-[#5D5959]/40 w-[66%]  h-[1030px] rounded-3xl`}>
+          <p>
+            Loading...
+          </p>
+        </div>
+      }
+      {error !== '' &&
+        <div className="flex justify-center items-center text-2xl bg-[#5D5959]/40 w-[66%]  h-[1030px] rounded-3xl">
+          <p>
+            {error}
+          </p>
+        </div>
+      }
     </>
   );
 };
