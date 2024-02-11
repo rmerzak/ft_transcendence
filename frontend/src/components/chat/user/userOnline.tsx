@@ -11,8 +11,8 @@ const UserOnline = () => {
 
   function getFriends() {
     getFriendList().then((res) => {
-      if (res.data && res.data.length > 0) {
-        setFriends(res.data);
+      if (res?.data && res?.data.length > 0) {
+        setFriends(res?.data);
       }
     })
       .catch((err) => {

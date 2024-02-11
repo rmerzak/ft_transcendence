@@ -84,7 +84,7 @@ export const ContextProvider = ({ children }: { children: any }) => {
           setProfile(res.data);
       }).catch((err) => { console.log(err) });
       getFriendList().then((res) => {
-        if (res.data)
+        if (res?.data)
           setFriends(res.data);
       }).catch((err) => { console.log(err) });
 

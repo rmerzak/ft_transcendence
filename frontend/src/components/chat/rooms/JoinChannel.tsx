@@ -21,34 +21,30 @@ function JoinChannel({ channel, setOpenChannel, Handlepopup }: PopupProps) {
   });
 
 
-  const handleNewMember = (e: any) => {
-    e.preventDefault();
-    const { password } = formData;
-    const channelData = {
-      name: channel.name,
-      passwordHash: password,
-    };
-    console.log("Channel Data:", channelData);
-    // router.push(`/dashboard/chat/room/${channel.id}`);
-    // chatSocket?.emit("join-room", { roomId: Number(channel?.id) });
+
+  
+    const handleNewMember = (e:any) => {
+      e.preventDefault();
+      if (channel.visibility !== RoomVisibility.PRIVATE) {
+      const { password } = formData;
+      const channelData = {
+        name: channel.name,
+        passwordHash: password,
+      };
     chatSocket?.emit("new-member", channelData);
     setFormData({
-      name: "",
-      password: "",
-    });
-    chatSocket?.on("push", (data) => {
-      if (data) {
-        router.push(`/dashboard/chat/room/${channel.id}`);
-      }
-    });
-    setValidationError(null);
-    if (Handlepopup) {
-      Handlepopup();
+        name: "",
+        password: "",
+      });
+    } else {
+      chatSocket?.emit("request-join-room", channel);
     }
-    return () => {
-      chatSocket?.off("push");
+      setValidationError(null);
+
+     if (Handlepopup){
+      Handlepopup();
+     }
     };
-  };
 
     return (
       <>
