@@ -1,6 +1,5 @@
 'use client';
-import { use, useContext, useEffect, useState } from 'react';
-// import { Message, ChatRoomUsers } from 'postcss';
+import { useContext, useEffect, useState } from 'react';
 import Chat from './chat';
 import Chatheader from './chatHeader';
 import Sendchatmsg from './sendchatmsg';
@@ -11,7 +10,6 @@ import { getChatRoomMembers } from '@/api/chat/chat.api';
 interface MsgShowProps {
   messages?: Messages[];
   chatId: number;
-  error?: string;
 }
 
 interface State {
@@ -23,8 +21,8 @@ interface State {
   chatRoomMembers: ChatRoomUsers[];
 }
 
-const MsgShow: React.FC<MsgShowProps> = ({ messages, chatId, error }) => {
-  const { profile, friends } = useContext(ContextGlobal);
+const MsgShow: React.FC<MsgShowProps> = ({ messages, chatId }) => {
+  const { profile, friends, socket } = useContext(ContextGlobal);
   const [state, setState] = useState<State>({
     username: '',
     friendId: 0,
@@ -37,12 +35,30 @@ const MsgShow: React.FC<MsgShowProps> = ({ messages, chatId, error }) => {
   useEffect(() => {
     if (chatId) {
       getChatRoomMembers(chatId).then((res) => {
-        setState(prevState => ({ ...prevState, chatRoomMembers: res.data }));
-      }).catch((err) => {
-        console.log(err);
+        if (res.data && Array.isArray(res.data) && res.data.length > 0)
+          setState(prevState => ({ ...prevState, chatRoomMembers: res.data }));
       });
     }
   }, [chatId]);
+
+  useEffect(() => {
+    if (socket) {
+      socket.on('blockFriendChat', (data: { isblock: boolean, blockByMe: number }) => {
+        if (data)
+          setState(prevState => ({ ...prevState, isblock: data.isblock, blockByMe: data.blockByMe }));
+      });
+      socket.on('unblockFriendChat', (data: { isblock: boolean, blockByMe: number }) => {
+        if (data)
+          setState(prevState => ({ ...prevState, isblock: data.isblock, blockByMe: data.blockByMe }));
+      });
+    }
+    return () => {
+      if (socket) {
+        socket.off('blockFriendChat');
+        socket.off('unblockFriendChat');
+      }
+    };
+  }, [socket]);
 
   useEffect(() => {
     if (state.chatRoomMembers.length > 0 && profile && profile?.id > 0 && friends) {
@@ -58,7 +74,7 @@ const MsgShow: React.FC<MsgShowProps> = ({ messages, chatId, error }) => {
             setState(prevState => ({ ...prevState, isblock: true, blockByMe: targetMembers.user.id }));
           }
         } else {
-          setState(prevState => ({ ...prevState, isblock: false, blockByMe: 0}));
+          setState(prevState => ({ ...prevState, isblock: false, blockByMe: 0 }));
         }
         setState(prevState => ({
           ...prevState,
@@ -73,21 +89,13 @@ const MsgShow: React.FC<MsgShowProps> = ({ messages, chatId, error }) => {
   return (
     <>
       <div className="bg-[#5D5959]/40 w-[66%] text-white h-[1030px] rounded-3xl p-4 hidden md:block">
-        {error === '' ? (
-          <>
-            <Chatheader username={state.username} status={state.status} userId={state.friendId} friendBlock={state.isblock} blockByMe={state.blockByMe} />
-            <div className='mt-6 h-[88%]'>
-              <Chat messages={messages} />
-            </div>
-            <Sendchatmsg chatRoomId={chatId} isblocked={state.isblock} friendId={state.friendId} />
-          </>
-        ) : (
-          <div className="flex justify-center items-center h-full text-2xl">
-            <p>
-              {error}
-            </p>
+        <>
+          <Chatheader username={state.username} status={state.status} userId={state.friendId} friendBlock={state.isblock} blockByMe={state.blockByMe} />
+          <div className='mt-6 h-[88%]'>
+            <Chat messages={messages} />
           </div>
-        )}
+          <Sendchatmsg chatRoomId={chatId} isblocked={state.isblock} friendId={state.friendId} />
+        </>
       </div>
     </>
   )

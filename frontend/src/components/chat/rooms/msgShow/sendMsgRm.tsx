@@ -1,22 +1,23 @@
 'user client'
-import React, { useContext, useState, KeyboardEvent, ChangeEvent } from 'react'
-import Image from 'next/image';
+import React, { useContext, useState, KeyboardEvent, useEffect, use } from 'react'
 import { ContextGlobal } from '@/context/contex';
-import { Messages, Recent } from '@/interfaces';
+import { ChatRoomMember, Messages, Recent } from '@/interfaces';
 import Picker from '@emoji-mart/react'
 import { SendHorizontal, SmilePlus } from 'lucide-react';
 import data from '@emoji-mart/data'
+import { get } from 'http';
+import { getChatRoomMemberByRoomId, getChatRoomMembers } from '@/api/chat/chat.api';
 
 interface SendchatmsgProps {
     chatRoomId: number;
-    isblocked?: boolean;
-    friendId?: number;
 }
 
-const SendMsgRm: React.FC<SendchatmsgProps> = ({ chatRoomId, isblocked, friendId }) => {
+const SendMsgRm: React.FC<SendchatmsgProps> = ({ chatRoomId }) => {
     const { profile, chatSocket } = useContext(ContextGlobal);
     const [message, setMessage] = useState<string>('');
     const [showEmojiPicker, setShowEmojiPicker] = useState<boolean>(false);
+    const [isMuted, setIsMuted] = useState<boolean>(false);
+    const [chatRoomMember, setChatRoomMember] = useState<ChatRoomMember>();
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         let newValue = e.target.value.replace(/(.{10})/g, "$1\n");
@@ -63,6 +64,39 @@ const SendMsgRm: React.FC<SendchatmsgProps> = ({ chatRoomId, isblocked, friendId
         });
         setMessage('');
     }
+    useEffect(() => {
+        if (chatRoomId) {
+            const fetch = async () => {
+                getChatRoomMemberByRoomId(chatRoomId).then((res) => {
+                    if (res.data) {
+                        setChatRoomMember(res.data);
+                    }
+                }).catch((err) => {
+                    console.log(err);
+                });
+            }
+            fetch();
+        }
+    }, [chatRoomId]);
+
+    useEffect(() => {
+        if (chatRoomMember && profile?.id && chatSocket) {
+            if (chatRoomMember && chatRoomMember.status === 'MUTED') {
+                setIsMuted(true);
+            }
+            chatSocket.on('mute_apdate_sendMsgInput', (data: ChatRoomMember) => {
+                // console.log('data', data, chatSocket.id);
+                if (data.userId === profile?.id && data.chatRoomId === chatRoomId) {
+                    data.status === 'MUTED' ? setIsMuted(true) : setIsMuted(false);
+                }
+            });
+
+        }
+        return () => {
+            chatSocket?.off('muted');
+            chatSocket?.off('mute_apdate_sendMsgInput');
+        }
+    }, [chatRoomMember, profile?.id, chatSocket]);
 
     return (
         <>
@@ -72,7 +106,7 @@ const SendMsgRm: React.FC<SendchatmsgProps> = ({ chatRoomId, isblocked, friendId
             </div>
             {/* input for send derict messages pointer-events-none opacity-50 */}
             {
-                !isblocked &&
+                isMuted === false &&
                 <div className={` flex justify-center items-center space-x-2 my-3`}>
                     <div className=" bg-gray-300 text-black flex justify-center items-center w-[30%] h-10 rounded-3xl font-light">
                         <div className='relative flex ml-1'>

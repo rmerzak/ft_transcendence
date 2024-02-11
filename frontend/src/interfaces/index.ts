@@ -72,7 +72,9 @@ export interface ChatRoomMember {
   is_admin: boolean;
   leftAt: string;
   user: User;
+  status: string;
   chatRoom: ChatRoom;
+  mutedDuration: String;
 }
 
 export interface Messages {

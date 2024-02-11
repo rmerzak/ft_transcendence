@@ -109,7 +109,8 @@ CREATE TABLE "ChatRoomMember" (
     "is_admin" BOOLEAN NOT NULL DEFAULT false,
     "leftAt" TIMESTAMP(3),
     "status" "RoomStatus" DEFAULT 'NORMAL',
-    "mutedDuration" BIGINT,
+    "mutedDate" TIMESTAMP(3),
+    "mutedDuration" TEXT,
 
     CONSTRAINT "ChatRoomMember_pkey" PRIMARY KEY ("userId","chatRoomId")
 );

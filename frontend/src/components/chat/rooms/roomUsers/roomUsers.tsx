@@ -15,9 +15,10 @@ function RoomUsers({ handleUserListClick, chatRoomId }: { handleUserListClick: a
     const [chatRoom, setChatRoom] = useState<ChatRoom>({})
     const [InvitedMembers, setInvitedMembers] = useState<ChatRoomInvitedMembers[]>([])
 
-    const { chatSocket } = useContext(ContextGlobal)
+    const { chatSocket, profile } = useContext(ContextGlobal)
     function updateComponent(id: number) {
         getChatRoomById(id).then((res: any) => {
+            console.log(res.data)
             setChatRoom(res.data);
         }).catch((err) => { });
         getChatRoomMembers(id).then((res) => {
@@ -40,11 +41,8 @@ function RoomUsers({ handleUserListClick, chatRoomId }: { handleUserListClick: a
         }).catch((err) => { });
     }
     useEffect(() => {
-        if (chatRoomId) {
+        if (chatRoomId && chatSocket) {
             updateComponent(chatRoomId);
-            chatSocket?.on('update_chat_room_member', () => {
-                    updateComponent(chatRoomId);
-            })
             chatSocket?.on('request-join-room', () => {
                     updateComponent(chatRoomId);
             })
@@ -57,13 +55,91 @@ function RoomUsers({ handleUserListClick, chatRoomId }: { handleUserListClick: a
             console.log("chatRoomId = ", chatRoomId)
             console.log("chatSocket = ", chatSocket)
             console.log("profileRoomStatus = ", profileRoomStatus)
+            chatSocket?.on('update_chat_room_member_roomUsers', (res) => {
+                console.log("res = ", res)
+                if (chatRoomId && res.chatRoomId === chatRoomId)
+                {
+                    getChatRoomMembers(chatRoomId).then((res) => {
+                        setUsers(res.data)
+                    }).catch((err) => {
+                        console.log(err);
+                    });
+                    getChatRoomMemberByRoomId(chatRoomId).then((res) => {
+                        if (res.data)
+                            setProfileRoomStatus(res.data)
+                    }).catch((err) => {
+                        console.log(err);
+                    });
+                    updateComponent(chatRoomId);
+                }
+            })
 
         }
         return () => {
-            chatSocket?.off('update_chat_room_member');
             chatSocket?.off('request-join-room');
+            chatSocket?.off('update_chat_room_member_roomUsers');
+            chatSocket?.off('accept-join-room');
+            chatSocket?.off('reject-join-room');
         };
     }, [chatRoomId, chatSocket])
+    
+    // useEffect(() => {
+    //     if (chatRoomId && chatSocket) {
+    //         getChatRoomById(chatRoomId).then((res) => {
+    //             setChatRoom(res.data);
+    //         }).catch((err) => { });
+    //         getChatRoomMembers(chatRoomId).then((res) => {
+    //             setUsers(res.data)
+    //             console.log(res.data)
+    //         }).catch((err) => {
+    //             console.log(err);
+    //         });
+    //         getChatRoomMemberByRoomId(chatRoomId).then((res) => {
+    //             console.log(res.data);
+    //             if (res.data)
+    //                 setProfileRoomStatus(res.data)
+    //         }).catch((err) => {
+    //             //throw err; must ask about the catch error what to do
+    //         });
+    //         chatSocket?.on('update_chat_room_member_roomUsers', (res) => {
+    //             if (chatRoomId && res.chatRoomId === chatRoomId)
+    //             {
+    //                 getChatRoomMembers(chatRoomId).then((res) => {
+    //                     setUsers(res.data)
+    //                 }).catch((err) => {
+    //                     console.log(err);
+    //                 });
+    //                 getChatRoomMemberByRoomId(chatRoomId).then((res) => {
+    //                     if (res.data)
+    //                         setProfileRoomStatus(res.data)
+    //                 }).catch((err) => {
+    //                     console.log(err);
+    //                 });
+    //             }
+    //         })
+    //         // chatSocket?.on('ban_from_room', (res) => {
+    //         //     if (chatRoomId && res.roomId === chatRoomId)
+    //         //     {
+    //         //         getChatRoomMembers(chatRoomId).then((res) => {
+    //         //             setUsers(res.data)
+    //         //         }).catch((err) => {
+    //         //             console.log(err);
+    //         //         });
+    //         //         getChatRoomMemberByRoomId(chatRoomId).then((res) => {
+    //         //             if (res.data)
+    //         //                 setProfileRoomStatus(res.data)
+    //         //         }).catch((err) => {
+    //         //             console.log(err);
+    //         //         });
+    //         //     }
+    //         // })
+    //     }
+    //     return () => {
+    //         chatSocket?.off('update_chat_room_member_roomUsers');
+    //         // chatSocket?.off('ban_from_room');
+    //     }
+    // }, [chatRoomId, chatSocket])
+
     return (
         <>
             <div className="fixed top-0 left-0 w-screen h-screen bg-[#000000]/50 z-50 flex justify-center items-center font-inter">

@@ -28,50 +28,49 @@ export class ChatController {
 
   // get chat rooms for user
   @Get('rooms')
-  async getChatRooms(@Req() req: Request): Promise<ChatRoom[]> {
-    const user = req.user as User;
-    return await this.roomService.getChatRoomsForUser(user.id);
+  async getChatRooms(@Req() req: Request): Promise<ChatRoom[] | null> {
+    try {
+      const user = req.user as User;
+      const rooms =  await this.roomService.getChatRoomsForUser(user.id);
+      if(!rooms)
+        return [];
+      return rooms;
+    } catch (error) {
+      return null;
+    }
   }
   // get chat rooms that user not in
   @Get('rooms/not')
-  async getChatRoomsNotJoined(@Req() req: Request): Promise<ChatRoom[]> {
-    const user = req.user as User;
-    return await this.roomService.getChatRoomsNotForUser(user.id);
+  async getChatRoomsNotJoined(@Req() req: Request): Promise<ChatRoom[] | null> {
+    try {
+      const user = req.user as User;
+      return await this.roomService.getChatRoomsNotForUser(user.id);
+    } catch (error) {
+      return null;
+    }
   }
   // get chat room by name
   @Get('room')
   async getChatRoomByName(@Query('user1') user1: string, @Query('user2') user2: string,): Promise<ChatRoom | null> {
     if (!user1 || user1.length === 0 || !user2 || user2.length === 0) {
-      throw new HttpException(
-        {
-          statusCode: HttpStatus.BAD_REQUEST,
-          message: 'Chat room name not provided',
-        },
-        HttpStatus.BAD_REQUEST,
-      );
+      return null;
     }
     try {
       const name = user1 + '_' + user2;
       const room = await this.roomService.getChatRoomByName(name);
       if (room) {
         return room;
-      }else {
+      } else {
         const name = user2 + '_' + user1;
         const room = await this.roomService.getChatRoomByName(name);
         if (room) {
           return room;
-        }else {
+        } else {
           return null;
         }
       }
-    }catch (error) {
-      throw new HttpException(
-        {
-          statusCode: HttpStatus.BAD_REQUEST,
-          message: error.message,
-        },
-        HttpStatus.BAD_REQUEST,
-      );
+    } catch (error) {
+      return null;
     }
   }
   // get chat room by id
@@ -80,7 +79,7 @@ export class ChatController {
     checkIfNumber(id.toString(), 'Chat room id must be a number');
     try {
       return await this.roomService.getChatRoomById(Number(id));
-    }catch (error) {
+    } catch (error) {
       throw new HttpException(
         {
           statusCode: HttpStatus.BAD_REQUEST,
@@ -178,6 +177,7 @@ export class ChatController {
         status: 'NORMAL',
         mutedDuration: undefined,
         updatedAt: undefined,
+        mutedDate: undefined,
       });
 
       await this.roomService.addUserToChatRoom({
@@ -189,6 +189,7 @@ export class ChatController {
         status: 'NORMAL',
         mutedDuration: undefined,
         updatedAt: undefined,
+        mutedDate: undefined,
       });
 
       return newChatRoom;
@@ -259,8 +260,14 @@ export class ChatController {
   }
   @Get('user')
   async getChatRoomMembers(@Query('chatRoomId') chatRoomId: number): Promise<ChatRoomUsers[] | null> {
-    checkIfNumber(chatRoomId.toString(), 'Chat room id must be a number');
-    return await this.roomService.getChatRoomMembers(Number(chatRoomId));
+    if (isNaN(chatRoomId) || chatRoomId <= 0) {
+      return null;
+    }
+    try {
+      return await this.roomService.getChatRoomMembers(Number(chatRoomId));
+    } catch (error) {
+      return null;
+    }
   }
   // create chat room
   // @Post()
@@ -291,186 +298,17 @@ export class ChatController {
 
   // get all messages of specific private user conversation
   @Get('user/:id')
-  async getChatRoomMessages(@Param('id') id: number, @Req() req: Request): Promise<Message[]> {
-    checkIfNumber(id.toString(), 'Chat room id must be a number');
+  async getChatRoomMessages(@Param('id') id: number, @Req() req: Request, @Query('from') from: string): Promise<Message[] | string> {
     const user = req.user as User;
     const Id = Number(id);
     if (isNaN(Id) || !Number.isInteger(Id) || Id <= 0) {
-      throw new HttpException(
-        {
-          statusCode: HttpStatus.BAD_REQUEST,
-          message: 'Invalid chat room ID',
-        },
-        HttpStatus.BAD_REQUEST,
-      );
+      return 'Error getting messages';
     }
     try {
-      return await this.chatService.getChatRoomMessages(Id, user.id);
+      return await this.chatService.getChatRoomMessages(Id, user.id, from);
     } catch (error) {
-      switch (error.message) {
-        case 'User not found':
-          throw new HttpException(
-            {
-              statusCode: HttpStatus.BAD_REQUEST,
-              message: 'User not found',
-            },
-            HttpStatus.BAD_REQUEST,
-          );
-        case 'Chat room not found':
-          throw new HttpException(
-            {
-              statusCode: HttpStatus.BAD_REQUEST,
-              message: 'Chat room not found',
-            },
-            HttpStatus.BAD_REQUEST,
-          );
-        case 'User not in chat room':
-          throw new HttpException(
-            {
-              statusCode: HttpStatus.BAD_REQUEST,
-              message: 'User not in chat room',
-            },
-            HttpStatus.BAD_REQUEST,
-          );
-        default:
-          throw new HttpException(
-            {
-              statusCode: HttpStatus.BAD_REQUEST,
-              message: 'Error updating message',
-            },
-            HttpStatus.BAD_REQUEST,
-          );
-      }
+      return 'Error getting messages';
     }
-  }
-
-  // add message
-  @Post('msg')
-  async addMessage(@Body() messageData: Message, @Req() req: Request): Promise<Message> {
-    if (isEmpty(messageData)) {
-      throw new HttpException(
-        {
-          statusCode: HttpStatus.BAD_REQUEST,
-          message: 'Message data not provided',
-        },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-    const user = req.user as User;
-    if (messageData.senderId !== user.id) {
-      throw new HttpException(
-        {
-          statusCode: HttpStatus.BAD_REQUEST,
-          message: 'Message sender id not match',
-        },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-    try {
-      return await this.chatService.addMessage(messageData, user.id);
-    } catch (error) {
-      switch (error.message) {
-        case 'User not found':
-          throw new HttpException(
-            {
-              statusCode: HttpStatus.BAD_REQUEST,
-              message: 'User not found',
-            },
-            HttpStatus.BAD_REQUEST,
-          );
-        case 'Chat room not found':
-          throw new HttpException(
-            {
-              statusCode: HttpStatus.BAD_REQUEST,
-              message: 'Chat room not found',
-            },
-            HttpStatus.BAD_REQUEST,
-          );
-        case 'User not in chat room':
-          throw new HttpException(
-            {
-              statusCode: HttpStatus.BAD_REQUEST,
-              message: 'User not in chat room',
-            },
-            HttpStatus.BAD_REQUEST,
-          );
-        default:
-          throw new HttpException(
-            {
-              statusCode: HttpStatus.BAD_REQUEST,
-              message: 'Error updating message',
-            },
-            HttpStatus.BAD_REQUEST,
-          );
-      }
-    }
-  }
-  // update message
-  @Put()
-  async updateMessage(@Body() messageData: Message, @Req() req: Request): Promise<Message> {
-    if (isEmpty(messageData)) {
-      throw new HttpException(
-        {
-          statusCode: HttpStatus.BAD_REQUEST,
-          message: 'Message data not provided',
-        },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-    const user = req.user as User;
-    if (messageData.senderId !== user.id) {
-      throw new HttpException(
-        {
-          statusCode: HttpStatus.BAD_REQUEST,
-          message: 'Message sender id not match',
-        },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-    try {
-      return await this.chatService.updateMessage(messageData, user.id);
-    } catch (error) {
-      switch (error.message) {
-        case 'User not found':
-          throw new HttpException(
-            {
-              statusCode: HttpStatus.BAD_REQUEST,
-              message: 'User not found',
-            },
-            HttpStatus.BAD_REQUEST,
-          );
-        case 'Chat room not found':
-          throw new HttpException(
-            {
-              statusCode: HttpStatus.BAD_REQUEST,
-              message: 'Chat room not found',
-            },
-            HttpStatus.BAD_REQUEST,
-          );
-        case 'User not in chat room':
-          throw new HttpException(
-            {
-              statusCode: HttpStatus.BAD_REQUEST,
-              message: 'User not in chat room',
-            },
-            HttpStatus.BAD_REQUEST,
-          );
-        default:
-          throw new HttpException(
-            {
-              statusCode: HttpStatus.BAD_REQUEST,
-              message: 'Error updating message',
-            },
-            HttpStatus.BAD_REQUEST,
-          );
-      }
-    }
-  }
-  // delete user message
-  @Delete()
-  async deleteMessage(@Query('id') id: number): Promise<Message | null> {
-    checkIfNumber(id.toString(), 'Message id must be a number');
-    return await this.chatService.deleteMessage(Number(id));
   }
   // end user message
 
@@ -543,11 +381,6 @@ export class ChatController {
     return await this.chatService.deleteRecent(user.id, Number(roomId));
   }
 
-  @Get('room/:id')
-  async getChatRoomMembersById(@Param('id') id: string): Promise<ChatRoomUsers[] | null> {
-    checkIfNumber(id.toString(), 'Chat room id must be a number');
-    return await this.roomService.getChatRoomMembers(Number(id));
-  }
   @Get('room/user/:id')
   async getChatRoomMemberByRoomId(@Req() req: Request, @Param('id') id: string): Promise<ChatRoomMember | null> {
     try {

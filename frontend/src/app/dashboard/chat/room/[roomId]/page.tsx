@@ -7,43 +7,69 @@ import { getChatRoomMessages } from '@/api/chat/chat.api';
 import MsgRmShow from '@/components/chat/rooms/msgShow/msgRmShow';
 import { useRouter } from 'next/navigation';
 
+
 const Room = () => {
   const { chatSocket, profile } = useContext(ContextGlobal);
   const { roomId } = useParams()
+  const router = useRouter();
   const [messages, setMessages] = useState<Messages[]>([]);
   const [error, setError] = useState<string>('');
-  const router = useRouter();
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     if (chatSocket && roomId) {
       if (messages.length === 0) {
-        getChatRoomMessages(Number(roomId))
+        getChatRoomMessages(Number(roomId), 'room')
           .then((res) => {
-            setMessages(res.data);
-          })
-          .catch((err) => {
-            console.log("err", err);
-            setError("Can't get messages");
+            if (Array.isArray(res.data)) {
+              setMessages(res.data);
+              setLoading(false);
+            }else
+              setError(res.data);
+          }).catch((err) => {
+            setError(err.response.data.message);
           });
       }
-      chatSocket.emit('join-room', { roomId: roomId });
       chatSocket.on('receive-message', (message) => {
-        setMessages((messages) => [...messages, message]);
-      });
-      chatSocket.on('leaveRoom', (data) => {
-        if (data.userId === profile?.id)
+        // console.log("message", message);
+        if (message.hasOwnProperty('userId') && profile?.id === message.userId)
           router.push('/dashboard/chat');
+        else if (message.chatRoomId === Number(roomId)) {
+          getChatRoomMessages(Number(roomId), 'room').then((res) => {
+            if (Array.isArray(res.data) && res.data.length > messages.length) {
+              setMessages(res.data);
+            }else
+              setError(res.data);
+          }).catch((err) => {
+            console.error(err);
+            setError(err.response.data.message);
+          });
+        }
       });
     }
     return () => {
       chatSocket?.off('receive-message');
-      chatSocket?.off('leaveRoom');
     };
   }, [roomId, chatSocket]);
 
   return (
     <>
-      <MsgRmShow messages={messages} roomId={Number(roomId)} error={error} />
+      {error === '' && !loading && <MsgRmShow messages={messages} roomId={Number(roomId)} />}
+      {
+        error === '' && loading &&
+        <div className={`flex justify-center items-center text-2xl bg-[#5D5959]/40 w-[66%]  h-[1030px] rounded-3xl`}>
+          <p>
+            Loading...
+          </p>
+        </div>
+      }
+      {error !== '' &&
+        <div className="flex justify-center items-center text-2xl bg-[#5D5959]/40 w-[66%]  h-[1030px] rounded-3xl">
+          <p>
+            {error}
+          </p>
+        </div>
+      }
     </>
   );
 };
