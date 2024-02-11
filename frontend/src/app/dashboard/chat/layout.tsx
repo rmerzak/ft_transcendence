@@ -47,11 +47,10 @@ const Layout = ({ children }: any) => {
 
   useEffect(() => {
     getChatRoomsJoined().then((res) => {
-      if (res.data) {
+      if (res !== null && res.data !== null && res.data.length > 0) {
         setChatRoomsJoined(res.data);
         res.data.forEach((room: ChatRoom) => {
-          if (chatSocket){
-            // console.log('Joining room', room.id);
+          if (chatSocket) {
             chatSocket.emit('join-room', { roomId: Number(room.id) });
           }
         });
@@ -59,7 +58,7 @@ const Layout = ({ children }: any) => {
     }).catch((err) => { console.log(err) });
 
     getChatRoomsNotJoined().then((res) => {
-      if (res.data)
+      if (res && res.data && res.data.length > 0)
         setChatRoomsToJoin(res.data);
     }).catch((err) => { console.log(err) });
   }, [chatSocket]);
@@ -69,7 +68,7 @@ const Layout = ({ children }: any) => {
       friends.forEach((friend) => {
         const friendId = friend.senderId === profile.id ? friend.receiverId : friend.senderId;
         getChatRoomByName(profile?.id.toString(), friendId.toString()).then((res) => {
-          if (res.data && !privChat.find((room) => room.id === res.data.id))
+          if (res && res.data.length > 0 && !privChat.find((room) => room.id === res.data.id))
             setPrivChat((prev) => [...prev, res.data]);
         }).catch((err) => { console.log(err) });
       });
@@ -85,12 +84,11 @@ const Layout = ({ children }: any) => {
         chatSocket.on('unban_from_room', (res: ChatRoomMember) => {
           if (res.userId === profile.id) {
             // console.log('unban_from_room', res);
-            chatSocket.emit('join-room', { roomId: res.chatRoomId , test: 'test'});
+            chatSocket.emit('join-room', { roomId: res.chatRoomId, test: 'test' });
           }
         });
         chatSocket.on('join-room-socket', (res: ChatRoomMember) => {
           if (res.userId === profile.id) {
-            // console.log('join-room-socket', res);
             chatSocket.emit('join-room', { roomId: res.chatRoomId });
           }
         });

@@ -3,7 +3,7 @@ import Image from "next/image";
 import Popup from "./popup";
 import { useContext, useEffect, useState, KeyboardEvent, useRef } from "react";
 import { ContextGlobal } from "@/context/contex";
-import { ChatRoom } from "@/interfaces";
+import { ChatRoom, ChatRoomMember } from "@/interfaces";
 import { IoIosExit } from "react-icons/io";
 import { MdOutlineKey } from "react-icons/md";
 import { MdAddLink } from "react-icons/md";
@@ -103,65 +103,66 @@ const Channels: React.FC<Channel> = ({ header }) => {
     if (chatSocket) {
       chatSocket?.on("create-room", (room: ChatRoom) => {
         getChatRoomsNotJoined().then((res) => {
-          if (res.data)
+          if (res.data && res.data.length > 0)
             setChatRoomsToJoin(res.data);
         }).catch((err) => { console.log(err) });
       });
       chatSocket?.on("ownedRoom", (room: ChatRoom) => {
-        getChatRoomsJoined()
-          .then((res) => {
-            if (res.data) {
-              setChatRoomsJoined(res.data);
-              const newChatRoomsToJoin = chatRoomsToJoin.filter((item: ChatRoom) => item.name !== room.name);
-              setChatRoomsToJoin(newChatRoomsToJoin);
-            }
-          })
-          .catch((err) => {
-            console.log(err);
-          });
+        getChatRoomsJoined().then((res) => {
+          if (res.data && res.data.length > 0) {
+            setChatRoomsJoined(res.data);
+            const newChatRoomsToJoin = chatRoomsToJoin.filter((item: ChatRoom) => item.name !== room.name);
+            setChatRoomsToJoin(newChatRoomsToJoin);
+          }
+        }).catch((err) => {
+          console.log(err);
+        });
       });
-      chatSocket?.on('updated-room', (room: ChatRoom) => {
-        // console.log('updated-room', room);
-        if (room) {
+      chatSocket?.on("update_chat_room_member_channel", (roomMem: ChatRoomMember) => {
+        if (roomMem) {
           getChatRoomsJoined().then((res) => {
-            // console.log('joined', res.data);
-            if (res.data) {
+            if (res.data && res.data.length > 0) {
               setChatRoomsJoined(res.data);
             }
           }).catch((err) => { console.log(err); });
           getChatRoomsNotJoined().then((res) => {
-            // console.log('not joined', res.data);
-            if (res.data)
+            if (res.data && res.data.length > 0)
               setChatRoomsToJoin(res.data);
           }).catch((err) => { console.log(err) });
         }
       });
       chatSocket?.on("update-room_channel", () => {
         getChatRoomsJoined().then((res) => {
-          if (res.data) {
+          if (res.data && res.data.length > 0) {
             setChatRoomsJoined(res.data);
           }
         }).catch((err) => { console.log(err); });
         getChatRoomsNotJoined().then((res) => {
-          if (res.data)
+          if (res.data && res.data.length > 0)
             setChatRoomsToJoin(res.data);
         }).catch((err) => { console.log(err) });
       });
       chatSocket?.on("deletedRoom", (data) => {
-        console.log('deletedRoom', data);
         if (data) {
           getChatRoomsJoined().then((res) => {
-            if (res.data) {
+            if (res.data && res.data.length > 0) {
               setChatRoomsJoined(res.data);
             }
           }).catch((err) => { console.log(err); });
           getChatRoomsNotJoined().then((res) => {
-            if (res.data)
+            if (res.data && res.data.length > 0)
               setChatRoomsToJoin(res.data);
           }).catch((err) => { console.log(err) });
         }
       });
-
+      chatSocket?.on("unban_from_room_getData", (data: ChatRoomMember) => {
+        if (data)
+          getChatRoomsJoined().then((res) => {
+            if (res.data && res.data.length > 0) {
+              setChatRoomsJoined(res.data);
+            }
+          }).catch((err) => { console.log(err); });
+      });
       chatSocket?.on("error", (data) => {
         if (data) {
           toast.error(data);
@@ -176,7 +177,7 @@ const Channels: React.FC<Channel> = ({ header }) => {
       chatSocket?.off("create-room");
       chatSocket?.off("ownedRoom");
       chatSocket?.off("error");
-      chatSocket?.off("update_chat_room_member");
+      chatSocket?.off("update_chat_room_member_channel");
       chatSocket?.off("update-room_channel");
       chatSocket?.off("deletedRoom");
       chatSocket?.off("unban_from_room_getData");

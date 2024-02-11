@@ -40,19 +40,38 @@ function RoomUsers({ handleUserListClick, chatRoomId }: { handleUserListClick: a
         }).catch((err) => { });
     }
     useEffect(() => {
-        if (chatRoomId) {
-            updateComponent(chatRoomId);
-            chatSocket?.on('update_chat_room_member', () => {
-                    updateComponent(chatRoomId);
-            })
-            chatSocket?.on('request-join-room', () => {
-                    updateComponent(chatRoomId);
-            })
-            chatSocket?.on('accept-join-room', () => {
-                updateComponent(chatRoomId);
-            })
-            chatSocket?.on('reject-join-room', () => {
-                updateComponent(chatRoomId);
+        if (chatRoomId && chatSocket) {
+            getChatRoomById(chatRoomId).then((res) => {
+                setChatRoom(res.data);
+            }).catch((err) => { });
+            getChatRoomMembers(chatRoomId).then((res) => {
+                setUsers(res.data)
+                console.log(res.data)
+            }).catch((err) => {
+                console.log(err);
+            });
+            getChatRoomMemberByRoomId(chatRoomId).then((res) => {
+                console.log(res.data);
+                if (res.data)
+                    setProfileRoomStatus(res.data)
+            }).catch((err) => {
+                //throw err; must ask about the catch error what to do
+            });
+            chatSocket?.on('update_chat_room_member_roomUsers', (res) => {
+                if (chatRoomId && res.chatRoomId === chatRoomId)
+                {
+                    getChatRoomMembers(chatRoomId).then((res) => {
+                        setUsers(res.data)
+                    }).catch((err) => {
+                        console.log(err);
+                    });
+                    getChatRoomMemberByRoomId(chatRoomId).then((res) => {
+                        if (res.data)
+                            setProfileRoomStatus(res.data)
+                    }).catch((err) => {
+                        console.log(err);
+                    });
+                }
             })
             console.log("chatRoomId = ", chatRoomId)
             console.log("chatSocket = ", chatSocket)
@@ -60,9 +79,9 @@ function RoomUsers({ handleUserListClick, chatRoomId }: { handleUserListClick: a
 
         }
         return () => {
-            chatSocket?.off('update_chat_room_member');
-            chatSocket?.off('request-join-room');
-        };
+            chatSocket?.off('update_chat_room_member_roomUsers');
+            // chatSocket?.off('ban_from_room');
+        }
     }, [chatRoomId, chatSocket])
     return (
         <>

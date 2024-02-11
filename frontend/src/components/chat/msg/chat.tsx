@@ -74,15 +74,3 @@ const Chat: React.FC<ChatProps> = ({ messages }) => {
 };
 
 export default Chat;
-// <div className="chat chat-end">
-//  ANNOUCEMENT
-//  NORMAL
-//   <div className="chat-header  mr-2  flex gap-2 items-center mb-1">
-//     {profile?.id === message.sender.id ? message.sender.username : "You"}
-//     <time className="text-xs opacity-50">12:46</time>
-//   </div>
-//   <div className="chat-bubble bg-purplee text-white">{message.text}</div>
-//   <div className="chat-footer opacity-50">
-//     Seen at 12:46
-//   </div>
-// </div>

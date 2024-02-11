@@ -21,12 +21,12 @@ const Room = () => {
       if (messages.length === 0) {
         getChatRoomMessages(Number(roomId), 'room')
           .then((res) => {
-            if (res.data) {
+            if (Array.isArray(res.data)) {
               setMessages(res.data);
               setLoading(false);
-            }
-          })
-          .catch((err) => {
+            }else
+              setError(res.data);
+          }).catch((err) => {
             setError(err.response.data.message);
           });
       }
@@ -36,8 +36,10 @@ const Room = () => {
           router.push('/dashboard/chat');
         else if (message.chatRoomId === Number(roomId)) {
           getChatRoomMessages(Number(roomId), 'room').then((res) => {
-            if (res.data.length > messages.length)
+            if (Array.isArray(res.data) && res.data.length > messages.length) {
               setMessages(res.data);
+            }else
+              setError(res.data);
           }).catch((err) => {
             console.error(err);
             setError(err.response.data.message);

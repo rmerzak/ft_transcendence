@@ -71,7 +71,7 @@ export class MsgService {
       if (msg.senderId === userId) return true;
       return !Friends.some((friend) => friend.block && (friend.senderId === msg.senderId || friend.receiverId === msg.senderId));
     });
-  
+
     return filteredMsgs;
   }
   // add user message
@@ -169,7 +169,7 @@ export class MsgService {
         throw new Error('User not found');
       }
 
-      const recent = await this.prisma.recent.findMany({
+      const recents = await this.prisma.recent.findMany({
         where: {
           userId: userId,
         },
@@ -197,9 +197,9 @@ export class MsgService {
           },
         },
       });
-
+      // console.log("recents", recents[0].chatRoom.users);
       const userDetails = await Promise.all(
-        recent.map((r) =>
+        recents.map((r) =>
           this.prisma.user.findMany({
             where: {
               id: {
@@ -215,16 +215,15 @@ export class MsgService {
           })
         )
       );
-
+      // console.log("userDetails", userDetails);
       // Merge userDetails with recent
-      const result = recent.map((r, i) => ({
+      const result = recents.map((r, i) => ({
         ...r,
         chatRoom: {
           ...r.chatRoom,
           users: userDetails[i],
         },
       }));
-
       return result;
     } catch (error) {
       console.error(error);

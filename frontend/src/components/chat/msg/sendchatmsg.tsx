@@ -29,7 +29,6 @@ const Sendchatmsg: React.FC<SendchatmsgProps> = ({ chatRoomId, isblocked, friend
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         let newValue = e.target.value.replace(/(.{10})/g, "$1\n");
-        // console.log("Updated value:", newValue);
         setMessage(newValue);
     };
 
@@ -67,7 +66,6 @@ const Sendchatmsg: React.FC<SendchatmsgProps> = ({ chatRoomId, isblocked, friend
             msgData: messageData,
             recentData: recentArray,
         };
-        // chatSocket?.emit('add-recent', data);
         chatSocket?.emit('send-message', data);
         setMessage('');
     }
