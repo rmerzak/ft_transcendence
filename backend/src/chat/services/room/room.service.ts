@@ -417,8 +417,6 @@ export class RoomService {
         const chatRoomMember = await this.prisma.chatRoomMember.findUnique({
             where: { userId_chatRoomId: { userId: user.id, chatRoomId: chatRoom.id } },
         });
-        if (!chatRoomMember) throw new Error('User not in chat room');
-        console.log('chatRoomMember: ', chatRoomMember)
         return chatRoomMember;
     }
 
