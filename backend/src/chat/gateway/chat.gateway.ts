@@ -143,8 +143,7 @@ export class GatewayGateway
         }
       });
       this.server.to(room.id.toString()).emit('receive-message', msg);
-      this.server.to(room.id.toString()).emit('update_chat_room_member_channel', room);
-      this.server.to(room.id.toString()).emit('update_chat_room_member_roomUsers', room);
+      console.log("new-member ", room);
       this.server.to('1_public').emit('join-room-socket', { userId: _client['user'].id, chatRoomId: room.id });
       _client.join(room.id.toString());
       _client.emit('push', msg);
@@ -301,6 +300,7 @@ export class GatewayGateway
           }
           const updatedRoomMem = await this.roomService.updatechatRoomMember(_client['user'].id, tmp);
           if (updatedRoomMem) {
+            this.server.to(roomMem.chatRoomId.toString()).emit('update_chat_room_member_roomUsers', updatedRoomMem);
             this.server.to(payload.roomId.toString()).emit('mute_apdate_sendMsgInput', updatedRoomMem);
           }
         }, Number(payload.duration) * 1000);
@@ -451,10 +451,8 @@ export class GatewayGateway
   @SubscribeMessage('leaveRoom')
   async handleLeaveRoomSocket(_client: Socket, payload: { roomId: number }) {
     try {
-      // console.log("leave-room ", payload);
       _client.leave(payload.roomId.toString());
     } catch (error) {
-      // console.log("leave-room ", error);
       _client.emit('error', error.message);
     }
   }
@@ -470,7 +468,6 @@ export class GatewayGateway
       } as Message;
       const msg = await this.chatService.addMessage(msgData, _client['user'].id);
       const room = await this.roomService.leaveMemberFromRoom(_client, payload);
-      console.log("room = ", room);
       this.roomService.connectedClients.forEach((sockets, userId) => {
         if (userId === _client['user'].id) {
           sockets.forEach(socket => {
@@ -494,6 +491,7 @@ export class GatewayGateway
         this.server.to(room.id.toString()).emit('receive-message', { ...msg, userId: _client['user'].id });
       }
       this.server.to(payload.id.toString()).emit('leaveRoom', { roomId: payload.id, userId: _client['user'].id });
+      this.server.to(payload.id.toString()).emit('update-room_msgRm', room);
     } catch (error) {
       _client.emit('error', error.message);
     }

@@ -34,17 +34,17 @@ const UserItem = ({ friend } : { friend: Friendship }) => {
   }
   return (
     (friend.status === 'ACCEPTED' && !friend.block && (status === 'ONLINE' || status === 'IN_GAME')) ? (
-        <div onClick={makeMessage} className='relative'>
+        <div onClick={makeMessage} className='relative w-full'>
         <Image
           src={profile?.id === friend.sender.id ? friend.receiver.image : friend.sender.image}
           alt={profile?.id === friend.sender.id ? friend.receiver.username : friend.sender.username }
           width={60}
           height={60}
           priority={true}
-          className="h-[45px] w-[45px] md:h-[60px] md:w-[60px] rounded-full mx-auto hover:cursor-pointer"
+          className="h-[45px] w-[45px] md:h-[50px] md:w-[50px] rounded-full mx-auto hover:cursor-pointer"
         />
-        <span className={`w-2 h-2 md:w-3 md:h-3 left-7 top-9  md:left-10 md:top-12 rounded-full absolute ${status === 'ONLINE' ? 'bg-custom-green' : status === 'IN_GAME' ? 'bg-orange-400' : 'bg-gray-400'}`}></span>
-        <p className={`text-white text-center text-xs md:text-base`}>
+        <span className={`w-2 h-2 md:w-3 md:h-3 left-7 top-9  md:left-9 md:top-10 rounded-full absolute ${status === 'ONLINE' ? 'bg-custom-green' : status === 'IN_GAME' ? 'bg-orange-400' : 'bg-gray-400'}`}></span>
+        <p className={`text-white text-center text-xs md:text-sm`}>
         {profile?.id === friend.sender.id ? friend.receiver.username : friend.sender.username }
         </p>
       </div>

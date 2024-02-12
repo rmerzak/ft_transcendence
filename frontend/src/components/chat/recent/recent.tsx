@@ -26,7 +26,9 @@ const Recent: React.FC<RecentProps> = ({ rooms }) => {
 
   useEffect(() => {
     getRecentMessages().then((res) => {
-      setRecent(res.data);
+      if (res.data && res.data.length > 0) {
+        setRecent(res.data);
+      }
     }).catch((err) => {
       console.error(err);
     });
@@ -45,7 +47,8 @@ const Recent: React.FC<RecentProps> = ({ rooms }) => {
     if (chatSocket) {
       chatSocket.on('receive-recent', () => {
         getRecentMessages().then((res) => {
-          setRecent(res.data);
+          if (res.data)
+            setRecent(res.data);
         }).catch((err) => {
           console.error(err);
         });
@@ -57,25 +60,20 @@ const Recent: React.FC<RecentProps> = ({ rooms }) => {
   }, [chatSocket]);
 
   function removeRecent(chatRoomId: number) {
-    deleteRecentMessage(chatRoomId)
-      .then((res) => {
+    deleteRecentMessage(chatRoomId).then((res) => {
         if (res.data) {
-          getRecentMessages()
-            .then((res) => {
+          getRecentMessages().then((res) => {
+            if (res.data && res.data.length > 0)
               setRecent(res.data);
-            })
-            .catch((err) => {
-              console.error(err);
-            });
+          }).catch((err) => {
+            console.error(err);
+          });
         }
       })
       .catch((err) => {
         console.error(err);
       });
   }
-  // useEffect(() => {
-  //   console.log('recents', recents);
-  // }, [recents]);
   return (
     <>
       <div className="-mt-10">

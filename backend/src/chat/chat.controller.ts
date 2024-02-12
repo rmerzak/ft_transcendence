@@ -30,7 +30,10 @@ export class ChatController {
   async getChatRooms(@Req() req: Request): Promise<ChatRoom[] | null> {
     try {
       const user = req.user as User;
-      return await this.roomService.getChatRoomsForUser(user.id);
+      const rooms = await this.roomService.getChatRoomsForUser(user.id);
+      if (!rooms)
+        return [];
+      return rooms;
     } catch (error) {
       return null;
     }
@@ -40,7 +43,10 @@ export class ChatController {
   async getChatRoomsNotJoined(@Req() req: Request): Promise<ChatRoom[] | null> {
     try {
       const user = req.user as User;
-      return await this.roomService.getChatRoomsNotForUser(user.id);
+      const tojoin = await this.roomService.getChatRoomsNotForUser(user.id);
+      if (!tojoin)
+        return [];
+      return tojoin;
     } catch (error) {
       return null;
     }
@@ -72,17 +78,14 @@ export class ChatController {
   // get chat room by id
   @Get('room/:id')
   async getChatRoomById(@Param('id') id: number): Promise<ChatRoom | null> {
-    checkIfNumber(id.toString(), 'Chat room id must be a number');
+
     try {
+      if (isNaN(id) || id <= 0) {
+        return null;
+      }
       return await this.roomService.getChatRoomById(Number(id));
     } catch (error) {
-      throw new HttpException(
-        {
-          statusCode: HttpStatus.BAD_REQUEST,
-          message: error.message,
-        },
-        HttpStatus.BAD_REQUEST,
-      );
+      return null;
     }
   }
 
@@ -311,22 +314,20 @@ export class ChatController {
   // start recent
   // get recent for user
   @Get('recent')
-  async getRecentForUser(@Req() req: Request): Promise<Recent[]> {
-    const user = req.user as User;
-    return await this.chatService.getRecent(user.id);
+  async getRecentForUser(@Req() req: Request): Promise<Recent[] | null> {
+    try {
+      const user = req.user as User;
+      return await this.chatService.getRecent(user.id);
+    } catch (error) {
+      return null;
+    }
   }
 
   // add recent
   @Post('recent')
-  async addRecent(@Body() recentData: Recent, @Req() req: Request): Promise<Recent> {
+  async addRecent(@Body() recentData: Recent, @Req() req: Request): Promise<Recent | null> {
     if (isEmpty(recentData)) {
-      throw new HttpException(
-        {
-          statusCode: HttpStatus.BAD_REQUEST,
-          message: 'Recent data not provided',
-        },
-        HttpStatus.BAD_REQUEST,
-      );
+      return null;
     }
     const user = req.user as User;
     if (recentData.userId !== user.id) {
@@ -372,25 +373,27 @@ export class ChatController {
   // delete recent for user
   @Delete('recent')
   async deleteRecent(@Query('roomId') roomId: number, @Req() req: Request): Promise<Recent | null> {
-    checkIfNumber(roomId.toString(), 'Chat room id must be a number');
-    const user = req.user as User;
-    return await this.chatService.deleteRecent(user.id, Number(roomId));
+    try {
+      if (isNaN(roomId) || roomId <= 0) {
+        return null;
+      }
+      const user = req.user as User;
+      return await this.chatService.deleteRecent(user.id, Number(roomId));
+    } catch (error) {
+      return null;
+    }
   }
 
   @Get('room/user/:id')
   async getChatRoomMemberByRoomId(@Req() req: Request, @Param('id') id: string): Promise<ChatRoomMember | null> {
     try {
-      checkIfNumber(id.toString(), 'User id must be a number');
+      if (isNaN(Number(id)) || Number(id) <= 0) {
+        return null;
+      }
       const user = req.user as User;
       return await this.roomService.getChatRoomMemberByRoomId(user.id, Number(id));
     } catch (error) {
-      throw new HttpException(
-        {
-          statusCode: HttpStatus.BAD_REQUEST,
-          message: error.message,
-        },
-        HttpStatus.BAD_REQUEST,
-      );
+      return null;
     }
   }
 }

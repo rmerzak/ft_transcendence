@@ -34,6 +34,7 @@ function RoomUsers({ handleUserListClick, chatRoomId }: { handleUserListClick: a
             chatSocket?.on('update_chat_room_member_roomUsers', (res) => {
                 if (chatRoomId && res.chatRoomId === chatRoomId)
                 {
+                    // console.log('here in roomUsers', res);
                     getChatRoomMembers(chatRoomId).then((res) => {
                         setUsers(res.data)
                     }).catch((err) => {
@@ -47,26 +48,9 @@ function RoomUsers({ handleUserListClick, chatRoomId }: { handleUserListClick: a
                     });
                 }
             })
-            // chatSocket?.on('ban_from_room', (res) => {
-            //     if (chatRoomId && res.roomId === chatRoomId)
-            //     {
-            //         getChatRoomMembers(chatRoomId).then((res) => {
-            //             setUsers(res.data)
-            //         }).catch((err) => {
-            //             console.log(err);
-            //         });
-            //         getChatRoomMemberByRoomId(chatRoomId).then((res) => {
-            //             if (res.data)
-            //                 setProfileRoomStatus(res.data)
-            //         }).catch((err) => {
-            //             console.log(err);
-            //         });
-            //     }
-            // })
         }
         return () => {
             chatSocket?.off('update_chat_room_member_roomUsers');
-            // chatSocket?.off('ban_from_room');
         }
     }, [chatRoomId, chatSocket])
 
