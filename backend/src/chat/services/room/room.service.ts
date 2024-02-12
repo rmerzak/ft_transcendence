@@ -533,9 +533,22 @@ export class RoomService {
         senderId: number,
         chatRoomId: number,
     ): Promise<RoomReqJoin | null> {
-        return await this.prisma.roomReqJoin.delete({
-            where: { senderId_chatRoomId: { senderId, chatRoomId } },
+        const user = await this.prisma.user.findUnique({
+            where: { id: senderId },
         });
+        const chatRoom = await this.prisma.chatRoom.findUnique({
+            where: { id: chatRoomId },
+        });
+        if (!chatRoom || !user) return null;
+        try {
+            const roomReq = await this.prisma.roomReqJoin.delete({
+                where: { senderId_chatRoomId: { senderId, chatRoomId } },
+            });
+            if (!roomReq) return null;
+            return roomReq;
+        } catch (error) {
+            return null;
+        }
     }
 
     async leaveMemberFromRoom(_client: Socket, payload: ChatRoom): Promise<any> {

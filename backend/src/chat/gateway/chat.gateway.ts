@@ -354,6 +354,9 @@ export class GatewayGateway
   async handleKickUser(_client: Socket, payload: { roomId: number, userId: number }) {
     try {
       const user = await this.prisma.user.findUnique({ where: { id: payload.userId } });
+      if (!user) throw new Error('User not found');
+      const room = await this.roomService.getChatRoomById(payload.roomId);
+      if (!room) throw new Error('Room not found');
       const deletedRoomMem = await this.roomService.deletechatRoomMember(_client['user'].id, payload.userId, payload.roomId);
       if (deletedRoomMem) {
         const msgData = {
@@ -363,6 +366,9 @@ export class GatewayGateway
           type: MessageStatus.ANNOUCEMENT,
         } as Message;
         const msg = await this.chatService.addMessage(msgData, _client['user'].id);
+        if (room.visibility === RoomVisibility.PRIVATE) {
+          await this.roomService.deleteRequestToJoinChatRoom(user.id, room.id);
+        }
         this.server.to(deletedRoomMem.chatRoomId.toString()).emit('receive-message', { ...msg, userId: payload.userId });
         this.server.to(deletedRoomMem.chatRoomId.toString()).emit('update_chat_room_member_channel', deletedRoomMem);
         this.server.to(deletedRoomMem.chatRoomId.toString()).emit('update_chat_room_member_roomUsers', deletedRoomMem);
@@ -466,7 +472,6 @@ export class GatewayGateway
         senderId: _client['user'].id,
         type: MessageStatus.ANNOUCEMENT,
       } as Message;
-      const msg = await this.chatService.addMessage(msgData, _client['user'].id);
       const room = await this.roomService.leaveMemberFromRoom(_client, payload);
       this.roomService.connectedClients.forEach((sockets, userId) => {
         if (userId === _client['user'].id) {
@@ -488,10 +493,14 @@ export class GatewayGateway
         }
       });
       if (room !== null) {
+        const msg = await this.chatService.addMessage(msgData, _client['user'].id);
+        if (room.visibility === RoomVisibility.PRIVATE) { 
+          await this.roomService.deleteRequestToJoinChatRoom(_client['user'].id, payload.id);
+        }
         this.server.to(room.id.toString()).emit('receive-message', { ...msg, userId: _client['user'].id });
+        this.server.to(payload.id.toString()).emit('leaveRoom', { roomId: payload.id, userId: _client['user'].id });
+        this.server.to(payload.id.toString()).emit('update-room_msgRm', room);
       }
-      this.server.to(payload.id.toString()).emit('leaveRoom', { roomId: payload.id, userId: _client['user'].id });
-      this.server.to(payload.id.toString()).emit('update-room_msgRm', room);
     } catch (error) {
       _client.emit('error', error.message);
     }
