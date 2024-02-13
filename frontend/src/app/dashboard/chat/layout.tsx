@@ -68,7 +68,7 @@ const Layout = ({ children }: any) => {
       friends.forEach((friend) => {
         const friendId = friend.senderId === profile.id ? friend.receiverId : friend.senderId;
         getChatRoomByName(profile?.id.toString(), friendId.toString()).then((res) => {
-          if (res && res.data.length > 0 && !privChat.find((room) => room.id === res.data.id))
+          if (res && res.data && !privChat.find((room) => room.id === res.data.id))
             setPrivChat((prev) => [...prev, res.data]);
         }).catch((err) => { console.log(err) });
       });

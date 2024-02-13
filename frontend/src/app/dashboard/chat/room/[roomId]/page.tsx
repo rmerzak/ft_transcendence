@@ -31,7 +31,6 @@ const Room = () => {
           });
       }
       chatSocket.on('receive-message', (message) => {
-        // console.log("message", message);
         if (message.hasOwnProperty('userId') && profile?.id === message.userId)
           router.push('/dashboard/chat');
         else if (message.chatRoomId === Number(roomId)) {

@@ -45,6 +45,12 @@ const Chatheader: React.FC<ChatheaderProps> = ({ username, status, userId, frien
                                         {friendBlock ? 'Unblock ' : 'Block '}{username}
                                     </div>
                                 </li>
+                                {/* mol game need to work here */}
+                                <li>
+                                    <div onClick={()=>{console.log('inaho fa5')}}>
+                                        Invite to game
+                                    </div>
+                                </li>
                             </ul>
                         </div>
                     </div>

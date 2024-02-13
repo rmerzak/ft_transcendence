@@ -493,12 +493,14 @@ export class GatewayGateway
         }
       });
       if (room !== null) {
-        const msg = await this.chatService.addMessage(msgData, _client['user'].id);
+        const roomTmp = await this.roomService.getChatRoomById(payload.id);
+        if (!roomTmp) throw new Error('Room not found');
+        const msg = await this.chatService.addMessage(msgData, roomTmp.owner);
         if (room.visibility === RoomVisibility.PRIVATE) { 
           await this.roomService.deleteRequestToJoinChatRoom(_client['user'].id, payload.id);
         }
         this.server.to(room.id.toString()).emit('receive-message', { ...msg, userId: _client['user'].id });
-        this.server.to(payload.id.toString()).emit('leaveRoom', { roomId: payload.id, userId: _client['user'].id });
+        this.server.to(payload.id.toString()).emit('leaveRoom', { roomId: room.id, userId: _client['user'].id });
         this.server.to(payload.id.toString()).emit('update-room_msgRm', room);
       }
     } catch (error) {

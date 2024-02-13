@@ -61,15 +61,15 @@ const Recent: React.FC<RecentProps> = ({ rooms }) => {
 
   function removeRecent(chatRoomId: number) {
     deleteRecentMessage(chatRoomId).then((res) => {
-        if (res.data) {
-          getRecentMessages().then((res) => {
-            if (res.data && res.data.length > 0)
-              setRecent(res.data);
-          }).catch((err) => {
-            console.error(err);
-          });
-        }
-      })
+      if (res.data) {
+        getRecentMessages().then((res) => {
+          if (res.data)
+            setRecent(res.data);
+        }).catch((err) => {
+          console.error(err);
+        });
+      }
+    })
       .catch((err) => {
         console.error(err);
       });
@@ -139,3 +139,4 @@ const Recent: React.FC<RecentProps> = ({ rooms }) => {
   );
 };
 export default Recent;
+

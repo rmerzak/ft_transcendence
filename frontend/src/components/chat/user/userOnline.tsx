@@ -1,7 +1,7 @@
 "use client";
 import { useContext, useEffect } from "react";
 import dynamic from 'next/dynamic';
-const SwiperFC = dynamic(() => import('./swiper'), { ssr: false });
+const SwiperFC = dynamic(() => import('./swiper'));
 import { ContextGlobal } from "@/context/contex";
 import { getFriendList } from "@/api/friendship/friendship.api";
 // import "./userOnline.css";
