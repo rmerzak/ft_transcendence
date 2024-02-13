@@ -214,7 +214,7 @@ export class GameService {
           }
           server.to(room.id).emit('timeOut');
         }
-      }, 30000); // 180000 = 3 minutes 30000 = 30 seconds
+      }, 60000); // 180000 = 3 minutes 30000 = 30 seconds
       if (room && room.state === State.PLAYING) {
         server.to(room.id).emit('roomIsFull', true);
         setTimeout(() => {
@@ -243,7 +243,6 @@ export class GameService {
 
   // this method is called when a player leaves a room
   leaveRoom(roomId: string, playerId: string, client: Socket): void {
-    console.log('hello');
     const roomIndex = this.rooms.findIndex((room) => room.id === roomId);
 
     if (roomIndex !== -1) {
@@ -274,23 +273,16 @@ export class GameService {
   // this method is called when a player leaves a challenge room
   leaveChallengeRoom(roomId: string, playerId: string, client: Socket): void {
     const roomIndex = this.challenge.findIndex((room) => room.id === roomId);
-
+    
     if (roomIndex !== -1) {
       const room = this.challenge[roomIndex];
       room.state = State.WAITING;
       room.endGame();
       client.leave(roomId);
-
-      // Find and remove the player from the room
-      const playerIndex = room.players.findIndex(
-        (player) => player.socketId === playerId,
-      );
-      if (playerIndex !== -1) {
-        const player = room.players[playerIndex];
-        room.removePlayer(player);
-        this.stopPlaying(player.user.id);
-        this.challenge.splice(roomIndex, 1);
-      }
+        room.players.forEach((player) => {
+          this.stopPlaying(player.user.id);
+        });
+        this.rooms.splice(roomIndex, 1);
     }
   }
 

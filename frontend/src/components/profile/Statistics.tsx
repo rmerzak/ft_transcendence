@@ -52,23 +52,23 @@ const Statistics = () => {
             <div className="text-[18px] px-4">
                 <div className="flex w-full items-center justify-between">
                     <div className="text-white font-thin">Matches</div>
-                    <div className="text-white text-opacity-50">{statistics.gameMatches}</div>
+                    <div className="text-white text-opacity-50">{statistics?.gameMatches}</div>
                 </div>
                 <div className="flex w-full items-center justify-between">
                     <div className="text-white font-thin">Wins</div>
-                    <div className="text-white text-opacity-50">{statistics.gameWins}</div>
+                    <div className="text-white text-opacity-50">{statistics?.gameWins}</div>
                 </div>
                 <div className="flex w-full items-center justify-between">
                     <div className="text-white font-thin">Loses</div>
-                    <div className="text-white text-opacity-50">{statistics.gameLoses}</div>
+                    <div className="text-white text-opacity-50">{statistics?.gameLoses}</div>
                 </div>
                 <div className="flex w-full items-center justify-between">
                     <div className="text-white font-thin">Score</div>
-                    <div className="text-white text-opacity-50">{statistics.gameElo}</div>
+                    <div className="text-white text-opacity-50">{statistics?.gameElo}</div>
                 </div>
                 <div className="flex w-full items-center justify-between">
                     <div className="text-white font-thin">Rank</div>
-                    <div className="text-white text-opacity-50">#{statistics.gameRank !== 0 ? statistics.gameRank : '?'}</div>
+                    <div className="text-white text-opacity-50">#{statistics?.gameRank !== 0 ? statistics?.gameRank : '?'}</div>
                 </div>
             </div>
         </>

@@ -6,6 +6,7 @@ import { ContextGlobal } from "@/context/contex";
 import Loading from "../game/Loading";
 import { usePathname } from "next/navigation";
 import PlayPopup from "../game/PlayPopup";
+import AuthWrapper from "../auth/AuthWrapper";
 
 type MatchHistoryEntry = {
     userPlayerId: number;
@@ -112,13 +113,16 @@ const MatchHistory = ({ data, head}: { data: MatchHistoryItemInterface[]; head: 
         if (profile.id !== -1) {
             fetchMatchHistory(profileName || profile.username);
         }
-    }, [profile.id, currentData.length]);
+        return () => {
+            setLoading(false);
+        };
+    }, [profile.id, currentData?.length]);
 
     return (
-        <>
+        <AuthWrapper>
             { openAl && <PlayPopup openAl={() => setOpenAl(!openAl)} />}
             <Loading isLoading={loading} />
-            {currentData.length > 0 ? <div className="flex items-center justify-between h-[40px] bg-head text-white text-[14px] md:text-[16px]">
+            {currentData?.length > 0 ? <div className="flex items-center justify-between h-[40px] bg-head text-white text-[14px] md:text-[16px]">
                 {head.map((item, index) => (
                     <div className="w-1/2 flex items-center justify-center" key={index}>
                         {item}
@@ -126,7 +130,7 @@ const MatchHistory = ({ data, head}: { data: MatchHistoryItemInterface[]; head: 
                 ))}
             </div> : null}
             {
-                currentData.length > 0 ? ( currentData.map((item, index) => (
+                currentData?.length > 0 ? ( currentData?.map((item, index) => (
                     <MatchHistoryItem
                         key={index}
                         playerOne={item.user.username}
@@ -151,7 +155,7 @@ const MatchHistory = ({ data, head}: { data: MatchHistoryItemInterface[]; head: 
             </div>
             )}
             {/* <div className="pagination flex items-center justify-center text-white bg-achievements3">{renderPageNumbers()}</div> */}
-        </>
+        </AuthWrapper>
     );
 };
 

@@ -109,8 +109,8 @@ const ProfileInformation = ({ profile, BtnFriend }: { profile: User, BtnFriend: 
                     </div>
                 </div>
                 <div>
-                    <p className="text-gray-300 font-thin ml-1">Freax</p>
-                    <Image src="/freax.png" alt="freax" width={100} height={100} style={{ width: "50px", height: "101px", marginRight: "15px" }} />
+                    {/* <p className="text-gray-300 font-thin ml-1">Freax</p>
+                    <Image src="/freax.png" alt="freax" width={100} height={100} style={{ width: "50px", height: "101px", marginRight: "15px" }} /> */}
                 </div>
             </div>
         </div>

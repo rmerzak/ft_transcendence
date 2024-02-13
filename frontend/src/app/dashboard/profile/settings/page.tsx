@@ -3,10 +3,11 @@ import PreAuthForm from '@/components/auth/PreAuthForm'
 import { ContextGlobal } from '@/context/contex';
 import React, { useContext } from 'react'
 import DisableTwoFa from '@/components/auth/DisableTwoFa';
+import AuthWrapper from '@/components/auth/AuthWrapper';
 function Settings() {
     const { profile } : any = useContext(ContextGlobal);
     return (
-        <>
+        <AuthWrapper>
             <div className="flex items-center justify-center w-[300px] md:w-full ">
                 <div className="flex flex-col items-center justify-center w-full  flex-1 px-3 md:px-20 text-center">
                     <div className="text-white font-bold md:text-[48px]">Settings: </div>
@@ -25,7 +26,7 @@ function Settings() {
                     </div>
                 </div>
             </div>
-        </>
+        </AuthWrapper>
     )
 }
 

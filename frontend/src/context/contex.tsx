@@ -75,12 +75,12 @@ export const ContextProvider = ({ children }: { children: any }) => {
   useEffect(() => {
     if (profile.id !== -1) {
       getUnreadNotification().then((res) => {
-        if (res.data)
+        if (res?.data)
           setNotification(res.data);
       }).catch((err) => { console.log(err) });
   
       getUserInfo().then((res) => {
-        if (res.data)
+        if (res?.data)
           setProfile(res.data);
       }).catch((err) => { console.log(err) });
       getFriendList().then((res) => {

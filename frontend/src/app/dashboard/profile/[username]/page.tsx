@@ -11,6 +11,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react'
 import Loading from '@/components/Loading/Loading'
 import { ContextGlobal } from '@/context/contex'
 import UserNotFound from '@/components/profile/UserNotFound'
+import AuthWrapper from '@/components/auth/AuthWrapper'
 
 
 function Page() {
@@ -39,23 +40,27 @@ function Page() {
     setBtnFriend(profile?.username !== username);
 }, [username, profile]);
   return (
-    loading ? <Loading /> :
-    (error || !user) ? <UserNotFound /> :
-      <div className="p-4 mx-2 bg-profile">
-        <h1 className="text-white font-bold text-3xl text-center mb-7 mt-2">Profile</h1>
-        <div className="w-full h-[250px] border-spacing-1 mb-3 border-[#ffff]">
-          <ProfileInformation profile={user} BtnFriend={BtnFriend} />
-        </div>
-        <div className="flex md:flex-row flex-col">
-          <div className="shadow-2xl pb-6 bg-achievements md:w-[33.33%] w-full h-full backdrop-blur-lg md:mb-0 mb-2">
-            <Achievements />
-            <Statistics />
+      <AuthWrapper>
+        {
+        loading ? <Loading /> :
+        error ? <UserNotFound /> :
+          <div className="p-4 mx-2 bg-profile">
+            <h1 className="text-white font-bold text-3xl text-center mb-7 mt-2">Profile</h1>
+            <div className="w-full h-[250px] border-spacing-1 mb-3 border-[#ffff]">
+              <ProfileInformation profile={user} BtnFriend={BtnFriend} />
+            </div>
+            <div className="flex md:flex-row flex-col">
+              <div className="shadow-2xl pb-6 bg-achievements md:w-[33.33%] w-full h-full backdrop-blur-lg md:mb-0 mb-2">
+                <Achievements />
+                <Statistics />
+              </div>
+              <div className="md:w-[66.33%] md:ml-2">
+                <MatchHistory data={data} head={["Player", "Result", "Opponents"]} />
+              </div>
+            </div>
           </div>
-          <div className="md:w-[66.33%] md:ml-2">
-            <MatchHistory data={data} head={["Player", "Result", "Opponents"]} />
-          </div>
-        </div>
-      </div>
+        }
+      </AuthWrapper>
     )
 }
 

@@ -36,7 +36,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   async handleConnection(socket: Socket) {
-    console.log("hi i'm connected");
+    console.log("Connected");
 
     // get user info from db and add it to the socket
     const user = await this.game.findUserById(socket['payload']['sub']);
@@ -52,7 +52,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   async handleDisconnect(client: Socket) {
-    console.log('disconnected');
+    console.log('Disconnected');
 
     // Change user status to ONLINE
     const userId = client['payload']['sub'];
@@ -94,7 +94,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             }
           });
         }
-        console.log('targetRoom', targetRoom);
         this.game.leaveRoom(targetRoom.id, client.id, client);
       }
 
@@ -138,7 +137,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   // this method is called when a player joins a room
   // if the room is full, the game is started immediately
-
   @SubscribeMessage('join')
   async joinRoom(client: Socket) {
     try {
@@ -172,83 +170,78 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('resign')
   resign(client: Socket, payload: { roomId: string; mode: number }): void {
     try {
-      // console.log(payload);
-      console.log('resign');
       if (payload.mode === 0) {
         const room = this.game.rooms.find((room) => room.id === payload.roomId);
         if (room) {
-            // console.log('player 1', room.players[0]);
-            // console.log('player 2', room.players[1]);
           // create match history, if the player resigns, the other player wins by default with 5 points to 0
-            if (room.players[0].socketId === client.id) {
-              this.game.createMatchHistory(
-                room.players[0].user.id,
-                room.players[1].user.id,
-                0,
-                5,
-              );
-              this.game.updateStatistics(room.players[1].user.id, 5, 0);
-              this.game.updateStatistics(room.players[0].user.id, 0, 5);
-            }
-            if (room.players[1].socketId === client.id) {
-              this.game.createMatchHistory(
-                room.players[0].user.id,
-                room.players[1].user.id,
-                5,
-                0,
-              );
-              this.game.updateStatistics(room.players[0].user.id, 5, 0);
-              this.game.updateStatistics(room.players[1].user.id, 0, 5);
-            }
+          if (room.players.length > 1) {
+              if (room.players[0].socketId === client.id) {
+                this.game.createMatchHistory(
+                  room.players[0].user.id,
+                  room.players[1].user.id,
+                  0,
+                  5,
+                );
+                this.game.updateStatistics(room.players[1].user.id, 5, 0);
+                this.game.updateStatistics(room.players[0].user.id, 0, 5);
+              }
+              if (room.players[1].socketId === client.id) {
+                this.game.createMatchHistory(
+                  room.players[0].user.id,
+                  room.players[1].user.id,
+                  5,
+                  0,
+                );
+                this.game.updateStatistics(room.players[0].user.id, 5, 0);
+                this.game.updateStatistics(room.players[1].user.id, 0, 5);
+              }
 
-          room.players.forEach((player) => {
-            if (player.socketId !== client.id) {
-              this.server.to(player.socketId).emit('winByResign');
-            }
-          });
+            room.players.forEach((player) => {
+              if (player.socketId !== client.id) {
+                this.server.to(player.socketId).emit('winByResign');
+              }
+            });
+          }
           this.game.leaveRoom(payload.roomId, client.id, client);
         }
 
         // update statistics
       } else if (payload.mode === 1) {
-        console.log('first', this.game.challenge);
         const room = this.game.challenge.find(
           (room) => room.id === payload.roomId,
         );
         if (room) {
-            // console.log('player 1', room.players[0]);
-            // console.log('player 2', room.players[1]);
           // create match history, if the player resigns, the other player wins by default with 5 points to 0
-            if (room.players[0].socketId === client.id) {
-              this.game.createMatchHistory(
-                room.players[0].user.id,
-                room.players[1].user.id,
-                0,
-                5,
-              );
-              this.game.updateStatistics(room.players[1].user.id, 5, 0);
-              this.game.updateStatistics(room.players[0].user.id, 0, 5);
-            }
-            if (room.players[1].socketId === client.id) {
-              this.game.createMatchHistory(
-                room.players[0].user.id,
-                room.players[1].user.id,
-                5,
-                0,
-              );
-              this.game.updateStatistics(room.players[0].user.id, 5, 0);
-              this.game.updateStatistics(room.players[1].user.id, 0, 5);
-            }
+          if (room.players.length > 1) {
+              if (room.players[0].socketId === client.id) {
+                this.game.createMatchHistory(
+                  room.players[0].user.id,
+                  room.players[1].user.id,
+                  0,
+                  5,
+                );
+                this.game.updateStatistics(room.players[1].user.id, 5, 0);
+                this.game.updateStatistics(room.players[0].user.id, 0, 5);
+              }
+              if (room.players[1].socketId === client.id) {
+                this.game.createMatchHistory(
+                  room.players[0].user.id,
+                  room.players[1].user.id,
+                  5,
+                  0,
+                );
+                this.game.updateStatistics(room.players[0].user.id, 5, 0);
+                this.game.updateStatistics(room.players[1].user.id, 0, 5);
+              }
 
-          room.players.forEach((player) => {
-            if (player.socketId !== client.id) {
-              this.server.to(player.socketId).emit('winByResign');
-            }
-          });
+            room.players.forEach((player) => {
+              if (player.socketId !== client.id) {
+                this.server.to(player.socketId).emit('winByResign');
+              }
+            });
+          }
           this.game.leaveChallengeRoom(payload.roomId, client.id, client);
-          //
         }
-        console.log('second', this.game.challenge);
       }
     } catch { }
   }
@@ -264,7 +257,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       } else if (payload.mode === 1) {
         this.game.leaveChallengeRoom(payload.roomId, playerId, client);
       }
-      console.log('leave');
     } catch { }
   }
 }
