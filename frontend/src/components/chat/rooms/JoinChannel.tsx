@@ -36,14 +36,21 @@ function JoinChannel({ channel, setOpenChannel, Handlepopup }: PopupProps) {
         name: "",
         password: "",
       });
+      chatSocket?.on("push", (data) => {
+        if (data) {
+          router.push(`/dashboard/chat/room/${channel.id}`);
+        }
+      });
     } else {
       chatSocket?.emit("request-join-room", channel);
     }
       setValidationError(null);
-
-     if (Handlepopup){
-      Handlepopup();
-     }
+      if (Handlepopup) {
+        Handlepopup();
+      }
+      return () => {
+        chatSocket?.off("push");
+      };
     };
 
     return (

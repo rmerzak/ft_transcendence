@@ -20,6 +20,7 @@ function ChannelItem({ channel, HandleOpen }: ChannelItemProps) {
     HandleOpen();
     setOpenChannel(null);
   }
+
     const handleClick = (ChatRoom: ChatRoom) => {
         setOpenChannel(ChatRoom);        
     };

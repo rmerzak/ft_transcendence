@@ -8,11 +8,11 @@ export interface Valid{
 }
 
 export async function middleware(req: NextRequest) {
-  console.log('middleware');
   const privatePath = ['/dashboard', '/auth/verify'];
   try {
     const cookies = req.cookies.get('accesstoken');
     const isProtectedPath = privatePath.some((path) => req.nextUrl.pathname.startsWith(path));
+    console.log('isProtectedPath', isProtectedPath, " ",req.nextUrl.pathname);
     const valid : Valid = await isValidAccessToken(cookies?.value);
     if (cookies === undefined && isProtectedPath) {
       return NextResponse.redirect(new URL('/', req.url));
