@@ -180,32 +180,34 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             // console.log('player 1', room.players[0]);
             // console.log('player 2', room.players[1]);
           // create match history, if the player resigns, the other player wins by default with 5 points to 0
-            if (room.players[0].socketId === client.id) {
-              this.game.createMatchHistory(
-                room.players[0].user.id,
-                room.players[1].user.id,
-                0,
-                5,
-              );
-              this.game.updateStatistics(room.players[1].user.id, 5, 0);
-              this.game.updateStatistics(room.players[0].user.id, 0, 5);
-            }
-            if (room.players[1].socketId === client.id) {
-              this.game.createMatchHistory(
-                room.players[0].user.id,
-                room.players[1].user.id,
-                5,
-                0,
-              );
-              this.game.updateStatistics(room.players[0].user.id, 5, 0);
-              this.game.updateStatistics(room.players[1].user.id, 0, 5);
-            }
+          if (room.players.length > 1) {
+              if (room.players[0].socketId === client.id) {
+                this.game.createMatchHistory(
+                  room.players[0].user.id,
+                  room.players[1].user.id,
+                  0,
+                  5,
+                );
+                this.game.updateStatistics(room.players[1].user.id, 5, 0);
+                this.game.updateStatistics(room.players[0].user.id, 0, 5);
+              }
+              if (room.players[1].socketId === client.id) {
+                this.game.createMatchHistory(
+                  room.players[0].user.id,
+                  room.players[1].user.id,
+                  5,
+                  0,
+                );
+                this.game.updateStatistics(room.players[0].user.id, 5, 0);
+                this.game.updateStatistics(room.players[1].user.id, 0, 5);
+              }
 
-          room.players.forEach((player) => {
-            if (player.socketId !== client.id) {
-              this.server.to(player.socketId).emit('winByResign');
-            }
-          });
+            room.players.forEach((player) => {
+              if (player.socketId !== client.id) {
+                this.server.to(player.socketId).emit('winByResign');
+              }
+            });
+          }
           this.game.leaveRoom(payload.roomId, client.id, client);
         }
 
@@ -219,32 +221,34 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             // console.log('player 1', room.players[0]);
             // console.log('player 2', room.players[1]);
           // create match history, if the player resigns, the other player wins by default with 5 points to 0
-            if (room.players[0].socketId === client.id) {
-              this.game.createMatchHistory(
-                room.players[0].user.id,
-                room.players[1].user.id,
-                0,
-                5,
-              );
-              this.game.updateStatistics(room.players[1].user.id, 5, 0);
-              this.game.updateStatistics(room.players[0].user.id, 0, 5);
-            }
-            if (room.players[1].socketId === client.id) {
-              this.game.createMatchHistory(
-                room.players[0].user.id,
-                room.players[1].user.id,
-                5,
-                0,
-              );
-              this.game.updateStatistics(room.players[0].user.id, 5, 0);
-              this.game.updateStatistics(room.players[1].user.id, 0, 5);
-            }
+          if (room.players.length > 1) {
+              if (room.players[0].socketId === client.id) {
+                this.game.createMatchHistory(
+                  room.players[0].user.id,
+                  room.players[1].user.id,
+                  0,
+                  5,
+                );
+                this.game.updateStatistics(room.players[1].user.id, 5, 0);
+                this.game.updateStatistics(room.players[0].user.id, 0, 5);
+              }
+              if (room.players[1].socketId === client.id) {
+                this.game.createMatchHistory(
+                  room.players[0].user.id,
+                  room.players[1].user.id,
+                  5,
+                  0,
+                );
+                this.game.updateStatistics(room.players[0].user.id, 5, 0);
+                this.game.updateStatistics(room.players[1].user.id, 0, 5);
+              }
 
-          room.players.forEach((player) => {
-            if (player.socketId !== client.id) {
-              this.server.to(player.socketId).emit('winByResign');
-            }
-          });
+            room.players.forEach((player) => {
+              if (player.socketId !== client.id) {
+                this.server.to(player.socketId).emit('winByResign');
+              }
+            });
+          }
           this.game.leaveChallengeRoom(payload.roomId, client.id, client);
           //
         }
