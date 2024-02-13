@@ -19,8 +19,9 @@ const LeaderboardEntry: React.FC<{
       </div>
       <div className='flex '>
         <div className='flex flex-col items-center'>
-          <div className='relative'>
+        <div className='relative'>
             <img src={avatarSrc} alt="avatar" className="md:w-[50px] md:h-[50px] w-[30px] h-[32px] rounded-full"/>
+            <img src="/1337.png" alt="avatar" className="absolute top-1/2 -right-1 md:w-[16px] md:h-[26px] w-[10px] h-[15px] rounded-b-full" style={{ filter: 'saturate(150%) brightness(120%)' }}/>
           </div>
           <h1 className='text-gray-200 font-thin md:text-[12px] text-[8px]'>{username}</h1>
         </div>
