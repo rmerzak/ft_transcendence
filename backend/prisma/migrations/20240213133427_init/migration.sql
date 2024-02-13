@@ -20,7 +20,7 @@ CREATE TYPE "FriendshipStatus" AS ENUM ('PENDING', 'ACCEPTED', 'BLOCKED');
 CREATE TYPE "Blocker" AS ENUM ('SENDER', 'RECEIVER');
 
 -- CreateEnum
-CREATE TYPE "RequestType" AS ENUM ('FRIENDSHIP', 'GAME');
+CREATE TYPE "RequestType" AS ENUM ('FRIENDSHIP', 'GAME', 'CHAT');
 
 -- CreateTable
 CREATE TABLE "User" (
@@ -109,7 +109,8 @@ CREATE TABLE "ChatRoomMember" (
     "is_admin" BOOLEAN NOT NULL DEFAULT false,
     "leftAt" TIMESTAMP(3),
     "status" "RoomStatus" DEFAULT 'NORMAL',
-    "mutedDuration" BIGINT,
+    "mutedDate" TIMESTAMP(3),
+    "mutedDuration" TEXT,
 
     CONSTRAINT "ChatRoomMember_pkey" PRIMARY KEY ("userId","chatRoomId")
 );

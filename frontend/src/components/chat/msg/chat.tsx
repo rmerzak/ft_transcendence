@@ -8,7 +8,7 @@ interface ChatProps {
   messages?: Messages[];
 }
 
-const formatDate = (timestamp: string) => {
+export const formatDate = (timestamp: string) => {
   if (!timestamp || timestamp.length === 0) return "";
   const originalDate = new Date(timestamp);
   const month = originalDate.toLocaleString('default', { month: 'short' });
@@ -21,11 +21,17 @@ const formatDate = (timestamp: string) => {
 
 const Chat: React.FC<ChatProps> = ({ messages }) => {
   const { profile }: any = useContext(ContextGlobal);
+  const chatRef = React.useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-  }, [messages]);
+    const div = chatRef.current;
+    if (div) {
+      div.scrollTop = div.scrollHeight;
+    }
+  }, [messages])
+
   return (
-    <div className='max-w-[80%] mx-auto overflow-y-auto md:max-h-[97%] p-2 '>
+    <div ref={chatRef} className='max-w-[80%] mx-auto overflow-y-auto md:max-h-[97%] p-2 '>
       {messages?.map((message, index) => {
         const isOwnMessage = message.senderId === profile?.id;
         const senderName = isOwnMessage ? "You" : message.sender?.username;
@@ -68,15 +74,3 @@ const Chat: React.FC<ChatProps> = ({ messages }) => {
 };
 
 export default Chat;
-// <div className="chat chat-end">
-//  ANNOUCEMENT
-//  NORMAL
-//   <div className="chat-header  mr-2  flex gap-2 items-center mb-1">
-//     {profile?.id === message.sender.id ? message.sender.username : "You"}
-//     <time className="text-xs opacity-50">12:46</time>
-//   </div>
-//   <div className="chat-bubble bg-purplee text-white">{message.text}</div>
-//   <div className="chat-footer opacity-50">
-//     Seen at 12:46
-//   </div>
-// </div>

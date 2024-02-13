@@ -8,7 +8,7 @@ import { ContextGlobal } from "@/context/contex";
 import { ChatRoom, Recent } from "@/interfaces";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useContext, useEffect, useState } from "react";
+import { use, useContext, useEffect, useState } from "react";
 import { Trash2 } from "lucide-react";
 
 type RecentProps = {
@@ -25,18 +25,17 @@ const Recent: React.FC<RecentProps> = ({ rooms }) => {
   const router = useRouter();
 
   useEffect(() => {
-    getRecentMessages()
-      .then((res) => {
-        setRecent(res.data);
-      })
-      .catch((err) => {
-        console.log("err", err);
-      });
+    getRecentMessages().then((res) => {
+      setRecent(res.data);
+    }).catch((err) => {
+      console.error(err);
+    });
   }, []);
 
   useEffect(() => {
     if (rooms) {
       rooms.forEach((room) => {
+        // console.log("room id", room);
         isNumber(room.id) ? chatSocket?.emit('join-room', { roomId: room.id }) : null;
       });
     }
@@ -48,7 +47,7 @@ const Recent: React.FC<RecentProps> = ({ rooms }) => {
         getRecentMessages().then((res) => {
           setRecent(res.data);
         }).catch((err) => {
-          console.log("err", err);
+          console.error(err);
         });
       });
     }
@@ -66,15 +65,17 @@ const Recent: React.FC<RecentProps> = ({ rooms }) => {
               setRecent(res.data);
             })
             .catch((err) => {
-              console.log("err", err);
+              console.error(err);
             });
         }
       })
       .catch((err) => {
-        console.log("err", err);
+        console.error(err);
       });
   }
-
+  // useEffect(() => {
+  //   console.log('recents', recents);
+  // }, [recents]);
   return (
     <>
       <div className="-mt-10">

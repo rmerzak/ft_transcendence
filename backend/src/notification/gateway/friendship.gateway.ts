@@ -6,11 +6,12 @@ import { Logger } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { User } from '@prisma/client';
 import { UserDto } from '../Dto';
+import { RoomService } from 'src/chat/services/room/room.service';
 /// dont forget to add the userin the socket using the methode socket.data = user
 
 @WebSocketGateway({ cors: { origin: 'http://localhost:8080', credentials: true, namespace: '/profile' } })
 export class FriendshipGateway {
-  constructor(private readonly friendship: FriendshipService) { }
+  constructor(private readonly friendship: FriendshipService,private roomService: RoomService) { }
   @WebSocketServer()
   server: Server;
 
@@ -84,14 +85,22 @@ export class FriendshipGateway {
   @SubscribeMessage('blockFriend')
   async blockFriend(socket: Socket, payload: number) {
     try {
+      // console.log("blockFrienddd", socket['payload']['sub'])
+      const blockByMe = socket['payload']['sub'];
       const emitClient = this.friendship.getSocketsByUser(Number(payload));
       const friendshipBlock = await this.friendship.BlockFriend(socket, Number(payload));
       if(friendshipBlock){
+        // console.log("blockFriend", payload)
 
         emitClient.forEach((socket) => {
           socket.emit('blockFriend', { notification: friendshipBlock, friendship: null, status: true, error: null });
+          socket.emit('blockFriendChat', { isblock: true, blockByMe: blockByMe });
+          socket.emit('blockUserOnline', { isblock: true, blockByMe: blockByMe });
         });
+        // console.log("blockFriendd", blockByMe)
         socket.emit('blockFriend', { notification: friendshipBlock, friendship: null, status: true, error: null });
+        socket.emit('blockFriendChat', { isblock: true, blockByMe: blockByMe });
+        socket.emit('blockUserOnline', { isblock: true, blockByMe: blockByMe });
       }
       } catch (error) {
         socket.emit('RequestError', { notification: null, friendship: null, status: false, error: error.message });
@@ -100,12 +109,17 @@ export class FriendshipGateway {
   @SubscribeMessage('unblockFriend')
   async unblockFriend(socket: Socket, payload: number) {
     try {
+      // console.log("unblockFriend", payload)
       const emitClient = this.friendship.getSocketsByUser(Number(payload));
       const friendshipUnblock = await this.friendship.UnBlockFriend(socket, Number(payload));
       emitClient.forEach((socket) => {
         socket.emit('unblockFriend', { notification: friendshipUnblock, friendship: null, status: true, error: null });
+        socket.emit('unblockFriendChat', { isblock: false, blockByMe: 0 });
+        socket.emit('unblockUserOnline', { isblock: false, blockByMe: 0 });
       });
       socket.emit('unblockFriend', { notification: friendshipUnblock, friendship: null, status: true, error: null });
+      socket.emit('unblockFriendChat', { isblock: false, blockByMe: 0 });
+      socket.emit('unblockUserOnline', { isblock: false, blockByMe: 0 });
     } catch (error) {
       socket.emit('RequestError', { notification: null, friendship: null, status: false, error: error.message });
     }
@@ -124,7 +138,6 @@ export class FriendshipGateway {
     } catch (error) {
       socket.emit('RequestError', { notification: null, friendship: null, status: false, error: error.message });
     }
-
   }
 
   @SubscribeMessage('refuseChallenge')

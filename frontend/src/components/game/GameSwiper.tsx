@@ -36,11 +36,14 @@ function GameSwiper()
             }}
             pagination={false}
             modules={[EffectCoverflow, Pagination]}
-            className="mySwiper"
+            className="gameSwiper"
             initialSlide={1}
         >
             {img.map((item, index) => (
-                <SwiperSlide key={index}>
+                <SwiperSlide 
+                    key={index}
+                    className="swiperSlide"
+                    >
                     <Image
                         src={`/game/${item}.png`}
                         alt={item}

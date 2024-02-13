@@ -1,5 +1,4 @@
 'use client'
-import Image from 'next/image'
 import Link from 'next/link';
 import React, { useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -10,17 +9,28 @@ import { toast } from 'react-toastify';
 import dynamic from 'next/dynamic';
 import { RiPingPongLine } from 'react-icons/ri';
 import { FaRobot } from 'react-icons/fa';
-// import GameSwiper from './GameSwiper';
+import { isValidAccessToken } from '@/api/user/user';
+
 const GameSwiper = dynamic(() => import('./GameSwiper'), { ssr: false });
 
 function Play()
 {
     const { profile }: any = useContext(ContextGlobal);
     const [ isPlaying, setIsPlaying ] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
     const router = useRouter();
     const createRoom = async () => {
         try {
+            isValidAccessToken().then((res) => {
+                if (res) {
+                    setIsAuthenticated(true);
+                } else {
+                    router.push('/auth/login');
+                }
+            }).catch(() => {
+                router.push('/auth/login');
+            });
             const res = await fetch(`${process.env.API_BASE_URL}/api/rooms`, {
                 method: 'POST',
                 headers: {

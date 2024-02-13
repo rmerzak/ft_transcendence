@@ -66,6 +66,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import {  BookUser,  Gamepad2, Home , MessageCircle, User } from 'lucide-react'
+import { useRouter } from "next/navigation";
 const sidebarItems = [
   {
     icon: <Home color="#ffff" size={35} strokeWidth={1.2}/>,
@@ -90,8 +91,8 @@ const sidebarItems = [
 ];
 
 const Sidebar = () => {
-  const [expanded, setExpanded] = useState(true);
   const currentRoute = usePathname();
+  const router = useRouter();
   return (
     // <aside className={`h-screen shadow-2xl backdrop-blur-lg bg-[#311150]/80 md:w-52`}>
     <aside className={`md:w-[85px] md:h-screen max-md:fixed max-md:bottom-0 shadow-2xl backdrop-blur-lg bg-[#311150]/80 max-md:w-full max-md:h-[80px] z-10 lg:w-52 duration-100 ease-in-out`}>
@@ -102,7 +103,9 @@ const Sidebar = () => {
           <span className={`text-white text-xl md:w-50 lg:block hidden `}>PingPong</span>
         </div>
         {sidebarItems.map(({ icon, to, text }, index) => (
-          <Link key={index} href={to}>
+          <button key={index} onClick={()=> {
+            router.push(to);
+          }}>
             <li className={` ${currentRoute === to ? " bg-[#78196F]" : "text-white"} hover:bg-[#78196F]/30 hover:text-white"}  relative flex items-center py-2 px-3 my-2 font-medium rounded-md cursor-pointer transition-colors group text-white md:w-35 md:mx-3 w-15`}>
               {icon}
               <span className={`overflow-hidden transition-all  md:w-35 md:ml-3 hidden lg:block`}>
@@ -112,7 +115,7 @@ const Sidebar = () => {
                   {text}
                 </div>
             </li>
-          </Link>
+          </button>
         ))}
       </nav>
     </aside>

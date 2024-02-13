@@ -1,11 +1,11 @@
-import { BadRequestException, Body, ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, Body, ForbiddenException, HttpException, HttpStatus, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AuthDto } from './Dto';
 import * as argon from 'argon2'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from '@nestjs/config';
-import { Prisma } from '@prisma/client';
+import { Prisma, UserStatus } from '@prisma/client';
 import { v2 as cloudinary, UploadApiResponse, UploadApiErrorResponse } from "cloudinary";
 const streamifier = require('streamifier');
 @Injectable()
@@ -20,8 +20,10 @@ export class AuthService {
     async signup(dto: AuthDto): Promise<any> {
         try {
             let user = await this.prisma.user.findUnique({ where: { email: dto.email } });
-            if (user)
+            if (user) {
+                await this.prisma.user.update({ where: { id: user.id }, data: { status: UserStatus.ONLINE } });
                 return user;
+            }
             user = await this.prisma.user.create({
                 data: {
                     id: dto.id,
@@ -72,11 +74,14 @@ export class AuthService {
         return { accessToken: token };
     }
 
-    async finishAuth(data: any, email: string) {
+    async finishAuth(data: {username:string, image:string}, email: string) {
         try {
             const user = await this.prisma.user.findUnique({ where: { email: email } });
             if (!user)
                 throw new BadRequestException('User not found');
+            const findUser = await this.prisma.user.findUnique({ where: { username: data.username } });
+            if (findUser)
+                return null;
             return await this.prisma.user.update({
                 where: {
                     id: user.id
@@ -88,7 +93,7 @@ export class AuthService {
                 }
             });
         } catch (error) {
-            throw new InternalServerErrorException('Error during user Update');
+            throw  new HttpException({ statusCode: HttpStatus.BAD_REQUEST, message: 'Error during updating user data', }, HttpStatus.BAD_REQUEST,);
         }
     }
 

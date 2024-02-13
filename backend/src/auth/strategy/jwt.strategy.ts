@@ -4,6 +4,7 @@ import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { PrismaService } from "src/prisma/prisma.service";
 import { Request } from 'express';
+import { UserStatus } from "@prisma/client";
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
     constructor(config: ConfigService, private prisma: PrismaService) {
@@ -21,6 +22,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
  
     async validate(payload: {sub: number; email: string;}) {
         const user = await this.prisma.user.findUnique({where:{id:payload.sub}})
+        if (user)
+          await this.prisma.user.update({where:{id:user.id},data:{status:UserStatus.ONLINE}});
         return user;
     }
     private static extractJWT(@Req() request: Request ): string | null {

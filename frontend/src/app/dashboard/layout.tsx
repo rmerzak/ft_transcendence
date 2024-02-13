@@ -14,7 +14,7 @@ import JotaiProvider from '@/app/dashboard/game/context/jotai';
 import ChannelPopup from '@/components/chat/rooms/ChannelPopup';
 import { ChatRoom } from '@/interfaces';
 
-const Layout = ({children} : any) => {
+const Layout = ({ children }: any) => {
   return (
       <div className="flex login-gradient h-full">
         <ContextProvider>

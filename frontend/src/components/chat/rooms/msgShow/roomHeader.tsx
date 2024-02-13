@@ -8,11 +8,12 @@ import ChannelSettingPopup from "../ChannelSettingPopup";
 import { FaUserFriends } from "react-icons/fa";
 import RoomUsers from "../roomUsers/roomUsers";
 import LeavePopup from "../LeavePopup";
+import { MoreVertical } from "lucide-react";
 interface roomHeaderProps {
     chatRoom?: ChatRoom;
 }
 
-const RoomHeader: React.FC<roomHeaderProps> = ({ chatRoom }) => {
+const RoomHeader: React.FC<roomHeaderProps> = ({ chatRoom}) => {
     const [isPopupVisible, setPopupVisible] = useState(false);
     const [openUserList, setOpenUserList] = useState(false);
     const [leave, setLeave] = useState(false);
@@ -61,19 +62,9 @@ const RoomHeader: React.FC<roomHeaderProps> = ({ chatRoom }) => {
                             )
                         }
                         <div className="dropdown dropdown-left">
-                            <svg
-                                role="button"
-                                className="h-8 w-8 m-1"
-                                viewBox="0 0 32 32"
-                                tabIndex={0}
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path
-                                    d="M16 13c-1.654 0-3 1.346-3 3s1.346 3 3 3 3-1.346 3-3-1.346-3-3-3zM6 13c-1.654 0-3 1.346-3 3s1.346 3 3 3 3-1.346 3-3-1.346-3-3-3zM26 13c-1.654 0-3 1.346-3 3s1.346 3 3 3 3-1.346 3-3-1.346-3-3-3z"
-                                    fill="#ffffff"
-                                    className=""
-                                ></path>
-                            </svg>
+                            <button tabIndex={0}>
+                                <MoreVertical />
+                            </button>
                             <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-purplee rounded-box w-40">
                                 <li>
                                     <div className="flex items-center space-x-2 cursor-pointer" onClick={handleLeaveClick}>

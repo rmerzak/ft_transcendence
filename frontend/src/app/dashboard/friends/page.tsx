@@ -10,7 +10,7 @@ import AuthWrapper from "@/components/auth/AuthWrapper";
 const Friends = () => {
   const { profile, setProfile, setFriends, friends, socket }: any = useContext(ContextGlobal);
   function getFriends(number: number) {
-    getFriendList().then((res) => {
+    getFriendList().then((res ): any => {
       if (res?.data)
         setFriends(res.data);
       console.log("friends inside 1", friends);
