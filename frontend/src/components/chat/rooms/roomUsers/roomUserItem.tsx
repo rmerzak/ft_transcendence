@@ -49,7 +49,6 @@ function RoomUserItem({ chatRoomMember, profileRoomStatus, chatRoom, chatRoomRol
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         const seconds = timeToSeconds(value);
-        console.log(seconds);
         if (seconds === -1)
             setStatus((prev) => ({ ...prev, error: 'invalid time format' }));
         else if (seconds > 86400)

@@ -103,54 +103,58 @@ const Channels: React.FC<Channel> = ({ header }) => {
     if (chatSocket) {
       chatSocket?.on("create-room", (room: ChatRoom) => {
         getChatRoomsNotJoined().then((res) => {
-          if (res.data && res.data.length > 0)
+          if (res.data)
             setChatRoomsToJoin(res.data);
         }).catch((err) => { console.log(err) });
       });
       chatSocket?.on("ownedRoom", (room: ChatRoom) => {
         getChatRoomsJoined().then((res) => {
-          if (res.data && res.data.length > 0) {
+          if (res.data) {
             setChatRoomsJoined(res.data);
-            const newChatRoomsToJoin = chatRoomsToJoin.filter((item: ChatRoom) => item.name !== room.name);
-            setChatRoomsToJoin(newChatRoomsToJoin);
+            // const newChatRoomsToJoin = chatRoomsToJoin.filter((item: ChatRoom) => item.name !== room.name);
+            // setChatRoomsToJoin(newChatRoomsToJoin);
           }
         }).catch((err) => {
           console.log(err);
         });
+        getChatRoomsNotJoined().then((res) => {
+          if (res.data)
+            setChatRoomsToJoin(res.data);
+        }).catch((err) => { console.log(err) });
       });
-      chatSocket?.on("update_chat_room_member_channel", (roomMem: ChatRoomMember) => {
+      chatSocket?.on("update_chat_room_member_channel", (roomMem) => {
         if (roomMem) {
           getChatRoomsJoined().then((res) => {
-            if (res.data && res.data.length > 0) {
+            if (res.data) {
               setChatRoomsJoined(res.data);
             }
           }).catch((err) => { console.log(err); });
           getChatRoomsNotJoined().then((res) => {
-            if (res.data && res.data.length > 0)
+            if (res.data)
               setChatRoomsToJoin(res.data);
           }).catch((err) => { console.log(err) });
         }
       });
       chatSocket?.on("update-room_channel", () => {
         getChatRoomsJoined().then((res) => {
-          if (res.data && res.data.length > 0) {
+          if (res.data) {
             setChatRoomsJoined(res.data);
           }
         }).catch((err) => { console.log(err); });
         getChatRoomsNotJoined().then((res) => {
-          if (res.data && res.data.length > 0)
+          if (res.data)
             setChatRoomsToJoin(res.data);
         }).catch((err) => { console.log(err) });
       });
       chatSocket?.on("deletedRoom", (data) => {
         if (data) {
           getChatRoomsJoined().then((res) => {
-            if (res.data && res.data.length > 0) {
+            if (res.data) {
               setChatRoomsJoined(res.data);
             }
           }).catch((err) => { console.log(err); });
           getChatRoomsNotJoined().then((res) => {
-            if (res.data && res.data.length > 0)
+            if (res.data)
               setChatRoomsToJoin(res.data);
           }).catch((err) => { console.log(err) });
         }
@@ -158,7 +162,7 @@ const Channels: React.FC<Channel> = ({ header }) => {
       chatSocket?.on("unban_from_room_getData", (data: ChatRoomMember) => {
         if (data)
           getChatRoomsJoined().then((res) => {
-            if (res.data && res.data.length > 0) {
+            if (res.data) {
               setChatRoomsJoined(res.data);
             }
           }).catch((err) => { console.log(err); });

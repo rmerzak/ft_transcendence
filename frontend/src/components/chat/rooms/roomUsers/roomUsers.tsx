@@ -60,6 +60,7 @@ function RoomUsers({ handleUserListClick, chatRoomId }: { handleUserListClick: a
             chatSocket?.on('update_chat_room_member_roomUsers', (res) => {
                 if (chatRoomId && res.chatRoomId === chatRoomId)
                 {
+                    // console.log('here in roomUsers', res);
                     getChatRoomMembers(chatRoomId).then((res) => {
                         setUsers(res.data)
                     }).catch((err) => {
@@ -73,14 +74,9 @@ function RoomUsers({ handleUserListClick, chatRoomId }: { handleUserListClick: a
                     });
                 }
             })
-            console.log("chatRoomId = ", chatRoomId)
-            console.log("chatSocket = ", chatSocket)
-            console.log("profileRoomStatus = ", profileRoomStatus)
-
         }
         return () => {
             chatSocket?.off('update_chat_room_member_roomUsers');
-            // chatSocket?.off('ban_from_room');
         }
     }, [chatRoomId, chatSocket])
     return (
