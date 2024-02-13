@@ -19,10 +19,12 @@ function RoomUsers({ handleUserListClick, chatRoomId }: { handleUserListClick: a
     function updateComponent(id: number) {
         getChatRoomById(id).then((res: any) => {
             console.log(res.data)
-            setChatRoom(res.data);
+            if (res.data)
+                setChatRoom(res.data);
         }).catch((err) => { });
         getChatRoomMembers(id).then((res) => {
-            setUsers(res.data)
+            if (res.data)
+                setUsers(res.data)
             console.log(res.data)
         }).catch((err) => {
             console.log(err);

@@ -615,7 +615,7 @@ export class RoomService {
         const room = await this.prisma.chatRoom.findUnique({
             where: { id: roomId },
         });
-        if (!room) throw new Error('Chat room not found');
+        if (!room) return null;
         // if(room.owner !== id) throw new Error('You are not the owner of this chat room');
         // if (room.visibility !== 'PRIVATE') throw new Error('Chat room is not private');
         const invitedUsers = await this.prisma.roomReqJoin.findMany({
@@ -637,6 +637,7 @@ export class RoomService {
                 },
             },
         });
+        if (!invitedUsers) return null;
         return invitedUsers;
       }
       async requestJoinRoom(_client: Socket, name: string): Promise<RoomReqJoin | null> {

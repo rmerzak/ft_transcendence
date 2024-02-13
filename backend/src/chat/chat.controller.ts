@@ -403,7 +403,8 @@ export class ChatController {
     try {
       checkIfNumber(id.toString(), 'Chat room id must be a number');
       const user = req.user as User;
-      return await this.roomService.getChatRoomInvitedUsers(user.id, Number(id));
+      const invited = await this.roomService.getChatRoomInvitedUsers(user.id, Number(id));
+      return invited;
     } catch (error) {
       throw new HttpException(
         {
