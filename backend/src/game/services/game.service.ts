@@ -243,7 +243,6 @@ export class GameService {
 
   // this method is called when a player leaves a room
   leaveRoom(roomId: string, playerId: string, client: Socket): void {
-    console.log('hello');
     const roomIndex = this.rooms.findIndex((room) => room.id === roomId);
 
     if (roomIndex !== -1) {
@@ -280,19 +279,10 @@ export class GameService {
       room.state = State.WAITING;
       room.endGame();
       client.leave(roomId);
-      
-      // Find and remove the player from the room
-      const playerIndex = room.players.findIndex(
-        (player) => player.socketId === playerId,
-      );
-        if (playerIndex !== -1) {
-        const player = room.players[playerIndex];
-        this.stopPlaying(player.user.id);
-        room.removePlayer(player);
-        if (room.players.length === 0) {
-          this.rooms.splice(roomIndex, 1);
-        }
-      }
+        room.players.forEach((player) => {
+          this.stopPlaying(player.user.id);
+        });
+        this.rooms.splice(roomIndex, 1);
     }
   }
 
