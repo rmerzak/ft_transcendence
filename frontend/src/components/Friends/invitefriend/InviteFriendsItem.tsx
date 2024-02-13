@@ -11,7 +11,7 @@ const InviteFriendsItem = ({ friend } : { friend: Friendship }) => {
     const {  profile,socket,setFriends,friends  } : any = useContext(ContextGlobal);
     function getFriends(number: number) {
         getFriendList().then((res) => {
-          if (res.data)
+          if (res?.data)
             setFriends((prev:any) => prev = res.data);
         }).catch((err) => { console.log(err) });
       }

@@ -11,7 +11,7 @@ const Friends = () => {
   const { profile, setProfile, setFriends, friends, socket }: any = useContext(ContextGlobal);
   function getFriends(number: number) {
     getFriendList().then((res) => {
-      if (res.data)
+      if (res?.data)
         setFriends(res.data);
       console.log("friends inside 1", friends);
     }).catch((err) => {  });
