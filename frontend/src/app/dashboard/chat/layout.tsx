@@ -5,7 +5,7 @@ import Recent from "@/components/chat/recent/recent";
 import { useContext, useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import { ContextGlobal } from '@/context/contex';
-import { getChatRoomByName, getChatRoomsJoined, getChatRoomsNotJoined } from '@/api/chat/chat.api';
+import { getChatRoomByName, getChatRoomsJoined } from '@/api/chat/chat.api';
 import { ChatRoom, ChatRoomMember } from '@/interfaces';
 import { useRouter } from 'next/navigation';
 
@@ -57,10 +57,10 @@ const Layout = ({ children }: any) => {
       }
     }).catch((err) => { console.log(err) });
 
-    getChatRoomsNotJoined().then((res) => {
-      if (res && res.data && res.data.length > 0)
-        setChatRoomsToJoin(res.data);
-    }).catch((err) => { console.log(err) });
+    // getChatRoomsNotJoined().then((res) => {
+    //   if (res && res.data && res.data.length > 0)
+    //     setChatRoomsToJoin(res.data);
+    // }).catch((err) => { console.log(err) });
   }, [chatSocket]);
 
   useEffect(() => {
@@ -89,6 +89,7 @@ const Layout = ({ children }: any) => {
         });
         chatSocket.on('join-room-socket', (res: ChatRoomMember) => {
           if (res.userId === profile.id) {
+            // console.log('join-room-socket', res);
             chatSocket.emit('join-room', { roomId: res.chatRoomId });
           }
         });
@@ -110,7 +111,7 @@ const Layout = ({ children }: any) => {
       <div className="rounded-md mx-2 md:mx-6 flex justify-between items-center">
         <div className="flex flex-col justify-between bg-[#5D5959]/40 w-full md:w-[32%] md:rounded-3xl rounded-t-3xl p-2 shadow-lg h-[1030px] font-light ">
           <UserOnline />
-          <Channels header={''} />
+          <Channels />
           <Recent rooms={privChat} />
         </div >
         {children}

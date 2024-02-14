@@ -554,6 +554,40 @@ export class RoomService {
             return null;
         }
     }
+    // delete all requests to join chat room
+    async deleteAllReqToJoinRoom(chatRoomId: number): Promise<RoomReqJoin[] | null> {
+        const chatRoom = await this.prisma.chatRoom.findUnique({
+            where: { id: chatRoomId },
+        });
+
+        if (!chatRoom) {
+            throw new Error('Chat room not found');
+        }
+    
+        try {
+            const roomReqsToDelete = await this.prisma.roomReqJoin.findMany({
+                where: { chatRoomId: chatRoomId },
+            });
+    
+            if (roomReqsToDelete.length === 0) {
+              return null;
+            }
+    
+            const deletedRoomReqs = await this.prisma.roomReqJoin.deleteMany({
+                where: { chatRoomId: chatRoomId },
+            });
+    
+            if (deletedRoomReqs.count !== roomReqsToDelete.length) {
+                throw new Error('Error deleting all requests to join chat room');
+            }
+    
+            return roomReqsToDelete;
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    }
+    
+    // end Request to join chat room
 
     async leaveMemberFromRoom(_client: Socket, payload: ChatRoom): Promise<any> {
 

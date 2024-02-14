@@ -1,42 +1,32 @@
 "use client";
-import Image from "next/image";
 import Popup from "./popup";
 import { useContext, useEffect, useState, KeyboardEvent, useRef } from "react";
 import { ContextGlobal } from "@/context/contex";
 import { ChatRoom, ChatRoomMember } from "@/interfaces";
 import { IoIosExit } from "react-icons/io";
-import { MdOutlineKey } from "react-icons/md";
-import { MdAddLink } from "react-icons/md";
-import { getChatRoomsJoined, getChatRoomsNotJoined } from "@/api/chat/chat.api";
-import OutsideClickHandler from "react-outside-click-handler";
-import {  Search } from "lucide-react";
+import { getChatRoomsJoined } from "@/api/chat/chat.api";
+import { Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import JoinChannel from "./JoinChannel";
 import { Plus } from "lucide-react";
 import axios from "axios";
 import { useDebouncedCallback } from 'use-debounce';
 import ChannelItem from "./ChannelItem";
-import Link from "next/link";
 
-interface Channel {
-  header: string;
-}
 
-const Channels: React.FC<Channel> = ({ header }) => {
+const Channels = () => {
   const {
     chatRoomsJoined,
-    chatRoomsToJoin,
-    setChatRoomsToJoin,
     setChatRoomsJoined,
     chatSocket,
+    profile
   } = useContext(ContextGlobal);
   const router = useRouter();
-  const handleBlur = (e:any) => {
+  const handleBlur = (e: any) => {
     if (inputRef.current && !inputRef.current.contains(e.relatedTarget)) {
-            setSearch('');
+      setSearch('');
     }
-};
+  };
   const [searched, setSearched] = useState<any>([]);
   const [newChannel, setNewChannel] = useState<boolean>(false);
 
@@ -46,7 +36,7 @@ const Channels: React.FC<Channel> = ({ header }) => {
   const [invalue, setinValue] = useState<string>("");
   const [selectedChannel, setSelectedChannel] = useState<ChatRoom | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const suggestedRef =useRef<HTMLDivElement | null>(null);
+  const suggestedRef = useRef<HTMLDivElement | null>(null);
   const [search, setSearch] = useState<string>('');
   async function searchProfile(search: string) {
     if (search && !/^[a-zA-Z0-9]+$/.test(search)) {
@@ -80,10 +70,6 @@ const Channels: React.FC<Channel> = ({ header }) => {
     setinValue("");
   };
 
-  function handleJoinRoom(roomId: number) {
-    chatSocket?.emit("join-room", { roomId: roomId });
-    router.push(`/dashboard/chat/room/${roomId}`);
-  }
   function handleNewChannel() {
     setNewChannel(!newChannel);
   }
@@ -99,32 +85,29 @@ const Channels: React.FC<Channel> = ({ header }) => {
 
     document.addEventListener("mousedown", handleMouseDown);
 
-    return () =>  document.removeEventListener("mousedown", handleMouseDown); }  
-    ,[]);
+    return () => document.removeEventListener("mousedown", handleMouseDown);
+  }, []);
 
   useEffect(() => {
     if (chatSocket) {
-      chatSocket?.on("create-room", (room: ChatRoom) => {
-        getChatRoomsNotJoined().then((res) => {
-          if (res.data)
-            setChatRoomsToJoin(res.data);
-        }).catch((err) => { console.log(err) });
-      });
       chatSocket?.on("ownedRoom", (room: ChatRoom) => {
         getChatRoomsJoined().then((res) => {
           if (res.data) {
             setChatRoomsJoined(res.data);
-            // const newChatRoomsToJoin = chatRoomsToJoin.filter((item: ChatRoom) => item.name !== room.name);
-            // setChatRoomsToJoin(newChatRoomsToJoin);
           }
         }).catch((err) => {
           console.log(err);
         });
-        getChatRoomsNotJoined().then((res) => {
-          if (res.data)
-            setChatRoomsToJoin(res.data);
-        }).catch((err) => { console.log(err) });
       });
+
+      chatSocket?.on('accept-join-room', () => {
+        getChatRoomsJoined().then((res) => {
+          if (res.data) {
+            setChatRoomsJoined(res.data);
+          }
+        }).catch((err) => { console.log(err); });
+      });
+
       chatSocket?.on("update_chat_room_member_channel", (roomMem) => {
         if (roomMem) {
           getChatRoomsJoined().then((res) => {
@@ -132,23 +115,17 @@ const Channels: React.FC<Channel> = ({ header }) => {
               setChatRoomsJoined(res.data);
             }
           }).catch((err) => { console.log(err); });
-          getChatRoomsNotJoined().then((res) => {
-            if (res.data)
-              setChatRoomsToJoin(res.data);
-          }).catch((err) => { console.log(err) });
         }
       });
+
       chatSocket?.on("update-room_channel", () => {
         getChatRoomsJoined().then((res) => {
           if (res.data) {
             setChatRoomsJoined(res.data);
           }
         }).catch((err) => { console.log(err); });
-        getChatRoomsNotJoined().then((res) => {
-          if (res.data)
-            setChatRoomsToJoin(res.data);
-        }).catch((err) => { console.log(err) });
       });
+
       chatSocket?.on("deletedRoom", (data) => {
         if (data) {
           getChatRoomsJoined().then((res) => {
@@ -156,12 +133,9 @@ const Channels: React.FC<Channel> = ({ header }) => {
               setChatRoomsJoined(res.data);
             }
           }).catch((err) => { console.log(err); });
-          getChatRoomsNotJoined().then((res) => {
-            if (res.data)
-              setChatRoomsToJoin(res.data);
-          }).catch((err) => { console.log(err) });
         }
       });
+
       chatSocket?.on("unban_from_room_getData", (data: ChatRoomMember) => {
         if (data)
           getChatRoomsJoined().then((res) => {
@@ -170,6 +144,7 @@ const Channels: React.FC<Channel> = ({ header }) => {
             }
           }).catch((err) => { console.log(err); });
       });
+
       chatSocket?.on("error", (data) => {
         if (data) {
           toast.error(data);
@@ -181,15 +156,15 @@ const Channels: React.FC<Channel> = ({ header }) => {
       debouncedSearchBackend(search);
     }
     return () => {
-      chatSocket?.off("create-room");
       chatSocket?.off("ownedRoom");
       chatSocket?.off("error");
       chatSocket?.off("update_chat_room_member_channel");
       chatSocket?.off("update-room_channel");
       chatSocket?.off("deletedRoom");
       chatSocket?.off("unban_from_room_getData");
+      chatSocket?.off('accept-join-room');
     };
-  }, [chatSocket,search]);
+  }, [chatSocket, search, profile]);
 
   return (
     <>
@@ -200,20 +175,20 @@ const Channels: React.FC<Channel> = ({ header }) => {
             type="text"
             className="bg-gray-300 text-black border-none  rounded-l-xl focus:ring-0 h-10 md:w-[70%] focus:outline-none"
             placeholder="channel name"
-            onAuxClickCapture={() =>{setOpen(false),setSearched(null),setSearch('')}} onBlur={handleBlur} onMouseDown={() => { setOpen(true); }}
-            ref={(input) => { inputRef.current = input; }} onChange={(e) => {setSearch(e.target.value);setOpen(true);}}
+            onAuxClickCapture={() => { setOpen(false), setSearched(null), setSearch('') }} onBlur={handleBlur} onMouseDown={() => { setOpen(true); }}
+            ref={(input) => { inputRef.current = input; }} onChange={(e) => { setSearch(e.target.value); setOpen(true); }}
           />
           <div className="pr-1 flex items-center justify-center bg-gray-300 text-black rounded-r-xl  md:w-1/7 focus:outline-none ">
             <Search size={24} strokeWidth={2.5} />
           </div>
         </div>
         <div ref={suggestedRef} className="right-1/5 z-10 top-[42px] border-cyan-900 absolute bg-search rounded-b-lg overflow-auto h-[180px]">
-            {open && searched.map((room: ChatRoom, index: any) => (
-              <div key={index}>
-                <ChannelItem channel={room} HandleOpen={HandleOpen} />
-              </div>
-            ))}
-          </div>
+          {open && searched.map((room: ChatRoom, index: any) => (
+            <div key={index}>
+              <ChannelItem channel={room} HandleOpen={HandleOpen} />
+            </div>
+          ))}
+        </div>
       </div>
 
       <div className="flex flex-col rounded-md md:w-[90%] w-[90%] mx-auto h-[69%]">

@@ -15,7 +15,7 @@ function RoomUsers({ handleUserListClick, chatRoomId }: { handleUserListClick: a
     const [chatRoom, setChatRoom] = useState<ChatRoom>({})
     const [InvitedMembers, setInvitedMembers] = useState<ChatRoomInvitedMembers[]>([])
 
-    const { chatSocket, profile } = useContext(ContextGlobal)
+    const { chatSocket } = useContext(ContextGlobal)
     function updateComponent(id: number) {
         getChatRoomById(id).then((res: any) => {
             console.log(res.data)
@@ -46,7 +46,7 @@ function RoomUsers({ handleUserListClick, chatRoomId }: { handleUserListClick: a
         if (chatRoomId && chatSocket) {
             updateComponent(chatRoomId);
             chatSocket?.on('request-join-room', () => {
-                    updateComponent(chatRoomId);
+                updateComponent(chatRoomId);
             })
             chatSocket?.on('accept-join-room', () => {
                 updateComponent(chatRoomId);
@@ -54,9 +54,8 @@ function RoomUsers({ handleUserListClick, chatRoomId }: { handleUserListClick: a
             chatSocket?.on('reject-join-room', () => {
                 updateComponent(chatRoomId);
             })
-            console.log("chatRoomId = ", chatRoomId)
-            console.log("chatSocket = ", chatSocket)
-            console.log("profileRoomStatus = ", profileRoomStatus)
+            // console.log("chatRoomId = ", chatRoomId)
+            // console.log("chatSocket = ", chatSocket)
             chatSocket?.on('update_chat_room_member_roomUsers', (res) => {
                 console.log("res = ", res)
                 if (chatRoomId && res.chatRoomId === chatRoomId)

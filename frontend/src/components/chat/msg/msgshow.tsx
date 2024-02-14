@@ -14,7 +14,7 @@ interface MsgShowProps {
 
 interface State {
   username: string;
-  friendId: number;
+  friendId: number | undefined;
   status: string;
   isblock: boolean;
   blockByMe?: number
@@ -82,6 +82,7 @@ const MsgShow: React.FC<MsgShowProps> = ({ messages, chatId }) => {
           ...prevState,
           username: targetMembers.user.username,
           status: targetMembers.user.status,
+          // friendId: friendship === undefined ? undefined : targetMembers.user.id,
           friendId: targetMembers.user.id,
         }));
       }
