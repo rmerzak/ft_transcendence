@@ -1,12 +1,10 @@
 import React, { useContext } from "react";
-// import GameSwiper from "./GameSwiper";
+import GameSwiper from "./GameSwiper";
 import OutsideClickHandler from "react-outside-click-handler";
 import { ContextGlobal } from "@/context/contex";
 import { useRouter } from "next/navigation";
 import { Mode, modeAtom } from "./atoms";
 import { useSetAtom } from "jotai";
-import dynamic from "next/dynamic";
-const GameSwiper = dynamic(() => import('./GameSwiper'), { ssr: false });
 
 const ChallengeAlert = ({
 	openAl,
