@@ -54,12 +54,15 @@ function RoomUsers({ handleUserListClick, chatRoomId }: { handleUserListClick: a
             chatSocket?.on('reject-join-room', () => {
                 updateComponent(chatRoomId);
             })
+            chatSocket?.on('update-room_msgRm', (room) => {
+                if (room)
+                    updateComponent(chatRoomId);
+            });
             // console.log("chatRoomId = ", chatRoomId)
             // console.log("chatSocket = ", chatSocket)
             chatSocket?.on('update_chat_room_member_roomUsers', (res) => {
                 console.log("res = ", res)
-                if (chatRoomId && res.chatRoomId === chatRoomId)
-                {
+                if (chatRoomId && res.chatRoomId === chatRoomId) {
                     getChatRoomMembers(chatRoomId).then((res) => {
                         setUsers(res.data)
                     }).catch((err) => {
@@ -81,9 +84,10 @@ function RoomUsers({ handleUserListClick, chatRoomId }: { handleUserListClick: a
             chatSocket?.off('update_chat_room_member_roomUsers');
             chatSocket?.off('accept-join-room');
             chatSocket?.off('reject-join-room');
+            chatSocket?.off('update-room_msgRm');
         };
     }, [chatRoomId, chatSocket])
-    
+
     // useEffect(() => {
     //     if (chatRoomId && chatSocket) {
     //         getChatRoomById(chatRoomId).then((res) => {
