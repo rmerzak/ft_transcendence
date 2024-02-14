@@ -65,7 +65,9 @@ const MsgShow: React.FC<MsgShowProps> = ({ messages, chatId }) => {
       const targetMembers = state.chatRoomMembers.find((member) => member.user.id !== profile?.id);
       if (targetMembers) {
         const friendship = friends?.find((friend) => friend.receiver.id === targetMembers.user.id || friend.sender.id === targetMembers.user.id);
-        if (friendship && friendship.block) {
+        if (friendship === undefined) 
+          setState(prevState => ({ ...prevState, blockByMe: undefined }));
+        else if (friendship && friendship.block) {
           if (friendship.blockBy === Blocker.SENDER && friendship.sender.id === profile?.id) {
             setState(prevState => ({ ...prevState, isblock: true, blockByMe: profile?.id }));
           } else if (friendship.blockBy === Blocker.RECEIVER && friendship.receiver.id === profile?.id) {

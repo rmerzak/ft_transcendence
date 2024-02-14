@@ -1,7 +1,6 @@
 "use client";
 import {
   deleteRecentMessage,
-  getChatRoomMembers,
   getRecentMessages,
 } from "@/api/chat/chat.api";
 import { ContextGlobal } from "@/context/contex";
@@ -19,6 +18,13 @@ const isNumber = (value: string | number | undefined): boolean => {
   if (value === undefined) return false;
   return !isNaN(Number(value.toString()));
 };
+
+const handleLastMessage = (message: string): string => {
+  if (message.length > 20) 
+    return message.slice(0, 20) + "...";
+  return message;
+}
+
 const Recent: React.FC<RecentProps> = ({ rooms }) => {
   const { profile, chatSocket } = useContext(ContextGlobal);
   const [recents, setRecent] = useState<Recent[]>([]);
@@ -118,7 +124,7 @@ const Recent: React.FC<RecentProps> = ({ rooms }) => {
                         ? "You"
                         : recent.chatRoom?.users[0]?.username}
                     </p>
-                    <p className="text-xs">{recent.lastMessage}</p>
+                    <p className="text-xs">{handleLastMessage(recent.lastMessage)}</p>
                   </div>
                 </div>
               </div>
