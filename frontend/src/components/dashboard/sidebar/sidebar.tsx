@@ -95,8 +95,8 @@ const Sidebar = () => {
   const router = useRouter();
   return (
     // <aside className={`h-screen shadow-2xl backdrop-blur-lg bg-[#311150]/80 md:w-52`}>
-    <aside className={`md:w-[85px] md:h-screen max-md:fixed max-md:bottom-0 shadow-2xl backdrop-blur-lg bg-[#311150]/80 max-md:w-full max-md:h-[80px] z-10 lg:w-52 duration-100 ease-in-out`}>
-      <nav className={`h-full flex md:flex-col max-md:justify-evenly max-md:items-center`}>
+    <aside className={`md:w-[85px] h-[2200px] max-md:fixed max-md:bottom-0 border shadow-2xl backdrop-blur-lg bg-[#311150]/80 max-md:w-full max-md:h-[80px] z-10 lg:w-52 duration-100 ease-in-out`}>
+      <nav className={`flex md:flex-col max-md:justify-evenly max-md:items-center`}>
         {/* <div className='flex items-center space-x-3 mt-8 mb-32 scroll-pl-6 md:mx-6 mx-2'> */}
         <div className='hidden md:flex items-center md:space-x-3 scroll-pl-6 md:mx-6 mx-2 md:mt-8 md:mb-32'>
           <img src="/pingsvg.svg" alt="42" className={`overflow-hidden transition-all md:w-10`} />
