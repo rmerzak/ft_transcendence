@@ -43,13 +43,11 @@ const UserOnline = () => {
 
   return (
     <>
-      <div className="">
-        <div className="">
+      <div className="border h-[13%]">
           <h1 className="text-white md:text-xl text-center">Online</h1>
           <div className="flex justify-center mt-1">
             <div className="mb-3 border-b border-white w-6 md:w-10"></div>
           </div>
-        </div>
         <SwiperFC friends={friends} />
       </div>
     </>

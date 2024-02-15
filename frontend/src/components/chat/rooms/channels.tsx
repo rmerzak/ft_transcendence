@@ -168,12 +168,12 @@ const Channels = () => {
 
   return (
     <>
-      <div className="relative flex flex-col items-center justify-center my-3 mx-auto w-[90%]">
-        <div className="flex justify-center">
+      <div className="border relative flex items-center justify-center my-3 mx-auto w-[96%]">
+        <div className="flex justify-center border w-[80%]">
           <input
             id="channelName"
             type="text"
-            className="bg-gray-300 text-black border-none  rounded-l-xl focus:ring-0 h-10 md:w-[70%] focus:outline-none"
+            className="bg-gray-300 text-black border-none  rounded-l-xl focus:ring-0 h-10 w-full focus:outline-none"
             placeholder="channel name"
             onAuxClickCapture={() => { setOpen(false), setSearched(null), setSearch('') }} onBlur={handleBlur} onMouseDown={() => { setOpen(true); }}
             ref={(input) => { inputRef.current = input; }} onChange={(e) => { setSearch(e.target.value); setOpen(true); }}
@@ -191,15 +191,15 @@ const Channels = () => {
         </div>
       </div>
 
-      <div className="flex flex-col rounded-md md:w-[90%] w-[90%] mx-auto h-[69%]">
-        <h1 className="mt-3 text-white md:text-xl text-center">
+      <div className="flex flex-col rounded-md md:w-[90%] w-[90%] mx-auto h-[50%] border">
+        <h1 className=" text-white md:text-xl text-center">
           Joined Channels
         </h1>
         <div className="flex justify-center mt-1">
           <div className="mb-3 border-b border-white w-6 md:w-10"></div>
         </div>
 
-        <div className="h-[330px] overflow-auto">
+        <div className="h-[350px] overflow-auto">
           {chatRoomsJoined.length > 0 ? (
             chatRoomsJoined.map((channel, index) => (
               <div key={index} className="flex w-full  bg-[#811B77]/50  hover:bg-[#811B77]/100 rounded-xl h-[15%] mb-[9px]">
@@ -228,7 +228,7 @@ const Channels = () => {
           <div className="mb-3 border-b border-white w-6 md:w-10"></div>
         </div>
 
-        <div className="flex text-center justify-center mb-1 relative">
+        <div className="flex text-center justify-center mb-1 relative border">
           <div className="group flex items-center justify-center">
             <button onClick={handleNewChannel}>
               <Plus size={24} strokeWidth={2} className="text-white font-inter" />
