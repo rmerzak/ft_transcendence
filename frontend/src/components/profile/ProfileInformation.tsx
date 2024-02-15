@@ -105,8 +105,10 @@ const ProfileInformation = ({ profile, BtnFriend }: { profile: User, BtnFriend: 
                 <div>
                     <div className="relative w-[120px] h-[120px] rounded-full ml-3">
                         <Image src={profile?.image} alt="profile pic" width={100} height={100} className="rounded-full" />
+                        {friendship?.status !== 'BLOCKED' && friend === true && (
                         <div className={`absolute left-1/2 -translate-x-1/2 -translate-y-1/2 text-[50px] h-[15px] w-[15px] rounded-full ${profile?.status === 'ONLINE' ? 'bg-custom-green' : profile?.status === 'INGAME' ? 'bg-orange-400' : 'bg-gray-400'}`}></div>
-                    </div>
+                        )}
+                        </div>
                 </div>
                 <div>
                     <Image src="/1337.png" alt="freax" width={100} height={100} style={{ width: "50px", height: "100px", marginRight: "15px" }} className="rounded-b-full" />
