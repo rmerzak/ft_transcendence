@@ -2,16 +2,14 @@ import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/web
 import { Server, Socket } from 'socket.io';
 import { FriendshipService } from '../friendship.service';
 import { SocketAuthMiddleware } from 'src/auth/middleware/ws.mw';
-import { Logger } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { User } from '@prisma/client';
-import { UserDto } from '../Dto';
 import { RoomService } from 'src/chat/services/room/room.service';
 /// dont forget to add the userin the socket using the methode socket.data = user
 
 @WebSocketGateway({ cors: { origin: 'http://localhost:8080', credentials: true, namespace: '/profile' } })
 export class FriendshipGateway {
-  constructor(private readonly friendship: FriendshipService,private roomService: RoomService) { }
+  constructor(private readonly friendship: FriendshipService, private roomService: RoomService,
+    private readonly prisma: PrismaService) { }
   @WebSocketServer()
   server: Server;
 
@@ -34,7 +32,7 @@ export class FriendshipGateway {
     try {
       const emitClient = this.friendship.getSocketsByUser(Number(payload));
       const request = await this.friendship.CreateFriendRequest(socket, Number(payload));
-      const notification = await this.friendship.CreateNotification(socket, Number(payload), 'friendRequest', 'You have a friend request', request,'FRIENDSHIP');
+      const notification = await this.friendship.CreateNotification(socket, Number(payload), 'friendRequest', 'You have a friend request', request, 'FRIENDSHIP');
       emitClient.forEach((socket) => {
         socket.emit('friendRequest', { notification: notification, friendship: request, status: true, error: null });
       });
@@ -49,7 +47,7 @@ export class FriendshipGateway {
     try {
       const emitClient = this.friendship.getSocketsByUser(Number(payload));
       const RequestAccepted = await this.friendship.AcceptFriendRequest(socket, Number(payload));
-      const notification = await this.friendship.CreateNotification(socket, Number(payload), 'friendAcceptRequest', 'your friend request has been accepted', RequestAccepted,'FRIENDSHIP');
+      const notification = await this.friendship.CreateNotification(socket, Number(payload), 'friendAcceptRequest', 'your friend request has been accepted', RequestAccepted, 'FRIENDSHIP');
       emitClient.forEach((socket) => {
         socket.emit('friendAcceptRequest', { notification: notification, friendship: RequestAccepted, status: true, error: null });
       });
@@ -89,7 +87,7 @@ export class FriendshipGateway {
       const blockByMe = socket['payload']['sub'];
       const emitClient = this.friendship.getSocketsByUser(Number(payload));
       const friendshipBlock = await this.friendship.BlockFriend(socket, Number(payload));
-      if(friendshipBlock){
+      if (friendshipBlock) {
         // console.log("blockFriend", payload)
 
         emitClient.forEach((socket) => {
@@ -102,9 +100,9 @@ export class FriendshipGateway {
         socket.emit('blockFriendChat', { isblock: true, blockByMe: blockByMe });
         socket.emit('blockUserOnline', { isblock: true, blockByMe: blockByMe });
       }
-      } catch (error) {
-        socket.emit('RequestError', { notification: null, friendship: null, status: false, error: error.message });
-      }
+    } catch (error) {
+      socket.emit('RequestError', { notification: null, friendship: null, status: false, error: error.message });
+    }
   }
   @SubscribeMessage('unblockFriend')
   async unblockFriend(socket: Socket, payload: number) {
@@ -126,23 +124,47 @@ export class FriendshipGateway {
   }
 
   @SubscribeMessage('challengeGame')
-  async challengeGame(socket: Socket, payload: {playerId: number, gameId: string}) {
+  async challengeGame(socket: Socket, payload: { playerId: number, gameId: string }) {
     try {
       const emitClient = this.friendship.getSocketsByUser(payload.playerId);
       // you must creaet a room or a game logic here
       // const rooom = await this.friendship.CreateRoom(socket, Number(payload));
-      const gameNotification = await this.friendship.CreateNotification(socket, payload.playerId, 'challengeGame', payload.gameId , null,'GAME');
+      const gameNotification = await this.friendship.CreateNotification(socket, payload.playerId, 'challengeGame', payload.gameId, null, 'GAME');
       emitClient.forEach((socket) => {
-        socket.emit('challengeGame', { notification: gameNotification , friendship: null, status: true, error: null });
+        socket.emit('challengeGame', { notification: gameNotification, friendship: null, status: true, error: null });
       });
     } catch (error) {
       socket.emit('RequestError', { notification: null, friendship: null, status: false, error: error.message });
     }
   }
 
+  @SubscribeMessage('acceptChallenge')
+  async accept(socket: Socket, payload: string) {
+    const notification = await this.prisma.notification.findFirst({
+      where: { content: payload }
+    });
+    
+    if (notification) {
+      await this.prisma.notification.delete({ where: { id: notification.id } });
+    }
+
+    socket.emit('updateNotification', { notification: notification, friendship: null, status: false, error: null });
+  }
+
   @SubscribeMessage('refuseChallenge')
-  refuse(socket: Socket, payload: string) {
+  async refuse(socket: Socket, payload: string) {
     const game = this.server.of('/game').to(payload);
     game.emit('refuseChallenge');
+
+    const notification = await this.prisma.notification.findFirst({
+      where: { content: payload }
+    });
+    
+    if (notification) {
+      await this.prisma.notification.delete({ where: { id: notification.id } });
+    }
+
+    // emit to reload the changes
+    socket.emit('updateNotification');
   }
 }

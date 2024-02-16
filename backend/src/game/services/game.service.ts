@@ -210,9 +210,10 @@ export class GameService {
             (room) => room.id === payload,
           );
           if (roomIndex !== -1) {
+            this.stopPlaying(room.players[0].user.id);
             this.challenge.splice(roomIndex, 1);
           }
-          server.to(room.id).emit('timeOut');
+          server.to(room.id).emit('timeOut', room.id);
         }
       }, 60000); // 180000 = 3 minutes 30000 = 30 seconds
       if (room && room.state === State.PLAYING) {
@@ -271,7 +272,8 @@ export class GameService {
   }
 
   // this method is called when a player leaves a challenge room
-  leaveChallengeRoom(roomId: string, playerId: string, client: Socket): void {
+  leaveChallengeRoom(roomId: string, client: Socket): void {
+    
     const roomIndex = this.challenge.findIndex((room) => room.id === roomId);
     
     if (roomIndex !== -1) {
@@ -279,10 +281,10 @@ export class GameService {
       room.state = State.WAITING;
       room.endGame();
       client.leave(roomId);
-        room.players.forEach((player) => {
-          this.stopPlaying(player.user.id);
-        });
-        this.rooms.splice(roomIndex, 1);
+      room.players.forEach((player) => {
+        this.stopPlaying(player.user.id);
+      });
+      this.challenge.splice(roomIndex, 1);
     }
   }
 
