@@ -13,6 +13,7 @@ import { SocketAuthMiddleware } from 'src/auth/middleware/ws.mw';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ChatRoom, ChatRoomMember, Message, MessageStatus, Recent, RoomStatus, RoomVisibility } from '@prisma/client';
 import { RoomService } from '../services/room/room.service';
+import { log } from 'console';
 
 @WebSocketGateway({
   cors: { origin: 'http://localhost:8080', credentials: true },
@@ -157,8 +158,9 @@ export class GatewayGateway
   async handleUpdateRoom(_client: Socket, payload: ChatRoom) {
     try {
       // console.log("update-room ", payload);
-      const roomTmp = await this.roomService.getChatRoomById(payload.id);
+      const roomTmp = await this.prisma.chatRoom.findUnique({ where: { id: payload.id } });
       if (!roomTmp) throw new Error('Room not found');
+      shalowEqual(roomTmp, payload) ? _client.emit('error', 'No changes made') : null;
       if (roomTmp.visibility === RoomVisibility.PRIVATE && payload.visibility !== RoomVisibility.PRIVATE) {
         await this.roomService.deleteAllReqToJoinRoom(payload.id);
       }
@@ -579,3 +581,19 @@ export class GatewayGateway
   }
 }
 
+function shalowEqual(roomTmp: ChatRoom, payload: ChatRoom): boolean{
+  payload.createdAt = new Date(payload.createdAt);
+  payload.updatedAt = new Date(payload.updatedAt);
+  if (Object.keys(roomTmp).length !== Object.keys(payload).length) return false;
+  for (const key in roomTmp) {
+    if (key === 'createdAt' || key === 'updatedAt'){
+      if (roomTmp[key].toString() !== payload[key].toString())
+        return false;
+      continue;
+    };
+    if (roomTmp[key] !== payload[key]){
+      return false;
+    } 
+  }
+  return true;
+}

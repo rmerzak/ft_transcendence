@@ -61,7 +61,7 @@ export interface ChatRoom {
   visibility?: RoomVisibility;
   createdAt?: string;
   updatedAt?: string;
-  passwordHash?: string;
+  passwordHash?: string | null;
   owner?: number;
 }
 
