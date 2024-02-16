@@ -40,10 +40,11 @@ function Page() {
     setBtnFriend(profile?.username !== username);
 }, [username, profile]);
   return (
-    <>
+    
       <AuthWrapper>
-        {loading ? <Loading /> :
-        error  ? <UserNotFound /> :
+        {
+        loading ? <Loading /> :
+        (error || !user) ? <UserNotFound /> :
           <div className="p-4 mx-2 bg-profile">
             <h1 className="text-white font-bold text-3xl text-center mb-7 mt-2">Profile</h1>
             <div className="w-full h-[250px] border-spacing-1 mb-3 border-[#ffff]">
@@ -58,9 +59,9 @@ function Page() {
                 <MatchHistory data={data} head={["Player", "Result", "Opponents"]} />
               </div>
             </div>
-          </div>}
+          </div>
+        }
       </AuthWrapper>
-    </>
     )
 }
 

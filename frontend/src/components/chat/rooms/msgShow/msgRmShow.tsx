@@ -19,14 +19,21 @@ const MsgRmShow: React.FC<MsgShowProps> = ({ messages, roomId }) => {
   useEffect(() => {
     if (roomId) {
       getChatRoomById(roomId).then((res) => {
-        setRoom(res.data);
+        if (res.data)
+          setRoom(res.data);
       }).catch((err) => {
         console.log(err);
       });
     }
     if (chatSocket) {
       chatSocket.on('update-room_msgRm', (room) => {
-        setRoom(room);
+        if (room)
+          getChatRoomById(roomId).then((res) => {
+            if (res.data)
+              setRoom(res.data);
+          }).catch((err) => {
+            console.log(err);
+          });
       });
     }
     return () => {

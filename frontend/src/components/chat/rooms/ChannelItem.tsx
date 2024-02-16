@@ -16,10 +16,10 @@ function ChannelItem({ channel, HandleOpen }: ChannelItemProps) {
     const [openChannel, setOpenChannel] = useState<ChatRoom | null>(null);
     const [Membership, setMembership] = useState<ChatRoomMember>();
 
-    function Handlepopup() {
-        HandleOpen();
-        setOpenChannel(null);
-      }
+  function Handlepopup() {
+    HandleOpen();
+    setOpenChannel(null);
+  }
 
     const handleClick = (ChatRoom: ChatRoom) => {
         setOpenChannel(ChatRoom);        
@@ -37,7 +37,7 @@ function ChannelItem({ channel, HandleOpen }: ChannelItemProps) {
             <button onClick={() => handleClick(channel)}>
                 {!Membership?.chatRoomId && (
                     <>
-                         {channel.visibility === "PRIVATE" && <RiChatNewFill className="w-[22px] h-[22px]" />}
+                        {channel.visibility === "PRIVATE" && <RiChatNewFill className="w-[22px] h-[22px]" />}
                         {channel.visibility === "PUBLIC" && <MdAddLink className="w-[22px] h-[22px]"/>}
                         {channel.visibility === "PROTECTED" && <MdOutlineKey className="w-[22px] h-[22px]" />}
                     </>

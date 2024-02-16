@@ -45,7 +45,7 @@ export class GatewayGateway
         this.roomService.connectedClients.set(user.id, []);
       }
       this.roomService.connectedClients.get(user.id).push(_client);
-      console.log('connected chat id1: ' + _client.id);
+      // console.log('connected chat id1: ' + _client.id);
     } catch (error) {
       throw new Error(error.message);
     }
@@ -71,7 +71,7 @@ export class GatewayGateway
       }
       this.server.to(payload.msgData.chatRoomId.toString()).emit('receive-message', msg);
     } catch (error) {
-      console.log("send-message ", error);
+      // console.log("send-message ", error);
       _client.emit('error', error.message);
     }
   }
@@ -88,7 +88,7 @@ export class GatewayGateway
         // this.server.to(payload.roomId.toString()).emit('has-joined');
       }
     } catch (error) {
-      console.log("join-room ", error);
+      // console.log("join-room ", error);
       _client.emit('error', error.message);
     }
   }
@@ -116,7 +116,7 @@ export class GatewayGateway
       }
 
     } catch (error) {
-      console.log("create-room ", error);
+      // console.log("create-room ", error);
       _client.emit('error', error.message);
     }
   }
@@ -143,8 +143,7 @@ export class GatewayGateway
         }
       });
       this.server.to(room.id.toString()).emit('receive-message', msg);
-      // this.server.to(room.id.toString()).emit('update_chat_room_member_channel', room);
-      // this.server.to(room.id.toString()).emit('update_chat_room_member_roomUsers', room);
+      // console.log("new-member ", room);
       this.server.to('1_public').emit('join-room-socket', { userId: _client['user'].id, chatRoomId: room.id });
       _client.join(room.id.toString());
       _client.emit('push', msg);
@@ -158,6 +157,11 @@ export class GatewayGateway
   async handleUpdateRoom(_client: Socket, payload: ChatRoom) {
     try {
       // console.log("update-room ", payload);
+      const roomTmp = await this.roomService.getChatRoomById(payload.id);
+      if (!roomTmp) throw new Error('Room not found');
+      if (roomTmp.visibility === RoomVisibility.PRIVATE && payload.visibility !== RoomVisibility.PRIVATE) {
+        await this.roomService.deleteAllReqToJoinRoom(payload.id);
+      }
       const room = await this.roomService.updateChatRoom(_client['user'].id, payload);
       if (room) {
         const msgData = {
@@ -259,6 +263,7 @@ export class GatewayGateway
   @SubscribeMessage('mute-user')
   async handleMuteUser(_client: Socket, payload: { roomId: number, userId: number, duration: number }) {
     try {
+      if (payload.duration < 1) throw new Error('Duration must be greater than 0');
       const roomMem = await this.roomService.getChatRoomMember(payload.userId, payload.roomId);
       if (!roomMem) throw new Error('User is not a member of the room');
       if (roomMem.status === RoomStatus.BANNED) throw new Error('You cannot mute a banned user');
@@ -301,12 +306,13 @@ export class GatewayGateway
           }
           const updatedRoomMem = await this.roomService.updatechatRoomMember(_client['user'].id, tmp);
           if (updatedRoomMem) {
+            this.server.to(roomMem.chatRoomId.toString()).emit('update_chat_room_member_roomUsers', updatedRoomMem);
             this.server.to(payload.roomId.toString()).emit('mute_apdate_sendMsgInput', updatedRoomMem);
           }
         }, Number(payload.duration) * 1000);
       }
     } catch (error) {
-      console.log("mute-user ", error);
+      // console.log("mute-user ", error);
       _client.emit('error', error.message);
     }
   }
@@ -345,7 +351,7 @@ export class GatewayGateway
         this.server.to(roomMem.chatRoomId.toString()).emit('mute_apdate_sendMsgInput', updatedRoomMem);
       }
     } catch (error) {
-      console.log("unmute-user ", error);
+      // console.log("unmute-user ", error);
       _client.emit('error', error.message);
     }
   }
@@ -354,6 +360,9 @@ export class GatewayGateway
   async handleKickUser(_client: Socket, payload: { roomId: number, userId: number }) {
     try {
       const user = await this.prisma.user.findUnique({ where: { id: payload.userId } });
+      if (!user) throw new Error('User not found');
+      const room = await this.roomService.getChatRoomById(payload.roomId);
+      if (!room) throw new Error('Room not found');
       const deletedRoomMem = await this.roomService.deletechatRoomMember(_client['user'].id, payload.userId, payload.roomId);
       if (deletedRoomMem) {
         const msgData = {
@@ -363,13 +372,16 @@ export class GatewayGateway
           type: MessageStatus.ANNOUCEMENT,
         } as Message;
         const msg = await this.chatService.addMessage(msgData, _client['user'].id);
+        if (room.visibility === RoomVisibility.PRIVATE) {
+          await this.roomService.deleteRequestToJoinChatRoom(user.id, room.id);
+        }
         this.server.to(deletedRoomMem.chatRoomId.toString()).emit('receive-message', { ...msg, userId: payload.userId });
         this.server.to(deletedRoomMem.chatRoomId.toString()).emit('update_chat_room_member_channel', deletedRoomMem);
         this.server.to(deletedRoomMem.chatRoomId.toString()).emit('update_chat_room_member_roomUsers', deletedRoomMem);
         this.server.to(deletedRoomMem.chatRoomId.toString()).emit('leaveRoom', { roomId: deletedRoomMem.chatRoomId, userId: payload.userId });
       }
     } catch (error) {
-      console.log("kick-user ", error);
+      // console.log("kick-user ", error);
       _client.emit('error', error.message);
     }
   }
@@ -451,10 +463,8 @@ export class GatewayGateway
   @SubscribeMessage('leaveRoom')
   async handleLeaveRoomSocket(_client: Socket, payload: { roomId: number }) {
     try {
-      // console.log("leave-room ", payload);
       _client.leave(payload.roomId.toString());
     } catch (error) {
-      // console.log("leave-room ", error);
       _client.emit('error', error.message);
     }
   }
@@ -468,9 +478,7 @@ export class GatewayGateway
         senderId: _client['user'].id,
         type: MessageStatus.ANNOUCEMENT,
       } as Message;
-      const msg = await this.chatService.addMessage(msgData, _client['user'].id);
       const room = await this.roomService.leaveMemberFromRoom(_client, payload);
-      console.log("room = ", room);
       this.roomService.connectedClients.forEach((sockets, userId) => {
         if (userId === _client['user'].id) {
           sockets.forEach(socket => {
@@ -487,13 +495,21 @@ export class GatewayGateway
             sockets.forEach(socket => {
               socket.emit('deletedRoom', payload.name);
             });
+            this.server.to('1_public').emit('leaveRoom', { roomId: payload.id, userId: _client['user'].id });
           }
         }
       });
       if (room !== null) {
+        const roomTmp = await this.roomService.getChatRoomById(payload.id);
+        if (!roomTmp) throw new Error('Room not found');
+        const msg = await this.chatService.addMessage(msgData, roomTmp.owner);
+        if (room.visibility === RoomVisibility.PRIVATE) { 
+          await this.roomService.deleteRequestToJoinChatRoom(_client['user'].id, payload.id);
+        }
         this.server.to(room.id.toString()).emit('receive-message', { ...msg, userId: _client['user'].id });
+        this.server.to(payload.id.toString()).emit('leaveRoom', { roomId: room.id, userId: _client['user'].id });
+        this.server.to(payload.id.toString()).emit('update-room_msgRm', room);
       }
-      this.server.to(payload.id.toString()).emit('leaveRoom', { roomId: payload.id, userId: _client['user'].id });
     } catch (error) {
       _client.emit('error', error.message);
     }
@@ -503,7 +519,7 @@ export class GatewayGateway
   async handleRequestJoinRoom(_client: Socket, payload: ChatRoom) {
     try {
      const request = await this.roomService.requestJoinRoom(_client, payload.name);
-     console.log("request-join-room ", request);
+    //  console.log("request-join-room ", request);
      this.roomService.connectedClients.forEach((sockets, userId) => {
         if (userId === payload.owner) {
           sockets.forEach(socket => {
@@ -519,22 +535,26 @@ export class GatewayGateway
   async handleAcceptJoinRoom(_client: Socket, payload: { roomId: number, userId: number }) {
     try {
       const request = await this.roomService.acceptJoinRoom(_client, payload);
-      const user = await this.prisma.user.findUnique({ where: { id: payload.userId } });
-      const msgData = {
-        chatRoomId: payload.roomId,
-        text: `${user.username} has joined the room`,
-        senderId: _client['user'].id,
-        type: MessageStatus.ANNOUCEMENT,
-      } as Message;
-      const msg = await this.chatService.addMessage(msgData, _client['user'].id);
-      this.roomService.connectedClients.forEach((sockets, userId) => {
-        sockets.forEach(socket => {
-          socket.emit('accept-join-room', request);
+      if (request)
+      {
+        const user = await this.prisma.user.findUnique({ where: { id: payload.userId } });
+        const msgData = {
+          chatRoomId: payload.roomId,
+          text: `${user.username} has joined the room`,
+          senderId: _client['user'].id,
+          type: MessageStatus.ANNOUCEMENT,
+        } as Message;
+        const msg = await this.chatService.addMessage(msgData, _client['user'].id);
+        this.roomService.connectedClients.forEach((sockets, userId) => {
+          sockets.forEach(socket => {
+            socket.emit('accept-join-room', request);
+          });
         });
-      });
-      this.server.to(payload.roomId.toString()).emit('receive-message', msg);
+        this.server.to('1_public').emit('join-room-socket', { userId: request.userId, chatRoomId: request.chatRoomId});
+        this.server.to(payload.roomId.toString()).emit('receive-message', msg);
+      }
     } catch (error) {
-      console.log("accept-join-room ", error);
+      // console.log("accept-join-room ", error);
       _client.emit('error', error.message);
     }
   }
@@ -555,7 +575,6 @@ export class GatewayGateway
     }
   }
   handleDisconnect(_client: Socket) {
-    console.log('disconnected chat id: ' + _client.id); // must fix this
+    console.log('disconnected chat id: ' + _client.id); 
   }
 }
-

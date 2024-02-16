@@ -5,7 +5,7 @@ import Recent from "@/components/chat/recent/recent";
 import { useContext, useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import { ContextGlobal } from '@/context/contex';
-import { getChatRoomByName, getChatRoomsJoined, getChatRoomsNotJoined } from '@/api/chat/chat.api';
+import { getChatRoomByName, getChatRoomsJoined } from '@/api/chat/chat.api';
 import { ChatRoom, ChatRoomMember } from '@/interfaces';
 import { useRouter } from 'next/navigation';
 
@@ -57,10 +57,10 @@ const Layout = ({ children }: any) => {
       }
     }).catch((err) => { console.log(err) });
 
-    getChatRoomsNotJoined().then((res) => {
-      if (res && res.data && res.data.length > 0)
-        setChatRoomsToJoin(res.data);
-    }).catch((err) => { console.log(err) });
+    // getChatRoomsNotJoined().then((res) => {
+    //   if (res && res.data && res.data.length > 0)
+    //     setChatRoomsToJoin(res.data);
+    // }).catch((err) => { console.log(err) });
   }, [chatSocket]);
 
   useEffect(() => {
@@ -68,7 +68,7 @@ const Layout = ({ children }: any) => {
       friends.forEach((friend) => {
         const friendId = friend.senderId === profile.id ? friend.receiverId : friend.senderId;
         getChatRoomByName(profile?.id.toString(), friendId.toString()).then((res) => {
-          if (res && res.data.length > 0 && !privChat.find((room) => room.id === res.data.id))
+          if (res && res.data && !privChat.find((room) => room.id === res.data.id))
             setPrivChat((prev) => [...prev, res.data]);
         }).catch((err) => { console.log(err) });
       });
@@ -89,6 +89,7 @@ const Layout = ({ children }: any) => {
         });
         chatSocket.on('join-room-socket', (res: ChatRoomMember) => {
           if (res.userId === profile.id) {
+            // console.log('join-room-socket', res);
             chatSocket.emit('join-room', { roomId: res.chatRoomId });
           }
         });
@@ -103,12 +104,12 @@ const Layout = ({ children }: any) => {
     }
   }, [friends, profile, chatSocket]);
   return (
-    <div className="pb-4 w-full h-screen bg-[#311251]/80 md:rounded-3xl rounded-t-md md:w-[95%] md:h-[90%] md:mt-6 md:overflow-auto md:mx-auto md:shadow-lg">
+    <div className="border pb-4 w-full h-full bg-[#311251]/80 md:rounded-3xl rounded-t-md md:w-[95%] md:h-[90%] md:mt-6 md:overflow-auto md:mx-auto md:shadow-lg">
       <h1 className="text-white md:text-3xl text-lg md:font-bold text-center m-2 p-1 md:m-4 md:p-2 font-inter w-auto">
         Chat
       </h1>
-      <div className="rounded-md mx-2 md:mx-6 flex justify-between items-center">
-        <div className="flex flex-col justify-between bg-[#5D5959]/40 w-full md:w-[32%] md:rounded-3xl rounded-t-3xl p-2 shadow-lg h-[1030px] font-light ">
+      <div className="rounded-md mx-2 md:mx-6 flex justify-between items-center flex-wrap">
+        <div className="flex flex-col justify-between bg-[#5D5959]/40 w-full md:w-[32%] md:rounded-3xl rounded-t-3xl p-2 shadow-lg md:h-[1030px] h-[800px] font-light">
           <UserOnline />
           <Channels />
           <Recent rooms={privChat} />

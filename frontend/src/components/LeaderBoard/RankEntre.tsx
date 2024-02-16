@@ -21,7 +21,7 @@ const RankEntre: React.FC<{
             <div className='relative'>
               <img src={avatarSrcWinner} alt="" className='md:w-[65px] md:h-[65px] w-[42px] h-[42px] rounded-full'/>
               <p className='text-white font-bold text-center'>#1</p>
-              <img src="/king.png" alt="avatar" className="absolute -top-3 left-1 md:-top-7 md:left-[1rem] md:w-[30px] md:h-[30px] w-[20px] h-[20px]" style={{ filter: 'saturate(150%) brightness(120%)' }}/>
+              <img src="/king.png" alt="avatar" className="absolute -top-3 right-1  md:-top-6 md:left-[1rem] md:w-[30px] md:h-[30px] w-[20px] h-[20px]" style={{ filter: 'saturate(150%) brightness(120%)' }}/>
             </div>
             <div className='mt-16'>
               <img src={avatarSrcThird} alt="" className='md:w-[55px] md:h-[55px] w-[30px] h-[30px] rounded-full'/>

@@ -49,7 +49,6 @@ function RoomUserItem({ chatRoomMember, profileRoomStatus, chatRoom, chatRoomRol
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         const seconds = timeToSeconds(value);
-        console.log(seconds);
         if (seconds === -1)
             setStatus((prev) => ({ ...prev, error: 'invalid time format' }));
         else if (seconds > 86400)
@@ -87,7 +86,6 @@ function RoomUserItem({ chatRoomMember, profileRoomStatus, chatRoom, chatRoomRol
     const handleUnAdmin = () => {
         chatSocket?.emit('unadmin-user', { userId: chatRoomMember.user.id, roomId: chatRoom.id });
     }
-    console.log("profile = ",profileRoomStatus);
 
     return (
         <div className="flex items-center space-x-2">

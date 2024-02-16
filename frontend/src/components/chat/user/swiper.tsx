@@ -3,7 +3,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/free-mode";
 import "swiper/css/pagination";
-import "./userOnline.css";
+import "./userOnline.css"
 
 import { FreeMode, Pagination } from "swiper/modules";
 import { Friendship } from "@/interfaces";

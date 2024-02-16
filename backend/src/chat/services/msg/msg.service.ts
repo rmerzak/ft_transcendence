@@ -68,7 +68,7 @@ export class MsgService {
     if (from === 'user')
       return msgs;
     const filteredMsgs = msgs.filter((msg) => {
-      if (msg.senderId === userId) return true;
+      if (msg.senderId === userId || msg.type === 'ANNOUCEMENT') return true;
       return !Friends.some((friend) => friend.block && (friend.senderId === msg.senderId || friend.receiverId === msg.senderId));
     });
 
@@ -76,7 +76,6 @@ export class MsgService {
   }
   // add user message
   async addMessage(messageData: Message, userId: number): Promise<Message> {
-    // console.log("message data ",messageData);
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
     });
@@ -92,14 +91,17 @@ export class MsgService {
     if (!specificMember) throw new Error('User not in chat room');
     if (!/[a-zA-Z]/.test(chatRoom.name.charAt(0))) {
       const roomMember = chatRoomMembers.find((member) => member.userId !== user.id);
-      const tmp = await this.Friends.getFriendship(userId, roomMember.userId);
-      if (tmp.block) throw new Error('User blocked');
+      try {
+        const tmp = await this.Friends.getFriendship(userId, roomMember.userId);
+        if (tmp.block) throw new Error('User blocked');
+      } catch (error) {
+        // throw new Error('You have to be friend with this user to send message');
+      }
     } else {
       if (specificMember.status === RoomStatus.BANNED) throw new Error('Your are banned from this room');
       else if (specificMember.status === RoomStatus.MUTED) {
         const result = compareDateWithCurrent(addDates(specificMember.mutedDate, Number(specificMember.mutedDuration)));
         if (result) throw new Error('Your are muted from this room');
-        // console.log("result in add Message", result);
         await this.prisma.chatRoomMember.update({
           where: { userId_chatRoomId: { userId: user.id, chatRoomId: chatRoom.id } },
           data: {
@@ -112,6 +114,7 @@ export class MsgService {
     const msg = await this.prisma.message.create({
       data: messageData,
     });
+    if (!msg) throw new Error('Message not created');
     return await this.prisma.message.findUnique({
       where: { id: msg.id },
       select: {

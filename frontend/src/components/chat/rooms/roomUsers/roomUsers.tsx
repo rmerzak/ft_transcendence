@@ -15,14 +15,16 @@ function RoomUsers({ handleUserListClick, chatRoomId }: { handleUserListClick: a
     const [chatRoom, setChatRoom] = useState<ChatRoom>({})
     const [InvitedMembers, setInvitedMembers] = useState<ChatRoomInvitedMembers[]>([])
 
-    const { chatSocket, profile } = useContext(ContextGlobal)
+    const { chatSocket } = useContext(ContextGlobal)
     function updateComponent(id: number) {
         getChatRoomById(id).then((res: any) => {
             console.log(res.data)
-            setChatRoom(res.data);
+            if (res.data)
+                setChatRoom(res.data);
         }).catch((err) => { });
         getChatRoomMembers(id).then((res) => {
-            setUsers(res.data)
+            if (res.data)
+                setUsers(res.data)
             console.log(res.data)
         }).catch((err) => {
             console.log(err);
@@ -44,7 +46,7 @@ function RoomUsers({ handleUserListClick, chatRoomId }: { handleUserListClick: a
         if (chatRoomId && chatSocket) {
             updateComponent(chatRoomId);
             chatSocket?.on('request-join-room', () => {
-                    updateComponent(chatRoomId);
+                updateComponent(chatRoomId);
             })
             chatSocket?.on('accept-join-room', () => {
                 updateComponent(chatRoomId);
@@ -52,13 +54,15 @@ function RoomUsers({ handleUserListClick, chatRoomId }: { handleUserListClick: a
             chatSocket?.on('reject-join-room', () => {
                 updateComponent(chatRoomId);
             })
-            console.log("chatRoomId = ", chatRoomId)
-            console.log("chatSocket = ", chatSocket)
-            console.log("profileRoomStatus = ", profileRoomStatus)
+            chatSocket?.on('update-room_msgRm', (room) => {
+                if (room)
+                    updateComponent(chatRoomId);
+            });
+            // console.log("chatRoomId = ", chatRoomId)
+            // console.log("chatSocket = ", chatSocket)
             chatSocket?.on('update_chat_room_member_roomUsers', (res) => {
                 console.log("res = ", res)
-                if (chatRoomId && res.chatRoomId === chatRoomId)
-                {
+                if (chatRoomId && res.chatRoomId === chatRoomId) {
                     getChatRoomMembers(chatRoomId).then((res) => {
                         setUsers(res.data)
                     }).catch((err) => {
@@ -80,9 +84,10 @@ function RoomUsers({ handleUserListClick, chatRoomId }: { handleUserListClick: a
             chatSocket?.off('update_chat_room_member_roomUsers');
             chatSocket?.off('accept-join-room');
             chatSocket?.off('reject-join-room');
+            chatSocket?.off('update-room_msgRm');
         };
     }, [chatRoomId, chatSocket])
-    
+
     // useEffect(() => {
     //     if (chatRoomId && chatSocket) {
     //         getChatRoomById(chatRoomId).then((res) => {
@@ -142,9 +147,9 @@ function RoomUsers({ handleUserListClick, chatRoomId }: { handleUserListClick: a
 
     return (
         <>
-            <div className="fixed top-0 left-0 w-screen h-screen bg-[#000000]/50 z-50 flex justify-center items-center font-inter">
+            <div className=" fixed top-0 left-0 w-screen h-screen bg-[#000000]/50 z-50 flex justify-center items-center font-inter">
                 <OutsideClickHandler onOutsideClick={handleUserListClick}>
-                    <div className="bg-[#311150]/80 w-[550px] h-[200px] rounded-3xl shadow-lg font-light mx-2">
+                    <div className=" bg-[#311150]/80 w-[550px] h-[300px] rounded-3xl shadow-lg font-light mx-2">
                         <div>
                             <div className="flex justify-between items-center px-4 py-2">
                                 <h1 className="text-xl">Members</h1>
@@ -152,21 +157,26 @@ function RoomUsers({ handleUserListClick, chatRoomId }: { handleUserListClick: a
                                     <X className="w-6 h-6" />
                                 </button>
                             </div>
+                            <div className="overflow-auto h-[120px]">
+
                             {
                                 users.map((user: any, index: number) => (
                                     <RoomUserItem key={index} chatRoom={chatRoom} profileRoomStatus={profileRoomStatus} chatRoomMember={user} chatRoomRole={user.user.id === chatRoom.owner ? "owner" : user.is_admin === true ? "admin" : "member"} />
-                                ))
-                            }
+                                    ))
+                                }
+                                </div>
                         </div>
                         <div>
-                            <div className="flex justify-between items-center px-4 py-2">
+                            <div className="flex justify-between items-center px-4 py-2 mt-3">
                                 <h1 className="text-xl">Invited Members</h1>
                             </div>
+                            <div className="overflow-auto h-[80px]">
                             {
                                 InvitedMembers.map((invited: ChatRoomInvitedMembers, index: number) => (
                                     <RoomInvitedUserItem key={index} chatRoom={chatRoom} RoomInvitedMember={invited} />
-                                ))
+                                    ))
                             }
+                            </div>
                         </div>
                     </div>
                 </OutsideClickHandler>

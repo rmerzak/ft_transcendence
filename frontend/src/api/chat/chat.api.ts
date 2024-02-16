@@ -5,7 +5,7 @@ import { apiInstance } from "../axios/axios.api";
 export const makeConversation = async (id: number, chatRoomData:ChatRoom) => apiInstance.post(`/chat/user/${id}`, chatRoomData);
 export const getChatRoomMembers = async (id: number) => apiInstance.get(`/chat/user?chatRoomId=${id}`);
 export const getChatRoomsJoined = async () => apiInstance.get(`/chat/rooms`);
-export const getChatRoomsNotJoined = async () => apiInstance.get(`/chat/rooms/not`);
+// export const getChatRoomsNotJoined = async () => apiInstance.get(`/chat/rooms/not`);
 export const getChatRoomByName = async (user1: any, user2: string) => apiInstance.get(`/chat/room?user1=${user1}&user2=${user2}`);
 export const getChatRoomById = async (id: number) => apiInstance.get(`/chat/room/${id}`);
 export const getChatRoomMessages = async (id: number, from: string) => apiInstance.get(`/chat/user/${id}?from=${from}`);

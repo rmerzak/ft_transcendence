@@ -145,10 +145,10 @@ export class FriendshipGateway {
     });
     
     if (notification) {
-      await this.prisma.notification.delete({ where: { id: notification.id } });
+      await this.prisma.notification.update({ where: { id: notification.id }, data: { vue: true } });
     }
 
-    socket.emit('updateNotification', { notification: notification, friendship: null, status: false, error: null });
+    // socket.emit('updateNotification');
   }
 
   @SubscribeMessage('refuseChallenge')
@@ -161,10 +161,8 @@ export class FriendshipGateway {
     });
     
     if (notification) {
-      await this.prisma.notification.delete({ where: { id: notification.id } });
+      await this.prisma.notification.update({ where: { id: notification.id }, data: { vue: true } });
     }
-
-    // emit to reload the changes
-    socket.emit('updateNotification');
+    // socket.emit('updateNotification');
   }
 }

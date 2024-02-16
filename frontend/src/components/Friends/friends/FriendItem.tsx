@@ -10,7 +10,7 @@ import ChallengeAlert from '@/components/game/ChallengeAlert';
 const FriendItem = ({ friend } : { friend: Friendship }) => {
   const {  profile, socket  } : any = useContext(ContextGlobal);
   const [status, setStatus] = useState<string>();
-  const [openAlert, setOpenAlert] = useState<boolean>(false);
+  const [ openAlert, setOpenAlert ] = useState<boolean>(false);
   const [ isPlaying, setIsPlaying ] = useState(false);
   const handleFriend = (status:boolean) => {
     if(status){

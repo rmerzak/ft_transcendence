@@ -1,5 +1,6 @@
 'user client';
 
+import ChallengeAlert from "@/components/game/ChallengeAlert";
 import { ContextGlobal } from "@/context/contex";
 import { MoreVertical } from "lucide-react";
 import Link from "next/link";
@@ -15,6 +16,33 @@ interface ChatheaderProps {
 
 const Chatheader: React.FC<ChatheaderProps> = ({ username, status, userId, friendBlock, blockByMe }) => {
     const { profile, socket } = useContext(ContextGlobal);
+    const [ openAlert, setOpenAlert ] = useState<boolean>(false);
+    const [ isPlaying, setIsPlaying ] = useState(false);
+
+
+    useEffect(() => {
+        const eventSource = new EventSource(`${process.env.API_BASE_URL}/api/is-playing`, {
+          withCredentials: true,
+        });
+    
+        eventSource.onmessage = (event) => {
+            try {
+                const parsedData = JSON.parse(event.data);
+                parsedData.forEach((player: { playerId: number, isPlaying: boolean }) => {
+                    if (player.isPlaying && player.playerId === profile?.id) {
+                        setIsPlaying(true);
+                    } else if (!player.isPlaying && player.playerId === profile?.id) {
+                        setIsPlaying(false);
+                    }
+                });
+            } catch {}
+        };
+    
+        return () => {
+          eventSource.close();
+        };
+    
+      }, [profile?.id]);
 
     const handleUnblock = () => {
         socket?.emit('unblockFriend', userId);
@@ -22,7 +50,6 @@ const Chatheader: React.FC<ChatheaderProps> = ({ username, status, userId, frien
     const handleBlock = () => {
         socket?.emit('blockFriend', userId);
     }
-    
     return (
         <>
             <div>
@@ -40,11 +67,17 @@ const Chatheader: React.FC<ChatheaderProps> = ({ username, status, userId, frien
                             </button>
                             <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-purplee rounded-box w-52">
                                 <li><Link href={`/dashboard/profile/${username}`}>View profile</Link></li>
-                                <li className={`${blockByMe !== profile?.id && friendBlock ? 'hidden' : ''}`}>
+                                <li className={`${ blockByMe === undefined || (blockByMe !== profile?.id && friendBlock) ? 'hidden' : ''}`}>
                                     <div onClick={friendBlock ? handleUnblock : handleBlock} className={`flex items-center space-x-2 cursor-pointer `}>
                                         {friendBlock ? 'Unblock ' : 'Block '}{username}
                                     </div>
                                 </li>
+                                { !isPlaying && <li>
+                                    <div
+                                        onClick={()=> setOpenAlert(!openAlert)}>
+                                        Challenge to a game
+                                    </div>
+                                </li>}
                             </ul>
                         </div>
                     </div>
@@ -53,6 +86,9 @@ const Chatheader: React.FC<ChatheaderProps> = ({ username, status, userId, frien
                     <hr className="w-1/5" />
                 </div>
             </div>
+            {
+                openAlert && userId && <ChallengeAlert openAl={() => {setOpenAlert(!openAlert);}} playerId={userId} />
+            }
         </>
     );
 };

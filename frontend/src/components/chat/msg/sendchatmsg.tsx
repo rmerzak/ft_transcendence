@@ -12,9 +12,10 @@ import { SmilePlus } from 'lucide-react';
 interface SendchatmsgProps {
     chatRoomId: number;
     isblocked?: boolean;
-    friendId?: number;
+    friendId?: number | undefined;
 }
-
+// we can check if friendId is undefined or not
+// if it is undefined then we not show the input field
 const Sendchatmsg: React.FC<SendchatmsgProps> = ({ chatRoomId, isblocked, friendId }) => {
     const { profile, chatSocket } = useContext(ContextGlobal);
     const [message, setMessage] = useState<string>('');
@@ -77,10 +78,11 @@ const Sendchatmsg: React.FC<SendchatmsgProps> = ({ chatRoomId, isblocked, friend
                 <hr className="w-1/6" />
             </div>
             {/* input for send derict messages pointer-events-none opacity-50 */}
-            {
+            { 
+            // friendId &&
                 !isblocked &&
-                <div className={` flex justify-center items-center space-x-2 my-3`}>
-                    <div className=" bg-gray-300 text-black flex justify-center items-center w-[30%] h-10 rounded-3xl font-light">
+                <div className={` flex justify-center items-center space-x-2 my-3 `}>
+                    <div className=" bg-gray-300 text-black flex justify-center items-center w-[60%] h-10 rounded-3xl font-light">
                         <div className='relative flex ml-1'>
                             <button onClick={showEmogieTable}>
                                 <SmilePlus size={24} strokeWidth={2} />

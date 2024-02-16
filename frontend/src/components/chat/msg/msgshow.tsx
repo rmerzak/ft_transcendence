@@ -14,7 +14,7 @@ interface MsgShowProps {
 
 interface State {
   username: string;
-  friendId: number;
+  friendId: number | undefined;
   status: string;
   isblock: boolean;
   blockByMe?: number
@@ -65,7 +65,9 @@ const MsgShow: React.FC<MsgShowProps> = ({ messages, chatId }) => {
       const targetMembers = state.chatRoomMembers.find((member) => member.user.id !== profile?.id);
       if (targetMembers) {
         const friendship = friends?.find((friend) => friend.receiver.id === targetMembers.user.id || friend.sender.id === targetMembers.user.id);
-        if (friendship && friendship.block) {
+        if (friendship === undefined) 
+          setState(prevState => ({ ...prevState, blockByMe: undefined }));
+        else if (friendship && friendship.block) {
           if (friendship.blockBy === Blocker.SENDER && friendship.sender.id === profile?.id) {
             setState(prevState => ({ ...prevState, isblock: true, blockByMe: profile?.id }));
           } else if (friendship.blockBy === Blocker.RECEIVER && friendship.receiver.id === profile?.id) {
@@ -80,6 +82,7 @@ const MsgShow: React.FC<MsgShowProps> = ({ messages, chatId }) => {
           ...prevState,
           username: targetMembers.user.username,
           status: targetMembers.user.status,
+          // friendId: friendship === undefined ? undefined : targetMembers.user.id,
           friendId: targetMembers.user.id,
         }));
       }
@@ -88,14 +91,12 @@ const MsgShow: React.FC<MsgShowProps> = ({ messages, chatId }) => {
 
   return (
     <>
-      <div className="bg-[#5D5959]/40 w-[66%] text-white h-[1030px] rounded-3xl p-4 hidden md:block">
-        <>
+      <div className="bg-[#5D5959]/40 md:w-[66%] w-full mx-auto  text-white md:h-[1030px] h-[500px] md:rounded-3xl p-4 md:block md:mt-0 my-2">
           <Chatheader username={state.username} status={state.status} userId={state.friendId} friendBlock={state.isblock} blockByMe={state.blockByMe} />
-          <div className='mt-6 h-[88%]'>
+          <div className='mt-4 md:h-[88%] h-[80%]'>
             <Chat messages={messages} />
           </div>
           <Sendchatmsg chatRoomId={chatId} isblocked={state.isblock} friendId={state.friendId} />
-        </>
       </div>
     </>
   )
