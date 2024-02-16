@@ -16,7 +16,7 @@ import { ChatRoom } from '@/interfaces';
 
 const Layout = ({ children }: any) => {
   return (
-      <div className="flex login-gradient h-[2200px]">
+    <div className="flex login-gradient h-full">
         <ContextProvider>
           <JotaiProvider>
               {/* <div className="flex-1 bg-red-500"> */}

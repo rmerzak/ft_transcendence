@@ -81,8 +81,8 @@ const Sendchatmsg: React.FC<SendchatmsgProps> = ({ chatRoomId, isblocked, friend
             { 
             // friendId &&
                 !isblocked &&
-                <div className={` flex justify-center items-center space-x-2 my-3`}>
-                    <div className=" bg-gray-300 text-black flex justify-center items-center w-[30%] h-10 rounded-3xl font-light">
+                <div className={` flex justify-center items-center space-x-2 my-3 `}>
+                    <div className=" bg-gray-300 text-black flex justify-center items-center w-[60%] h-10 rounded-3xl font-light">
                         <div className='relative flex ml-1'>
                             <button onClick={showEmogieTable}>
                                 <SmilePlus size={24} strokeWidth={2} />

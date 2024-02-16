@@ -386,7 +386,7 @@ function Bot() {
             <div className='flex justify-center items-center w-[80%] shadow-md'>
                 <canvas
                     ref={gameRef}
-                    className={styles.game_canvas}
+                    className="bg-cover bg-no-repeat bg-center w-full h-full brightness-[0.8] contrast-[1.2] saturate[1.2] hue-rotate-[-15deg]"
                     style={{ backgroundImage: `url(/game/${themes[theme]}.png)` }}
                 >
                 </canvas>

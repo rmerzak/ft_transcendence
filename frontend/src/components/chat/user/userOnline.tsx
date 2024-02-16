@@ -4,7 +4,6 @@ import dynamic from 'next/dynamic';
 const SwiperFC = dynamic(() => import('./swiper'));
 import { ContextGlobal } from "@/context/contex";
 import { getFriendList } from "@/api/friendship/friendship.api";
-// import "./userOnline.css";
 
 const UserOnline = () => {
   const { friends, setFriends, profile, socket } = useContext(ContextGlobal);
@@ -42,15 +41,16 @@ const UserOnline = () => {
   }, [profile, socket]);
 
   return (
-    <>
-      <div className="border h-[13%]">
+
+      <div className=" h-[13%]">
+        <div className="">
           <h1 className="text-white md:text-xl text-center">Online</h1>
           <div className="flex justify-center mt-1">
             <div className="mb-3 border-b border-white w-6 md:w-10"></div>
           </div>
         <SwiperFC friends={friends} />
       </div>
-    </>
+    </div>
   );
 };
 export default UserOnline;

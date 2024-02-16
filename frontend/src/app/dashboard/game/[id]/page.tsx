@@ -62,8 +62,8 @@ const Game = () => {
     }, [router, theme, roomId, mode, check]);
     
     return (
-        <AuthWrapper>
-            <GameProvider>
+        <GameProvider>
+                <AuthWrapper>
             {
             theme !== -1 && check &&
             <div className='w-[88%] mx-auto text-center p-[1%] shadow-md rounded-3xl bg-[#311251]/80 top-[50%]  -translate-y-[50%] absolute'>
@@ -87,8 +87,8 @@ const Game = () => {
                     </div>
             </div>
             }
-            </GameProvider>
         </AuthWrapper>
+            </GameProvider>
   );
 };
 

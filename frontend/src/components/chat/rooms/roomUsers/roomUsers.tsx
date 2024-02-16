@@ -147,9 +147,9 @@ function RoomUsers({ handleUserListClick, chatRoomId }: { handleUserListClick: a
 
     return (
         <>
-            <div className="fixed top-0 left-0 w-screen h-screen bg-[#000000]/50 z-50 flex justify-center items-center font-inter">
+            <div className=" fixed top-0 left-0 w-screen h-screen bg-[#000000]/50 z-50 flex justify-center items-center font-inter">
                 <OutsideClickHandler onOutsideClick={handleUserListClick}>
-                    <div className="bg-[#311150]/80 w-[550px] h-[200px] rounded-3xl shadow-lg font-light mx-2">
+                    <div className=" bg-[#311150]/80 w-[550px] h-[300px] rounded-3xl shadow-lg font-light mx-2">
                         <div>
                             <div className="flex justify-between items-center px-4 py-2">
                                 <h1 className="text-xl">Members</h1>
@@ -157,21 +157,26 @@ function RoomUsers({ handleUserListClick, chatRoomId }: { handleUserListClick: a
                                     <X className="w-6 h-6" />
                                 </button>
                             </div>
+                            <div className="overflow-auto h-[120px]">
+
                             {
                                 users.map((user: any, index: number) => (
                                     <RoomUserItem key={index} chatRoom={chatRoom} profileRoomStatus={profileRoomStatus} chatRoomMember={user} chatRoomRole={user.user.id === chatRoom.owner ? "owner" : user.is_admin === true ? "admin" : "member"} />
-                                ))
-                            }
+                                    ))
+                                }
+                                </div>
                         </div>
                         <div>
-                            <div className="flex justify-between items-center px-4 py-2">
+                            <div className="flex justify-between items-center px-4 py-2 mt-3">
                                 <h1 className="text-xl">Invited Members</h1>
                             </div>
+                            <div className="overflow-auto h-[80px]">
                             {
                                 InvitedMembers.map((invited: ChatRoomInvitedMembers, index: number) => (
                                     <RoomInvitedUserItem key={index} chatRoom={chatRoom} RoomInvitedMember={invited} />
-                                ))
+                                    ))
                             }
+                            </div>
                         </div>
                     </div>
                 </OutsideClickHandler>
