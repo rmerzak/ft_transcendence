@@ -43,7 +43,7 @@ const UserOnline = () => {
 
   return (
     <>
-      <div className="">
+      <div className=" h-[13%]">
         <div className="">
           <h1 className="text-white md:text-xl text-center">Online</h1>
           <div className="flex justify-center mt-1">

@@ -91,14 +91,12 @@ const MsgShow: React.FC<MsgShowProps> = ({ messages, chatId }) => {
 
   return (
     <>
-      <div className="bg-[#5D5959]/40 w-[66%] text-white h-[1030px] rounded-3xl p-4 hidden md:block">
-        <>
+      <div className="bg-[#5D5959]/40 md:w-[66%] w-full mx-auto  text-white md:h-[1030px] h-[500px] md:rounded-3xl p-4 md:block md:mt-0 my-2">
           <Chatheader username={state.username} status={state.status} userId={state.friendId} friendBlock={state.isblock} blockByMe={state.blockByMe} />
-          <div className='mt-6 h-[88%]'>
+          <div className='mt-4 md:h-[88%] h-[80%]'>
             <Chat messages={messages} />
           </div>
           <Sendchatmsg chatRoomId={chatId} isblocked={state.isblock} friendId={state.friendId} />
-        </>
       </div>
     </>
   )
