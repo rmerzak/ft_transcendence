@@ -106,8 +106,8 @@ const PreAuthForm = ({ exit }: { exit: boolean }) => {
     <>
       <form onSubmit={handleSubmit} className="bg-[#311251] drop-shadow-2xl w-[260px] md:w-[500px] bg-opacity-50 pb-10 rounded-2xl  flex items-center justify-center flex-col max-w-4xl">
 
-        <div onClick={handleImageClick} className="w-[100px]  h-[100px] md:w-[150px]  md:h-[150px] rounded-full">
-          <img src={image} className="rounded-full" />
+      <div onClick={handleImageClick} className="w-[100px]  h-[100px] md:w-[120px]  md:h-[120px] rounded-full">
+          <img src={image} className="rounded-full h-[90px] w-[90px] md:h-[120px] md:w-[120px]"/>
           <label htmlFor="file"></label>
           <input type="file"
             onChange={(e) => handleImageChange(e)}

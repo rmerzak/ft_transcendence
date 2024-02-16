@@ -8,9 +8,9 @@ function Settings() {
     const { profile } : any = useContext(ContextGlobal);
     return (
         <AuthWrapper>
-            <div className="flex items-center justify-center w-[300px] md:w-full ">
-                <div className="flex flex-col items-center justify-center w-full  flex-1 px-3 md:px-20 text-center">
-                    <div className="text-white font-bold md:text-[48px]">Settings: </div>
+            <div className="flex items-center mt-4 justify-center w-[300px] md:w-full mx-auto border">
+                <div className="flex flex-col items-center justify-center w-full flex-1 px-3 md:px-20 text-center">
+                    <div className="text-white font-bold md:text-[44px]">Settings: </div>
                     <PreAuthForm exit={false} />
                     <div className="bg-[#311251] drop-shadow-2xl w-[260px] md:w-[500px] bg-opacity-50 pb-10 rounded-2xl  flex items-center justify-center flex-col max-w-4xl">
                     <div className='text-white'>{profile?.twoFactorEnabled == true ?"2FA is enabled" : "2FA is disabled"} </div>
