@@ -130,7 +130,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
             }
           });
         }
-        this.game.leaveChallengeRoom(targetChallengeRoom.id, client.id, client);
+        this.game.leaveChallengeRoom(targetChallengeRoom.id, client);
       }
     } catch { }
   }
@@ -240,7 +240,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
               }
             });
           }
-          this.game.leaveChallengeRoom(payload.roomId, client.id, client);
+          this.game.leaveChallengeRoom(payload.roomId, client);
         }
       }
     } catch { }
@@ -255,7 +255,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       if (payload.mode === 0) {
         this.game.leaveRoom(payload.roomId, playerId, client);
       } else if (payload.mode === 1) {
-        this.game.leaveChallengeRoom(payload.roomId, playerId, client);
+        this.game.leaveChallengeRoom(payload.roomId, client);
       }
     } catch { }
   }

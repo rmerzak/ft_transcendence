@@ -10,7 +10,7 @@ export class FriendshipService {
     public readonly connectedClients: Map<number, Socket[]> = new Map(); // must change to private its just for testing
 
     async handleConnection(socket: Socket): Promise<void> {
-        try{
+        try{ 
             const clientId = socket.id;
             let payload = socket['payload'];
             let user = await this.prisma.user.findUnique({ where: { email: payload['email'] } });
