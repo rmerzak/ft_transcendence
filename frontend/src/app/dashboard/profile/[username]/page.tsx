@@ -40,6 +40,7 @@ function Page() {
     setBtnFriend(profile?.username !== username);
 }, [username, profile]);
   return (
+    
       <AuthWrapper>
         {
         loading ? <Loading /> :

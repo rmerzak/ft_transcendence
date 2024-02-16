@@ -14,33 +14,33 @@ body {
   padding: 0;
 }
 
-.swiper {
-  width: 80%;
-  height: auto;
-  background-color: rgba(200, 200, 200, 0.1);
-  margin-top: 1rem;
-  border-radius: 25px;;
-  padding-top: 2%;
-  padding-bottom: 2%;
+.gameSwiper {
+  width: 90% !important;
+  height: auto !important;
+  background-color: rgba(200, 200, 200, 0.1) !important;
+  margin-top: 1rem !important;
+  border-radius: 25px !important;
+  padding-top: 2% !important;
+  padding-bottom: 2% !important;
 }
 
-.swiper-slide {
-  background-position: center;
-  background-size: cover;
-  width: 35%;
-  box-shadow: 4px 8px 50px 5px rgba(0, 0, 0, 0.5);
+.swiperSlide {
+  background-position: center !important;
+  background-size: cover !important;
+  width: 35% !important;
+  box-shadow: 4px 8px 50px 5px rgba(0, 0, 0, 0.5) !important;
 
-  height: 100%;
+  height: 100% !important;
 }
 
-.swiper-slide img {
-  display: block;
-  width: 100%;
+.swiperSlide img {
+  display: block !important;
+  width: 100% !important;
 }
 
 @media screen and (min-width: 2560px) {
-  .swiper {
-     padding: 40px
+  .gameSwiper {
+     padding: 40px !important;
   }
   
 }

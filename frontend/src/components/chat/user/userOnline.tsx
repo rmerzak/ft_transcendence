@@ -4,7 +4,6 @@ import dynamic from 'next/dynamic';
 const SwiperFC = dynamic(() => import('./swiper'));
 import { ContextGlobal } from "@/context/contex";
 import { getFriendList } from "@/api/friendship/friendship.api";
-// import "./userOnline.css";
 
 const UserOnline = () => {
   const { friends, setFriends, profile, socket } = useContext(ContextGlobal);
