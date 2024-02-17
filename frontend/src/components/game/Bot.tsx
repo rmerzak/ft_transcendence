@@ -334,7 +334,7 @@ function Bot() {
                 updateScores(user.score, com.score);
                 resetBall();
             }
-            if (user.score == 5 || com.score == 5) {
+            if (user.score == 500 || com.score == 500) {
                 clearInterval(intervalId);
                 Swal.fire({
                     title: 'Game Over',
