@@ -54,7 +54,7 @@ const Chat = () => {
       {error === '' && !loading && <MsgShow messages={messages} chatId={Number(chatRoomId)} />}
       {
         error === '' && loading &&
-        <div className={`flex justify-center items-center text-2xl bg-[#5D5959]/40 w-[66%]  h-[1030px] rounded-3xl`}>
+        <div className={`flex justify-center items-center text-2xl bg-[#5D5959]/40 w-[66%]  h-[1030px] rounded-3xl text-white`}>
           <p>
             Loading...
           </p>

@@ -31,10 +31,10 @@ const Channels = () => {
   const [newChannel, setNewChannel] = useState<boolean>(false);
 
   const [open, setOpen] = useState<boolean>(false);
-  const [openChannel, setOpenChannel] = useState<ChatRoom | null>(null);
-  const [isPrompetVisible, setIsPrompetVisible] = useState<boolean>(false);
-  const [invalue, setinValue] = useState<string>("");
-  const [selectedChannel, setSelectedChannel] = useState<ChatRoom | null>(null);
+  // const [openChannel, setOpenChannel] = useState<ChatRoom | null>(null);
+  // const [isPrompetVisible, setIsPrompetVisible] = useState<boolean>(false);
+  // const [invalue, setinValue] = useState<string>("");
+  // const [selectedChannel, setSelectedChannel] = useState<ChatRoom | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const suggestedRef = useRef<HTMLDivElement | null>(null);
   const [search, setSearch] = useState<string>('');
@@ -47,28 +47,28 @@ const Channels = () => {
   }
   const debouncedSearchBackend = useDebouncedCallback(searchProfile, 500);
 
-  const handleClick = (ChatRoom: ChatRoom) => {
-    // console.log("User entered:");
-    setOpen(true);
-    setOpenChannel(ChatRoom);
-  };
+  // const handleClick = (ChatRoom: ChatRoom) => {
+  //   // console.log("User entered:");
+  //   setOpen(true);
+  //   setOpenChannel(ChatRoom);
+  // };
   function HandleOpen() {
     setOpen(!open);
   }
 
-  const handleKeyDown = (e: KeyboardEvent) => {
-    if (e.key === "Enter") {
-      handleInput();
-    }
-  };
+  // const handleKeyDown = (e: KeyboardEvent) => {
+  //   if (e.key === "Enter") {
+  //     handleInput();
+  //   }
+  // };
 
-  const handleInput = () => {
-    console.log("User entered:", invalue);
-    setIsPrompetVisible(false);
-    chatSocket?.emit("join-channel", invalue);
-    setSelectedChannel(null);
-    setinValue("");
-  };
+  // const handleInput = () => {
+  //   console.log("User entered:", invalue);
+  //   setIsPrompetVisible(false);
+  //   chatSocket?.emit("join-channel", invalue);
+  //   setSelectedChannel(null);
+  //   setinValue("");
+  // };
 
   function handleNewChannel() {
     setNewChannel(!newChannel);
@@ -204,19 +204,12 @@ const Channels = () => {
             chatRoomsJoined.map((channel, index) => (
               <div key={index} className="flex w-full  bg-[#811B77]/50  hover:bg-[#811B77]/100 rounded-xl h-[15%] mb-[9px]">
 
-                < button onClick={() => {
+                <div onClick={() => {
                   router.push(`/dashboard/chat/room/${channel.id}`);
                 }}
                   className=" flex items-center w-full text-xs md:text-base p-3 my-[6px] md:my-[10px] text-white hover:bg-[#811B77]/100"
                 >
                   <p>#{channel.name}</p>
-                </button>
-                <div className="flex items-center">
-                  <IoIosExit
-                    size={28}
-                    strokeWidth={2.5}
-                    className="pr-1 text-white md:h-[70%] h-[78%]   md:w-1/7 focus:outline-none  hover:bg-[#811B77]/100  "
-                  />
                 </div>
               </div>
             ))
