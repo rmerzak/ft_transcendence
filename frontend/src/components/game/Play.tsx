@@ -114,24 +114,24 @@ function Play()
                     </div>
                 </div>
 
-                <div  className='w-3/4 bg-[#5D5959]/30 backdrop-blur-xl rounded-3xl shadow-2xl flex flex-col justify-around h-[596px]  items-center pb-6'>
-                    <h1 className='inline-block font-inter text-sm sm:text-xl p-4 border-b-[1px] text-[#ffffff]/80'>
+                <div  className='w-3/4 bg-[#5D5959]/30 backdrop-blur-xl rounded-3xl shadow-2xl flex flex-col justify-around h-auto items-center pb-6'>
+                    <h1 className='inline-block font-inter text-sm lg:text-xl p-4 border-b-[1px] text-[#ffffff]/80'>
                         Maps
                     </h1>
                     <GameSwiper />
-                    <h1 className='inline-block font-inter text-sm sm:text-xl p-4 border-b-[1px] text-[#ffffff]/80'>
+                    <h1 className='inline-block font-inter text-sm lg:text-xl p-4 border-b-[1px] text-[#ffffff]/80'>
                         How to play
                     </h1>
-                    <div className='flex items-center justify-around text-white/80 w-full'>
-                        <div className="flex justify-center items-center  m-4">
-                            <p className="text-md mr-2"> Press</p>
-                            <kbd className="kbd bg-[#811B77]/50 w-10 h-10">▲</kbd>
-                            <p className="text-md ml-2"> to Move Up</p>
+                    <div className='flex items-center justify-around text-white/80 w-full flex-col md:flex-row'>
+                        <div className="flex justify-center items-center m-3">
+                            <p className="text-[12px] md:text-md mr-2"> Press</p>
+                            <kbd className="kbd  bg-[#811B77]/50 w-6 h-6 lg:w-12 lg:h-10">▲</kbd>
+                            <p className="text-[12px] md:text-md ml-2"> to Move Up</p>
                         </div>
-                        <div className="flex justify-center items-center  m-4">
-                            <p className="text-md mr-2"> Press</p>
-                            <kbd className="kbd bg-[#811B77]/50 w-10 h-10 ">▼</kbd>
-                            <p className="text-md ml-2"> to Move Down</p>
+                        <div className="flex justify-center items-center md:m-3 my-3 ml-3">
+                            <p className="text-[12px] md:text-md mr-2"> Press</p>
+                            <kbd className="kbd bg-[#811B77]/50 w-6 h-6 lg:w-12 lg:h-10">▼</kbd>
+                            <p className="text-[12px] md:text-md ml-2"> to Move Down</p>
                         </div>
                     </div>
                 </div>

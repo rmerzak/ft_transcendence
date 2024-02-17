@@ -45,17 +45,17 @@ function Page() {
         {
         loading ? <Loading /> :
         (error || !user) ? <UserNotFound /> :
-          <div className="p-4 mx-2 bg-profile">
+          <div className="p-4 mx-2 bg-profile md:h-full h-[95%] overflow-auto">
             <h1 className="text-white font-bold text-3xl text-center mb-7 mt-2">Profile</h1>
             <div className="w-full h-[250px] border-spacing-1 mb-3 border-[#ffff]">
               <ProfileInformation profile={user} BtnFriend={BtnFriend} />
             </div>
-            <div className="flex md:flex-row flex-col">
+            <div className="flex md:flex-row flex-col  h-[600px]">
               <div className="shadow-2xl pb-6 bg-achievements md:w-[33.33%] w-full h-full backdrop-blur-lg md:mb-0 mb-2">
                 <Achievements />
                 <Statistics />
               </div>
-              <div className="md:w-[66.33%] md:ml-2">
+              <div className="md:w-[66.33%] md:ml-2 md:mb-0 h-full">
                 <MatchHistory data={data} head={["Player", "Result", "Opponents"]} />
               </div>
             </div>
