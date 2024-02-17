@@ -6,25 +6,26 @@ const RankEntre: React.FC<{
     avatarSrcSecond: string;
     avatarSrcThird: string;
     bestRank: number;
-  }> = ({ rank, avatarSrcWinner,  avatarSrcSecond, avatarSrcThird, bestRank}) => {
+    className: string
+  }> = ({ rank, avatarSrcWinner,  avatarSrcSecond, avatarSrcThird, bestRank, className}) => {
     return (
-        <div className='rounded-2xl w-[27%] bg-[#FFFFFF]/10 ml-4 py-2 md:h-[600px] h-[400px]'>
+        <div className={`${className} rounded-2xl w-[27%] bg-[#FFFFFF]/10 md:mx-4 py-2 md:h-[600px] h-[400px]`}>
             <h1 className='text-gray-300 font-thin md:text-xl text-[10px] text-center' style={{ textShadow: '1px 1px 2px rgba(255, 255, 255, 0.6)' }}>Top Players</h1>
           <div className="flex justify-center mt-1">
               <div className="mb-4 border-b border-white w-6 md:w-16"></div>
           </div>
          <div className='flex justify-between m-6'>
             <div className='mt-16'>
-              <img src={avatarSrcSecond} alt="" className='md:w-[55px] md:h-[55px] w-[30px] h-[30px] rounded-full'/>
+              <img src={avatarSrcSecond} alt="" className='md:w-[55px] md:h-[55px] w-[55px] h-[55px] rounded-full'/>
               <p className='text-white font-bold text-center'>#2</p>
             </div>
             <div className='relative'>
-              <img src={avatarSrcWinner} alt="" className='md:w-[65px] md:h-[65px] w-[42px] h-[42px] rounded-full'/>
+              <img src={avatarSrcWinner} alt="" className='w-[65px] h-[65px] rounded-full'/>
               <p className='text-white font-bold text-center'>#1</p>
-              <img src="/king.png" alt="avatar" className="absolute -top-3 right-1  md:-top-6 md:left-[1rem] md:w-[30px] md:h-[30px] w-[20px] h-[20px]" style={{ filter: 'saturate(150%) brightness(120%)' }}/>
+              <img src="/king.png" alt="avatar" className="absolute left-[50%] -translate-x-[50%] -top-6   md:-top-6  md:w-[30px] md:h-[30px] w-[25px] h-[25px]" style={{ filter: 'saturate(150%) brightness(120%)' }}/>
             </div>
             <div className='mt-16'>
-              <img src={avatarSrcThird} alt="" className='md:w-[55px] md:h-[55px] w-[30px] h-[30px] rounded-full'/>
+              <img src={avatarSrcThird} alt="" className='md:w-[55px] md:h-[55px] w-[55px] h-[55px] rounded-full'/>
               <p className='text-white font-bold text-center'>#3</p>
             </div>
          </div>

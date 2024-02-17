@@ -22,7 +22,7 @@ function User({ className = '', id = UserEnum.USER}: { className?: string; id?: 
 
     return (
         <div className={`${className}`}>
-            <div className="bg-neutral card md:card-side md:shadow-xl inline-block md:max-h-[365px] w-[35%] md:w-full ">
+            <div className="bg-neutral card md:card-side md:shadow-xl inline-block md:max-h-[365px] w-[80%] md:w-full ">
                 <figure className='hidden md:flex'>
                     <div className="avatar justify-center p-[6%] hidden md:flex  items-center ">
                         <div className="w-[8.5rem] rounded-xl max-[1342px]:h-[80px] max-[1342px]:w-auto">
@@ -66,7 +66,7 @@ function User({ className = '', id = UserEnum.USER}: { className?: string; id?: 
                                         id === UserEnum.BOT ? player2Score : 0
                                     }
                                 </div>
-                                <div className="stat-desc">
+                                <div className="stat-desc hidden md:flex">
                                     {
                                         id === uid ? player1Elo :
                                         id === oid ? player2Elo :

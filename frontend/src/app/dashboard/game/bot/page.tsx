@@ -15,8 +15,8 @@ const Game = () => {
                 <h1>Game</h1>
               </div>
 
-              <div className="flex flex-col md:flex-row bg-white/20 backdrop-blur-sm justify-between md:items-center  rounded-3xl shadow-md p-[1%] ">
-                  <div className="flex-non">
+              <div className="flex flex-col md:flex-row bg-white/20 backdrop-blur- justify-between md:items-center  rounded-3xl shadow-md p-[1%] ">
+                  <div className="flex-none">
                       <User id={UserEnum.PLAYER}/>
                   </div>
 
@@ -24,7 +24,7 @@ const Game = () => {
                       <Bot />
                   </div>
 
-                  <div className="flex-non ">
+                  <div className="flex-none">
                       <User id={UserEnum.BOT}/>
                   </div>
               </div>
