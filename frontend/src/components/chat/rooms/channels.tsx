@@ -62,7 +62,7 @@ const Channels = () => {
 
   const handleDisplayChannels = () => {
     setDisplayChannel(!displayChannel);
-    setSearch('');
+    //setSearch('');
   };
   
 
@@ -175,10 +175,10 @@ const Channels = () => {
         }
       });
     }
-    // if (search) {
-    //   console.log("search", search);
-    //   debouncedSearchBackend(search);
-    // }
+    if (search) {
+      console.log("search", search);
+      debouncedSearchBackend(search);
+    }
     return () => {
       chatSocket?.off("ownedRoom");
       chatSocket?.off("error");
@@ -201,7 +201,7 @@ const Channels = () => {
             placeholder="channel name"
             onAuxClickCapture={() => { setOpen(false), setSearched(null), setSearch('') }} onBlur={handleBlur} onMouseDown={() => { setOpen(true); }}
             ref={(input) => { inputRef.current = input; }} onChange={(e) => { setSearch(e.target.value); }}
-            value={search}
+            //value={search}
           />
           <div className="pr-1 flex items-center justify-center bg-gray-300 text-black rounded-r-xl  md:w-1/7 focus:outline-none ">
             <button onClick={handleDisplayChannels}>
@@ -211,7 +211,7 @@ const Channels = () => {
         {displayChannel && searched.length > 0  && (<div ref={suggestedRef} className="border right-1/5 z-10 top-[42px] border-cyan-900 absolute bg-search rounded-b-lg overflow-auto h-[180px]">
           {open && searched.map((room: ChatRoom, index: any) => (
             <div key={index}>
-              <ChannelItem channel={room} HandleOpen={HandleOpen}/>
+              <ChannelItem channel={room} HandleOpen={HandleOpen} handleDisplayChannels={handleDisplayChannels}/>
             </div>
           ))}
         </div>)}

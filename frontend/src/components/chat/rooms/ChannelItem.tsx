@@ -10,9 +10,10 @@ import { getChatRoomMembershipStatus } from '@/api/chat/chat.api';
 interface ChannelItemProps {
     channel: ChatRoom;
     HandleOpen(): void;
+    handleDisplayChannels(): void;
 }
 
-function ChannelItem({ channel, HandleOpen }: ChannelItemProps) {
+function ChannelItem({ channel, HandleOpen, handleDisplayChannels }: ChannelItemProps) {
     const [openChannel, setOpenChannel] = useState<ChatRoom | null>(null);
     const [Membership, setMembership] = useState<ChatRoomMember>();
 
@@ -31,6 +32,7 @@ function ChannelItem({ channel, HandleOpen }: ChannelItemProps) {
                 setMembership(res.data);
         })
     }, [])
+
     return (
         <div className="flex border md:w-[160px] w-[200px] bg-[#811B77]/50 justify-between items-center text-xs md:text-base p-3 my-[6px] md:my-[10px] mx-2 rounded-md text-white hover:bg-[#811B77]/100">
             #{channel.name}
@@ -43,15 +45,17 @@ function ChannelItem({ channel, HandleOpen }: ChannelItemProps) {
                     </>
                 )}
             </button>
-            {openChannel === channel && (
+            {openChannel === channel  && (
+                
                 <JoinChannel
                     channel={channel}
                     setOpenChannel={setOpenChannel}
                     Handlepopup={Handlepopup}
-                />
+                    handleDisplayChannels={handleDisplayChannels}
+                />                  
             )}
         </div>
-    )
-}
+    );
+};
 
 export default ChannelItem

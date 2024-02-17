@@ -8,9 +8,10 @@ interface PopupProps {
   channel: ChatRoom
   setOpenChannel: React.Dispatch<React.SetStateAction<ChatRoom | null>>
   Handlepopup(): void
+  handleDisplayChannels(): void
 }
 
-function JoinChannel({ channel, setOpenChannel, Handlepopup }: PopupProps) {
+function JoinChannel({ channel, setOpenChannel, Handlepopup,  handleDisplayChannels }: PopupProps) {
   const { chatSocket } = useContext(ContextGlobal);
   const [Validationerror, setValidationError] = useState<string | null>(null);
   const router = useRouter();
@@ -19,10 +20,12 @@ function JoinChannel({ channel, setOpenChannel, Handlepopup }: PopupProps) {
     name: "",
     password: "",
   });
-
-
-
   
+
+  const handleClick = () => {
+    setOpenChannel(null);
+    handleDisplayChannels();
+  }
     const handleNewMember = (e:any) => {
       e.preventDefault();
       if (channel.visibility !== RoomVisibility.PRIVATE) {
@@ -79,7 +82,7 @@ function JoinChannel({ channel, setOpenChannel, Handlepopup }: PopupProps) {
             </div>}
             <div className="flex justify-center items-center mt-4 text-sm">
               <div className="flex justify-between w-[67.5%]">
-                <button onClick={() => setOpenChannel(null)} className="w-[100px] h-9 md:h-[40px] rounded-xl text-white hover:bg-[#811B77]/100 border">
+                <button onClick={handleClick} className="w-[100px] h-9 md:h-[40px] rounded-xl text-white hover:bg-[#811B77]/100 border">
                   Cancel
                 </button>
                 <button type="submit" className="bg-[#811B77] w-[100px] h-9 md:h-[40px] rounded-xl text-white hover:bg-[#811B77]/100 border">
