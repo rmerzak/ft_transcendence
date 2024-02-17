@@ -37,8 +37,8 @@ const Friends = () => {
   
     socket?.on('AcceptRequest', handleFriendAccept);
     socket?.on('friendAcceptRequest', handleFriendAccept);
-    socket?.on('friendRequest', handleFriendRequest);
     socket?.on('removeFriend', handleRemoveFriend);
+    socket?.on('friendRequest', handleFriendRequest);
     socket?.on('blockFriend', handleRemoveFriend);
     socket?.on('unblockFriend', handleRemoveFriend);
   
@@ -47,6 +47,9 @@ const Friends = () => {
       socket?.off('AcceptRequest', handleFriendAccept);
       socket?.off('friendRequest', handleFriendRequest);
       socket?.off('removeFriend', handleRemoveFriend);
+      socket?.off('blockFriend', handleRemoveFriend);
+      socket?.off('unblockFriend', handleRemoveFriend);
+      socket?.off('friendAcceptRequest', handleFriendAccept);
     };
   }, [profile, socket]);
   

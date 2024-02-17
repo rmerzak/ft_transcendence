@@ -56,11 +56,6 @@ const Layout = ({ children }: any) => {
         });
       }
     }).catch((err) => { console.log(err) });
-
-    // getChatRoomsNotJoined().then((res) => {
-    //   if (res && res.data && res.data.length > 0)
-    //     setChatRoomsToJoin(res.data);
-    // }).catch((err) => { console.log(err) });
   }, [chatSocket]);
 
   useEffect(() => {
@@ -83,7 +78,6 @@ const Layout = ({ children }: any) => {
         });
         chatSocket.on('unban_from_room', (res: ChatRoomMember) => {
           if (res.userId === profile.id) {
-            // console.log('unban_from_room', res);
             chatSocket.emit('join-room', { roomId: res.chatRoomId, test: 'test' });
           }
         });
@@ -104,7 +98,7 @@ const Layout = ({ children }: any) => {
     }
   }, [friends, profile, chatSocket]);
   return (
-    <div className="border pb-4 w-full h-full bg-[#311251]/80 md:rounded-3xl rounded-t-md md:w-[95%] md:h-[90%] md:mt-6 md:overflow-auto md:mx-auto md:shadow-lg">
+    <div className="border pb-4 w-full h-full bg-[#311251]/80 md:rounded-3xl rounded-t-md md:w-[95%] md:h-[95%] md:mt-6 md:overflow-auto md:mx-auto md:shadow-lg">
       <h1 className="text-white md:text-3xl text-lg md:font-bold text-center m-2 p-1 md:m-4 md:p-2 font-inter w-auto">
         Chat
       </h1>

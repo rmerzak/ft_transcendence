@@ -16,7 +16,7 @@ const SwiperFC = ({ friends }: { friends: Friendship[] }) => {
       spaceBetween={20}
       freeMode={true}
       modules={[FreeMode, Pagination]}
-      className="chatSwiper"
+      className="mySwiper"
     >
       {friends.length > 0 ? friends.map((user, index) => (
         <SwiperSlide key={index} className="chatSwiperSlide">

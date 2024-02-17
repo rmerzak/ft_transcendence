@@ -21,7 +21,7 @@ const ChannelSettingPopup: React.FC<PopupProps> = ({ handleSettingClick, chatRoo
     if (formData.visibility !== RoomVisibility.PROTECTED) {
       setFormData((prevData) => ({
         ...prevData,
-        passwordHash: "",
+        passwordHash: null,
       }));
     }
   }, [formData.visibility]);
@@ -55,7 +55,7 @@ const ChannelSettingPopup: React.FC<PopupProps> = ({ handleSettingClick, chatRoo
             <input
               type="text"
               className="bg-gray-800 text-white mt-4 border-none rounded-xl focus:ring-0 h-9 md:w-3/4 focus:outline-none"
-              placeholder={`#${chatRoom?.name}`}
+              placeholder={`${chatRoom?.name}`}
               required
               onChange={(e) => {setFormData((prevData) => ({ ...prevData, name: e.target.value }))}}
             />
@@ -105,7 +105,8 @@ const ChannelSettingPopup: React.FC<PopupProps> = ({ handleSettingClick, chatRoo
               type="password"
               className="bg-gray-800 text-white border-none rounded-xl focus:ring-0 h-10 md:w-3/6 focus:outline-none"
               placeholder="Enter password"
-              value={formData.passwordHash}
+              // value={formData.passwordHash}
+              required
               onChange={(e) => setFormData((prevData) => ({ ...prevData, passwordHash: e.target.value }))}
             />
           </div>
