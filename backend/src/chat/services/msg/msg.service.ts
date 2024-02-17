@@ -95,7 +95,7 @@ export class MsgService {
         const tmp = await this.Friends.getFriendship(userId, roomMember.userId);
         if (tmp.block) throw new Error('User blocked');
       } catch (error) {
-        // throw new Error('You have to be friend with this user to send message');
+        throw new Error('You have to be friend with this user to send message');
       }
     } else {
       if (specificMember.status === RoomStatus.BANNED) throw new Error('Your are banned from this room');

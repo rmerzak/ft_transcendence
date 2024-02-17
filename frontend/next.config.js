@@ -34,14 +34,42 @@ const nextConfig = {
       API_FRONT_END: process.env.SERVER_FRONTEND,
 
     },
-    images: {
-      domains: ['res.cloudinary.com','cdn.intra.42.fr','i.pravatar.cc'],
+    // images: {
+    //   domains: ['res.cloudinary.com','cdn.intra.42.fr','i.pravatar.cc'],
     //   remotePatterns: [{
     //     protocol: 'https',
     //     hostname: '**',
     //     pathname: '**',
     //   },
     // ]
+    // },
+    images: {
+      remotePatterns: [
+        {
+          protocol: 'https',
+          hostname: 'res.cloudinary.com',
+          port: '',
+          pathname: '/**',
+        },
+        {
+          protocol: 'https',
+          hostname: 'cdn.intra.42.fr',
+          port: '',
+          pathname: '/**',
+        },
+        {
+          protocol: 'https',
+          hostname: 'i.pravatar.cc',
+          port: '',
+          pathname: '/**',
+        },
+        {
+          protocol: 'http',
+          hostname: 'res.cloudinary.com',
+          port: '',
+          pathname: '/**',
+        },
+      ],
     },
     reactStrictMode: false,
 };

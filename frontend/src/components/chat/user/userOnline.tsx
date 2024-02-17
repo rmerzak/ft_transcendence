@@ -33,9 +33,22 @@ const UserOnline = () => {
         }
       });
 
+      socket?.on('AcceptRequest', () => {
+        getFriends();
+      });
+      socket?.on('friendAcceptRequest', () => {
+        getFriends();
+      });
+      socket?.on('removeFriend', () => {
+        getFriends();
+      });
+
       return () => {
         socket?.off("blockUserOnline");
         socket?.off("blockUserOnline");
+        socket?.off('AcceptRequest');
+        socket?.off('friendAcceptRequest');
+        socket?.off('removeFriend');
       }
     }
   }, [profile, socket]);
