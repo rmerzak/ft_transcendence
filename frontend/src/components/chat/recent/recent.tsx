@@ -82,7 +82,7 @@ const Recent: React.FC<RecentProps> = ({ rooms }) => {
   }
   return (
     <>
-      <div className="">
+      <div >
         <h1 className="text-white md:text-xl text-center font-inter">Recent</h1>
         <div className="flex justify-center md:mt-2">
           <div className="md:mb-2 mb-0 border-b border-white md:w-14 w-6"></div>

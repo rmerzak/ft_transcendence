@@ -9,7 +9,7 @@ import { getChatRoomMembershipStatus } from '@/api/chat/chat.api';
 
 interface ChannelItemProps {
     channel: ChatRoom;
-    HandleOpen(): void; 
+    HandleOpen(): void;
 }
 
 function ChannelItem({ channel, HandleOpen }: ChannelItemProps) {
