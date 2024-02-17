@@ -23,14 +23,21 @@ const Channels = () => {
   } = useContext(ContextGlobal);
   const router = useRouter();
   const handleBlur = (e: any) => {
-    if (inputRef.current && !inputRef.current.contains(e.relatedTarget)) {
+    if (
+      inputRef.current &&
+      !inputRef.current.contains(e.relatedTarget) &&
+      !suggestedRef.current?.contains(e.target)
+    ) {
+      setDisplayChannel(false);
       setSearch('');
     }
   };
+  
   const [searched, setSearched] = useState<any>([]);
   const [newChannel, setNewChannel] = useState<boolean>(false);
 
   const [open, setOpen] = useState<boolean>(false);
+  const  [displayChannel, setDisplayChannel] = useState<boolean>(false);
   const [openChannel, setOpenChannel] = useState<ChatRoom | null>(null);
   const [isPrompetVisible, setIsPrompetVisible] = useState<boolean>(false);
   const [invalue, setinValue] = useState<string>("");
@@ -52,6 +59,13 @@ const Channels = () => {
     setOpen(true);
     setOpenChannel(ChatRoom);
   };
+
+  const handleDisplayChannels = () => {
+    setDisplayChannel(!displayChannel);
+    setSearch('');
+  };
+  
+
   function HandleOpen() {
     setOpen(!open);
   }
@@ -63,11 +77,11 @@ const Channels = () => {
   };
 
   const handleInput = () => {
-    console.log("User entered:", invalue);
+    console.log("User entered:", search);
     setIsPrompetVisible(false);
-    chatSocket?.emit("join-channel", invalue);
+    searchProfile(search);
     setSelectedChannel(null);
-    setinValue("");
+    setSearch('');
   };
 
   function handleNewChannel() {
@@ -83,9 +97,19 @@ const Channels = () => {
       }
     }
 
-    document.addEventListener("mousedown", handleMouseDown);
+    const handleGlobalClick = (e: MouseEvent) => {
+      if (
+        !inputRef.current?.contains(e.target as Node) &&
+        !suggestedRef.current?.contains(e.target as Node)
+      ) {
+        setDisplayChannel(false);
+        setSearch('');
+      }
+    };
 
-    return () => document.removeEventListener("mousedown", handleMouseDown);
+    document.addEventListener("mousedown", handleGlobalClick);
+
+    return () => document.removeEventListener("mousedown", handleGlobalClick);
   }, []);
 
   useEffect(() => {
@@ -151,10 +175,10 @@ const Channels = () => {
         }
       });
     }
-    if (search) {
-      console.log("search", search);
-      debouncedSearchBackend(search);
-    }
+    // if (search) {
+    //   console.log("search", search);
+    //   debouncedSearchBackend(search);
+    // }
     return () => {
       chatSocket?.off("ownedRoom");
       chatSocket?.off("error");
@@ -168,7 +192,7 @@ const Channels = () => {
 
   return (
     <>
-      <div className="relative flex flex-col items-center justify-center my-3 mx-auto w-[90%]">
+      <div className="relative flex flex-col items-center justify-center my-3 mx-auto w-[90%] border">
         <div className="flex justify-center w-full">
           <input
             id="channelName"
@@ -176,19 +200,21 @@ const Channels = () => {
             className="bg-gray-300 text-black border-none  rounded-l-xl focus:ring-0 h-10 w-full  focus:outline-none"
             placeholder="channel name"
             onAuxClickCapture={() => { setOpen(false), setSearched(null), setSearch('') }} onBlur={handleBlur} onMouseDown={() => { setOpen(true); }}
-            ref={(input) => { inputRef.current = input; }} onChange={(e) => { setSearch(e.target.value); setOpen(true); }}
+            ref={(input) => { inputRef.current = input; }} onChange={(e) => { setSearch(e.target.value); }}
+            value={search}
           />
           <div className="pr-1 flex items-center justify-center bg-gray-300 text-black rounded-r-xl  md:w-1/7 focus:outline-none ">
-            <Search size={24} strokeWidth={2.5} />
+            <button onClick={handleDisplayChannels}>
+            <Search size={24} strokeWidth={2.5}/> </button>
           </div>
         </div>
-        <div ref={suggestedRef} className="right-1/5 z-10 top-[42px] border-cyan-900 absolute bg-search rounded-b-lg overflow-auto h-[180px]">
+        {displayChannel && searched.length > 0  && (<div ref={suggestedRef} className="border right-1/5 z-10 top-[42px] border-cyan-900 absolute bg-search rounded-b-lg overflow-auto h-[180px]">
           {open && searched.map((room: ChatRoom, index: any) => (
             <div key={index}>
-              <ChannelItem channel={room} HandleOpen={HandleOpen} />
+              <ChannelItem channel={room} HandleOpen={HandleOpen}/>
             </div>
           ))}
-        </div>
+        </div>)}
       </div>
 
       <div className="flex flex-col rounded-md md:w-[90%] w-[90%] mx-auto h-[50%]">
