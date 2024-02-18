@@ -416,6 +416,9 @@ export class GameService {
         {
           gameWins: 'desc',
         },
+        {
+          id: 'desc'
+        }
       ],
     });
   
@@ -452,6 +455,9 @@ export class GameService {
         {
           gameWins: 'desc',
         },
+        {
+          id: 'desc'
+        }
       ],
     });
   

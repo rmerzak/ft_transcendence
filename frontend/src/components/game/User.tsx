@@ -57,7 +57,7 @@ function User({ className = '', id = UserEnum.USER}: { className?: string; id?: 
                         </h2>
                         <div className="md:card-actions flex items-center justify-center  h-full">
                             <div className="stat place-items-center ">
-                                <div className="stat-title max-[1342px]:text-sm hidden md:flex">Score</div>
+                                <div className="stat-title max-[1342px]:text-sm hidden md:flex text-white/25">Score</div>
                                 <div className="stat-value text-[#ffffff]/70 text-[1rem] md:text-[1.7rem]  "> 
                                     {
                                         id === uid ? player1Score :
@@ -66,7 +66,7 @@ function User({ className = '', id = UserEnum.USER}: { className?: string; id?: 
                                         id === UserEnum.BOT ? player2Score : 0
                                     }
                                 </div>
-                                <div className="stat-desc hidden md:flex">
+                                <div className="stat-desc hidden md:flex text-white/25">
                                     {
                                         id === uid ? player1Elo :
                                         id === oid ? player2Elo :
