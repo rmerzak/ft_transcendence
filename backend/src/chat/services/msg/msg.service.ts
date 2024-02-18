@@ -76,6 +76,19 @@ export class MsgService {
   }
   // add user message
   async addMessage(messageData: Message, userId: number): Promise<Message> {
+    if (messageData.type === 'ANNOUCEMENT') {
+      const chatRoom = await this.prisma.chatRoom.findUnique({
+        where: { id: messageData.chatRoomId },
+      });
+      if (!chatRoom) throw new Error('Chat room not found');
+      if (/[a-zA-Z]/.test(chatRoom.name.charAt(0))) {
+        const msg = await this.prisma.message.create({
+          data: messageData,
+        });
+        if (!msg) throw new Error('Message not created');
+        return msg;
+      }
+    }
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
     });

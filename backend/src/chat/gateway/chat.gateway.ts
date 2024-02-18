@@ -485,7 +485,6 @@ export class GatewayGateway
         senderId: _client['user'].id,
         type: MessageStatus.ANNOUCEMENT,
       } as Message;
-      const msg = await this.chatService.addMessage(msgData, _client['user'].id);
       const room = await this.roomService.leaveMemberFromRoom(_client, payload);
       this.roomService.connectedClients.forEach((sockets, userId) => {
         if (userId === _client['user'].id) {
@@ -508,6 +507,9 @@ export class GatewayGateway
         }
       });
       if (room !== null) {
+        const roomTmp = await this.roomService.getChatRoomById(payload.id);
+        if (!roomTmp) throw new Error('Room not found');
+        const msg = await this.chatService.addMessage(msgData, roomTmp.owner);
         if (room.visibility === RoomVisibility.PRIVATE) {
           await this.roomService.deleteRequestToJoinChatRoom(_client['user'].id, payload.id);
         }
