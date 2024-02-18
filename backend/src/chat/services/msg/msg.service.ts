@@ -93,6 +93,7 @@ export class MsgService {
       const roomMember = chatRoomMembers.find((member) => member.userId !== user.id);
       try {
         const tmp = await this.Friends.getFriendship(userId, roomMember.userId);
+        if (tmp.status !== 'ACCEPTED') throw new Error('You have to be friend with this user to send message');
         if (tmp.block) throw new Error('User blocked');
       } catch (error) {
         throw new Error('You have to be friend with this user to send message');
