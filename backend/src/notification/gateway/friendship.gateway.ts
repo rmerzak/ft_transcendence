@@ -78,7 +78,7 @@ export class FriendshipGateway {
         socket.emit('removeFriend', { notification: null, friendship: null, status: true, error: null });
       });
       socket.emit('removeFriend', { notification: null, friendship: null, status: true, error: null });
-      this.server.to('1_notification').emit('removeFriend', { notification: null, friendship: friendshipRemoved, status: true, error: null });
+      this.server.to('1_friendship').emit('removeFriend', { notification: null, friendship: friendshipRemoved, status: true, error: null });
     } catch (error) {
       socket.emit('RequestError', { notification: null, friendship: null, status: false, error: error.message });
     }
