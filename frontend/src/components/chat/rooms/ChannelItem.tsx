@@ -52,8 +52,9 @@ function ChannelItem({ channel, HandleOpen, handleDisplayChannels }: ChannelItem
                     setOpenChannel={setOpenChannel}
                     Handlepopup={Handlepopup}
                     handleDisplayChannels={handleDisplayChannels}
-                />                  
-            )}
+                />
+                )}
+                  
         </div>
     );
 };

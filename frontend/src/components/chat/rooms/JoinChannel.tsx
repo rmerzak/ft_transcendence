@@ -26,16 +26,17 @@ function JoinChannel({ channel, setOpenChannel, Handlepopup,  handleDisplayChann
     setOpenChannel(null);
     handleDisplayChannels();
   }
-    const handleNewMember = (e:any) => {
-      e.preventDefault();
-      if (channel.visibility !== RoomVisibility.PRIVATE) {
+
+  const handleNewMember = (e:any) => {
+    e.preventDefault();
+    if (channel.visibility !== RoomVisibility.PRIVATE) {
       const { password } = formData;
       const channelData = {
         name: channel.name,
         passwordHash: password,
       };
-    chatSocket?.emit("new-member", channelData);
-    setFormData({
+      chatSocket?.emit("new-member", channelData);
+      setFormData({
         name: "",
         password: "",
       });
@@ -47,14 +48,16 @@ function JoinChannel({ channel, setOpenChannel, Handlepopup,  handleDisplayChann
     } else {
       chatSocket?.emit("request-join-room", channel);
     }
-      setValidationError(null);
-      if (Handlepopup) {
-        Handlepopup();
-      }
-      return () => {
-        chatSocket?.off("push");
-      };
+    setValidationError(null);
+    if (Handlepopup) {
+      Handlepopup();
+      handleDisplayChannels();
+    }
+    return () => {
+      chatSocket?.off("push");
     };
+  };
+  
 
     return (
       <>
@@ -93,7 +96,7 @@ function JoinChannel({ channel, setOpenChannel, Handlepopup,  handleDisplayChann
           </div>
         </form>
       </div>
-    </>
+    </>  
   )
 }
 

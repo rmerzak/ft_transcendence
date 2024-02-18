@@ -42,10 +42,7 @@ const Channels = () => {
   const [isPrompetVisible, setIsPrompetVisible] = useState<boolean>(false);
   const [invalue, setinValue] = useState<string>("");
   const [selectedChannel, setSelectedChannel] = useState<ChatRoom | null>(null);
-  // const [openChannel, setOpenChannel] = useState<ChatRoom | null>(null);
-  // const [isPrompetVisible, setIsPrompetVisible] = useState<boolean>(false);
-  // const [invalue, setinValue] = useState<string>("");
-  // const [selectedChannel, setSelectedChannel] = useState<ChatRoom | null>(null);
+
   const inputRef = useRef<HTMLInputElement | null>(null);
   const suggestedRef = useRef<HTMLDivElement | null>(null);
   const [search, setSearch] = useState<string>('');
@@ -58,23 +55,11 @@ const Channels = () => {
   }
   const debouncedSearchBackend = useDebouncedCallback(searchProfile, 500);
 
-  const handleClick = (ChatRoom: ChatRoom) => {
-    // console.log("User entered:");
-    setOpen(true);
-    setOpenChannel(ChatRoom);
-  };
-
   const handleDisplayChannels = () => {
     setDisplayChannel(!displayChannel);
-    //setSearch('');
+    setSearch('');
   };
   
-
-  // const handleClick = (ChatRoom: ChatRoom) => {
-  //   // console.log("User entered:");
-  //   setOpen(true);
-  //   setOpenChannel(ChatRoom);
-  // };
   function HandleOpen() {
     setOpen(!open);
   }
@@ -194,7 +179,7 @@ const Channels = () => {
     if (search) {
       console.log("search", search);
       searchProfile(search);
-      //debouncedSearchBackend(search);
+      debouncedSearchBackend(search);
     }
     return () => {
       chatSocket?.off("ownedRoom");
@@ -219,13 +204,13 @@ const Channels = () => {
             onAuxClickCapture={() => { setOpen(false), setSearched(null), setSearch('') }} onBlur={handleBlur} onMouseDown={() => { setOpen(true); }}
             ref={(input) => { inputRef.current = input; }}
             onChange={(e) => { setSearch(e.target.value); setOpen(true); }}
-            //value={search}
+            value={search}
           />
-          <div onClick={() => console.log("search",search)} className="pr-1 flex items-center justify-center bg-gray-300 text-black rounded-r-xl  md:w-1/7 focus:outline-none ">
-            <Search size={24} strokeWidth={2.5} />
+          <div onClick={handleDisplayChannels} className="pr-1 flex items-center justify-center bg-gray-300 text-black rounded-r-xl  md:w-1/7 focus:outline-none ">
+            <button> <Search size={24} strokeWidth={2.5}/> </button>
           </div>
         </div>
-        {displayChannel && searched.length > 0  && (<div ref={suggestedRef} className="border right-1/5 z-10 top-[42px] border-cyan-900 absolute bg-search rounded-b-lg overflow-auto h-[180px]">
+        {displayChannel && searched.length > 0 && (<div ref={suggestedRef} className="right-1/5 z-10 top-[42px] border-cyan-900 absolute bg-search rounded-b-lg overflow-auto h-[180px]">
           {open && searched.map((room: ChatRoom, index: any) => (
             <div key={index}>
               <ChannelItem channel={room} HandleOpen={HandleOpen} handleDisplayChannels={handleDisplayChannels}/>
