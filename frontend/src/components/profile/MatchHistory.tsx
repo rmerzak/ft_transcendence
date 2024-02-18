@@ -129,8 +129,9 @@ const MatchHistory = ({ data, head}: { data: MatchHistoryItemInterface[]; head: 
                     </div>
                 ))}
             </div> : null}
-            {
-                currentData?.length > 0 ? ( currentData?.map((item, index) => (
+            <div className="overflow-auto h-[93%] ">
+            {currentData?.length > 0 ? (
+                currentData?.map((item, index) => (
                     <MatchHistoryItem
                         key={index}
                         playerOne={item.user.username}
@@ -139,24 +140,25 @@ const MatchHistory = ({ data, head}: { data: MatchHistoryItemInterface[]; head: 
                         ImgPlayerTwo={item.opponent.image}
                         result={`${item.userScore}-${item.oppScore}`}
                     />
-                )) 
-            ) : ( 
-            <div className="flex flex-col items-center">
-                {profile.username === profileName || profileName === undefined ? (
-                <>
-                    <h1 className="text-white font-inter text-3xl text-center mt-10"><span className="text-[#BC51BE]">Play</span> to save the history</h1>
-                    <button onClick={() => setOpenAl(!openAl)} className='btn mt-5 w-32 text-white bg-[#BC51BE]/50'>
-                        Play
-                    </button>
-                </>
-                ) : (
-                    <h1 className="text-white font-inter text-3xl text-center mt-10">No match history found</h1> 
-                )}
-            </div>
+                ))
+            ) : (
+                <div className="flex flex-col items-center">
+                    {profile.username === profileName || profileName === undefined ? (
+                        <>
+                            <h1 className="text-white font-inter text-3xl text-center mt-10"><span className="text-[#BC51BE]">Play</span> to save the history</h1>
+                            <button onClick={() => setOpenAl(!openAl)} className='btn mt-5 w-32 text-white bg-[#BC51BE]/50'>
+                                Play
+                            </button>
+                        </>
+                    ) : (
+                        <h1 className="text-white font-inter text-3xl text-center mt-10">No match history found</h1> 
+                    )}
+                </div>
             )}
-            {/* <div className="pagination flex items-center justify-center text-white bg-achievements3">{renderPageNumbers()}</div> */}
-        </AuthWrapper>
-    );
+        </div>
+        {/* <div className="pagination flex items-center justify-center text-white bg-achievements3">{renderPageNumbers()}</div> */}
+    </AuthWrapper>
+);
 };
 
 export default MatchHistory;

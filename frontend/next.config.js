@@ -1,30 +1,4 @@
-/** @type {import('next').NextConfig} */
 const nextConfig = {
-    // headers: async function () {
-    //   return [
-    //     {
-    //       source: '/dashboard/:path*',
-    //       headers: [
-    //         {
-    //           key: 'Access-Control-Allow-Origin',
-    //           value: '*',
-    //         },
-    //         {
-    //           key: 'Access-Control-Allow-Methods',
-    //           value: 'GET, POST, PUT, DELETE, OPTIONS',
-    //         },
-    //         {
-    //           key: 'Access-Control-Allow-Headers',
-    //           value: 'Content-Type, Authorization, X-Requested-With',
-    //         },
-    //         {
-    //           key: 'Access-Control-Allow-Credentials',
-    //           value: 'true',
-    //         },
-    //       ],
-    //     },
-    //   ];
-    // },
     env: {
       API_BASE_URL: process.env.SERVER_BACKEND,
       API_USER_VERIFY: process.env.USER_VERIFY,
@@ -35,13 +9,44 @@ const nextConfig = {
 
     },
     images: {
-      domains: ['res.cloudinary.com','cdn.intra.42.fr','i.pravatar.cc'],
-    //   remotePatterns: [{
-    //     protocol: 'https',
-    //     hostname: '**',
-    //     pathname: '**',
-    //   },
-    // ]
+      remotePatterns: [
+        {
+          protocol: 'https',
+          hostname: 'res.cloudinary.com',
+          port: '',
+          pathname: '/**',
+        },
+        {
+          protocol: 'https',
+          hostname: 'cdn.intra.42.fr',
+          port: '',
+          pathname: '/**',
+        },
+        {
+          protocol: 'https',
+          hostname: 'i.pravatar.cc',
+          port: '',
+          pathname: '/**',
+        },
+        {
+          protocol: 'http',
+          hostname: 'res.cloudinary.com',
+          port: '',
+          pathname: '/**',
+        },
+        {
+          protocol: 'http',
+          hostname: 'cdn.intra.42.fr',
+          port: '',
+          pathname: '/**',
+        },
+        {
+          protocol: 'http',
+          hostname: 'i.pravatar.cc',
+          port: '',
+          pathname: '/**',
+        },
+      ],
     },
     reactStrictMode: false,
 };

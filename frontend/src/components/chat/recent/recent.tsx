@@ -130,7 +130,7 @@ const Recent: React.FC<RecentProps> = ({ rooms }) => {
               </div>
             </div>
             <div className="flex items-center">
-              <button onClick={() => removeRecent(recent.chatRoomId)}>
+              <button onClick={() => removeRecent(recent.chatRoomId)} className="h-[40px]">
                 <Trash2
                   size={24}
                   strokeWidth={1.5}

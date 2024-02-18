@@ -43,7 +43,6 @@ function RoomUserItem({ chatRoomMember, profileRoomStatus, chatRoom, chatRoomRol
 
     const handleRangeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = parseInt(event.target.value, 10);
-        // setMuteDuration(value);
         setStatus({ ...status, muteDuration: value });
     };
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -101,39 +100,81 @@ function RoomUserItem({ chatRoomMember, profileRoomStatus, chatRoom, chatRoomRol
             {
                 profileRoomStatus.userId === chatRoom.owner && chatRoomMember.user.id !== chatRoom.owner && (
                     chatRoomMember.is_admin === false ?
-                        <div>
+                        <div className='group relative'>
                             <button onClick={() => { handleAdmin() }} className="bg-[#A1A1A1] rounded-full px-2 py-1">
                                 <GoShieldLock />
                             </button>
+                            <p
+                                className={`absolute right-9 w-32 -top-4 rounded-md px-2 py-1 bg-indigo-100 text-indigo-800 text-sm invisible
+                                opacity-20 -translate-x-3 transition-all group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-10`}
+                            >
+                                make Admin
+                            </p>
                         </div> :
-                        <div>
+                        <div className='group relative'>
                             <button onClick={() => { handleUnAdmin() }} className="bg-[#A1A1A1] rounded-full px-2 py-1">
                                 <GoShieldX />
                             </button>
+                            <p
+                                className={`absolute right-8 w-32 -top-4 rounded-md px-2 py-1 bg-indigo-100 text-indigo-800 text-sm invisible
+                                opacity-20 -translate-x-3 transition-all group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-10`}
+                            >
+                                make Member
+                            </p>
                         </div>
                 )
             }
             {
                 profileRoomStatus.is_admin && profileRoomStatus.userId !== chatRoomMember.user.id && chatRoomMember.user.id !== chatRoom.owner && (
                     <div className=' flex items-center justify-center space-x-2'>
-                        <button onClick={() => { handleKick() }} className="bg-[#A1A1A1] rounded-full px-2 py-1">
+                        <button onClick={() => { handleKick() }} className="bg-[#A1A1A1] rounded-full px-2 py-1 group relative">
                             <GiBootKick />
+                            <p
+                                className={`absolute right-8 w-32 -top-4 rounded-md px-2 py-1 bg-indigo-100 text-indigo-800 text-sm invisible text-start
+                                        opacity-20 -translate-x-3 transition-all group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-10`}
+                            >
+                                kick Member
+                            </p>
                         </button>
                         {chatRoomMember.status === 'BANNED' ?
-                            <button onClick={() => { handleUnBan() }} className="bg-[#A1A1A1] rounded-full px-2 py-1">
+                            <button onClick={() => { handleUnBan() }} className="bg-[#A1A1A1] rounded-full px-2 py-1 group relative">
                                 <FaCheck />
+                                <p
+                                    className={`absolute right-8 w-32 -top-4 rounded-md px-2 py-1 bg-indigo-100 text-indigo-800 text-sm invisible text-start
+                                        opacity-20 -translate-x-3 transition-all group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-10`}
+                                >
+                                    unban Member
+                                </p>
                             </button> :
-                            <button onClick={() => { handleBan() }} className="bg-[#A1A1A1] rounded-full px-2 py-1">
+                            <button onClick={() => { handleBan() }} className="bg-[#A1A1A1] rounded-full px-2 py-1 group relative">
                                 <FaBan />
+                                <p
+                                    className={`absolute right-8 w-32 -top-4 rounded-md px-2 py-1 bg-indigo-100 text-indigo-800 text-sm invisible text-start
+                                        opacity-20 -translate-x-3 transition-all group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-10`}
+                                >
+                                    ban Member
+                                </p>
                             </button>
                         }
                         {
                             chatRoomMember.status === 'MUTED' ?
-                                <button onClick={() => { handleUnMute() }} className="bg-[#A1A1A1] rounded-full px-[6px] py-[2px]">
+                                <button onClick={() => { handleUnMute() }} className="bg-[#A1A1A1] rounded-full px-[6px] py-[2px] group relative">
                                     <MessageSquare className='w-5 h-5' />
+                                    <p
+                                        className={`absolute right-8 w-32 -top-4 rounded-md px-2 py-1 bg-indigo-100 text-indigo-800 text-sm invisible text-start
+                                        opacity-20 -translate-x-3 transition-all group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-10`}
+                                    >
+                                        unmute Member
+                                    </p>
                                 </button> :
-                                <button onClick={() => { setStatus({ ...status, openSelect: !status.openSelect }) }} className="bg-[#A1A1A1] rounded-full px-2 py-1">
+                                <button onClick={() => { setStatus({ ...status, openSelect: !status.openSelect }) }} className="bg-[#A1A1A1] rounded-full px-2 py-1 group relative">
                                     <RiChatOffFill />
+                                    <p
+                                        className={`absolute right-8 w-32 -top-4 rounded-md px-2 py-1 bg-indigo-100 text-indigo-800 text-sm invisible text-start
+                                        opacity-20 -translate-x-3 transition-all group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-10`}
+                                    >
+                                        mute Member
+                                    </p>
                                 </button>
                         }
                         {status.openSelect && (
@@ -149,7 +190,8 @@ function RoomUserItem({ chatRoomMember, profileRoomStatus, chatRoom, chatRoomRol
                                         className="range bg-white h-[15px]"
                                     />
                                     <div
-                                        className={`absolute right-28 -top-20 rounded-md px-2 py-1  bg-indigo-100 text-indigo-800 text-sm invisible opacity-20 -translate-x-3 transition-all group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-10`}
+                                        className={`absolute right-32 -top-10 rounded-md px-2 py-1  bg-indigo-100 text-indigo-800 text-sm invisible opacity-20 -translate-x-3 
+                                        transition-all group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 z-10`}
                                     >
                                         {status.error !== '' && <span className='p-1 text-red-500'>{status.error}</span> ||
                                             <p className='p-1'>{secondsToTime(status.muteDuration)}</p>

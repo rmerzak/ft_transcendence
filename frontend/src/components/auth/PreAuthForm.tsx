@@ -69,6 +69,10 @@ const PreAuthForm = ({ exit }: { exit: boolean }) => {
         toast.error('Please enter a valid username');
         return;
       }
+      if (newUsername.length > 8) {
+        toast.error('Username must be less than 8 characters');
+        return;
+      }
       const response = await axios.post('http://localhost:3000/auth/finish-auth', { image: ii, username: newUsername }, {
         withCredentials: true,
       });

@@ -10,7 +10,7 @@ import ChallengeAlert from '@/components/game/ChallengeAlert';
 const FriendItem = ({ friend } : { friend: Friendship }) => {
   const {  profile, socket  } : any = useContext(ContextGlobal);
   const [status, setStatus] = useState<string>();
-  const [openAlert, setOpenAlert] = useState<boolean>(false);
+  const [ openAlert, setOpenAlert ] = useState<boolean>(false);
   const [ isPlaying, setIsPlaying ] = useState(false);
   const handleFriend = (status:boolean) => {
     if(status){
@@ -60,10 +60,10 @@ const FriendItem = ({ friend } : { friend: Friendship }) => {
     (friend.status === 'ACCEPTED') ? (
     <div className={`text-white bg-achievements1 flex items-center justify-between py-1 mx-3`}>
       <div className="flex items-center">
-        <div className="relative w-[30px] h-[30px] md:w-[40px] md:h-[40px] ml-2 mb-2 rounded-full">
-          <img src={profile?.id === friend.sender.id ? friend.receiver.image : friend.sender.image } className="w-[40px] h-[40px] rounded-full " alt="default pic" />
+        <div className="relative w-[35px] h-[35px] md:w-[40px] md:h-[40px] ml-2 md:mb-2 rounded-full">
+          <img src={profile?.id === friend.sender.id ? friend.receiver.image : friend.sender.image } className="md:w-[40px] md:h-[40px] h-[35px] w-[35px] rounded-full " alt="default pic" />
           <div
-            className={`absolute left-5 top-10  -translate-x-1/2 -translate-y-1/2 text-[8px] h-[8px] w-[8px] rounded-full ${status === 'ONLINE' ? 'bg-custom-green' : status === 'INGAME' ? 'bg-orange-400' : 'bg-gray-400'}`}> 
+            className={`absolute left-5 md:top-10 top-8 -translate-x-1/2 -translate-y-1/2 text-[8px] h-[8px] w-[8px] rounded-full ${status === 'ONLINE' ? 'bg-custom-green' : status === 'INGAME' ? 'bg-orange-400' : 'bg-gray-400'}`}> 
             </div>
         </div>
         <div className="text-gray-200 text-[16px] font-thin pl-1">{profile?.id === friend.sender.id ? friend.receiver.username : friend.sender.username}</div>

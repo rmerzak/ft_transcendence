@@ -42,6 +42,10 @@ const Channels = () => {
   const [isPrompetVisible, setIsPrompetVisible] = useState<boolean>(false);
   const [invalue, setinValue] = useState<string>("");
   const [selectedChannel, setSelectedChannel] = useState<ChatRoom | null>(null);
+  // const [openChannel, setOpenChannel] = useState<ChatRoom | null>(null);
+  // const [isPrompetVisible, setIsPrompetVisible] = useState<boolean>(false);
+  // const [invalue, setinValue] = useState<string>("");
+  // const [selectedChannel, setSelectedChannel] = useState<ChatRoom | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const suggestedRef = useRef<HTMLDivElement | null>(null);
   const [search, setSearch] = useState<string>('');
@@ -66,15 +70,20 @@ const Channels = () => {
   };
   
 
+  // const handleClick = (ChatRoom: ChatRoom) => {
+  //   // console.log("User entered:");
+  //   setOpen(true);
+  //   setOpenChannel(ChatRoom);
+  // };
   function HandleOpen() {
     setOpen(!open);
   }
 
-  const handleKeyDown = (e: KeyboardEvent) => {
-    if (e.key === "Enter") {
-      handleInput();
-    }
-  };
+  // const handleKeyDown = (e: KeyboardEvent) => {
+  //   if (e.key === "Enter") {
+  //     handleInput();
+  //   }
+  // };
 
   const handleInput = () => {
     console.log("User entered:", search);
@@ -83,6 +92,13 @@ const Channels = () => {
     setSelectedChannel(null);
     setSearch('');
   };
+  // const handleInput = () => {
+  //   console.log("User entered:", invalue);
+  //   setIsPrompetVisible(false);
+  //   chatSocket?.emit("join-channel", invalue);
+  //   setSelectedChannel(null);
+  //   setinValue("");
+  // };
 
   function handleNewChannel() {
     setNewChannel(!newChannel);
@@ -177,7 +193,8 @@ const Channels = () => {
     }
     if (search) {
       console.log("search", search);
-      debouncedSearchBackend(search);
+      searchProfile(search);
+      //debouncedSearchBackend(search);
     }
     return () => {
       chatSocket?.off("ownedRoom");
@@ -200,12 +217,12 @@ const Channels = () => {
             className="bg-gray-300 text-black border-none  rounded-l-xl focus:ring-0 h-10 w-full  focus:outline-none"
             placeholder="channel name"
             onAuxClickCapture={() => { setOpen(false), setSearched(null), setSearch('') }} onBlur={handleBlur} onMouseDown={() => { setOpen(true); }}
-            ref={(input) => { inputRef.current = input; }} onChange={(e) => { setSearch(e.target.value); }}
+            ref={(input) => { inputRef.current = input; }}
+            onChange={(e) => { setSearch(e.target.value); setOpen(true); }}
             //value={search}
           />
-          <div className="pr-1 flex items-center justify-center bg-gray-300 text-black rounded-r-xl  md:w-1/7 focus:outline-none ">
-            <button onClick={handleDisplayChannels}>
-            <Search size={24} strokeWidth={2.5}/> </button>
+          <div onClick={() => console.log("search",search)} className="pr-1 flex items-center justify-center bg-gray-300 text-black rounded-r-xl  md:w-1/7 focus:outline-none ">
+            <Search size={24} strokeWidth={2.5} />
           </div>
         </div>
         {displayChannel && searched.length > 0  && (<div ref={suggestedRef} className="border right-1/5 z-10 top-[42px] border-cyan-900 absolute bg-search rounded-b-lg overflow-auto h-[180px]">
@@ -230,19 +247,12 @@ const Channels = () => {
             chatRoomsJoined.map((channel, index) => (
               <div key={index} className="flex w-full  bg-[#811B77]/50  hover:bg-[#811B77]/100 rounded-xl h-[15%] mb-[9px]">
 
-                < button onClick={() => {
+                <div onClick={() => {
                   router.push(`/dashboard/chat/room/${channel.id}`);
                 }}
                   className=" flex items-center w-full text-xs md:text-base p-3 my-[6px] md:my-[10px] text-white hover:bg-[#811B77]/100"
                 >
                   <p>#{channel.name}</p>
-                </button>
-                <div className="flex items-center">
-                  <IoIosExit
-                    size={28}
-                    strokeWidth={2.5}
-                    className="pr-1 text-white md:h-[70%] h-[78%]   md:w-1/7 focus:outline-none  hover:bg-[#811B77]/100  "
-                  />
                 </div>
               </div>
             ))

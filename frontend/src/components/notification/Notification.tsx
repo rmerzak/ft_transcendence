@@ -45,16 +45,7 @@ const Notification = () => {
             }
         });
 
-        socket?.on('updateNotification', (data: any) => {
-            if (data?.notification) {
-                postReadNotification(data?.notification.id).then((res) => {
-                    if(res.data.vue === true)
-                        setNotification((prevNotifications: Notification[]) =>
-                            prevNotifications.filter((notification: Notification) => notification !== data?.notification)
-                        );
-                }).catch((err) => { console.log(err)});  
-            }
-        });
+        
 
         return () => {
             socket?.off('connect');

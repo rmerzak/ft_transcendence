@@ -37,8 +37,8 @@ const Friends = () => {
   
     socket?.on('AcceptRequest', handleFriendAccept);
     socket?.on('friendAcceptRequest', handleFriendAccept);
-    socket?.on('friendRequest', handleFriendRequest);
     socket?.on('removeFriend', handleRemoveFriend);
+    socket?.on('friendRequest', handleFriendRequest);
     socket?.on('blockFriend', handleRemoveFriend);
     socket?.on('unblockFriend', handleRemoveFriend);
   
@@ -47,12 +47,15 @@ const Friends = () => {
       socket?.off('AcceptRequest', handleFriendAccept);
       socket?.off('friendRequest', handleFriendRequest);
       socket?.off('removeFriend', handleRemoveFriend);
+      socket?.off('blockFriend', handleRemoveFriend);
+      socket?.off('unblockFriend', handleRemoveFriend);
+      socket?.off('friendAcceptRequest', handleFriendAccept);
     };
   }, [profile, socket]);
   
   return (
     <AuthWrapper>
-      <div className="bg-profile py-4 px-2 mx-4 ">
+      <div className="h-[95%] md:h-full bg-profile py-4 px-2 mx-4 overflow-auto">
         <h1 className="text-white font-bold text-3xl text-center mb-4">Friends</h1>
         <div className="flex md:flex-row flex-col">
           <ListOfFriends friends={friends} />

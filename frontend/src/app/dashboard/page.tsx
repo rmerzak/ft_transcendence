@@ -73,11 +73,11 @@ const Dashboard = () => {
   return (
     <AuthWrapper>
       { openAl && <PlayPopup openAl={() => setOpenAl(!openAl)} />}
-    <div className="bg-profile h-screen m-4 py-4 pl-4 md:pr-0 pr-2 backdrop-blur-md">
+    <div className="bg-profile md:h-full h-[95%] overflow-auto m-4 p-4 backdrop-blur-md">
       <Loading isLoading={loading} />
      <h1 className="text-white font-bold text-3xl text-center mt-6 mb-8">LeaderBoard</h1>
-     <div className='flex flex-row'>
-     <div className='w-[70%]'>
+     <div className='flex max-lg:flex-col-reverse max-lg:items-center max-lg:gap-4'>
+     <div className='w-full'>
         {leaderboardData?.length > 0 && <div className=" w-[99%] mb-3 p-2 text-white font-bold md:text-[15px] text-[10px]  flex justify-between  bg-[#FFFFFF]/30 ml-1 rounded-xl">
           <h1 className=''>Rank</h1>
           <h1>Player</h1>
@@ -86,7 +86,7 @@ const Dashboard = () => {
           <h1>Score</h1>
           <h1>Profile</h1>
         </div>}
-        <div className='h-[720px] overflow-auto w-full'>
+        <div className='max-h-[720px] overflow-auto w-full'>
         {leaderboardData?.length > 0 ? leaderboardData?.map((entry, index) => (
           <LeaderboardEntry
             key={index}
@@ -109,13 +109,14 @@ const Dashboard = () => {
         }
         </div>
         </div>
-        <RankEntre
-          rank={rank}
-          avatarSrcWinner={leaderboardData?.length > 0 ? leaderboardData[0]?.image : '/avatar.jpeg'}
-          avatarSrcSecond={leaderboardData?.length > 1 ? leaderboardData[1]?.image : '/avatar.jpeg'}
-          avatarSrcThird={leaderboardData?.length > 2 ? leaderboardData[2]?.image : '/avatar.jpeg'}
-          bestRank={1}
-        />
+          <RankEntre
+            className='w-full lg:w-[50%]'
+            rank={rank}
+            avatarSrcWinner={leaderboardData?.length > 0 ? leaderboardData[0]?.image : '/avatar.jpeg'}
+            avatarSrcSecond={leaderboardData?.length > 1 ? leaderboardData[1]?.image : '/avatar.jpeg'}
+            avatarSrcThird={leaderboardData?.length > 2 ? leaderboardData[2]?.image : '/avatar.jpeg'}
+            bestRank={1}
+          />
      </div>
     </div>
     </AuthWrapper>

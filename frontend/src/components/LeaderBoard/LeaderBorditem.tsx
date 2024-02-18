@@ -13,11 +13,11 @@ const LeaderboardEntry: React.FC<{
 }> = ({ rank, avatarSrc, username, matchesPlayed, wins, score, profile }) => {
   const router = useRouter();
   return (
-    <div className='w-full bg-[#FFFFFF]/10 my-2 rounded-xl py-1  px-2 flex justify-between'>
+    <div className='w-full bg-[#FFFFFF]/10 my-2 rounded-xl py-1  px-2 flex justify-between border-b'>
       <div className='flex items-center'>
         <h1 className='text-white font-bold text-[26px]'> #{rank}</h1>
       </div>
-      <div className='flex '>
+      <div className='flex'>
         <div className='flex flex-col items-center'>
         <div className='relative'>
             <img src={avatarSrc} alt="avatar" className="md:w-[50px] md:h-[50px] w-[30px] h-[32px] rounded-full"/>

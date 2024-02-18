@@ -177,7 +177,7 @@ export class GatewayGateway
         this.server.to('1_public').emit('update-room_channel', room);
         this.server.to('1_public').emit('update-room_msgRm', room);
       }
-      
+
     } catch (error) {
       _client.emit('error', error.message);
     }
@@ -306,10 +306,15 @@ export class GatewayGateway
             mutedDate: null,
             updatedAt: roomMem.updatedAt,
           }
-          const updatedRoomMem = await this.roomService.updatechatRoomMember(_client['user'].id, tmp);
-          if (updatedRoomMem) {
-            this.server.to(roomMem.chatRoomId.toString()).emit('update_chat_room_member_roomUsers', updatedRoomMem);
-            this.server.to(payload.roomId.toString()).emit('mute_apdate_sendMsgInput', updatedRoomMem);
+          try {
+            const updatedRoomMem = await this.roomService.updatechatRoomMember(_client['user'].id, tmp);
+            if (updatedRoomMem) {
+              this.server.to(roomMem.chatRoomId.toString()).emit('update_chat_room_member_roomUsers', updatedRoomMem);
+              this.server.to(payload.roomId.toString()).emit('mute_apdate_sendMsgInput', updatedRoomMem);
+            }
+          } catch (error) {
+            // _client.emit('error', error.message);
+            return;
           }
         }, Number(payload.duration) * 1000);
       }
@@ -505,7 +510,7 @@ export class GatewayGateway
         const roomTmp = await this.roomService.getChatRoomById(payload.id);
         if (!roomTmp) throw new Error('Room not found');
         const msg = await this.chatService.addMessage(msgData, roomTmp.owner);
-        if (room.visibility === RoomVisibility.PRIVATE) { 
+        if (room.visibility === RoomVisibility.PRIVATE) {
           await this.roomService.deleteRequestToJoinChatRoom(_client['user'].id, payload.id);
         }
         this.server.to(room.id.toString()).emit('receive-message', { ...msg, userId: _client['user'].id });
@@ -520,15 +525,15 @@ export class GatewayGateway
   @SubscribeMessage('request-join-room')
   async handleRequestJoinRoom(_client: Socket, payload: ChatRoom) {
     try {
-     const request = await this.roomService.requestJoinRoom(_client, payload.name);
-    //  console.log("request-join-room ", request);
-     this.roomService.connectedClients.forEach((sockets, userId) => {
+      const request = await this.roomService.requestJoinRoom(_client, payload.name);
+      //  console.log("request-join-room ", request);
+      this.roomService.connectedClients.forEach((sockets, userId) => {
         if (userId === payload.owner) {
           sockets.forEach(socket => {
             socket.emit('request-join-room', request);
           });
         }
-     });
+      });
     } catch (error) {
       _client.emit('error', error.message);
     }
@@ -537,8 +542,7 @@ export class GatewayGateway
   async handleAcceptJoinRoom(_client: Socket, payload: { roomId: number, userId: number }) {
     try {
       const request = await this.roomService.acceptJoinRoom(_client, payload);
-      if (request)
-      {
+      if (request) {
         const user = await this.prisma.user.findUnique({ where: { id: payload.userId } });
         const msgData = {
           chatRoomId: payload.roomId,
@@ -552,7 +556,7 @@ export class GatewayGateway
             socket.emit('accept-join-room', request);
           });
         });
-        this.server.to('1_public').emit('join-room-socket', { userId: request.userId, chatRoomId: request.chatRoomId});
+        this.server.to('1_public').emit('join-room-socket', { userId: request.userId, chatRoomId: request.chatRoomId });
         this.server.to(payload.roomId.toString()).emit('receive-message', msg);
       }
     } catch (error) {
@@ -566,7 +570,7 @@ export class GatewayGateway
       const request = await this.roomService.rejectJoinRoom(_client, payload);
       const room = await this.prisma.chatRoom.findUnique({ where: { id: payload.roomId } });
       this.roomService.connectedClients.forEach((sockets, userId) => {
-        if(userId === room.owner) {
+        if (userId === room.owner) {
           sockets.forEach(socket => {
             socket.emit('reject-join-room', request);
           });
@@ -577,23 +581,23 @@ export class GatewayGateway
     }
   }
   handleDisconnect(_client: Socket) {
-    console.log('disconnected chat id: ' + _client.id); 
+    console.log('disconnected chat id: ' + _client.id);
   }
 }
 
-function shalowEqual(roomTmp: ChatRoom, payload: ChatRoom): boolean{
+function shalowEqual(roomTmp: ChatRoom, payload: ChatRoom): boolean {
   payload.createdAt = new Date(payload.createdAt);
   payload.updatedAt = new Date(payload.updatedAt);
   if (Object.keys(roomTmp).length !== Object.keys(payload).length) return false;
   for (const key in roomTmp) {
-    if (key === 'createdAt' || key === 'updatedAt'){
+    if (key === 'createdAt' || key === 'updatedAt') {
       if (roomTmp[key].toString() !== payload[key].toString())
         return false;
       continue;
     };
-    if (roomTmp[key] !== payload[key]){
+    if (roomTmp[key] !== payload[key]) {
       return false;
-    } 
+    }
   }
   return true;
 }
