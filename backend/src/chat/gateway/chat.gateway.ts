@@ -518,6 +518,7 @@ export class GatewayGateway
         this.server.to(payload.id.toString()).emit('update-room_msgRm', room);
       }
     } catch (error) {
+      console.log("leave-room ", error);
       _client.emit('error', error.message);
     }
   }

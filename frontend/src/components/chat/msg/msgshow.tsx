@@ -58,19 +58,24 @@ const MsgShow: React.FC<MsgShowProps> = ({ messages, chatId }) => {
         if (data)
           setState(prevState => ({ ...prevState, isblock: data.isblock, blockByMe: data.blockByMe }));
       });
+
       socket.on('unblockFriendChat', (data: { isblock: boolean, blockByMe: number }) => {
         if (data)
           setState(prevState => ({ ...prevState, isblock: data.isblock, blockByMe: data.blockByMe }));
       });
+
       socket?.on('AcceptRequest', () => {
         getFriends();
       });
       socket?.on('friendAcceptRequest', () => {
         getFriends();
       });
+
       socket?.on('removeFriend', () => {
+        console.log('removeFriend in chat');
         getFriends();
       });
+
     }
     return () => {
       if (socket) {

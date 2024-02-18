@@ -132,25 +132,12 @@ export class ChatController {
   @Post('user/:id')
   async createConversationRoom(@Body() chatRoomData: ChatRoom, @Req() req: Request): Promise<ChatRoom> {
     const user = req.user as User;
-    // console.log(user); 
     const targetUserId = Number(req.params.id);
-    if (isNaN(targetUserId) || !Number.isInteger(targetUserId) || targetUserId <= 0) {
-      throw new HttpException(
-        {
-          statusCode: HttpStatus.BAD_REQUEST,
-          message: 'Invalid target user ID',
-        },
-        HttpStatus.BAD_REQUEST,
-      );
+    if (isNaN(targetUserId) || targetUserId <= 0) {
+      return null;
     }
     if (!chatRoomData.name || typeof chatRoomData.name !== 'string') {
-      throw new HttpException(
-        {
-          statusCode: HttpStatus.BAD_REQUEST,
-          message: 'Invalid chat room data',
-        },
-        HttpStatus.BAD_REQUEST,
-      );
+      return null;
     }
 
     try {
@@ -194,13 +181,7 @@ export class ChatController {
 
       return newChatRoom;
     } catch (error) {
-      throw new HttpException(
-        {
-          statusCode: HttpStatus.BAD_REQUEST,
-          message: error.message || 'Error creating conversation room',
-        },
-        HttpStatus.BAD_REQUEST,
-      );
+      return null;
     }
   }
 
@@ -301,7 +282,7 @@ export class ChatController {
   async getChatRoomMessages(@Param('id') id: number, @Req() req: Request, @Query('from') from: string): Promise<Message[] | string> {
     const user = req.user as User;
     const Id = Number(id);
-    if (isNaN(Id) || !Number.isInteger(Id) || Id <= 0) {
+    if (isNaN(Id) || Id <= 0) {
       return 'Error getting messages';
     }
     try {
@@ -430,7 +411,7 @@ export class ChatController {
     }
   }
   @Get('room/membership/:id')
-  async getChatRoomMembershipStatus(@Req() req: Request,@Param('id') id:string): Promise<ChatRoomMember> {
+  async getChatRoomMembershipStatus(@Req() req: Request, @Param('id') id: string): Promise<ChatRoomMember> {
     try {
       const user = req.user as User;
       checkIfNumber(id, 'Chat room id must be a number');

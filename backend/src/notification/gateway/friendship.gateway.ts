@@ -21,6 +21,7 @@ export class FriendshipGateway {
 
   handleConnection(socket: Socket) {
     this.friendship.handleConnection(socket);
+    //socket.join('1_friendship');
   }
 
   handleDisconnect(socket: Socket) {
@@ -48,11 +49,11 @@ export class FriendshipGateway {
       const emitClient = this.friendship.getSocketsByUser(Number(payload));
       const RequestAccepted = await this.friendship.AcceptFriendRequest(socket, Number(payload));
       const notification = await this.friendship.CreateNotification(socket, Number(payload), 'friendAcceptRequest', 'your friend request has been accepted', RequestAccepted, 'FRIENDSHIP');
-      emitClient.forEach((socket) => {
+      emitClient.forEach((socket: Socket) => {
         socket.emit('friendAcceptRequest', { notification: notification, friendship: RequestAccepted, status: true, error: null });
       });
-      //socket.emit('AcceptRequest', 'notification');
       socket.emit('AcceptRequest', { notification: null, friendship: null, status: true, error: null });
+      //this.server.to('1_friendship').emit('AcceptRequest', { notification: notification, friendship: RequestAccepted, status: true, error: null });
     } catch (error) {
       socket.emit('RequestError', { notification: null, friendship: null, status: false, error: error.message });
     }
@@ -75,6 +76,7 @@ export class FriendshipGateway {
         socket.emit('removeFriend', { notification: null, friendship: null, status: true, error: null });
       });
       socket.emit('removeFriend', { notification: null, friendship: null, status: true, error: null });
+      //this.server.to('1_friendship').emit('removeFriend', { notification: null, friendship: friendshipRemoved, status: true, error: null });
     } catch (error) {
       socket.emit('RequestError', { notification: null, friendship: null, status: false, error: error.message });
     }
