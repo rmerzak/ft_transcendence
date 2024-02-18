@@ -10,6 +10,7 @@ import axios from "axios";
 import { ContextGlobal } from "@/context/contex";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import React from "react";
 const PreAuthForm = ({ exit }: { exit: boolean }) => {
   const router = useRouter();
   const [user, setUser] = useState<any>("");

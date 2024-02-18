@@ -20,7 +20,7 @@ const Sendchatmsg: React.FC<SendchatmsgProps> = ({ chatRoomId, isblocked, friend
     const { profile, chatSocket } = useContext(ContextGlobal);
     const [message, setMessage] = useState<string>('');
     const [showEmojiPicker, setShowEmojiPicker] = useState<boolean>(false);
-    
+
     const handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === 'Enter') {
             e.preventDefault();
@@ -29,7 +29,7 @@ const Sendchatmsg: React.FC<SendchatmsgProps> = ({ chatRoomId, isblocked, friend
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        let newValue = e.target.value.replace(/(.{10})/g, "$1\n");
+        let newValue = e.target.value.replace(/(.{40}|\p{Emoji})/gu, "$1\n");
         setMessage(newValue);
     };
 
@@ -39,7 +39,7 @@ const Sendchatmsg: React.FC<SendchatmsgProps> = ({ chatRoomId, isblocked, friend
     };
 
     function addMsg() {
-        chatSocket?.emit('join-room', { roomId: chatRoomId});
+        chatSocket?.emit('join-room', { roomId: chatRoomId });
         if (!message || message.length === 0) return;
         const messageData: Messages = {
             type: 'NORMAL',
@@ -70,7 +70,6 @@ const Sendchatmsg: React.FC<SendchatmsgProps> = ({ chatRoomId, isblocked, friend
         chatSocket?.emit('send-message', data);
         setMessage('');
     }
-
     return (
         <>
             {/* end message here */}
@@ -78,8 +77,8 @@ const Sendchatmsg: React.FC<SendchatmsgProps> = ({ chatRoomId, isblocked, friend
                 <hr className="w-1/6" />
             </div>
             {/* input for send derict messages pointer-events-none opacity-50 */}
-            { 
-            // friendId &&
+            {
+                friendId !== undefined &&
                 !isblocked &&
                 <div className={` flex justify-center items-center space-x-2 my-3 `}>
                     <div className=" bg-gray-300 text-black flex justify-center items-center w-[60%] h-10 rounded-3xl font-light">

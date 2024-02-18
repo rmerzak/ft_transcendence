@@ -6,6 +6,7 @@ import Sendchatmsg from './sendchatmsg';
 import { Blocker, ChatRoomUsers, Messages } from '@/interfaces';
 import { ContextGlobal } from '@/context/contex';
 import { getChatRoomMembers } from '@/api/chat/chat.api';
+import { getFriendList } from '@/api/friendship/friendship.api';
 
 interface MsgShowProps {
   messages?: Messages[];
@@ -22,7 +23,7 @@ interface State {
 }
 
 const MsgShow: React.FC<MsgShowProps> = ({ messages, chatId }) => {
-  const { profile, friends, socket } = useContext(ContextGlobal);
+  const { profile, friends, socket, setFriends } = useContext(ContextGlobal);
   const [state, setState] = useState<State>({
     username: '',
     friendId: 0,
@@ -32,10 +33,20 @@ const MsgShow: React.FC<MsgShowProps> = ({ messages, chatId }) => {
     chatRoomMembers: [],
   });
 
+  function getFriends() {
+    getFriendList().then((res) => {
+      if (res?.data && res?.data?.length > 0) {
+        setFriends(res?.data);
+      }
+    })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
   useEffect(() => {
     if (chatId) {
       getChatRoomMembers(chatId).then((res) => {
-        if (res.data && Array.isArray(res.data) && res.data.length > 0)
+        if (res?.data && Array.isArray(res?.data) && res?.data?.length > 0)
           setState(prevState => ({ ...prevState, chatRoomMembers: res.data }));
       });
     }
@@ -51,11 +62,23 @@ const MsgShow: React.FC<MsgShowProps> = ({ messages, chatId }) => {
         if (data)
           setState(prevState => ({ ...prevState, isblock: data.isblock, blockByMe: data.blockByMe }));
       });
+      socket?.on('AcceptRequest', () => {
+        getFriends();
+      });
+      socket?.on('friendAcceptRequest', () => {
+        getFriends();
+      });
+      socket?.on('removeFriend', () => {
+        getFriends();
+      });
     }
     return () => {
       if (socket) {
         socket.off('blockFriendChat');
         socket.off('unblockFriendChat');
+        socket.off('AcceptRequest');
+        socket.off('friendAcceptRequest');
+        socket.off('removeFriend');
       }
     };
   }, [socket]);
@@ -65,7 +88,7 @@ const MsgShow: React.FC<MsgShowProps> = ({ messages, chatId }) => {
       const targetMembers = state.chatRoomMembers.find((member) => member.user.id !== profile?.id);
       if (targetMembers) {
         const friendship = friends?.find((friend) => friend.receiver.id === targetMembers.user.id || friend.sender.id === targetMembers.user.id);
-        if (friendship === undefined) 
+        if (friendship === undefined || friendship.status === 'PENDING')
           setState(prevState => ({ ...prevState, blockByMe: undefined }));
         else if (friendship && friendship.block) {
           if (friendship.blockBy === Blocker.SENDER && friendship.sender.id === profile?.id) {
@@ -82,8 +105,8 @@ const MsgShow: React.FC<MsgShowProps> = ({ messages, chatId }) => {
           ...prevState,
           username: targetMembers.user.username,
           status: targetMembers.user.status,
-          // friendId: friendship === undefined ? undefined : targetMembers.user.id,
-          friendId: targetMembers.user.id,
+          friendId: friendship === undefined || friendship.status === 'PENDING' ? undefined : targetMembers.user.id,
+          // friendId: targetMembers.user.id,
         }));
       }
     }
@@ -92,11 +115,11 @@ const MsgShow: React.FC<MsgShowProps> = ({ messages, chatId }) => {
   return (
     <>
       <div className="bg-[#5D5959]/40 md:w-[66%] w-full mx-auto  text-white md:h-[1030px] h-[500px] md:rounded-3xl p-4 md:block md:mt-0 my-2">
-          <Chatheader username={state.username} status={state.status} userId={state.friendId} friendBlock={state.isblock} blockByMe={state.blockByMe} />
-          <div className='mt-4 md:h-[88%] h-[80%]'>
-            <Chat messages={messages} />
-          </div>
-          <Sendchatmsg chatRoomId={chatId} isblocked={state.isblock} friendId={state.friendId} />
+        <Chatheader username={state.username} status={state.status} userId={state.friendId} friendBlock={state.isblock} blockByMe={state.blockByMe} />
+        <div className='mt-4 md:h-[88%] h-[80%]'>
+          <Chat messages={messages} />
+        </div>
+        <Sendchatmsg chatRoomId={chatId} isblocked={state.isblock} friendId={state.friendId} />
       </div>
     </>
   )

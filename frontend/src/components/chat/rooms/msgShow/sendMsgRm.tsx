@@ -20,7 +20,7 @@ const SendMsgRm: React.FC<SendchatmsgProps> = ({ chatRoomId }) => {
     const [chatRoomMember, setChatRoomMember] = useState<ChatRoomMember>();
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        let newValue = e.target.value.replace(/(.{10})/g, "$1\n");
+        let newValue = e.target.value.replace(/(.{40}|\p{Emoji})/gu, "$1\n");
         setMessage(newValue);
     };
 
