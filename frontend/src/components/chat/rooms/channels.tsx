@@ -194,7 +194,7 @@ const Channels = () => {
 
   return (
     <>
-      <div className="relative flex flex-col items-center justify-center my-3 mx-auto w-[90%] border">
+      <div className="relative flex flex-col items-center justify-center my-3 mx-auto w-[90%]">
         <div className="flex justify-center w-full">
           <input
             id="channelName"
@@ -219,12 +219,12 @@ const Channels = () => {
         </div>)}
       </div>
 
-      <div className="flex flex-col rounded-md md:w-[90%] w-[90%] mx-auto h-[50%]">
-        <h1 className="mt-3 text-white md:text-xl text-center">
+      <div className="flex flex-col rounded-md w-[90%] mx-auto h-[50%]">
+        <h1 className=" text-white text-xl text-center">
           Joined Channels
         </h1>
         <div className="flex justify-center mt-1">
-          <div className="mb-3 border-b border-white w-6 md:w-10"></div>
+          <div className="mb-3 border-b border-white w-10"></div>
         </div>
 
         <div className="h-[350px] overflow-auto">
@@ -246,10 +246,10 @@ const Channels = () => {
           )}
         </div>
         <div className="flex justify-center mt-1">
-          <div className="mb-3 border-b border-white w-6 md:w-10"></div>
+          <div className="mb-3 border-b border-white w-12"></div>
         </div>
 
-        <div className="flex text-center justify-center mb-1 relative border">
+        <div className="flex text-center justify-center mb-1 relative ">
           <div className="group flex items-center justify-center">
             <button onClick={handleNewChannel}>
               <Plus size={24} strokeWidth={2} className="text-white font-inter" />
