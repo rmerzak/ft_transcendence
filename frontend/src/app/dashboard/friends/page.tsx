@@ -17,6 +17,7 @@ const Friends = () => {
     }).catch((err) => {  });
   }
   useEffect(() => {
+    console.log("friends inside ");
     getFriends(profile?.id);
   
     const handleFriendAccept = (data: any) => {
