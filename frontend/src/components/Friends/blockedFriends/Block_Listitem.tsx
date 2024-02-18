@@ -17,7 +17,7 @@ const Block_Listitem = ({ friend }: { friend: any }) => {
                     <img src={profile?.id === friend.sender.id ? friend.receiver.image : friend.sender.image} alt="default pic" className="rounded-full" />
                 </div>
                 <div className="text-gray-200 text-[15px] font-thin">{profile?.id === friend.sender.id ? friend.receiver.username : friend.sender.username}</div>
-                <button className="ml-auto md:mr-0 mr-2 border" onClick={handleUblock}>
+                <button className="ml-auto md:mr-0 mr-2" onClick={handleUblock}>
                     <UnlockKeyhole size={18} strokeWidth={2.5} color="#FFFFFF" />
                 </button>
             </div> : null

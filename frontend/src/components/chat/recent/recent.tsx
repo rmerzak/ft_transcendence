@@ -89,18 +89,18 @@ const Recent: React.FC<RecentProps> = ({ rooms }) => {
         </div>
       </div>
 
-      <div className="flex items-center flex-col  mx-auto w-[90%] md:scroll-y-auto mb-1 text-white rounded-xl overflow-auto ">
+      <div className="flex items-center justify-center flex-col  mx-auto w-[92%] md:scroll-y-auto text-white rounded-md overflow-auto">
         {recents.map((recent) => (
           isNumber(recent.chatRoomId) &&
           <div
             key={recent.chatRoomId}
-            className="flex border-b-black border-b w-[96%] items-center my-[5px] md:my-[8px] rounded-md font-inter bg-[#5D5959]/50 hover:bg-[#5D5959]/100"
+            className="flex border-b-black border-b w-full items-center my-[5px] md:my-[8px] rounded-md font-inter bg-[#5D5959]/50 hover:bg-[#5D5959]/100"
           >
             <div
               onClick={() => {
                 router.push(recent.link.toString());
               }}
-              className="flex items-center  px-2 pt-1 hover:cursor-pointer w-[95%] h-full"
+              className="flex items-center px-2 pt-1 hover:cursor-pointer w-[99%] h-full"
             >
               <div className="w-full">
                 <div className="flex mb-1">

@@ -50,9 +50,9 @@ const FriendItem = ({ friend }: { friend: Friendship }) => {
       try {
         const parsedData = JSON.parse(event.data);
         parsedData.forEach((player: { playerId: number, isPlaying: boolean }) => {
-          if (player.isPlaying && player.playerId === profile.id) {
+          if (player.isPlaying && player.playerId === (profile?.id === friend.sender.id ? friend.receiver.id : friend.sender.id)) {
             setIsPlaying(true);
-          } else if (!player.isPlaying && player.playerId === profile.id) {
+          } else if (!player.isPlaying && player.playerId === (profile?.id === friend.sender.id ? friend.receiver.id : friend.sender.id)) {
             setIsPlaying(false);
           }
         });

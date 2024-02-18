@@ -41,8 +41,9 @@ const UserItem = ({ friend }: { friend: Friendship }) => {
           alt={profile?.id === friend.sender.id ? friend.receiver.username : friend.sender.username}
           width={60}
           height={60}
+          draggable={false}
           priority={true}
-          className="h-[45px] w-[45px] md:h-[50px] md:w-[50px] rounded-full mx-auto hover:cursor-pointer"
+          className="h-[45px] w-[45px] md:h-[50px] md:w-[50px] rounded-full mx-auto hover:cursor-pointer "
         />
         <span className={`w-2 h-2 md:w-3 md:h-3 top-9  left-7 md:top-10 rounded-full absolute ${status === 'ONLINE' ? 'bg-custom-green' : status === 'INGAME' ? 'bg-orange-400' : 'bg-gray-400'}`}></span>
         <p className={`text-white text-center text-xs md:text-sm`}>

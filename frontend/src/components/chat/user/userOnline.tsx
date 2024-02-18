@@ -1,9 +1,8 @@
 "use client";
 import { useContext, useEffect } from "react";
-import dynamic from 'next/dynamic';
-const SwiperFC = dynamic(() => import('./swiper'));
 import { ContextGlobal } from "@/context/contex";
 import { getFriendList } from "@/api/friendship/friendship.api";
+import ShowUsers from "./ShowUsers";
 
 const UserOnline = () => {
   const { friends, setFriends, profile, socket } = useContext(ContextGlobal);
@@ -61,7 +60,7 @@ const UserOnline = () => {
           <div className="flex justify-center mt-1">
             <div className="mb-3 border-b border-white w-6 md:w-10"></div>
           </div>
-        <SwiperFC friends={friends} />
+        <ShowUsers friends={friends}/>
       </div>
     </div>
   );

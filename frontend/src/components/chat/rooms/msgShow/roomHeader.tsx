@@ -79,7 +79,7 @@ const RoomHeader: React.FC<roomHeaderProps> = ({ chatRoom}) => {
                     </div>
                 </div>
                 <div className="flex justify-center">
-                    <hr className="w-1/5" />
+                    <hr className="w-1/4"/>
                 </div>
             </div>
         </>
