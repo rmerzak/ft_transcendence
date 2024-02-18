@@ -1,10 +1,10 @@
 .mySwiper {
   width: 100% !important;
   border-radius: 99px !important;
+  height: 120px !important;
   display: flex;
   justify-content: flex-start; 
   align-items: center;
-  background-color: red !important;
 }
 
 .swiper-slide {

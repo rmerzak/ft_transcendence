@@ -19,7 +19,7 @@ const SwiperFC = ({ friends }: { friends: Friendship[] }) => {
       className="mySwiper"
     >
       {friends.length > 0 ? friends.map((user, index) => (
-        <SwiperSlide key={index} className="chatSwiperSlide">
+        <SwiperSlide key={index} className="chatSwiperSlide mx-1">
           <UserItem friend={user} />
         </SwiperSlide>
       )) : <div className="flex justify-center items-center"><h1 className="text-white text-2xl">You have no friends</h1></div>}
