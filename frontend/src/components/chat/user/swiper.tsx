@@ -13,7 +13,7 @@ const SwiperFC = ({ friends }: { friends: Friendship[] }) => {
   return (
     <Swiper
       slidesPerView={4}
-      spaceBetween={20}
+      spaceBetween={5}
       freeMode={true}
       modules={[FreeMode, Pagination]}
       className="mySwiper"
