@@ -56,7 +56,7 @@ const Chatheader: React.FC<ChatheaderProps> = ({ username, status, userId, frien
                 <div className="flex">
                     {status ?
                         <div className="w-full flex justify-center items-center space-x-2">
-                            <span className={`${friendBlock ? 'hidden' : '' || status === 'ONLINE' ? 'bg-custom-green' : status === 'IN_GAME' ? 'bg-orange-400' : 'bg-gray-400'} rounded-full h-3 w-3`}></span>
+                            <span className={`${friendBlock ? 'hidden' : '' || status === 'ONLINE' ? 'bg-custom-green' : status === 'INGAME' ? 'bg-orange-400' : 'bg-gray-400'} rounded-full h-3 w-3`}></span>
                             <h1 className="text-xl font-thin">{username}</h1>
                         </div> : <div className="w-full flex justify-center items-center space-x-2"></div>
                     }

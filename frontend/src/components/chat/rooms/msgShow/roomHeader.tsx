@@ -37,10 +37,8 @@ const RoomHeader: React.FC<roomHeaderProps> = ({ chatRoom}) => {
                 <div className="flex">
                     {
                         <div className="w-full flex justify-center items-center space-x-2">
-                            {/* <span className={`${status === 'ONLINE' ? 'bg-custom-green' : status === 'IN_GAME' ? 'bg-orange-400' : 'bg-gray-400'} rounded-full h-3 w-3`}></span> */}
                             <h1 className="text-xl font-thin">#{chatRoom?.name}</h1>
                         </div>
-                        // : <div className="w-full flex justify-center items-center space-x-2"></div>
                     }
                     <div className=" flex items-center">
                         <button onClick={handleUserListClick}>
