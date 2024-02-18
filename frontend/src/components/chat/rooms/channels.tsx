@@ -50,7 +50,7 @@ const Channels = () => {
     if (search && !/^[a-zA-Z0-9]+$/.test(search)) {
       return;
     }
-    const response = await axios.get(`http://localhost:3000/chat/room/search/${search}`, { withCredentials: true }).then((res) => { setSearched(res.data); console.log(res.data); });
+    const response = await axios.get(`${process.env.API_BASE_URL}/chat/room/search/${search}`, { withCredentials: true }).then((res) => { setSearched(res.data); console.log(res.data); });
     console.log("searched", searched);
   }
   const debouncedSearchBackend = useDebouncedCallback(searchProfile, 500);

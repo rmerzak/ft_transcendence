@@ -26,7 +26,7 @@ function Page() {
   useEffect(() => {
       const fetchProfile = async () => {
           try {
-              const response = await axios.get(`http://localhost:3000/users/profile/${username}`, { withCredentials: true });
+              const response = await axios.get(`${process.env.API_BASE_URL}/users/profile/${username}`, { withCredentials: true });
               if (response.data) {
                 setUser(response.data);
               }

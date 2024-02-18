@@ -6,12 +6,10 @@ import { themeAtom } from './atoms';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { ContextGlobal } from '@/context/contex';
 import { toast } from 'react-toastify';
-import dynamic from 'next/dynamic';
 import { RiPingPongLine } from 'react-icons/ri';
 import { FaRobot } from 'react-icons/fa';
 import { isValidAccessToken } from '@/api/user/user';
-
-const GameSwiper = dynamic(() => import('./GameSwiper'), { ssr: false });
+import GameSwiper from './GameSwiper';
 
 function Play()
 {

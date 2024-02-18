@@ -16,7 +16,7 @@ const Layout = ({ children }: any) => {
   const router = useRouter();
 
   useEffect(() => {
-    const sock = io("http://localhost:3000/chat", {
+    const sock = io(`${process.env.API_BASE_URL}/chat`, {
       autoConnect: false,
       withCredentials: true,
     });

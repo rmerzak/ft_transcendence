@@ -16,7 +16,7 @@ import { RoomService } from '../services/room/room.service';
 import { log } from 'console';
 
 @WebSocketGateway({
-  cors: { origin: 'http://localhost:8080', credentials: true },
+  cors: { origin: process.env.CLIENT_URL, credentials: true },
   namespace: '/chat'
 })
 export class GatewayGateway

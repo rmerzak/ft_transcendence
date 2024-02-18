@@ -15,7 +15,7 @@ function DisableTwoFa() {
     if(code.length <= 0)
       toast.warn("Please enter a code!");
     else {
-      const response = await axios.get(`http://localhost:3000/auth/2fa/disable/` + code, {
+      const response = await axios.get(`${process.env.API_BASE_URL}/auth/2fa/disable/` + code, {
         withCredentials: true,
       }).then((res) => {
   

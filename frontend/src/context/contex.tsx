@@ -7,10 +7,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import { getUnreadNotification } from '@/api/notifications/notifications.api';
 import { getFriendList } from '@/api/friendship/friendship.api';
 import { getUserInfo } from '@/api/user/user';
-import Profile from '@/app/dashboard/profile/page';
-import { get } from 'http';
-import { getChatRoomsJoined, getChatRoomsNotJoined } from '@/api/chat/chat.api';
-import ChallengeAlert from '@/components/game/ChallengeAlert';
 
 interface contextProps {
   profile: User | null;

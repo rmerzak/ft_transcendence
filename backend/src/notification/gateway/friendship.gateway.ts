@@ -6,7 +6,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { RoomService } from 'src/chat/services/room/room.service';
 /// dont forget to add the userin the socket using the methode socket.data = user
 
-@WebSocketGateway({ cors: { origin: 'http://localhost:8080', credentials: true, namespace: '/profile' } })
+@WebSocketGateway({ cors: { origin: process.env.CLIENT_URL, credentials: true, namespace: '/profile' } })
 export class FriendshipGateway {
   constructor(private readonly friendship: FriendshipService, private roomService: RoomService,
     private readonly prisma: PrismaService) { }

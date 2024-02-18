@@ -12,7 +12,7 @@ const Notification = () => {
     const { setSocket, notification ,setNotification}: any = useContext(ContextGlobal);
     const [open, setOpen] = useState<boolean>(false);
     useEffect(() => {
-        const socket = io("http://localhost:3000", {
+        const socket = io(`${process.env.API_BASE_URL}`, {
             autoConnect: false,
             withCredentials: true,
         });
