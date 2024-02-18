@@ -417,8 +417,8 @@ export class GameService {
           gameWins: 'desc',
         },
         {
-          id: 'desc'
-        }
+          id: 'desc',
+        },
       ],
     });
   
@@ -456,8 +456,8 @@ export class GameService {
           gameWins: 'desc',
         },
         {
-          id: 'desc'
-        }
+          id: 'desc',
+        },
       ],
     });
   
