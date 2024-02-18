@@ -20,8 +20,8 @@ const isNumber = (value: string | number | undefined): boolean => {
 };
 
 const handleLastMessage = (message: string): string => {
-  if (message.length > 20) 
-    return message.slice(0, 20) + "...";
+  if (message.length > 10) 
+    return message.slice(0, 10) + "...";
   return message;
 }
 
