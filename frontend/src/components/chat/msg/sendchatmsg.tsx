@@ -29,7 +29,8 @@ const Sendchatmsg: React.FC<SendchatmsgProps> = ({ chatRoomId, isblocked, friend
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        let newValue = e.target.value.replace(/(.{10})/g, "$1\n");
+        // let newValue = e.target.value.replace(/(.{40})/g, "$1\n");
+        let newValue = e.target.value.replace(/(.{40}|\p{Emoji})/gu, "$1\n");
         setMessage(newValue);
     };
 
