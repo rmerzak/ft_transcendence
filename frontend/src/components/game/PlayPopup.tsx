@@ -1,13 +1,24 @@
-import React from "react";
+import React, { useState } from "react";
 import GameSwiper from "./GameSwiper";
 import OutsideClickHandler from "react-outside-click-handler";
 import { useRouter } from "next/navigation";
+import { isValidAccessToken } from '@/api/user/user';
 
 
 function PlayPopup({ openAl }: { openAl: () => void}) {
     const router = useRouter();
+	const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 	const createRoom = async () => {
         try {
+			isValidAccessToken().then((res) => {
+                if (res) {
+                    setIsAuthenticated(true);
+                } else {
+                    router.push('/auth/login');
+                }
+            }).catch(() => {
+                router.push('/auth/login');
+            });
             const res = await fetch(`${process.env.API_BASE_URL}/api/rooms`, {
                 method: 'POST',
                 headers: {

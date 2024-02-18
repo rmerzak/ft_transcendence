@@ -66,7 +66,7 @@ const Game = () => {
                 <AuthWrapper>
             {
             theme !== -1 && check &&
-            <div className='w-[95%] flex flex-col items-center mx-auto text-center p-[1%] shadow-md rounded-3xl bg-[#311251]/80 '>
+            <div className='w-[95%] h-[95%] overflow-auto flex flex-col items-center mx-auto text-center p-[1%] shadow-md rounded-3xl bg-[#311251]/80 '>
 
                     <div className='text-3xl font-black text-white m-4'>
                     <h1>Game</h1>

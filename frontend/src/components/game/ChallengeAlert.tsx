@@ -1,10 +1,11 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import GameSwiper from "./GameSwiper";
 import OutsideClickHandler from "react-outside-click-handler";
 import { ContextGlobal } from "@/context/contex";
 import { useRouter } from "next/navigation";
 import { Mode, modeAtom } from "./atoms";
 import { useSetAtom } from "jotai";
+import { isValidAccessToken } from '@/api/user/user';
 
 const ChallengeAlert = ({
 	openAl,
@@ -16,8 +17,18 @@ const ChallengeAlert = ({
 	const router = useRouter();
 	const setMode = useSetAtom(modeAtom);
 	const { socket }: any = useContext(ContextGlobal);
+	const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 	const createChallengeRoom = async () => {
 		try {
+			isValidAccessToken().then((res) => {
+                if (res) {
+                    setIsAuthenticated(true);
+                } else {
+                    router.push('/auth/login');
+                }
+            }).catch(() => {
+                router.push('/auth/login');
+            });
 			setMode(Mode.challenge);
 			const res = await fetch(
 				`${process.env.API_BASE_URL}/api/rooms-challenge`,
