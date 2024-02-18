@@ -12,9 +12,11 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { UploadedFile } from "@nestjs/common";
 import { TwoFactorService } from "./two-factor/two-factor.service";
 import * as qrcode from "qrcode";
+import { UserStatus } from "@prisma/client";
+import { PrismaService } from "src/prisma/prisma.service";
 @Controller('auth')
 export class AuthController {
-    constructor(private authService: AuthService, private jwtService: JwtService, private config: ConfigService, private readonly twoFactorService: TwoFactorService) {
+    constructor(private authService: AuthService, private prisma: PrismaService ,private jwtService: JwtService, private config: ConfigService, private readonly twoFactorService: TwoFactorService) {
 
     }
     @UseGuards(LeetGuard)
@@ -68,6 +70,7 @@ export class AuthController {
     @Get('logout')
     async logout(@Req() req: Request, @Res() res: Response) {
         try {
+            await this.prisma.user.update({where:{id:req.user['id']}, data:{status:UserStatus.OFFLINE}});
             res.clearCookie('accesstoken', { httpOnly: true });
             res.clearCookie('userId', { httpOnly: true });
             res.status(200).json({ message: 'Logout successful' });
