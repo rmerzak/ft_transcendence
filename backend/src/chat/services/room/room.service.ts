@@ -140,8 +140,8 @@ export class RoomService {
     }
     // get chat room by by id
     async getChatRoomById(id: number): Promise<ChatRoom | null> {
-        if (!id) throw new Error('Chat room id not provided');
         try {
+            if (!id) throw new Error('Chat room id not provided');
             return await this.prisma.chatRoom.findUnique({
                 where: { id },
                 select: {
@@ -154,7 +154,6 @@ export class RoomService {
                 },
             }) as ChatRoom | null;
         } catch (error) {
-            console.error('Error getting chat room by id:', error.message);
             return null;
         }
     }
@@ -388,7 +387,7 @@ export class RoomService {
             where: { userId_chatRoomId: { userId: userToUpdate.id, chatRoomId: chatRoom.id } },
         });
         if (!chatRoomMember) throw new Error('User not in chat room');
-        if (chatRoomOwner.chatRoom.owner !== user.id && chatRoomMember.is_admin) throw new Error('you are not allowed to update admin');
+        // if (chatRoomOwner.chatRoom.owner !== user.id && chatRoomMember.is_admin) throw new Error('you are not allowed to update admin');
         return await this.prisma.chatRoomMember.update({
             where: { userId_chatRoomId: { userId: userToUpdate.id, chatRoomId: chatRoom.id } },
             data: {
