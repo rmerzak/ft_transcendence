@@ -9,7 +9,6 @@ export class FriendshipController {
     constructor(private friendship:FriendshipService) {}
     @Get()
     test() {
-        // console.log("i m here")
         return "hello";
     }
     @Get('status/:id')
@@ -23,7 +22,6 @@ export class FriendshipController {
     }
     @Get('friendlist')
     async getFriendList(@Req() req : Request) {
-        // console.log("i m here")
         try {
             const friendlist = await this.friendship.getFriendListByUserId(req.user['id']);
             return friendlist;

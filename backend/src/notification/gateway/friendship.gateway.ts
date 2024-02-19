@@ -14,9 +14,7 @@ export class FriendshipGateway {
   server: Server;
 
   afterInit(socket: Socket) {
-    console.log('init');
     socket.use(SocketAuthMiddleware() as any);
-    console.log("socket", socket.data)
   }
 
   handleConnection(socket: Socket) {
@@ -25,7 +23,7 @@ export class FriendshipGateway {
   }
 
   handleDisconnect(socket: Socket) {
-    // console.log('disconnected');
+
     this.friendship.handleDisconnect(socket);
   }
   @SubscribeMessage('friendRequest')
@@ -85,19 +83,19 @@ export class FriendshipGateway {
   @SubscribeMessage('blockFriend')
   async blockFriend(socket: Socket, payload: number) {
     try {
-      // console.log("blockFrienddd", socket['payload']['sub'])
+
       const blockByMe = socket['payload']['sub'];
       const emitClient = this.friendship.getSocketsByUser(Number(payload));
       const friendshipBlock = await this.friendship.BlockFriend(socket, Number(payload));
       if (friendshipBlock) {
-        // console.log("blockFriend", payload)
+
 
         emitClient.forEach((socket) => {
           socket.emit('blockFriend', { notification: friendshipBlock, friendship: null, status: true, error: null });
           socket.emit('blockFriendChat', { isblock: true, blockByMe: blockByMe });
           socket.emit('blockUserOnline', { isblock: true, blockByMe: blockByMe });
         });
-        // console.log("blockFriendd", blockByMe)
+
         socket.emit('blockFriend', { notification: friendshipBlock, friendship: null, status: true, error: null });
         socket.emit('blockFriendChat', { isblock: true, blockByMe: blockByMe });
         socket.emit('blockUserOnline', { isblock: true, blockByMe: blockByMe });
@@ -109,7 +107,7 @@ export class FriendshipGateway {
   @SubscribeMessage('unblockFriend')
   async unblockFriend(socket: Socket, payload: number) {
     try {
-      // console.log("unblockFriend", payload)
+
       const emitClient = this.friendship.getSocketsByUser(Number(payload));
       const friendshipUnblock = await this.friendship.UnBlockFriend(socket, Number(payload));
       emitClient.forEach((socket) => {

@@ -22,7 +22,6 @@ export class FriendshipService {
     
             this.connectedClients.get(userId).push(socket);
             // print socket id
-            console.log('connected notification id : ' + clientId);
         } catch(error) {
             throw new Error(error.message);
         }
@@ -50,7 +49,6 @@ export class FriendshipService {
     }
     async CreateNotification(socket: Socket, user: any, type: string, content: string, requestId: number, requestType: RequestType) {
         //type: 'friendRequest' | 'friendRequestAccepted' | 'friendRequestRejected' | 'friendRequestCanceled' | 'friendRequestDeleted' | 'friendRequestBlocked' | 'friendRequestUnblocked' | 'friendRequestUnfriended' | 'friendRequestUnblocked'
-        console.log(' i  m herre');
         const Receiver = await this.prisma.user.findUnique({ where: { id: user } });
         const Sender = await this.prisma.user.findUnique({ where: { id: socket['payload']['sub'] } });
         const notification = await this.prisma.notification.create({
@@ -67,7 +65,6 @@ export class FriendshipService {
                 createdAt: new Date(),
             } as any
         });
-        console.log('notification', notification);
         return notification;
     }
     async CreateFriendRequest(socket: Socket, userId: number) {
@@ -127,8 +124,7 @@ export class FriendshipService {
 
     async RemoveFriend(socket: Socket, userId: number) {
         const user = await this.prisma.user.findUnique({ where: { id: userId } });
-        console.log('user', user);
-        console.log('socket', socket['payload']['sub']);
+
         if (!user) throw new Error('user not found');
         const friendRequest = await this.prisma.friendship.findFirst({
             where: {
@@ -139,7 +135,7 @@ export class FriendshipService {
             }
         });
         if (!friendRequest) throw new Error('friend request not found');
-        console.log('i m herre 2');
+
         const friendRequestRemoved = await this.prisma.friendship.delete({
             where: { id: friendRequest.id }
         });

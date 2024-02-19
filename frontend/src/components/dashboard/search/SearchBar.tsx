@@ -14,7 +14,7 @@ function SearchBar() {
         if (search && !/^[a-zA-Z]+$/.test(search)) {
             return;
           }
-        const response = await axios.get(`${process.env.API_BASE_URL}/users/search/${search}`,{withCredentials:true}).then((res) => {setSearched(res.data); console.log(res.data);});
+        const response = await axios.get(`${process.env.API_BASE_URL}/users/search/${search}`,{withCredentials:true}).then((res) => {setSearched(res.data);});
     }
     const debouncedSearchBackend = useDebouncedCallback(searchProfile, 500);
     useEffect(() => {

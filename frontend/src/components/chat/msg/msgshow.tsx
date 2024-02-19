@@ -40,7 +40,7 @@ const MsgShow: React.FC<MsgShowProps> = ({ messages, chatId }) => {
       }
     })
       .catch((err) => {
-        console.log(err);
+  
       });
   }
   useEffect(() => {
@@ -72,7 +72,7 @@ const MsgShow: React.FC<MsgShowProps> = ({ messages, chatId }) => {
       });
 
       socket?.on('removeFriend', () => {
-        console.log('removeFriend in chat');
+
         getFriends();
       });
 

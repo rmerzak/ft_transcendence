@@ -26,11 +26,11 @@ const Layout = ({ children }: any) => {
     }
     const handleConnect = () => {
       setChatSocket(sock);
-      console.log('Connected to the server');
+
     };
 
     const handleDisconnect = () => {
-      console.log('Disconnected from the server');
+
     };
 
     sock.on('connect', handleConnect);
@@ -38,7 +38,6 @@ const Layout = ({ children }: any) => {
 
 
     return () => {
-      console.log("Cleanup: Disconnecting socket");
       sock.off('connect', handleConnect);
       sock.off('disconnect', handleDisconnect);
       sock.disconnect();
@@ -55,7 +54,7 @@ const Layout = ({ children }: any) => {
           }
         });
       }
-    }).catch((err) => { console.log(err) });
+    }).catch((err) => {  });
   }, [chatSocket]);
 
   useEffect(() => {
@@ -65,13 +64,13 @@ const Layout = ({ children }: any) => {
         getChatRoomByName(profile?.id.toString(), friendId.toString()).then((res) => {
           if (res && res.data && !privChat.find((room) => room.id === res.data.id))
             setPrivChat((prev) => [...prev, res.data]);
-        }).catch((err) => { console.log(err) });
+        }).catch((err) => {  });
       });
 
       if (profile?.id > 0) {
         chatSocket.on('leaveRoom', ({ roomId, userId }: { roomId: number, userId: number }) => {
           if (profile && profile?.id > 0 && chatSocket.id && userId === profile?.id) {
-            // console.log("Leaving room", roomId);
+
             chatSocket.emit('leaveRoom', { roomId });
             router.push('/dashboard/chat');
           }
@@ -83,7 +82,7 @@ const Layout = ({ children }: any) => {
         });
         chatSocket.on('join-room-socket', (res: ChatRoomMember) => {
           if (res.userId === profile.id) {
-            // console.log('join-room-socket', res);
+
             chatSocket.emit('join-room', { roomId: res.chatRoomId });
           }
         });

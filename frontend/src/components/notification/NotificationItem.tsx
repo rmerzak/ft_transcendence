@@ -17,7 +17,7 @@ function NotificationItem({item,setOpen}: {item: Notification,setOpen: any}) {
                 setNotification((prevNotifications: Notification[]) =>
                     prevNotifications.filter((notification: Notification) => notification !== item)
                 );
-        }).catch((err) => { console.log(err)});
+        }).catch((err) => { });
         setOpen(false);
         router.push(`/dashboard/profile/` + item.senderName);
     }
@@ -28,7 +28,7 @@ function NotificationItem({item,setOpen}: {item: Notification,setOpen: any}) {
                 setNotification((prevNotifications: Notification[]) =>
                     prevNotifications.filter((notification: Notification) => notification !== item)
                 );
-        }).catch((err) => { console.log(err)});
+        }).catch((err) => { });
         setOpen(false);
         router.push(`/dashboard/friends`);
     }
@@ -39,7 +39,7 @@ function NotificationItem({item,setOpen}: {item: Notification,setOpen: any}) {
                     setNotification((prevNotifications: Notification[]) =>
                         prevNotifications.filter((notification: Notification) => notification !== data?.notification)
                     );
-            }).catch((err) => { console.log(err)});  
+            }).catch((err) => { });  
         }
     });
     function handleButtonClick() {

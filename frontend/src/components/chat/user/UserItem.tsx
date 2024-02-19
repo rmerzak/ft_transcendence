@@ -16,7 +16,7 @@ const UserItem = ({ friend }: { friend: Friendship }) => {
     } else {
       setStatus(friend.sender.status);
     }
-    // console.log('status: ', status);
+
   }, [status, friend]);
 
   function makeMessage() {
@@ -29,7 +29,7 @@ const UserItem = ({ friend }: { friend: Friendship }) => {
       chatSocket?.emit('join-room', res.data.id);
       router.push(`/dashboard/chat/user/${res.data.id}`);
     }).catch((err) => {
-      console.log(err);
+      
     });
   }
   return (

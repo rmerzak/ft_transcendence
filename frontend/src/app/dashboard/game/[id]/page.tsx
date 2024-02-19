@@ -41,7 +41,7 @@ const Game = () => {
 
     useEffect(() => {
         checkRoom();
-        console.log('theme', theme)
+
         if (theme == -1 || check == false) {
             Swal.fire({
                 title: 'You have no access to this page',

@@ -19,26 +19,26 @@ function RoomUsers({ handleUserListClick, chatRoomId }: { handleUserListClick: a
     const { chatSocket, profile } = useContext(ContextGlobal)
     function updateComponent(id: number) {
         getChatRoomById(id).then((res: any) => {
-            console.log(res.data)
+            
             if (res.data)
                 setChatRoom(res.data);
         }).catch((err) => { });
         getChatRoomMembers(id).then((res) => {
             if (res.data)
                 setUsers(res.data)
-            console.log(res.data)
+            
         }).catch((err) => {
-            console.log(err);
+           
         });
         getChatRoomMemberByRoomId(id).then((res) => {
-            console.log(res.data);
+            
             if (res.data)
                 setProfileRoomStatus(res.data)
         }).catch((err) => { });
         getChatRoomInvitedMembers(id).then((res) => {
             if (res.data)
                 setInvitedMembers(res.data)
-            console.log("req = ", res.data)
+            
         }).catch((err) => { });
     }
     useEffect(() => {
@@ -58,18 +58,18 @@ function RoomUsers({ handleUserListClick, chatRoomId }: { handleUserListClick: a
                     updateComponent(chatRoomId);
             });
             chatSocket?.on('update_chat_room_member_roomUsers', (res) => {
-                console.log("res = ", res)
+                
                 if (chatRoomId && res.chatRoomId === chatRoomId) {
                     getChatRoomMembers(chatRoomId).then((res) => {
                         setUsers(res.data)
                     }).catch((err) => {
-                        console.log(err);
+                        
                     });
                     getChatRoomMemberByRoomId(chatRoomId).then((res) => {
                         if (res.data)
                             setProfileRoomStatus(res.data)
                     }).catch((err) => {
-                        console.log(err);
+                        
                     });
                     updateComponent(chatRoomId);
                 }

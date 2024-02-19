@@ -13,15 +13,15 @@ const Friends = () => {
     getFriendList().then((res) => {
       if (res?.data)
         setFriends(res.data);
-      console.log("friends inside 1", friends);
+
     }).catch((err) => {  });
   }
   useEffect(() => {
-    console.log("friends inside ");
+
     getFriends(profile?.id);
   
     const handleFriendAccept = (data: any) => {
-      console.log("friend accept");
+
       if(data.status === true)
         getFriends(profile?.id);
     };

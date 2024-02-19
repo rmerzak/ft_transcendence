@@ -36,7 +36,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   async handleConnection(socket: Socket) {
-    console.log("Connected");
 
     // get user info from db and add it to the socket
     const user = await this.game.findUserById(socket['payload']['sub']);
@@ -52,7 +51,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   async handleDisconnect(client: Socket) {
-    console.log('Disconnected');
 
     // Change user status to ONLINE
     const userId = client['payload']['sub'];

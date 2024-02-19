@@ -27,7 +27,7 @@ function ChannelItem({ channel, HandleOpen, handleDisplayChannels }: ChannelItem
     };
     useEffect(() => {
         getChatRoomMembershipStatus(channel.id).then((res) => {
-            console.log(res.data);
+           
             if (res.data)
                 setMembership(res.data);
         })

@@ -72,7 +72,7 @@ const SendMsgRm: React.FC<SendchatmsgProps> = ({ chatRoomId }) => {
                         setChatRoomMember(res.data);
                     }
                 }).catch((err) => {
-                    console.log(err);
+                    
                 });
             }
             fetch();
@@ -85,7 +85,7 @@ const SendMsgRm: React.FC<SendchatmsgProps> = ({ chatRoomId }) => {
                 setIsMuted(true);
             }
             chatSocket.on('mute_apdate_sendMsgInput', (data: ChatRoomMember) => {
-                // console.log('data', data, chatSocket.id);
+
                 if (data.userId === profile?.id && data.chatRoomId === chatRoomId) {
                     data.status === 'MUTED' ? setIsMuted(true) : setIsMuted(false);
                 }

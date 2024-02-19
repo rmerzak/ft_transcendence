@@ -43,7 +43,7 @@ const Recent: React.FC<RecentProps> = ({ rooms }) => {
   useEffect(() => {
     if (rooms) {
       rooms.forEach((room) => {
-        // console.log("room id", room);
+
         isNumber(room.id) ? chatSocket?.emit('join-room', { roomId: room.id }) : null;
       });
     }

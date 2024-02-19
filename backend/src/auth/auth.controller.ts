@@ -82,8 +82,6 @@ export class AuthController {
     @UseGuards(JwtGuard)
     @Get('validateToken')
     async validateToken(@Req() req: Request, @Body() body: any): Promise<any> {
-        
-            console.log(req.user);
             return { status: true, user: req.user };
     }
     @UseGuards(JwtGuard)
@@ -116,7 +114,6 @@ export class AuthController {
         const userId = req.cookies.userId;
         const user = await this.authService.findUserById(Number(userId));
         const isTokenValid = this.twoFactorService.verifyTwoFactorToken(code, user['twoFactorSecret']);
-        console.log(isTokenValid);
         if (isTokenValid) {
             const { accessToken } = await this.authService.signToken(user['id'], user['email']);
             res.cookie('accesstoken', accessToken, { httpOnly: true, });

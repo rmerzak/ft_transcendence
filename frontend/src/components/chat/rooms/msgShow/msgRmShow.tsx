@@ -22,7 +22,7 @@ const MsgRmShow: React.FC<MsgShowProps> = ({ messages, roomId }) => {
         if (res.data)
           setRoom(res.data);
       }).catch((err) => {
-        console.log(err);
+       
       });
     }
     if (chatSocket) {
@@ -32,7 +32,7 @@ const MsgRmShow: React.FC<MsgShowProps> = ({ messages, roomId }) => {
             if (res.data)
               setRoom(res.data);
           }).catch((err) => {
-            console.log(err);
+           
           });
       });
     }

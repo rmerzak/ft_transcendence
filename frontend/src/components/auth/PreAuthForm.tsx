@@ -104,7 +104,7 @@ const PreAuthForm = ({ exit }: { exit: boolean }) => {
       await UsersAPIService.logout();
       router.push("/");
     } catch (error) {
-      console.log(error);
+
     }
   }
   return (

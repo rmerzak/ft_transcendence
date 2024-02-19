@@ -26,7 +26,7 @@ const ProfileInformation = ({ profile, BtnFriend }: { profile: User, BtnFriend: 
     }
     useEffect(() => {
         getFriendshipStatus(profile?.id).then((res) => {
-            console.log("friendship status = ", res.data);
+
             if (res.data.status === 'ACCEPTED')
                 setFriend(true);
             if (res.data.status === 'PENDING')
@@ -58,7 +58,7 @@ const ProfileInformation = ({ profile, BtnFriend }: { profile: User, BtnFriend: 
                 }
             })
 
-        }).catch((err) => { console.log(err) });
+        }).catch((err) => { });
     }, [socket, friend]);
     return (
         <div className="bg-mberri w-full flex items-end relative">

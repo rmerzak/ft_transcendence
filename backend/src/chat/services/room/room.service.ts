@@ -159,7 +159,6 @@ export class RoomService {
     }
     // create chat room
     async createChatRoom(socket: Socket, chatRoomData: ChatRoom): Promise<ChatRoom> {
-        // console.log('chatRoomData: ', chatRoomData);
         // if (!chatRoomData.name[0].match(/[a-zA-Z]/)) throw new Error('Chat room name must start with a letter');
         chatRoomDataValidation(chatRoomData);
         const existingChatRoom = await this.prisma.chatRoom.findUnique({
@@ -351,7 +350,6 @@ export class RoomService {
 
     // update user chatroom
     async updatechatRoomMember(fromUserI: number, chatRoomMemData: ChatRoomMember): Promise<ChatRoomMember | null> {
-        // console.log('chatRoomMemData: update update', chatRoomMemData);
         const user = await this.prisma.user.findUnique({
             where: { id: fromUserI },
         });
@@ -445,10 +443,8 @@ export class RoomService {
         });
         if (!chatRoom) throw new Error('Chat room not found');
         if (chatRoom.visibility === 'PROTECTED') {
-            // console.log('chatRoom.passwordHash: ', payload.passwordHash);
             if (payload.passwordHash === null || payload.passwordHash === undefined) throw new Error('Chat room password not set');
             const isPasswordValid = await argon.verify(chatRoom.passwordHash, payload.passwordHash);
-            // console.log('isPasswordValid: ', isPasswordValid);
             if (!isPasswordValid) throw new Error('Invalid password');
         }
         if (chatRoom.visibility === 'PRIVATE') {
@@ -457,7 +453,6 @@ export class RoomService {
         const chatRoomMember = await this.prisma.chatRoomMember.findUnique({
             where: { userId_chatRoomId: { userId: _client['user'].id, chatRoomId: chatRoom.id } },
         });
-        // console.log('chatRoomMember: ', chatRoomMember);
         if (chatRoomMember) throw new Error('User already in chat room');
         const newChatRoomMember = await this.prisma.chatRoomMember.create({
             data: {
@@ -478,7 +473,6 @@ export class RoomService {
             where: { userId_chatRoomId: { userId: user.id, chatRoomId: chatRoom.id } },
         });
         // if (!chatRoomMember) throw new Error('User not in chat room');
-        // console.log('chatRoomMember: ', chatRoomMember)
         return chatRoomMember;
     }
 
@@ -683,7 +677,6 @@ export class RoomService {
     }
     async requestJoinRoom(_client: Socket, name: string): Promise<RoomReqJoin | null> {
         const chatRoom = await this.prisma.chatRoom.findUnique({ where: { name: name } });
-        console.log('chatRoom: ', chatRoom);
         if (!chatRoom) throw new Error('Chat room not found');
 
         if (chatRoom.visibility !== 'PRIVATE') throw new Error('Chat room is not private');

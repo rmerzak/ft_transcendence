@@ -73,28 +73,28 @@ export const ContextProvider = ({ children }: { children: any }) => {
       getUnreadNotification().then((res) => {
         if (res?.data)
           setNotification(res.data);
-      }).catch((err) => { console.log(err) });
+      }).catch((err) => {  });
   
       getUserInfo().then((res) => {
         if (res?.data)
           setProfile(res.data);
-      }).catch((err) => { console.log(err) });
+      }).catch((err) => {  });
       getFriendList().then((res) => {
         if (res?.data)
           setFriends(res.data);
-      }).catch((err) => { console.log(err) });
+      }).catch((err) => { });
 
       // getChatRoomsJoined().then((res) => {
       //   if (res.data)
       //     setChatRoomsJoined(res.data);
-      //   // console.log(res.data);
-      // }).catch((err) => { console.log(err) });
+  ;
+      // }).catch((err) => {  });
 
       // getChatRoomsNotJoined().then((res) => {
       //   if (res.data)
       //     setChatRoomsToJoin(res.data);
-      //   // console.log(res.data);
-      // }).catch((err) => { console.log(err) });
+  
+      // }).catch((err) => {  });
     }
   }, [socket]);
 

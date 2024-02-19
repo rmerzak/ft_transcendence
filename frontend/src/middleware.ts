@@ -12,7 +12,7 @@ export async function middleware(req: NextRequest) {
   try {
     const cookies = req.cookies.get('accesstoken');
     const isProtectedPath = privatePath.some((path) => req.nextUrl.pathname.startsWith(path));
-    console.log('isProtectedPath', isProtectedPath, " ",req.nextUrl.pathname);
+
     const valid : Valid = await isValidAccessToken(cookies?.value);
     if (cookies === undefined && isProtectedPath) {
       return NextResponse.redirect(new URL('/', req.url));
@@ -22,7 +22,7 @@ export async function middleware(req: NextRequest) {
       return NextResponse.redirect(new URL('/auth/login', req.url));
     }
     if (valid.user.isVerified === false) {
-      console.log('redirecting to verify');
+
       if (req.nextUrl.pathname !== '/auth/verify') {
         return NextResponse.redirect(new URL('/auth/verify', req.url));
       }

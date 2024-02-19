@@ -63,7 +63,7 @@ const Popup: React.FC<PopupProps> = ({ setChannel }) => {
     };
     
     
-  console.log("Channel Data:", channelData);
+
   chatSocket?.emit("create-room", channelData);
   setFormData({
       channelName: "",

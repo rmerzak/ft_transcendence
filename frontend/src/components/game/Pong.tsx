@@ -385,7 +385,6 @@ function Pong() {
 
 		// time out
 		socket.on("timeOut", () => {
-			console.log(roomId);
 			Swal.fire({
 				title: "Time Out!",
 				text: "Your opponent not accept your challenge!",

@@ -14,7 +14,7 @@ const UserOnline = () => {
       }
     })
       .catch((err) => {
-        console.log(err);
+        
       });
   }
 

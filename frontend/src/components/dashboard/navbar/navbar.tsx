@@ -35,7 +35,7 @@ const Navbar = () => {
       await UsersAPIService.logout();
       router.push("/");
     } catch (error) {
-      console.log(error);
+      
     }
   }
   return (
