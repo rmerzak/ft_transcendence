@@ -9,7 +9,8 @@ import ChallengeNotif from "../game/ChallengeNotif";
 
 function NotificationItem({item,setOpen}: {item: Notification,setOpen: any}) {
     const [openAlert, setOpenAlert] = useState<boolean>(false);
-    const { notification ,setNotification, socket}: any = useContext(ContextGlobal);
+    const { notification ,setNotification, socket, profile}: any = useContext(ContextGlobal);
+    const [ isPlaying, setIsPlaying ] = useState(false);
     const router = useRouter();
     function friendRequest(item: Notification) {
         postReadNotification(item.id).then((res) => {
@@ -55,6 +56,30 @@ function NotificationItem({item,setOpen}: {item: Notification,setOpen: any}) {
         }
     }
 
+    useEffect(() => {
+        const eventSource = new EventSource(`${process.env.API_BASE_URL}/api/is-playing`, {
+          withCredentials: true,
+        });
+    
+        eventSource.onmessage = (event) => {
+            try {
+                const parsedData = JSON.parse(event.data);
+                parsedData.forEach((player: { playerId: number, isPlaying: boolean }) => {
+                    if (player.isPlaying && player.playerId === profile?.id) {
+                        setIsPlaying(true);
+                    } else if (!player.isPlaying && player.playerId === profile?.id) {
+                        setIsPlaying(false);
+                    }
+                });
+            } catch {}
+        };
+    
+        return () => {
+          eventSource.close();
+        };
+    
+      }, [profile?.id]);
+
     return (
         <>
             <img src={item.senderImage} alt="" className="w-10 h-10 rounded-full" />
@@ -67,7 +92,7 @@ function NotificationItem({item,setOpen}: {item: Notification,setOpen: any}) {
                 </div> :
                 <div className='flex items-center justify-between px-2 w-full'>
                     <p className="ml-2 text-white">Your friend is challenging you</p>
-                    <button className="bg-[#78196F] px-4 py-2 rounded-xl border border-white text-[14px] text-white" onClick={() => setOpenAlert(!openAlert)}>Check</button>
+                    {!isPlaying && <button className="bg-[#78196F] px-4 py-2 rounded-xl border border-white text-[14px] text-white" onClick={() => setOpenAlert(!openAlert)}>Check</button>}
                     { openAlert && <ChallengeNotif openAl={() => {
                             setOpenAlert(!openAlert);}}
                             gameId={ item.content }
