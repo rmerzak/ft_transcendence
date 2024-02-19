@@ -15,6 +15,7 @@ const ChallengeNotif = ( { openAl, gameId }: {openAl: any, gameId: string} ) => 
 
     const challenge = () => {
         setMode(Mode.challenge);
+        socket?.emit("acceptChallenge", gameId);
         router.push(`/dashboard/game/${gameId}`, { scroll: false });
     }
 

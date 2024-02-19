@@ -8,9 +8,10 @@ interface PopupProps {
   channel: ChatRoom
   setOpenChannel: React.Dispatch<React.SetStateAction<ChatRoom | null>>
   Handlepopup(): void
+  handleDisplayChannels(): void
 }
 
-function JoinChannel({ channel, setOpenChannel, Handlepopup }: PopupProps) {
+function JoinChannel({ channel, setOpenChannel, Handlepopup,  handleDisplayChannels }: PopupProps) {
   const { chatSocket } = useContext(ContextGlobal);
   const [Validationerror, setValidationError] = useState<string | null>(null);
   const router = useRouter();
@@ -19,20 +20,23 @@ function JoinChannel({ channel, setOpenChannel, Handlepopup }: PopupProps) {
     name: "",
     password: "",
   });
-
-
-
   
-    const handleNewMember = (e:any) => {
-      e.preventDefault();
-      if (channel.visibility !== RoomVisibility.PRIVATE) {
+
+  const handleClick = () => {
+    setOpenChannel(null);
+    handleDisplayChannels();
+  }
+
+  const handleNewMember = (e:any) => {
+    e.preventDefault();
+    if (channel.visibility !== RoomVisibility.PRIVATE) {
       const { password } = formData;
       const channelData = {
         name: channel.name,
         passwordHash: password,
       };
-    chatSocket?.emit("new-member", channelData);
-    setFormData({
+      chatSocket?.emit("new-member", channelData);
+      setFormData({
         name: "",
         password: "",
       });
@@ -44,14 +48,16 @@ function JoinChannel({ channel, setOpenChannel, Handlepopup }: PopupProps) {
     } else {
       chatSocket?.emit("request-join-room", channel);
     }
-      setValidationError(null);
-      if (Handlepopup) {
-        Handlepopup();
-      }
-      return () => {
-        chatSocket?.off("push");
-      };
+    setValidationError(null);
+    if (Handlepopup) {
+      Handlepopup();
+      handleDisplayChannels();
+    }
+    return () => {
+      chatSocket?.off("push");
     };
+  };
+  
 
     return (
       <>
@@ -79,7 +85,7 @@ function JoinChannel({ channel, setOpenChannel, Handlepopup }: PopupProps) {
             </div>}
             <div className="flex justify-center items-center mt-4 text-sm">
               <div className="flex justify-between w-[67.5%]">
-                <button onClick={() => setOpenChannel(null)} className="w-[100px] h-9 md:h-[40px] rounded-xl text-white hover:bg-[#811B77]/100 border">
+                <button onClick={handleClick} className="w-[100px] h-9 md:h-[40px] rounded-xl text-white hover:bg-[#811B77]/100 border">
                   Cancel
                 </button>
                 <button type="submit" className="bg-[#811B77] w-[100px] h-9 md:h-[40px] rounded-xl text-white hover:bg-[#811B77]/100 border">
@@ -90,7 +96,7 @@ function JoinChannel({ channel, setOpenChannel, Handlepopup }: PopupProps) {
           </div>
         </form>
       </div>
-    </>
+    </>  
   )
 }
 

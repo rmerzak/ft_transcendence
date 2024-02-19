@@ -5,6 +5,7 @@ import MsgShow from '@/components/chat/msg/msgshow';
 import { getChatRoomMessages } from '@/api/chat/chat.api';
 import { ContextGlobal } from '@/context/contex';
 import { Messages, Recent } from '@/interfaces';
+import AuthWrapper from '@/components/auth/AuthWrapper';
 
 
 const Chat = () => {
@@ -50,7 +51,7 @@ const Chat = () => {
   }, [chatId, chatSocket]);
 
   return (
-    <>
+    <AuthWrapper>
       {error === '' && !loading && <MsgShow messages={messages} chatId={Number(chatRoomId)} />}
       {
         error === '' && loading &&
@@ -67,7 +68,7 @@ const Chat = () => {
           </p>
         </div>
       }
-    </>
+    </AuthWrapper>
   );
 };
 

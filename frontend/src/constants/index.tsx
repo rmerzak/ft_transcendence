@@ -3,28 +3,28 @@ import {SideNaveItems} from "./types";
 export const team = [
   {
     id: 'profile-1',
-    imgUrl: '/rabi.png',
-    title: 'rmerzak',
+    imgUrl: '/aaammari.png',
+    title: 'aaammari',
   },
   {
     id: 'profile-2',
-    imgUrl: '/profile.jpg',
-    title: 'zchbani',
+    imgUrl: '/ymoutaou.png',
+    title: 'ymoutaou',
   },
   {
     id: 'profile-3',
-    imgUrl: '/profile1.png',
-    title: 'aoustani',
+    imgUrl: '/mberri.png',
+    title: 'mberri',
   },
   {
     id: 'profile-4',
-    imgUrl: '/profile3.png',
-    title: 'aboumadi',
+    imgUrl: '/ylambark.png',
+    title: 'ylambark',
   },
   {
     id: 'profile-5',
-    imgUrl: '/profile4.jpeg',
-    title: 'sbousidi',
+    imgUrl: '/rabi.png',
+    title: 'rmerzak',
   },
 ];
 

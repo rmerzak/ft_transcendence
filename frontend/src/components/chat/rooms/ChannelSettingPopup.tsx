@@ -57,7 +57,7 @@ const ChannelSettingPopup: React.FC<PopupProps> = ({ handleSettingClick, chatRoo
               className="bg-gray-800 text-white mt-4 border-none rounded-xl focus:ring-0 h-9 md:w-3/4 focus:outline-none"
               placeholder={`${chatRoom?.name}`}
               required
-              onChange={(e) => setFormData((prevData) => ({ ...prevData, name: e.target.value }))}
+              onChange={(e) => {setFormData((prevData) => ({ ...prevData, name: e.target.value }))}}
             />
           </div>
         </div>
@@ -97,9 +97,9 @@ const ChannelSettingPopup: React.FC<PopupProps> = ({ handleSettingClick, chatRoo
         </div>
         {formData.visibility === RoomVisibility.PROTECTED && (
           <div className="flex justify-evenly w-full ">
-             {chatRoom?.visibility ===  RoomVisibility.PROTECTED ? <div>
+            {chatRoom?.visibility === RoomVisibility.PROTECTED ? <div>
               <p className="text-[8px] text-center">(optional)</p>
-            <label className="text-xl">change password:</label>
+              <label className="text-xl">change password:</label>
             </div> : <label className="text-xl">set password:</label>}
             <input
               type="password"

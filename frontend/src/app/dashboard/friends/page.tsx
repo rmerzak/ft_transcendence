@@ -55,7 +55,7 @@ const Friends = () => {
   
   return (
     <AuthWrapper>
-      <div className="bg-profile py-4 px-2 mx-4 ">
+      <div className="h-[95%] md:h-full bg-profile py-4 px-2 mx-4 overflow-auto">
         <h1 className="text-white font-bold text-3xl text-center mb-4">Friends</h1>
         <div className="flex md:flex-row flex-col">
           <ListOfFriends friends={friends} />

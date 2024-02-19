@@ -2,16 +2,14 @@ import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/web
 import { Server, Socket } from 'socket.io';
 import { FriendshipService } from '../friendship.service';
 import { SocketAuthMiddleware } from 'src/auth/middleware/ws.mw';
-import { Logger } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { User } from '@prisma/client';
-import { UserDto } from '../Dto';
 import { RoomService } from 'src/chat/services/room/room.service';
 /// dont forget to add the userin the socket using the methode socket.data = user
 
 @WebSocketGateway({ cors: { origin: 'http://localhost:8080', credentials: true, namespace: '/profile' } })
 export class FriendshipGateway {
-  constructor(private readonly friendship: FriendshipService, private roomService: RoomService) { }
+  constructor(private readonly friendship: FriendshipService, private roomService: RoomService,
+    private readonly prisma: PrismaService) { }
   @WebSocketServer()
   server: Server;
 
@@ -142,9 +140,31 @@ export class FriendshipGateway {
     }
   }
 
+  @SubscribeMessage('acceptChallenge')
+  async accept(socket: Socket, payload: string) {
+    const notification = await this.prisma.notification.findFirst({
+      where: { content: payload }
+    });
+    
+    if (notification) {
+      await this.prisma.notification.update({ where: { id: notification.id }, data: { vue: true } });
+    }
+
+    // socket.emit('updateNotification');
+  }
+
   @SubscribeMessage('refuseChallenge')
-  refuse(socket: Socket, payload: string) {
+  async refuse(socket: Socket, payload: string) {
     const game = this.server.of('/game').to(payload);
     game.emit('refuseChallenge');
+
+    const notification = await this.prisma.notification.findFirst({
+      where: { content: payload }
+    });
+    
+    if (notification) {
+      await this.prisma.notification.update({ where: { id: notification.id }, data: { vue: true } });
+    }
+    // socket.emit('updateNotification');
   }
 }

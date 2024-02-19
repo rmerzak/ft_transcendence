@@ -3,7 +3,7 @@ import { Bell, DivideIcon } from "lucide-react";
 import React, { use, useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { io } from "socket.io-client";
-import { getUnreadNotification } from "@/api/notifications/notifications.api";
+import { getUnreadNotification, postReadNotification } from "@/api/notifications/notifications.api";
 import { data } from "@/data/MatchHistory";
 import NotificationItem from "./NotificationItem";
 import OutsideClickHandler from 'react-outside-click-handler'
@@ -27,7 +27,6 @@ const Notification = () => {
             }
         });
         socket?.on('friendAcceptRequest', (data: any) => {
-            console.log(data.notification);
             if(data.notification){
                 setNotification((prev: Notification[]) => [data.notification, ...prev]);
                 toast.success('Your friend accepted your request');
@@ -45,6 +44,9 @@ const Notification = () => {
                 toast.error(data);
             }
         });
+
+        
+
         return () => {
             socket?.off('connect');
             socket?.off('friendRequest');

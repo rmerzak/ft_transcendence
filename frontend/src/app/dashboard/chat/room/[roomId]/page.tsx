@@ -6,6 +6,7 @@ import { ContextGlobal } from '@/context/contex';
 import { getChatRoomMessages } from '@/api/chat/chat.api';
 import MsgRmShow from '@/components/chat/rooms/msgShow/msgRmShow';
 import { useRouter } from 'next/navigation';
+import AuthWrapper from '@/components/auth/AuthWrapper';
 
 
 const Room = () => {
@@ -52,7 +53,7 @@ const Room = () => {
   }, [roomId, chatSocket]);
 
   return (
-    <>
+    <AuthWrapper>
       {error === '' && !loading && <MsgRmShow messages={messages} roomId={Number(roomId)} />}
       {
         error === '' && loading &&
@@ -69,7 +70,7 @@ const Room = () => {
           </p>
         </div>
       }
-    </>
+    </AuthWrapper>
   );
 };
 

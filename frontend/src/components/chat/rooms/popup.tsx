@@ -26,6 +26,14 @@ const Popup: React.FC<PopupProps> = ({ setChannel }) => {
     validateChannelName(value);
   };
 
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  }
+
   const validateChannelName = (name: string) => {
     if (name.length < 2 || name.length > 12) {
       setValidationError("Channel name must be between 2 and 12 characters.");
@@ -45,7 +53,7 @@ const Popup: React.FC<PopupProps> = ({ setChannel }) => {
     e.preventDefault();
     const { channelName } = formData;
     if (channelName.length < 2 || channelName.length > 12) {
-      setValidationError("Channel name must be between 2 and 12 characters.");
+      setValidationError("Channel name must be between 2 and 12 characters");
       return;
     }
     const channelData = {
@@ -105,7 +113,7 @@ const Popup: React.FC<PopupProps> = ({ setChannel }) => {
             </div>
           </div>
            {formData.visibility === "PROTECTED" && <div className="flex justify-center items-center my-2 text-black">
-            <input type="password" name="password" value={formData.password} onChange={handleInputChange} required className="w-[67.5%] bg-[#D9D9D9] md:h-11 h-[36px] rounded-lg px-2 md:text-lg text-sm outline-none" placeholder="group password" />
+            <input type="password" name="password" value={formData.password} onChange={handlePasswordChange} required className="w-[67.5%] bg-[#D9D9D9] md:h-11 h-[36px] rounded-lg px-2 md:text-lg text-sm outline-none" placeholder="group password" />
           </div>}
           <div className="text-white font-light text-lg flex justify-center items-center space-x-1 my-3">
             <fieldset className="flex justify-between items-center space-x-4 w-[67.5%] h-10 p-2" id="safe">

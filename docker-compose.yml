@@ -6,6 +6,7 @@ services:
     container_name: nest_backend
     ports:
       - "3000:3000"
+      - "5555:5555"
     volumes:
       - ./backend:/usr/src/app
     env_file:

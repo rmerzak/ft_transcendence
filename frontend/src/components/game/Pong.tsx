@@ -385,6 +385,7 @@ function Pong() {
 
 		// time out
 		socket.on("timeOut", () => {
+			console.log(roomId);
 			Swal.fire({
 				title: "Time Out!",
 				text: "Your opponent not accept your challenge!",
@@ -400,7 +401,7 @@ function Pong() {
 			}).then((res) => {
 				if (res.isConfirmed) {
 					socket.emit("leave", {
-						roomId: roomID,
+						roomId: roomId,
 						mode: mode,
 					});
 					router.push("/dashboard/game");
@@ -500,7 +501,7 @@ function Pong() {
 						roomId: roomID,
 						mode: mode,
 					});
-					router.push("/dashboard/game");
+					router.push("/dashboard");
 				}
 			});
 
@@ -526,7 +527,7 @@ function Pong() {
 						roomId: roomID,
 						mode: mode,
 					});
-					router.push("/dashboard/game");
+					router.push("/dashboard");
 				}
 			});
 
@@ -552,7 +553,7 @@ function Pong() {
 						roomId: roomID,
 						mode: mode,
 					});
-					router.push("/dashboard/game");
+					router.push("/dashboard");
 				}
 			});
 		});
