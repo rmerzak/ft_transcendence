@@ -14,6 +14,7 @@ const FriendItem = ({ friend }: { friend: Friendship }) => {
   const [status, setStatus] = useState<string>();
   const [openAlert, setOpenAlert] = useState<boolean>(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlay, setIsPlay] = useState(false);
   const router = useRouter();
   const handleFriend = (status: boolean) => {
     if (status) {
@@ -37,7 +38,7 @@ const FriendItem = ({ friend }: { friend: Friendship }) => {
       chatSocket?.emit('join-room', res?.data?.id);
       router.push(`/dashboard/chat/user/${res?.data?.id}`);
     }).catch((err) => {
-      console.log(err);
+      
     });
   }
 
@@ -51,8 +52,13 @@ const FriendItem = ({ friend }: { friend: Friendship }) => {
         const parsedData = JSON.parse(event.data);
         parsedData.forEach((player: { playerId: number, isPlaying: boolean }) => {
           if (player.isPlaying && player.playerId === profile.id) {
-            setIsPlaying(true);
+            setIsPlay(true);
           } else if (!player.isPlaying && player.playerId === profile.id) {
+            setIsPlay(false);
+          }
+          if (player.isPlaying && player.playerId === (profile?.id === friend.sender.id ? friend.receiver.id : friend.sender.id)) {
+            setIsPlaying(true);
+          } else if (!player.isPlaying && player.playerId === (profile?.id === friend.sender.id ? friend.receiver.id : friend.sender.id)) {
             setIsPlaying(false);
           }
         });
@@ -90,7 +96,7 @@ const FriendItem = ({ friend }: { friend: Friendship }) => {
             <MessagesSquare />
           </button>
           {
-            !isPlaying &&
+            !isPlaying && !isPlay &&
             <button className="md:px-2 px-1">
               <Gamepad2 onClick={() => setOpenAlert(!openAlert)} />
             </button>

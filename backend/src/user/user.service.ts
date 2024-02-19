@@ -46,7 +46,7 @@ export class UserService {
                 status: true,
             },
         });
-        console.log("user =",user);
+
         if (!user)
             null;
         return user;

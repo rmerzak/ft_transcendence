@@ -17,7 +17,7 @@ const TwoFa = () => {
       toast.error('Please enter a valid numeric code');
       return;
     }
-    await axios.get(`http://localhost:3000/auth/2fa/check/` + code, {
+    await axios.get(`${process.env.API_BASE_URL}/auth/2fa/check/` + code, {
       withCredentials: true,
     }).then((res) => {
 

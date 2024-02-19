@@ -22,7 +22,7 @@ const MsgRmShow: React.FC<MsgShowProps> = ({ messages, roomId }) => {
         if (res.data)
           setRoom(res.data);
       }).catch((err) => {
-        console.log(err);
+       
       });
     }
     if (chatSocket) {
@@ -32,7 +32,7 @@ const MsgRmShow: React.FC<MsgShowProps> = ({ messages, roomId }) => {
             if (res.data)
               setRoom(res.data);
           }).catch((err) => {
-            console.log(err);
+           
           });
       });
     }
@@ -41,9 +41,9 @@ const MsgRmShow: React.FC<MsgShowProps> = ({ messages, roomId }) => {
     };
   }, [roomId, chatSocket]);
   return (
-    <div className="bg-[#5D5959]/40 w-[66%] text-white h-[1030px] rounded-3xl p-4 hidden md:block">
+    <div className="bg-[#5D5959]/40 md:w-[66%] w-full mx-auto  text-white  md:h-full h-[65%] md:rounded-3xl p-4 md:block md:mt-0 my-2">
       <RoomHeader chatRoom={room} />
-      <div className='mt-6 h-[88%]'>
+      <div className='mt-4 h-[88%] '>
         <Chat messages={messages} />
       </div>
       <SendMsgRm chatRoomId={roomId} />

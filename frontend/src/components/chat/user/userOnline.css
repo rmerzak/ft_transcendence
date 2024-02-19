@@ -1,16 +1,16 @@
 .mySwiper {
   width: 100% !important;
   border-radius: 99px !important;
+  height: 120px !important;
   display: flex;
   justify-content: flex-start; 
   align-items: center;
-  background-color: red !important;
 }
 
 .swiper-slide {
   width: 100% ;
   height: 100% ;
-  /* background: #000; */
+   /*background: #000;*/
   display: flex;
   justify-content: flex-start ; 
   align-items: center;
@@ -18,7 +18,7 @@
 
 @media (max-width: 1280px) {
   .mySwiper {
-    width: 100% !important;
+    width: 47% !important;
     border-radius: 0 !important;
     /* background-color: red; */
     border-radius: 99px !important;

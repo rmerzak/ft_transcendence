@@ -6,7 +6,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { RoomService } from 'src/chat/services/room/room.service';
 /// dont forget to add the userin the socket using the methode socket.data = user
 
-@WebSocketGateway({ cors: { origin: 'http://localhost:8080', credentials: true, namespace: '/profile' } })
+@WebSocketGateway({ cors: { origin: process.env.CLIENT_URL, credentials: true, namespace: '/profile' } })
 export class FriendshipGateway {
   constructor(private readonly friendship: FriendshipService, private roomService: RoomService,
     private readonly prisma: PrismaService) { }
@@ -14,18 +14,16 @@ export class FriendshipGateway {
   server: Server;
 
   afterInit(socket: Socket) {
-    console.log('init');
     socket.use(SocketAuthMiddleware() as any);
-    console.log("socket", socket.data)
   }
 
   handleConnection(socket: Socket) {
     this.friendship.handleConnection(socket);
-    socket.join('1_friendship');
+    //socket.join('1_friendship');
   }
 
   handleDisconnect(socket: Socket) {
-    // console.log('disconnected');
+
     this.friendship.handleDisconnect(socket);
   }
   @SubscribeMessage('friendRequest')
@@ -53,7 +51,7 @@ export class FriendshipGateway {
         socket.emit('friendAcceptRequest', { notification: notification, friendship: RequestAccepted, status: true, error: null });
       });
       socket.emit('AcceptRequest', { notification: null, friendship: null, status: true, error: null });
-      this.server.to('1_friendship').emit('AcceptRequest', { notification: notification, friendship: RequestAccepted, status: true, error: null });
+      //this.server.to('1_friendship').emit('AcceptRequest', { notification: notification, friendship: RequestAccepted, status: true, error: null });
     } catch (error) {
       socket.emit('RequestError', { notification: null, friendship: null, status: false, error: error.message });
     }
@@ -76,7 +74,7 @@ export class FriendshipGateway {
         socket.emit('removeFriend', { notification: null, friendship: null, status: true, error: null });
       });
       socket.emit('removeFriend', { notification: null, friendship: null, status: true, error: null });
-      this.server.to('1_friendship').emit('removeFriend', { notification: null, friendship: friendshipRemoved, status: true, error: null });
+      //this.server.to('1_friendship').emit('removeFriend', { notification: null, friendship: friendshipRemoved, status: true, error: null });
     } catch (error) {
       socket.emit('RequestError', { notification: null, friendship: null, status: false, error: error.message });
     }
@@ -85,19 +83,19 @@ export class FriendshipGateway {
   @SubscribeMessage('blockFriend')
   async blockFriend(socket: Socket, payload: number) {
     try {
-      // console.log("blockFrienddd", socket['payload']['sub'])
+
       const blockByMe = socket['payload']['sub'];
       const emitClient = this.friendship.getSocketsByUser(Number(payload));
       const friendshipBlock = await this.friendship.BlockFriend(socket, Number(payload));
       if (friendshipBlock) {
-        // console.log("blockFriend", payload)
+
 
         emitClient.forEach((socket) => {
           socket.emit('blockFriend', { notification: friendshipBlock, friendship: null, status: true, error: null });
           socket.emit('blockFriendChat', { isblock: true, blockByMe: blockByMe });
           socket.emit('blockUserOnline', { isblock: true, blockByMe: blockByMe });
         });
-        // console.log("blockFriendd", blockByMe)
+
         socket.emit('blockFriend', { notification: friendshipBlock, friendship: null, status: true, error: null });
         socket.emit('blockFriendChat', { isblock: true, blockByMe: blockByMe });
         socket.emit('blockUserOnline', { isblock: true, blockByMe: blockByMe });
@@ -109,7 +107,7 @@ export class FriendshipGateway {
   @SubscribeMessage('unblockFriend')
   async unblockFriend(socket: Socket, payload: number) {
     try {
-      // console.log("unblockFriend", payload)
+
       const emitClient = this.friendship.getSocketsByUser(Number(payload));
       const friendshipUnblock = await this.friendship.UnBlockFriend(socket, Number(payload));
       emitClient.forEach((socket) => {

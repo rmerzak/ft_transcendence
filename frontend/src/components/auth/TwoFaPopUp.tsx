@@ -12,7 +12,7 @@ const TwoFaPopUp = ({ open, onClose, image, secret }: any) => {
     const { profile, setProfile } : any= useContext(ContextGlobal);
     async function handleSubmit(event: any) {
         event.preventDefault();
-        const response = await axios.post('http://localhost:3000/auth/2fa/verify', {code: code, secret: secret}, {
+        const response = await axios.post(`${process.env.API_BASE_URL}/auth/2fa/verify`, {code: code, secret: secret}, {
             withCredentials: true,
         });
         if (response.data === true) {

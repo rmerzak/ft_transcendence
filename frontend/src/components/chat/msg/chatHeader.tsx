@@ -18,6 +18,7 @@ const Chatheader: React.FC<ChatheaderProps> = ({ username, status, userId, frien
     const { profile, socket } = useContext(ContextGlobal);
     const [ openAlert, setOpenAlert ] = useState<boolean>(false);
     const [ isPlaying, setIsPlaying ] = useState(false);
+    const [isPlay, setIsPlay] = useState(false);
 
 
     useEffect(() => {
@@ -30,8 +31,13 @@ const Chatheader: React.FC<ChatheaderProps> = ({ username, status, userId, frien
                 const parsedData = JSON.parse(event.data);
                 parsedData.forEach((player: { playerId: number, isPlaying: boolean }) => {
                     if (player.isPlaying && player.playerId === profile?.id) {
-                        setIsPlaying(true);
+                        setIsPlay(true);
                     } else if (!player.isPlaying && player.playerId === profile?.id) {
+                        setIsPlay(false);
+                    }
+                    if (player.isPlaying && player.playerId === userId) {
+                        setIsPlaying(true);
+                    } else if (!player.isPlaying && player.playerId === userId) {
                         setIsPlaying(false);
                     }
                 });
@@ -42,7 +48,7 @@ const Chatheader: React.FC<ChatheaderProps> = ({ username, status, userId, frien
           eventSource.close();
         };
     
-      }, [profile?.id]);
+      }, [profile?.id, userId]);
 
     const handleUnblock = () => {
         socket?.emit('unblockFriend', userId);
@@ -72,7 +78,7 @@ const Chatheader: React.FC<ChatheaderProps> = ({ username, status, userId, frien
                                         {friendBlock ? 'Unblock ' : 'Block '}{username}
                                     </div>
                                 </li>
-                                { !isPlaying && <li>
+                                { !isPlaying &&  !isPlay && <li>
                                     <div
                                         onClick={()=> setOpenAlert(!openAlert)}>
                                         Challenge to a game

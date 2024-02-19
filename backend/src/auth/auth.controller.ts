@@ -12,9 +12,11 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { UploadedFile } from "@nestjs/common";
 import { TwoFactorService } from "./two-factor/two-factor.service";
 import * as qrcode from "qrcode";
+import { UserStatus } from "@prisma/client";
+import { PrismaService } from "src/prisma/prisma.service";
 @Controller('auth')
 export class AuthController {
-    constructor(private authService: AuthService, private jwtService: JwtService, private config: ConfigService, private readonly twoFactorService: TwoFactorService) {
+    constructor(private authService: AuthService, private prisma: PrismaService ,private jwtService: JwtService, private config: ConfigService, private readonly twoFactorService: TwoFactorService) {
 
     }
     @UseGuards(LeetGuard)
@@ -27,16 +29,16 @@ export class AuthController {
     async ftAuthCallback(@Req() req: Request, @Res() res: Response) {
         res.cookie('userId', req.user['id']);
         if (req.user['twoFactorEnabled'] === true) {
-            return res.redirect('http://localhost:8080/auth/twofa');
+            return res.redirect(`${process.env.CLIENT_URL}/auth/twofa`);
         }
         if (req.user['isVerified'] === false) {
             const { accessToken } = await this.authService.signToken(req.user['id'], req.user['email']);
             res.cookie('accesstoken', accessToken, { httpOnly: true, });
-            return res.redirect('http://localhost:8080/auth/verify');
+            return res.redirect(`${process.env.CLIENT_URL}/auth/verify`);
         } else {
             const { accessToken } = await this.authService.signToken(req.user['id'], req.user['email']);
             res.cookie('accesstoken', accessToken, { httpOnly: true, });
-            return res.redirect('http://localhost:8080/dashboard/profile');
+            return res.redirect(`${process.env.CLIENT_URL}/dashboard/profile`);
         }
     }
     @UseGuards(JwtGuard)
@@ -68,6 +70,7 @@ export class AuthController {
     @Get('logout')
     async logout(@Req() req: Request, @Res() res: Response) {
         try {
+            await this.prisma.user.update({where:{id:req.user['id']}, data:{status:UserStatus.OFFLINE}});
             res.clearCookie('accesstoken', { httpOnly: true });
             res.clearCookie('userId', { httpOnly: true });
             res.status(200).json({ message: 'Logout successful' });
@@ -79,8 +82,6 @@ export class AuthController {
     @UseGuards(JwtGuard)
     @Get('validateToken')
     async validateToken(@Req() req: Request, @Body() body: any): Promise<any> {
-        
-            console.log(req.user);
             return { status: true, user: req.user };
     }
     @UseGuards(JwtGuard)
@@ -113,7 +114,6 @@ export class AuthController {
         const userId = req.cookies.userId;
         const user = await this.authService.findUserById(Number(userId));
         const isTokenValid = this.twoFactorService.verifyTwoFactorToken(code, user['twoFactorSecret']);
-        console.log(isTokenValid);
         if (isTokenValid) {
             const { accessToken } = await this.authService.signToken(user['id'], user['email']);
             res.cookie('accesstoken', accessToken, { httpOnly: true, });

@@ -214,7 +214,6 @@ export class MsgService {
           },
         },
       });
-      // console.log("recents", recents[0].chatRoom.users);
       const userDetails = await Promise.all(
         recents.map((r) =>
           this.prisma.user.findMany({
@@ -232,7 +231,6 @@ export class MsgService {
           })
         )
       );
-      // console.log("userDetails", userDetails);
       // Merge userDetails with recent
       const result = recents.map((r, i) => ({
         ...r,

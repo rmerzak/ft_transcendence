@@ -43,7 +43,7 @@ const Recent: React.FC<RecentProps> = ({ rooms }) => {
   useEffect(() => {
     if (rooms) {
       rooms.forEach((room) => {
-        // console.log("room id", room);
+
         isNumber(room.id) ? chatSocket?.emit('join-room', { roomId: room.id }) : null;
       });
     }
@@ -82,29 +82,29 @@ const Recent: React.FC<RecentProps> = ({ rooms }) => {
   }
   return (
     <>
-      <div >
+      <div>
         <h1 className="text-white md:text-xl text-center font-inter">Recent</h1>
         <div className="flex justify-center md:mt-2">
           <div className="md:mb-2 mb-0 border-b border-white md:w-14 w-6"></div>
         </div>
       </div>
 
-      <div className="mx-auto w-[90%] md:scroll-y-auto mb-1 text-white rounded-xl overflow-auto ">
+      <div className="flex items-center justify-center flex-col  mx-auto w-[92%] md:scroll-y-auto text-white rounded-md overflow-auto">
         {recents.map((recent) => (
           isNumber(recent.chatRoomId) &&
           <div
             key={recent.chatRoomId}
-            className="flex justify-between items-center my-[6px] md:my-[10px] rounded-md font-inter  bg-[#5D5959]/50 hover:bg-[#5D5959]/100"
+            className="flex border-b-black border-b w-full items-center my-[5px] md:my-[8px] rounded-md font-inter bg-[#5D5959]/50 hover:bg-[#5D5959]/100"
           >
             <div
               onClick={() => {
                 router.push(recent.link.toString());
               }}
-              className="flex items-center space-x-2 px-2 pt-1 hover:cursor-pointer w-[95%] h-full"
+              className="flex items-center px-2 pt-1 hover:cursor-pointer w-[99%] h-full"
             >
-              <div className="flex justify-between">
+              <div className="w-full">
                 <div className="flex mb-1">
-                  <div className="">
+                  <div >
                     <Image
                       src={recent.chatRoom?.users[0]?.image || "/avatar.jpeg"}
                       alt="user image"
@@ -129,20 +129,22 @@ const Recent: React.FC<RecentProps> = ({ rooms }) => {
                 </div>
               </div>
             </div>
-            <div className="flex items-center">
-              <button onClick={() => removeRecent(recent.chatRoomId)} className="h-[40px]">
-                <Trash2
+            <div className="w-8 flex justify-center ">
+                <button onClick={() => removeRecent(recent.chatRoomId)}>
+                  <Trash2
                   size={24}
-                  strokeWidth={1.5}
-                  className="text-white mx-2 hover:cursor-pointer"
-                />
-              </button>
+                  strokeWidth={2}
+                  className="text-white hover:cursor-pointer"
+                  />
+                </button>
             </div>
           </div>
+          
         ))}
+        
       </div>
     </>
   );
 };
-export default Recent;
 
+export default Recent;

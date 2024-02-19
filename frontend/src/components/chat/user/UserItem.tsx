@@ -16,7 +16,7 @@ const UserItem = ({ friend }: { friend: Friendship }) => {
     } else {
       setStatus(friend.sender.status);
     }
-    // console.log('status: ', status);
+
   }, [status, friend]);
 
   function makeMessage() {
@@ -29,24 +29,27 @@ const UserItem = ({ friend }: { friend: Friendship }) => {
       chatSocket?.emit('join-room', res.data.id);
       router.push(`/dashboard/chat/user/${res.data.id}`);
     }).catch((err) => {
-      console.log(err);
+      
     });
   }
   return (
     (friend.status === 'ACCEPTED' && !friend.block && (status === 'ONLINE' || status === 'INGAME')) ? (
-      <div onClick={makeMessage} className='relative w-full'>
+      <div onClick={makeMessage} className=' w-full'>
+        <div className='relative w-[45px] h-[45px] md:w-[50px] md:h-[50px] mx-auto'>
         <Image
           src={profile?.id === friend.sender.id ? friend.receiver.image : friend.sender.image}
           alt={profile?.id === friend.sender.id ? friend.receiver.username : friend.sender.username}
           width={60}
           height={60}
+          draggable={false}
           priority={true}
-          className="h-[45px] w-[45px] md:h-[50px] md:w-[50px] rounded-full mx-auto hover:cursor-pointer"
+          className="h-[45px] w-[45px] md:h-[50px] md:w-[50px] rounded-full mx-auto hover:cursor-pointer "
         />
-        <span className={`w-2 h-2 md:w-3 md:h-3 left-7 top-9  md:left-9 md:top-10 rounded-full absolute ${status === 'ONLINE' ? 'bg-custom-green' : status === 'INGAME' ? 'bg-orange-400' : 'bg-gray-400'}`}></span>
+        <span className={`w-2 h-2 md:w-3 md:h-3 top-9  left-7 md:top-10 rounded-full absolute ${status === 'ONLINE' ? 'bg-custom-green' : status === 'INGAME' ? 'bg-orange-400' : 'bg-gray-400'}`}></span>
         <p className={`text-white text-center text-xs md:text-sm`}>
           {profile?.id === friend.sender.id ? friend.receiver.username : friend.sender.username}
         </p>
+        </div>
       </div>
     ) : null
   );

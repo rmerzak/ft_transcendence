@@ -16,7 +16,7 @@ import { RoomService } from '../services/room/room.service';
 import { log } from 'console';
 
 @WebSocketGateway({
-  cors: { origin: 'http://localhost:8080', credentials: true },
+  cors: { origin: process.env.CLIENT_URL, credentials: true },
   namespace: '/chat'
 })
 export class GatewayGateway
@@ -46,7 +46,6 @@ export class GatewayGateway
         this.roomService.connectedClients.set(user.id, []);
       }
       this.roomService.connectedClients.get(user.id).push(_client);
-      // console.log('connected chat id1: ' + _client.id);
     } catch (error) {
       throw new Error(error.message);
     }
@@ -72,7 +71,6 @@ export class GatewayGateway
       }
       this.server.to(payload.msgData.chatRoomId.toString()).emit('receive-message', msg);
     } catch (error) {
-      // console.log("send-message ", error);
       _client.emit('error', error.message);
     }
   }
@@ -81,7 +79,6 @@ export class GatewayGateway
   handleJoinRoom(_client: Socket, payload: { roomId: number }) {
     try {
       if (_client.hasOwnProperty('user') && _client['user'].hasOwnProperty('id')) {
-        // console.log("join-room ", payload);
         if (!payload.hasOwnProperty('roomId') || _client.rooms.has(payload.roomId.toString())) return;
         const inRoom = this.roomService.getChatRoomMember(_client['user'].id, Number(payload.roomId));
         if (!inRoom) return;
@@ -89,7 +86,6 @@ export class GatewayGateway
         // this.server.to(payload.roomId.toString()).emit('has-joined');
       }
     } catch (error) {
-      // console.log("join-room ", error);
       _client.emit('error', error.message);
     }
   }
@@ -117,7 +113,6 @@ export class GatewayGateway
       }
 
     } catch (error) {
-      // console.log("create-room ", error);
       _client.emit('error', error.message);
     }
   }
@@ -144,7 +139,6 @@ export class GatewayGateway
         }
       });
       this.server.to(room.id.toString()).emit('receive-message', msg);
-      // console.log("new-member ", room);
       this.server.to('1_public').emit('join-room-socket', { userId: _client['user'].id, chatRoomId: room.id });
       _client.join(room.id.toString());
       _client.emit('push', msg);
@@ -157,7 +151,6 @@ export class GatewayGateway
   @SubscribeMessage('update-room')
   async handleUpdateRoom(_client: Socket, payload: ChatRoom) {
     try {
-      // console.log("update-room ", payload);
       const roomTmp = await this.prisma.chatRoom.findUnique({ where: { id: payload.id } });
       if (!roomTmp) throw new Error('Room not found');
       shalowEqual(roomTmp, payload) ? _client.emit('error', 'No changes made') : null;
@@ -319,7 +312,6 @@ export class GatewayGateway
         }, Number(payload.duration) * 1000);
       }
     } catch (error) {
-      // console.log("mute-user ", error);
       _client.emit('error', error.message);
     }
   }
@@ -358,7 +350,6 @@ export class GatewayGateway
         this.server.to(roomMem.chatRoomId.toString()).emit('mute_apdate_sendMsgInput', updatedRoomMem);
       }
     } catch (error) {
-      // console.log("unmute-user ", error);
       _client.emit('error', error.message);
     }
   }
@@ -388,7 +379,6 @@ export class GatewayGateway
         this.server.to(deletedRoomMem.chatRoomId.toString()).emit('leaveRoom', { roomId: deletedRoomMem.chatRoomId, userId: payload.userId });
       }
     } catch (error) {
-      // console.log("kick-user ", error);
       _client.emit('error', error.message);
     }
   }
@@ -518,7 +508,6 @@ export class GatewayGateway
         this.server.to(payload.id.toString()).emit('update-room_msgRm', room);
       }
     } catch (error) {
-      console.log("leave-room ", error);
       _client.emit('error', error.message);
     }
   }
@@ -527,7 +516,6 @@ export class GatewayGateway
   async handleRequestJoinRoom(_client: Socket, payload: ChatRoom) {
     try {
       const request = await this.roomService.requestJoinRoom(_client, payload.name);
-      //  console.log("request-join-room ", request);
       this.roomService.connectedClients.forEach((sockets, userId) => {
         if (userId === payload.owner) {
           sockets.forEach(socket => {
@@ -561,7 +549,6 @@ export class GatewayGateway
         this.server.to(payload.roomId.toString()).emit('receive-message', msg);
       }
     } catch (error) {
-      // console.log("accept-join-room ", error);
       _client.emit('error', error.message);
     }
   }
@@ -582,7 +569,6 @@ export class GatewayGateway
     }
   }
   handleDisconnect(_client: Socket) {
-    console.log('disconnected chat id: ' + _client.id);
   }
 }
 

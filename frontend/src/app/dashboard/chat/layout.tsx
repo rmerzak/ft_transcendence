@@ -16,7 +16,7 @@ const Layout = ({ children }: any) => {
   const router = useRouter();
 
   useEffect(() => {
-    const sock = io("http://localhost:3000/chat", {
+    const sock = io(`${process.env.API_BASE_URL}/chat`, {
       autoConnect: false,
       withCredentials: true,
     });
@@ -26,11 +26,11 @@ const Layout = ({ children }: any) => {
     }
     const handleConnect = () => {
       setChatSocket(sock);
-      console.log('Connected to the server');
+
     };
 
     const handleDisconnect = () => {
-      console.log('Disconnected from the server');
+
     };
 
     sock.on('connect', handleConnect);
@@ -38,7 +38,6 @@ const Layout = ({ children }: any) => {
 
 
     return () => {
-      console.log("Cleanup: Disconnecting socket");
       sock.off('connect', handleConnect);
       sock.off('disconnect', handleDisconnect);
       sock.disconnect();
@@ -55,7 +54,7 @@ const Layout = ({ children }: any) => {
           }
         });
       }
-    }).catch((err) => { console.log(err) });
+    }).catch((err) => {  });
   }, [chatSocket]);
 
   useEffect(() => {
@@ -65,13 +64,13 @@ const Layout = ({ children }: any) => {
         getChatRoomByName(profile?.id.toString(), friendId.toString()).then((res) => {
           if (res && res.data && !privChat.find((room) => room.id === res.data.id))
             setPrivChat((prev) => [...prev, res.data]);
-        }).catch((err) => { console.log(err) });
+        }).catch((err) => {  });
       });
 
       if (profile?.id > 0) {
         chatSocket.on('leaveRoom', ({ roomId, userId }: { roomId: number, userId: number }) => {
           if (profile && profile?.id > 0 && chatSocket.id && userId === profile?.id) {
-            // console.log("Leaving room", roomId);
+
             chatSocket.emit('leaveRoom', { roomId });
             router.push('/dashboard/chat');
           }
@@ -83,7 +82,7 @@ const Layout = ({ children }: any) => {
         });
         chatSocket.on('join-room-socket', (res: ChatRoomMember) => {
           if (res.userId === profile.id) {
-            // console.log('join-room-socket', res);
+
             chatSocket.emit('join-room', { roomId: res.chatRoomId });
           }
         });
@@ -98,12 +97,12 @@ const Layout = ({ children }: any) => {
     }
   }, [friends, profile, chatSocket]);
   return (
-    <div className="border pb-4 w-full h-full bg-[#311251]/80 md:rounded-3xl rounded-t-md md:w-[95%] md:h-[95%] md:mt-6 md:overflow-auto md:mx-auto md:shadow-lg">
+    <div className="pb-4 w-full h-full bg-[#311251]/80 md:rounded-3xl rounded-t-md md:w-[95%] mt-5 overflow-auto mx-auto md:shadow-lg">
       <h1 className="text-white md:text-3xl text-lg md:font-bold text-center m-2 p-1 md:m-4 md:p-2 font-inter w-auto">
         Chat
       </h1>
-      <div className="rounded-md mx-2 md:mx-6 flex justify-between items-center flex-wrap">
-        <div className="flex flex-col justify-between bg-[#5D5959]/40 w-full md:w-[32%] md:rounded-3xl rounded-t-3xl p-2 shadow-lg md:h-[1030px] h-[800px] font-light">
+      <div className="md:h-full h-[90%] rounded-md mx-2 md:mx-6 flex justify-between items-center flex-wrap overflow-auto ">
+        <div className="flex flex-col justify-between bg-[#5D5959]/40 w-full md:w-[32%] md:rounded-3xl rounded-t-3xl p-2 shadow-lg h-full font-light">
           <UserOnline />
           <Channels />
           <Recent rooms={privChat} />

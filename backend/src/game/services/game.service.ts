@@ -5,8 +5,12 @@ import { State } from '../classes/state';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Socket, Server } from 'socket.io';
 import { v4 as uuidv4 } from 'uuid';
-import { Subject } from 'rxjs';
 import { Achievements } from '../types/types';
+import { EventEmitter } from 'events';
+import { Subject } from 'rxjs';
+
+
+EventEmitter.defaultMaxListeners = 10000;
 
 @Injectable()
 export class GameService {
@@ -24,11 +28,12 @@ export class GameService {
     });
     return user;
   }
-
+  
   rooms: Array<Room> = [];
   challenge: Array<Room> = [];
   playerStatusMap: Map<number, boolean> = new Map();
   sseSubject = new Subject<string>();
+  // sseSubject = new BehaviorSubject<string>(this.getIsPlayingData());
   private width = 1908;
   private height = 1146;
 

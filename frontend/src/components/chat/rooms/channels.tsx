@@ -50,8 +50,8 @@ const Channels = () => {
     if (search && !/^[a-zA-Z0-9]+$/.test(search)) {
       return;
     }
-    const response = await axios.get(`http://localhost:3000/chat/room/search/${search}`, { withCredentials: true }).then((res) => { setSearched(res.data); console.log(res.data); });
-    console.log("searched", searched);
+    const response = await axios.get(`${process.env.API_BASE_URL}/chat/room/search/${search}`, { withCredentials: true }).then((res) => { setSearched(res.data); });
+
   }
   const debouncedSearchBackend = useDebouncedCallback(searchProfile, 500);
 
@@ -71,14 +71,14 @@ const Channels = () => {
   // };
 
   const handleInput = () => {
-    console.log("User entered:", search);
+
     setIsPrompetVisible(false);
     searchProfile(search);
     setSelectedChannel(null);
     setSearch('');
   };
   // const handleInput = () => {
-  //   console.log("User entered:", invalue);
+
   //   setIsPrompetVisible(false);
   //   chatSocket?.emit("join-channel", invalue);
   //   setSelectedChannel(null);
@@ -121,7 +121,7 @@ const Channels = () => {
             setChatRoomsJoined(res.data);
           }
         }).catch((err) => {
-          console.log(err);
+         
         });
       });
 
@@ -130,7 +130,7 @@ const Channels = () => {
           if (res.data) {
             setChatRoomsJoined(res.data);
           }
-        }).catch((err) => { console.log(err); });
+        }).catch((err) => { });
       });
 
       chatSocket?.on("update_chat_room_member_channel", (roomMem) => {
@@ -139,7 +139,7 @@ const Channels = () => {
             if (res.data) {
               setChatRoomsJoined(res.data);
             }
-          }).catch((err) => { console.log(err); });
+          }).catch((err) => { });
         }
       });
 
@@ -148,7 +148,7 @@ const Channels = () => {
           if (res.data) {
             setChatRoomsJoined(res.data);
           }
-        }).catch((err) => { console.log(err); });
+        }).catch((err) => { });
       });
 
       chatSocket?.on("deletedRoom", (data) => {
@@ -157,7 +157,7 @@ const Channels = () => {
             if (res.data) {
               setChatRoomsJoined(res.data);
             }
-          }).catch((err) => { console.log(err); });
+          }).catch((err) => {  });
         }
       });
 
@@ -167,7 +167,7 @@ const Channels = () => {
             if (res.data) {
               setChatRoomsJoined(res.data);
             }
-          }).catch((err) => { console.log(err); });
+          }).catch((err) => {  });
       });
 
       chatSocket?.on("error", (data) => {
@@ -177,7 +177,7 @@ const Channels = () => {
       });
     }
     if (search) {
-      console.log("search", search);
+
       searchProfile(search);
       debouncedSearchBackend(search);
     }
@@ -194,7 +194,7 @@ const Channels = () => {
 
   return (
     <>
-      <div className="relative flex flex-col items-center justify-center my-3 mx-auto w-[90%] border">
+      <div className="relative flex flex-col items-center justify-center my-3 mx-auto w-[90%]">
         <div className="flex justify-center w-full">
           <input
             id="channelName"
@@ -219,12 +219,12 @@ const Channels = () => {
         </div>)}
       </div>
 
-      <div className="flex flex-col rounded-md md:w-[90%] w-[90%] mx-auto h-[50%]">
-        <h1 className="mt-3 text-white md:text-xl text-center">
+      <div className="flex flex-col rounded-md w-[90%] mx-auto h-[50%]">
+        <h1 className=" text-white text-xl text-center">
           Joined Channels
         </h1>
         <div className="flex justify-center mt-1">
-          <div className="mb-3 border-b border-white w-6 md:w-10"></div>
+          <div className="mb-3 border-b border-white w-10"></div>
         </div>
 
         <div className="h-[350px] overflow-auto">
@@ -246,10 +246,10 @@ const Channels = () => {
           )}
         </div>
         <div className="flex justify-center mt-1">
-          <div className="mb-3 border-b border-white w-6 md:w-10"></div>
+          <div className="mb-3 border-b border-white w-12"></div>
         </div>
 
-        <div className="flex text-center justify-center mb-1 relative border">
+        <div className="flex text-center justify-center mb-1 relative ">
           <div className="group flex items-center justify-center">
             <button onClick={handleNewChannel}>
               <Plus size={24} strokeWidth={2} className="text-white font-inter" />

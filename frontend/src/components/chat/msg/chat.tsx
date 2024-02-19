@@ -52,7 +52,7 @@ const Chat: React.FC<ChatProps> = ({ messages }) => {
                   <div className="chat-image avatar ">
                     <div className="w-10 rounded-full">
                       {/* <img alt="Tailwind CSS chat bubble component" src={message.sender?.image} /> */}
-                      <Image src={message.sender?.image ? message.sender?.image : "/images/blank.png"} alt="Tailwind CSS chat bubble component" width={40} height={40} />
+                      <Image src={message.sender?.image ? message.sender?.image : "/images/blank.png"} alt="Tailwind CSS chat bubble component" width={40} height={40}  priority/>
                     </div>
                   </div>
                   <div className={`chat-header ${isOwnMessage ? "ml-2" : "mr-2"} flex gap-2 items-center mb-1`}>

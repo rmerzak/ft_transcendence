@@ -242,6 +242,7 @@ button:hover{
   
   /* Optional: If you want to style the scrollbar thumb (the draggable part), you can use the following */
   ::-webkit-scrollbar-thumb {
-    background-color: transparent; /* Set the color you want */
+    background-color: rgba(255, 255, 255, 0.30);/* Set the color you want */
+    border-radius: 99px;
   }
   

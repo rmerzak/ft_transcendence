@@ -41,7 +41,7 @@ const Game = () => {
 
     useEffect(() => {
         checkRoom();
-        console.log('theme', theme)
+
         if (theme == -1 || check == false) {
             Swal.fire({
                 title: 'You have no access to this page',
@@ -63,32 +63,32 @@ const Game = () => {
     
     return (
         <GameProvider>
-                <AuthWrapper>
+            <AuthWrapper>
             {
-            theme !== -1 && check &&
-            <div className='w-[95%] h-[95%] overflow-auto flex flex-col items-center mx-auto text-center p-[1%] shadow-md rounded-3xl bg-[#311251]/80 '>
+                theme !== -1 && check &&
+                <div className='w-[95%] h-[25%] md:h-[95%] overflow-auto flex flex-col items-center mx-auto text-center p-[1%] shadow-md rounded-3xl  bg-[#311251]/80 '>
 
-                    <div className='text-3xl font-black text-white m-4'>
-                    <h1>Game</h1>
-                    </div>
-
-                    <div className="flex flex-col md:flex-row bg-white/20 backdrop-blur- justify-between md:items-center  rounded-3xl shadow-md p-[1%] ">
-                        <div className="flex-none">
-                            <User id={UserEnum.USER}/>
+                        <div className='text-3xl font-black  text-white m-4'>
+                        <h1>Game</h1>
                         </div>
 
-                        <div className="flex-grow flex items-center justify-center mb-6 mt-6">
-                            <Pong />
-                        </div>
+                        <div className="flex flex-col md:flex-row bg-white/20 backdrop-blur- justify-between md:items-center  rounded-3xl shadow-md p-[1%] ">
+                            <div className="flex-none">
+                                <User id={UserEnum.USER}/>
+                            </div>
 
-                        <div className="flex-none">
-                            <User id={UserEnum.OPPONENT}/>
+                            <div className="flex-grow flex items-center justify-center mb-6 mt-6">
+                                <Pong />
+                            </div>
+
+                            <div className="flex-none">
+                                <User id={UserEnum.OPPONENT}/>
+                            </div>
                         </div>
-                    </div>
-            </div>
-            }
-        </AuthWrapper>
-            </GameProvider>
+                </div>
+                }
+            </AuthWrapper>
+        </GameProvider>
   );
 };
 

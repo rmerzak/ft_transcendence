@@ -80,6 +80,7 @@ export class GameController {
     const initialState = this.game.getIsPlayingData();
 
     // Return the observable for future updates, starting with the initial state
+    // this.game.sseSubject.setMaxListeners(20);
     return this.game.sseSubject.pipe(startWith(initialState));
   }
 }

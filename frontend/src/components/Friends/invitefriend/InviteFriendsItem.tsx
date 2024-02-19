@@ -13,7 +13,7 @@ const InviteFriendsItem = ({ friend } : { friend: Friendship }) => {
         getFriendList().then((res) => {
           if (res?.data)
             setFriends((prev:any) => prev = res.data);
-        }).catch((err) => { console.log(err) });
+        }).catch((err) => { });
     }
     const handleAcceptFriend = (status:boolean) => {
         if(status){

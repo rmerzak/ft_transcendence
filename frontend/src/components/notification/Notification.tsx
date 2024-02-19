@@ -9,10 +9,10 @@ import NotificationItem from "./NotificationItem";
 import OutsideClickHandler from 'react-outside-click-handler'
 
 const Notification = () => {
-    const { setSocket, notification ,setNotification}: any = useContext(ContextGlobal);
+    const { setSocket, notification ,setNotification, profile}: any = useContext(ContextGlobal);
     const [open, setOpen] = useState<boolean>(false);
     useEffect(() => {
-        const socket = io("http://localhost:3000", {
+        const socket = io(`${process.env.API_BASE_URL}`, {
             autoConnect: false,
             withCredentials: true,
         });
@@ -33,7 +33,6 @@ const Notification = () => {
             }
         });
         socket?.on('challengeGame', (data: any) => {
-            console.log('here', data.notification);
             if(data.notification){
                 setNotification((prev: Notification[]) => [data.notification, ...prev]);
                 toast.success('Your friend challenged you to a game');
@@ -56,24 +55,28 @@ const Notification = () => {
             socket.disconnect();
         };
     }, []);
+
+
     return (
-        <div className="relative">
-        <div className="flex relative cursor-pointer" onClick={() => setOpen(!open)}>
-            <Bell color="#ffff" className="color-red-500" size={30}  />
-            <span className="text-white bg-red-500 flex items-center justify-center font-bold text-[12px] rounded-full  w-[16px] h-[16px]  absolute top-0 left-4">{notification.length}</span>
-        </div>
-        <OutsideClickHandler onOutsideClick={() => setOpen(false)}>
-        <div className={`z-10 right-0 absolute bg-search rounded-b-lg w-[500px] h-[110px] overflow-y-auto ${open === false ? "hidden" : ""} `}>
-            {
-                open && notification.map((item :any, index:any) => (
-                    <div key={index} className="flex items-center justify-between p-2 hover:bg-purple-300/50">
-                       <NotificationItem item={item} setOpen={setOpen} />
-                    </div>
-                ))
-            }
-        </div>
-        </OutsideClickHandler>
-        </div>
+        <>
+            <div className="relative">
+            <div className="flex relative cursor-pointer" onClick={() => setOpen(!open)}>
+                <Bell color="#ffff" className="color-red-500" size={30}  />
+                <span className="text-white bg-red-500 flex items-center justify-center font-bold text-[12px] rounded-full  w-[16px] h-[16px]  absolute top-0 left-4">{notification.length}</span>
+            </div>
+            <OutsideClickHandler onOutsideClick={() => setOpen(false)}>
+            <div className={`z-10 right-0 absolute bg-search rounded-b-lg w-[500px] h-[110px] overflow-y-auto ${open === false ? "hidden" : ""} `}>
+                {
+                    open && notification.map((item :any, index:any) => (
+                        <div key={index} className="flex items-center justify-between p-2 hover:bg-purple-300/50">
+                        <NotificationItem item={item} setOpen={setOpen} />
+                        </div>
+                    ))
+                }
+            </div>
+            </OutsideClickHandler>
+            </div>
+    </>
     );
 };
 
