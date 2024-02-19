@@ -42,7 +42,7 @@ const Chat: React.FC<ChatProps> = ({ messages }) => {
             {message.type === "ANNOUCEMENT" ? (
               <div>
                 <time className="flex justify-center text-[10px] opacity-30">{formatDate(message.createdAt ? message.createdAt : "")}</time>
-                <div className="relative text-gray-300 opacity-50 text-[15px] flex justify-center mb-3">{message.text}</div>
+                <div className="relative text-gray-300 opacity-50 text-[15px] flex justify-center mb-3 ">{message.text}</div>
               </div>
             )
               :
@@ -58,7 +58,8 @@ const Chat: React.FC<ChatProps> = ({ messages }) => {
                   <div className={`chat-header ${isOwnMessage ? "ml-2" : "mr-2"} flex gap-2 items-center mb-1`}>
                     {senderName}
                     <time className="text-xs opacity-50">{formatDate(message.createdAt ? message.createdAt : "")}</time>
-                  </div><div className="chat-bubble bg-purplee text-white ">{message.text}</div>
+                  </div>
+                  <div className="chat-bubble bg-purplee text-white break-words">{message.text}</div>
                 </div>
 
 
