@@ -17,8 +17,8 @@ interface ChatheaderProps {
 const Chatheader: React.FC<ChatheaderProps> = ({ username, status, userId, friendBlock, blockByMe }) => {
     const { profile, socket } = useContext(ContextGlobal);
     const [ openAlert, setOpenAlert ] = useState<boolean>(false);
-    const [ isPlaying, setIsPlaying ] = useState(false);
     const [isPlay, setIsPlay] = useState(false);
+    const [ isPlaying, setIsPlaying ] = useState(false);
 
 
     useEffect(() => {
@@ -62,7 +62,6 @@ const Chatheader: React.FC<ChatheaderProps> = ({ username, status, userId, frien
                 <div className="flex">
                     {status ?
                         <div className="w-full flex justify-center items-center space-x-2">
-                            {/* ${(status === 'INGAME' || isPlaying) ? 'bg-orange-400' : status === 'ONLINE' ? 'bg-custom-green' : 'bg-gray-400'}` */}
                             <span className={`${friendBlock ? 'hidden' : '' || (status === 'INGAME' || isPlaying) ?  'bg-orange-400' : status === 'ONLINE' ? 'bg-custom-green' : 'bg-gray-400'} rounded-full h-3 w-3`}></span>
                             <h1 className="text-xl font-thin">{username}</h1>
                         </div> : <div className="w-full flex justify-center items-center space-x-2"></div>
