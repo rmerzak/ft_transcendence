@@ -110,8 +110,9 @@ const ProfileInformation = ({ profile, BtnFriend }: { profile: User, BtnFriend: 
                         <div className={`absolute left-1/2 -translate-x-1/2 -translate-y-1/2 text-[50px] h-[15px] w-[15px] rounded-full ${profile?.status === 'ONLINE' ? 'bg-custom-green' : profile?.status === 'INGAME' ? 'bg-orange-400' : 'bg-gray-400'}`}></div>
                         )}</div>
                 </div>
-                <div>
-                    <img src={`/${profile?.coaltion}.png`} alt="freax"  className="rounded-b-full mr-8 w-16 h-24" />
+                <div className="md:w-16 mr-4 w-10">
+                    <p className="text-[#FFFFFF] text-opacity-50 text-center md:text-[16px] text-[12px]">{profile?.coaltion}</p>
+                    <img src={`/${profile?.coaltion}.png`} alt="freax"  className="rounded-b-full mr-8 md:w-16 md:h-full w-10 h-[80%]" />
                 </div>
             </div>
         </div>
