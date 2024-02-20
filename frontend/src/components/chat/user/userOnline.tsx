@@ -9,17 +9,17 @@ const UserOnline = () => {
 
   function getFriends() {
     getFriendList().then((res) => {
-      if (res?.data && res?.data.length > 0) {
+      if (res?.data) {
         setFriends(res?.data);
       }
     })
       .catch((err) => {
-        
+
       });
   }
 
   useEffect(() => {
-    console.log("online");
+    if (profile && socket) {
       getFriends();
       socket?.on("blockUserOnline", (res) => {
         if (res) {
@@ -33,14 +33,12 @@ const UserOnline = () => {
       });
 
       socket?.on('AcceptRequest', () => {
-        console.log("AcceptRequest");
         getFriends();
       });
       socket?.on('friendAcceptRequest', () => {
         getFriends();
       });
       socket?.on('removeFriend', () => {
-        console.log("removeFriend");
         getFriends();
       });
 
@@ -51,17 +49,18 @@ const UserOnline = () => {
         socket?.off('friendAcceptRequest');
         socket?.off('removeFriend');
       };
+    }
   }, [profile, socket]);
 
   return (
 
+    <div>
       <div>
-        <div>
-          <h1 className="text-white md:text-xl text-center">Online</h1>
-          <div className="flex justify-center mt-1">
-            <div className="mb-3 border-b border-white w-6 md:w-10"></div>
-          </div>
-        <ShowUsers friends={friends}/>
+        <h1 className="text-white md:text-xl text-center">Online</h1>
+        <div className="flex justify-center mt-1">
+          <div className="mb-3 border-b border-white w-6 md:w-10"></div>
+        </div>
+        <ShowUsers friends={friends} />
       </div>
     </div>
   );

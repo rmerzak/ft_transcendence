@@ -19,7 +19,7 @@ export class FriendshipGateway {
 
   handleConnection(socket: Socket) {
     this.friendship.handleConnection(socket);
-    socket.join('1_friendship');
+    // socket.join('1_friendship');
   }
 
   handleDisconnect(socket: Socket) {
@@ -84,7 +84,7 @@ export class FriendshipGateway {
       socketClients.forEach((socket) => {
         socket.emit('removeFriend', { notification: null, friendship: null, status: true, error: null });
       })
-      this.server.to('1_friendship').emit('removeFriend', { notification: null, friendship: friendshipRemoved, status: true, error: null });
+      // this.server.to('1_friendship').emit('removeFriend', { notification: null, friendship: friendshipRemoved, status: true, error: null });
     } catch (error) {
       socket.emit('RequestError', { notification: null, friendship: null, status: false, error: error.message });
     }
