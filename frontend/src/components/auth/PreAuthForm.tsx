@@ -66,6 +66,7 @@ const PreAuthForm = ({ exit }: { exit: boolean }) => {
       .then((res) => {
         setUser(res.data);
         setImage(res.data.image);
+        setSelectedCoalition(res.data.coalition); // set the coalition when getting the user data
       })
       .catch((err) => {
         router.push("/");
@@ -88,11 +89,11 @@ const PreAuthForm = ({ exit }: { exit: boolean }) => {
       }
       if (newUsername.length > 8) {
         toast.error("Username must be less than 8 characters");
-        return;
+        return; 
       }
       const response = await axios.post(
         `${process.env.API_BASE_URL}/auth/finish-auth`,
-        { image: ii, username: newUsername },
+        { image: ii, username: newUsername, coalition: selectedCoalition },
         {
           withCredentials: true,
         }
@@ -198,7 +199,7 @@ const PreAuthForm = ({ exit }: { exit: boolean }) => {
               checked={selectedCoalition === 'Freax'}
                 onChange={handleRadioChange}
                 className="text-yellow-500"/>
-              <label htmlFor="Freax" className="text-yellow-500">Freax</label>
+              <label htmlFor="Freax" className="text-yellow-400">Freax</label>
             </div>
             <div>
               <input type="radio" id="Bios" name="coalition" value="Bios" checked={selectedCoalition === 'Bios'}

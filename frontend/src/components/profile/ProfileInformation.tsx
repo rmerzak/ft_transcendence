@@ -33,7 +33,7 @@ const ProfileInformation = ({ profile, BtnFriend }: { profile: User, BtnFriend: 
                 setFriend(false);
             setFriendship(res.data);
             socket?.on('friendRequest', (data: any) => {
-                if (data.notification) {
+                if (data.status) {
                     setFriend(false);
                 }
             });
@@ -57,6 +57,7 @@ const ProfileInformation = ({ profile, BtnFriend }: { profile: User, BtnFriend: 
                     setFriend(true);
                 }
             })
+            
 
         }).catch((err) => { });
     }, [socket, friend]);

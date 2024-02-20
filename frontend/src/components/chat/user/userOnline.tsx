@@ -19,7 +19,7 @@ const UserOnline = () => {
   }
 
   useEffect(() => {
-    if (profile?.id && socket) {
+    console.log("online");
       getFriends();
       socket?.on("blockUserOnline", (res) => {
         if (res) {
@@ -33,12 +33,14 @@ const UserOnline = () => {
       });
 
       socket?.on('AcceptRequest', () => {
+        console.log("AcceptRequest");
         getFriends();
       });
       socket?.on('friendAcceptRequest', () => {
         getFriends();
       });
       socket?.on('removeFriend', () => {
+        console.log("removeFriend");
         getFriends();
       });
 
@@ -48,8 +50,7 @@ const UserOnline = () => {
         socket?.off('AcceptRequest');
         socket?.off('friendAcceptRequest');
         socket?.off('removeFriend');
-      }
-    }
+      };
   }, [profile, socket]);
 
   return (

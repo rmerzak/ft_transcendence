@@ -55,6 +55,7 @@ model User {
   lastname String
   username String @unique
   image String
+  coaltion String
 
   // verification user authentification
   isVerified Boolean @default(false)
