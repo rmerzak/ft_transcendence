@@ -86,7 +86,7 @@ const FriendItem = ({ friend }: { friend: Friendship }) => {
           <div className="relative w-[30px] h-[30px] md:w-[40px] md:h-[40px] ml-2 mb-2 rounded-full">
             <img src={profile?.id === friend.sender.id ? friend.receiver.image : friend.sender.image} className="w-[40px] h-[40px] rounded-full " alt="default pic" />
             <div
-              className={`absolute left-5 top-10  -translate-x-1/2 -translate-y-1/2 text-[8px] h-[8px] w-[8px] rounded-full ${status === 'ONLINE' ? 'bg-custom-green' : status === 'INGAME' ? 'bg-orange-400' : 'bg-gray-400'}`}>
+              className={`absolute left-5 top-10  -translate-x-1/2 -translate-y-1/2 text-[8px] h-[8px] w-[8px] rounded-full ${(status === 'INGAME' || isPlaying) ? 'bg-orange-400' : status === 'ONLINE' ? 'bg-custom-green' : 'bg-gray-400'}`}>
             </div>
           </div>
           <div className="text-gray-200 text-[16px] font-thin pl-1">{profile?.id === friend.sender.id ? friend.receiver.username : friend.sender.username}</div>
