@@ -15,6 +15,7 @@ type LesderboardEntry = {
   id: number;
   image: string;
   username: string;
+  coaltion: string;
 }
 
 const Dashboard = () => {
@@ -29,6 +30,7 @@ const Dashboard = () => {
       id: 0,
       image: '/avatar.jpeg',
       username: 'username',
+      coaltion: '1337'
     },
   ]);
   const [rank, setRank] = useState<number>(0);
@@ -92,6 +94,7 @@ const Dashboard = () => {
             key={index}
             rank={entry.gameRank}
             avatarSrc={entry.image}
+            coaltion={entry.coaltion}
             username={entry.username}
             matchesPlayed={entry.gameMatches}
             wins={entry.gameWins}

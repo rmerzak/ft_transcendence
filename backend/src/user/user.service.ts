@@ -44,6 +44,7 @@ export class UserService {
                 firstname: true,
                 lastname: true,
                 status: true,
+                coaltion: true,
             },
         });
 

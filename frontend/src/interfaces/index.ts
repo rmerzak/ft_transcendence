@@ -17,6 +17,7 @@ export interface User {
   twoFactorSecret: string | null;
   twoFactorEnabled: boolean;
   status: string;
+  coaltion: string;
 }
 
 export interface Notification {

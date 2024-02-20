@@ -29,6 +29,7 @@ export type Leaderboard = {
     gameElo: number;
     gameMatches: number;
     gameWins: number;
+    coaltion: string;
   };
 
 export enum Achievements {

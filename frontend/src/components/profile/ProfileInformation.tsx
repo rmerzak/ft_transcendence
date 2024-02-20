@@ -111,7 +111,7 @@ const ProfileInformation = ({ profile, BtnFriend }: { profile: User, BtnFriend: 
                         )}</div>
                 </div>
                 <div>
-                    <img src="/1337.png" alt="freax"  className="rounded-b-full mr-8 w-16 h-24" />
+                    <img src={`/${profile?.coaltion}.png`} alt="freax"  className="rounded-b-full mr-8 w-16 h-24" />
                 </div>
             </div>
         </div>

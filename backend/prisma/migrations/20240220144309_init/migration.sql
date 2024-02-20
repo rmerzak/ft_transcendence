@@ -32,6 +32,7 @@ CREATE TABLE "User" (
     "lastname" TEXT NOT NULL,
     "username" TEXT NOT NULL,
     "image" TEXT NOT NULL,
+    "coaltion" TEXT NOT NULL,
     "isVerified" BOOLEAN NOT NULL DEFAULT false,
     "status" "UserStatus" NOT NULL DEFAULT 'OFFLINE',
     "twoFactorSecret" TEXT NOT NULL,

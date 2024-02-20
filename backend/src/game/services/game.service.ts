@@ -446,6 +446,7 @@ export class GameService {
         gameElo: true,
         gameMatches: true,
         gameWins: true,
+        coaltion: true,
       },
       where: {
         gameMatches: {

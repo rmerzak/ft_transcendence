@@ -5,12 +5,13 @@ import { useRouter } from 'next/navigation';
 const LeaderboardEntry: React.FC<{
   rank: number;
   avatarSrc: string;
+  coaltion: string;
   username: string;
   matchesPlayed: number;
   wins: number;
   score: number;
   profile: string;
-}> = ({ rank, avatarSrc, username, matchesPlayed, wins, score, profile }) => {
+}> = ({ rank, avatarSrc, coaltion, username, matchesPlayed, wins, score, profile }) => {
   const router = useRouter();
   return (
     <div className='w-full bg-[#FFFFFF]/10 my-2 rounded-xl py-1  px-2 flex justify-between border-b'>
@@ -21,7 +22,7 @@ const LeaderboardEntry: React.FC<{
         <div className='flex flex-col items-center'>
         <div className='relative'>
             <img src={avatarSrc} alt="avatar" className="md:w-[50px] md:h-[50px] w-[30px] h-[32px] rounded-full"/>
-            <img src="/1337.png" alt="avatar" className="absolute top-1/2 -right-1 md:w-[16px] md:h-[26px] w-[10px] h-[15px] rounded-b-full" style={{ filter: 'saturate(150%) brightness(120%)' }}/>
+            <img src={`/${coaltion}.png`} alt="avatar" className="absolute top-1/2 -right-1 md:w-[16px] md:h-[26px] w-[10px] h-[15px] rounded-b-full" style={{ filter: 'saturate(150%) brightness(120%)' }}/>
           </div>
           <h1 className='text-gray-200 font-thin md:text-[12px] text-[8px]'>{username}</h1>
         </div>

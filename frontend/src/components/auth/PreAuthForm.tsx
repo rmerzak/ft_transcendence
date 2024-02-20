@@ -124,6 +124,13 @@ const PreAuthForm = ({ exit }: { exit: boolean }) => {
       router.push("/");
     } catch (error) {}
   }
+  const coalitionOptions = [
+    { id: 'Pandora', value: 'Pandora', label: 'Pandora', color: 'text-purple-500' },
+    { id: 'Commodore', value: 'Commodore', label: 'Commodore', color: 'text-green-500' },
+    { id: 'Freax', value: 'Freax', label: 'Freax', color: 'text-yellow-500' },
+    { id: 'Bios', value: 'Bios', label: 'Bios', color: 'text-cyan-500' }
+  ];
+
   return (
     <>
       <form
@@ -165,50 +172,28 @@ const PreAuthForm = ({ exit }: { exit: boolean }) => {
           />
           <User className=" absolute right-3" />
         </div>
-        <div className="mt-2">
-          <p className="text-white font-bold mb-1">Select coalition</p>
+       {exit && <div className="mt-2">
+          <p className="text-white font-bold mb-1">Select your coalition</p>
           <fieldset className="flex space-x-4">
-            <div>
-              <input
-                type="radio"
-                id="Pandora"
-                name="coalition"
-                value="Pandora"
-                checked={selectedCoalition === 'Pandora'}
-                onChange={handleRadioChange}
-                className="text-purple-500"
-              />
-              <label htmlFor="Pandora" className="text-purple-500">Pandora</label>
-            </div>
-
-            <div>
-              <input
-                type="radio"
-                id="Commodore"
-                name="coalition"
-                value="Commodore"
-                checked={selectedCoalition === 'Commodore'}
-                onChange={handleRadioChange}
-                className="text-green-500"
-              />
-              <label htmlFor="Commodore" className="text-green-500">Commodore</label>
-            </div>
-
-            <div>
-              <input type="radio" id="Freax" name="coalition" value="Freax"
-              checked={selectedCoalition === 'Freax'}
-                onChange={handleRadioChange}
-                className="text-yellow-500"/>
-              <label htmlFor="Freax" className="text-yellow-400">Freax</label>
-            </div>
-            <div>
-              <input type="radio" id="Bios" name="coalition" value="Bios" checked={selectedCoalition === 'Bios'}
-            onChange={handleRadioChange}
-            className="text-cyan-500"/>
-              <label htmlFor="Bios" className="text-cyan-500">Bios</label>
+            <div className="flex justify-between gap-5">
+              {coalitionOptions.map(option => (
+                <div key={option.id}>
+                  <input
+                    type="radio"
+                    id={option.id}
+                    name="coalition"
+                    value={option.value}
+                    checked={selectedCoalition === option.value}
+                    onChange={handleRadioChange}
+                    className={option.color}
+                  />
+                  <label htmlFor={option.id} className={option.color}>{option.label}</label>
+                </div>
+               ))}
             </div>
           </fieldset>
         </div>
+        }
 
         <div className="pt-5">
           <Switch

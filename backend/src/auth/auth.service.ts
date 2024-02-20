@@ -24,6 +24,7 @@ export class AuthService {
                 await this.prisma.user.update({ where: { id: user.id }, data: { status: UserStatus.ONLINE } });
                 return user;
             }
+            
             user = await this.prisma.user.create({
                 data: {
                     id: dto.id,
@@ -33,6 +34,7 @@ export class AuthService {
                     lastname: dto.lastname,
                     username: dto.username,
                     twoFactorSecret: "null",
+                    coaltion: "1337",
                 },
             })
             return user;
@@ -74,7 +76,7 @@ export class AuthService {
         return { accessToken: token };
     }
 
-    async finishAuth(data: {username:string, image:string}, email: string) {
+    async finishAuth(data: {username:string, image:string, coalition:string}, email: string) {
         try {
             const user = await this.prisma.user.findUnique({ where: { email: email } });
             if (!user)
@@ -90,6 +92,7 @@ export class AuthService {
                     isVerified: true,
                     username: data.username.length > 0 ? data.username : user.username,
                     image: data.image.length > 0 ? data.image : user.image,
+                    coaltion: data.coalition.length > 0 ? data.coalition : user.coaltion,
                 }
             });
         } catch (error) {
