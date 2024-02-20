@@ -60,6 +60,7 @@ export const ContextProvider = ({ children }: { children: any }) => {
     twoFactorSecret: '',
     twoFactorEnabled: false,
     status: '', // Add the status property and provide a valid value
+    coaltion: '', // Add the coaltion property and provide a valid value
   });
   const [socket, setSocket] = useState<any>(null);
   const [gameSocket, setGameSocket] = useState<any>(null); // [1
