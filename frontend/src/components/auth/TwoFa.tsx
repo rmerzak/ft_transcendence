@@ -44,7 +44,7 @@ const TwoFa = () => {
           <input type="text" id="code" onChange={(e) => {setCode(e.target.value)}} placeholder="Two-factor authentication code" className="w-[20.438rem] h-[2.75rem] pl-[1.063rem] leading-normal" />
         </div>
         <div className="pt-5 flex items-center justify-between w-[20.438rem] h-[2.75rem]" style={{ marginBottom: "10px", marginTop: "10px" }}>
-          <button className="bg-[#79196F]  w-[100px] h-[40px] text-white py-2 px-4 rounded-[10px] border-colors">Back</button>
+        <button  onClick={() => router.push("/auth/login")} className="bg-[#79196F]  w-[100px] h-[40px] text-white py-2 px-4 rounded-[10px] border-colors">Back</button>
           <button type="submit" className="bg-[#79196F] w-[100px] h-[40px] text-white py-2 px-4 rounded-[10px]">Continue</button>
         </div>
 
