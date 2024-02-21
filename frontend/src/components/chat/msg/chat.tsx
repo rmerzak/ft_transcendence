@@ -31,7 +31,7 @@ const Chat: React.FC<ChatProps> = ({ messages }) => {
   }, [messages])
 
   return (
-    <div ref={chatRef} className='max-w-[80%] mx-auto overflow-y-auto max-h-full md:max-h-[97%] p-2'>
+    <div ref={chatRef} className=' max-w-[80%] mx-auto overflow-y-auto max-h-full md:max-h-[97%] p-2'>
       {messages?.map((message, index) => {
         const isOwnMessage = message.senderId === profile?.id;
         const senderName = isOwnMessage ? "You" : message.sender?.username;

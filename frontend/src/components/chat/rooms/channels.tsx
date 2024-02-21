@@ -193,7 +193,7 @@ const Channels = () => {
 
   return (
     <>
-      <div className="relative flex flex-col items-center justify-center my-3 mx-auto w-[90%] ">
+      <div className="relative flex flex-col items-center justify-center my-3 mx-auto w-[90%]">
         <div className="flex justify-center w-full">
           <input
             id="channelName"
@@ -218,7 +218,7 @@ const Channels = () => {
         </div>)}
       </div>
 
-      <div className="flex flex-col rounded-md w-[90%] mx-auto">
+      <div className="flex flex-col rounded-md w-[90%] mx-auto h-[42%]">
         <h1 className=" text-white text-xl text-center">
           Joined Channels
         </h1>

@@ -85,16 +85,16 @@ const Recent: React.FC<RecentProps> = ({ rooms }) => {
       <div>
         <h1 className="text-white md:text-xl text-center font-inter">Recent</h1>
         <div className="flex justify-center md:mt-2">
-          <div className="md:mb-2 mb-0 border-b border-white md:w-14 w-6"></div>
+          <div className="border-b border-white md:w-14 w-6"></div>
         </div>
       </div>
 
-      <div className="border flex items-center justify-center flex-col mx-auto w-[92%] h-[20%] text-white rounded-md overflow-auto">
+      <div className="flex items-center justify-center flex-col mx-auto w-[92%]  text-white rounded-md overflow-auto">
         {recents.map((recent) => (
           isNumber(recent.chatRoomId) &&
           <div
             key={recent.chatRoomId}
-            className="flex border-b-black border-b w-full items-center my-[5px] md:my-[8px] rounded-md font-inter bg-[#5D5959]/50 hover:bg-[#5D5959]/100"
+            className="flex border-b-black border-b w-full items-center my-[5px] rounded-md font-inter bg-[#5D5959]/50 hover:bg-[#5D5959]/100"
           >
             <div
               onClick={() => {

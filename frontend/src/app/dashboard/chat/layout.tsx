@@ -101,8 +101,8 @@ const Layout = ({ children }: any) => {
       <h1 className="text-white md:text-3xl text-lg md:font-bold text-center m-2 p-1 md:m-4 md:p-2 font-inter w-auto">
         Chat
       </h1>
-      <div className="border md:h-[96%] h-[90%] rounded-md mx-2 md:mx-6 flex justify-between items-center flex-wrap overflow-auto ">
-        <div className="border overflow-auto flex flex-col justify-between bg-[#5D5959]/40 w-full md:w-[32%] md:rounded-3xl rounded-t-3xl p-2 shadow-lg font-light">
+      <div className="md:h-[96%] h-[90%] rounded-md mx-2 md:mx-6 flex justify-between flex-wrap overflow-auto ">
+        <div className="md:h-[96%] overflow-auto flex flex-col justify-between bg-[#5D5959]/40 w-full md:w-[32%] md:rounded-3xl rounded-t-3xl p-2 shadow-lg font-light">
           <UserOnline />
           <Channels />
           <Recent rooms={privChat} />
