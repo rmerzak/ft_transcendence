@@ -583,6 +583,10 @@ export class GatewayGateway
 function shalowEqual(roomTmp: ChatRoom, payload: ChatRoom): boolean {
   payload.createdAt = new Date(payload.createdAt);
   payload.updatedAt = new Date(payload.updatedAt);
+  for (const key in payload) {
+    if (key !== 'passwordHash' && (!payload[key] || payload[key] === ''))
+      return false;
+  }
   if (Object.keys(roomTmp).length !== Object.keys(payload).length) return false;
   for (const key in roomTmp) {
     if (key === 'createdAt' || key === 'updatedAt') {

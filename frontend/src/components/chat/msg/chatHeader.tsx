@@ -43,7 +43,6 @@ const Chatheader: React.FC<ChatheaderProps> = ({ username, status, userId, frien
                 });
             } catch {}
         };
-    
         return () => {
           eventSource.close();
         };

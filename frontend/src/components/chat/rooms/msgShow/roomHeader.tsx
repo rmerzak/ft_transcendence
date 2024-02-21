@@ -1,6 +1,4 @@
 'user client';
-
-import User from "@/components/game/User";
 import { ContextGlobal } from "@/context/contex";
 import { ChatRoom, ChatRoomMember } from "@/interfaces";
 import { useContext, useState } from "react";
