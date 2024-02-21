@@ -10,7 +10,7 @@ import AuthWrapper from '@/components/auth/AuthWrapper';
 
 
 const Room = () => {
-  const { chatSocket, profile } = useContext(ContextGlobal);
+  const { chatSocket, profile, socket } = useContext(ContextGlobal);
   const { roomId } = useParams()
   const router = useRouter();
   const [messages, setMessages] = useState<Messages[]>([]);
@@ -18,14 +18,14 @@ const Room = () => {
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    if (chatSocket && roomId) {
+    if (chatSocket && roomId && socket) {
       if (messages.length === 0) {
         getChatRoomMessages(Number(roomId), 'room')
           .then((res) => {
             if (Array.isArray(res.data)) {
               setMessages(res.data);
               setLoading(false);
-            }else
+            } else
               setError(res.data);
           }).catch((err) => {
             setError(err.response.data.message);
@@ -38,19 +38,41 @@ const Room = () => {
           getChatRoomMessages(Number(roomId), 'room').then((res) => {
             if (Array.isArray(res.data) && res.data.length > messages.length) {
               setMessages(res.data);
-            }else
+            } else
               setError(res.data);
           }).catch((err) => {
-            console.error(err);
             setError(err.response.data.message);
           });
         }
+      });
+      socket.on('blockFriendChat', (data: { isblock: boolean, blockByMe: number }) => {
+        if (data)
+          getChatRoomMessages(Number(roomId), 'room').then((res) => {
+            if (Array.isArray(res.data) && res.data.length > messages.length) {
+              setMessages(res.data);
+            } else
+              setError(res.data);
+          }).catch((err) => {
+            setError(err.response.data.message);
+          });
+      });
+
+      socket.on('unblockFriendChat', (data: { isblock: boolean, blockByMe: number }) => {
+        if (data)
+          getChatRoomMessages(Number(roomId), 'room').then((res) => {
+            if (Array.isArray(res.data) && res.data.length > messages.length) {
+              setMessages(res.data);
+            } else
+              setError(res.data);
+          }).catch((err) => {
+            setError(err.response.data.message);
+          });
       });
     }
     return () => {
       chatSocket?.off('receive-message');
     };
-  }, [roomId, chatSocket]);
+  }, [roomId, chatSocket, socket]);
 
   return (
     <AuthWrapper>
