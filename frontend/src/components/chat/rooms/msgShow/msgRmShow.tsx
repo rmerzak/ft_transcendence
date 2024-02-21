@@ -17,29 +17,27 @@ const MsgRmShow: React.FC<MsgShowProps> = ({ messages, roomId }) => {
   const { chatSocket } = useContext(ContextGlobal);
 
   useEffect(() => {
-    if (roomId) {
+    if (roomId && chatSocket && messages && messages?.length > 0) {
       getChatRoomById(roomId).then((res) => {
         if (res.data)
           setRoom(res.data);
       }).catch((err) => {
-       
+
       });
-    }
-    if (chatSocket) {
       chatSocket.on('update-room_msgRm', (room) => {
         if (room)
           getChatRoomById(roomId).then((res) => {
             if (res.data)
               setRoom(res.data);
           }).catch((err) => {
-           
+
           });
       });
     }
     return () => {
       chatSocket?.off('update-room_msgRm');
     };
-  }, [roomId, chatSocket]);
+  }, [messages?.length, chatSocket, roomId]);
   return (
     <div className="bg-[#5D5959]/40 md:w-[66%] w-full mx-auto  text-white  md:h-full h-[65%] md:rounded-3xl p-4 md:block md:mt-0 my-2">
       <RoomHeader chatRoom={room} />
