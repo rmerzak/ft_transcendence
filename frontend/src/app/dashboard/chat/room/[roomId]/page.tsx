@@ -64,7 +64,7 @@ const Room = () => {
         </div>
       }
       {error !== '' &&
-        <div className="flex justify-center items-center text-2xl bg-[#5D5959]/40 w-[66%]  h-[1030px] rounded-3xl">
+        <div className="flex justify-center items-center text-white text-2xl bg-[#5D5959]/40 w-[66%]  h-[1030px] rounded-3xl">
           <p>
             {error}
           </p>

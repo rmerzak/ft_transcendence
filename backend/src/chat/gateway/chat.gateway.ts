@@ -478,6 +478,12 @@ export class GatewayGateway
       } as Message;
       const room = await this.roomService.leaveMemberFromRoom(_client, payload);
       this.roomService.connectedClients.forEach((sockets, userId) => {
+        if (room === null) {
+          sockets.forEach(socket => {
+            socket.emit('leaveRoom', { roomId: payload.id, userId: _client['user'].id });
+          });
+          // this.server.to('1_public').emit('leaveRoom', { roomId: payload.id, userId: _client['user'].id });
+        }
         if (userId === _client['user'].id) {
           sockets.forEach(socket => {
             if (room !== null) {
@@ -492,8 +498,9 @@ export class GatewayGateway
           if (room === null) {
             sockets.forEach(socket => {
               socket.emit('deletedRoom', payload.name);
+              // socket.emit('leaveRoom', { roomId: payload.id, userId: _client['user'].id });
             });
-            this.server.to('1_public').emit('leaveRoom', { roomId: payload.id, userId: _client['user'].id });
+            // this.server.to('1_public').emit('leaveRoom', { roomId: payload.id, userId: _client['user'].id });
           }
         }
       });

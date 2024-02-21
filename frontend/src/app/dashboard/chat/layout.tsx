@@ -11,7 +11,7 @@ import { useRouter } from 'next/navigation';
 
 
 const Layout = ({ children }: any) => {
-  const { setChatSocket, setChatRoomsToJoin, setChatRoomsJoined, friends, profile, chatSocket } = useContext(ContextGlobal);
+  const { setChatSocket, setChatRoomsJoined, friends, profile, chatSocket } = useContext(ContextGlobal);
   const [privChat, setPrivChat] = useState<ChatRoom[]>([]);
   const router = useRouter();
 
