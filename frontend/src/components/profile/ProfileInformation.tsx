@@ -111,7 +111,7 @@ const ProfileInformation = ({ profile, BtnFriend }: { profile: User, BtnFriend: 
                         )}</div>
                 </div>
                 <div className="md:w-16 mr-4 w-10">
-                    <p className="text-[#FFFFFF] text-opacity-50 text-center md:text-[16px] text-[12px]">{profile?.coaltion}</p>
+                    <p className="text-black text-opacity-50 font-bold text-center md:text-[10px] text-[7px]">{profile?.coaltion}</p>
                     <img src={`/${profile?.coaltion}.png`} alt="freax"  className="rounded-b-full mr-8 md:w-16 md:h-full w-10 h-[80%]" />
                 </div>
             </div>
