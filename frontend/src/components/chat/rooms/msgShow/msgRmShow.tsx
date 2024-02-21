@@ -1,8 +1,8 @@
 'use client';
 import { useContext, useEffect, useState } from 'react';
 import Chat from '../../msg/chat';
-import { ChatRoom, ChatRoomMember, Messages } from '@/interfaces';
-import { getChatRoomById, getChatRoomMembers } from '@/api/chat/chat.api';
+import { ChatRoom, Messages } from '@/interfaces';
+import { getChatRoomById } from '@/api/chat/chat.api';
 import RoomHeader from './roomHeader';
 import SendMsgRm from './sendMsgRm';
 import { ContextGlobal } from '@/context/contex';
@@ -17,7 +17,7 @@ const MsgRmShow: React.FC<MsgShowProps> = ({ messages, roomId }) => {
   const { chatSocket } = useContext(ContextGlobal);
 
   useEffect(() => {
-    if (roomId && chatSocket && messages && messages?.length > 0) {
+    if (roomId && chatSocket && messages && messages?.length >= 0) {
       getChatRoomById(roomId).then((res) => {
         if (res.data)
           setRoom(res.data);
@@ -29,9 +29,7 @@ const MsgRmShow: React.FC<MsgShowProps> = ({ messages, roomId }) => {
           getChatRoomById(roomId).then((res) => {
             if (res.data)
               setRoom(res.data);
-          }).catch((err) => {
-
-          });
+          }).catch((err) => {});
       });
     }
     return () => {
