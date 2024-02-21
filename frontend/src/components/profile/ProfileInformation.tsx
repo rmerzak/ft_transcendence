@@ -13,6 +13,7 @@ const ProfileInformation = ({ profile, BtnFriend }: { profile: User, BtnFriend: 
     const [block, setBlock] = useState<boolean> (false);
     const [friendship, setFriendship] = useState<Friendship>();
     function HandleUnfriend() {
+        console.log('unfriend');
         socket?.emit('removeFriend', profile?.id);
         setFriend(null);
     }
@@ -80,22 +81,22 @@ const ProfileInformation = ({ profile, BtnFriend }: { profile: User, BtnFriend: 
                     <p className="text-[#CE6FF5]">Email</p>
                     <p className="text-[#FFFFFF] text-opacity-50">{profile?.email}</p>
                 </div>
-                {friendship?.status !== 'BLOCKED' && BtnFriend && <div>
+                {friendship?.status !== 'BLOCKED' && BtnFriend && <div className="w-[100px]">
                     {friend === true ? (
-                        <button className="text-red-500 pl-1" onClick={HandleUnfriend}>
-                            <UserMinus />
+                        <button className="text-red-500 pl-1 w-[100px] h-[40px]" onClick={HandleUnfriend}>
+                            <UserMinus/>remove
                         </button>
                     ) : friend === null ? (
-                        <button className="text-blue-500 pl-1" onClick={HandleSendFriendRequest}>
-                            <UserPlus /> Send Request
+                        <button className="text-blue-500 pl-1 w-[100px] h-[40px]" onClick={HandleSendFriendRequest}>
+                            <UserPlus /> add Friend
                         </button>
                     ) : (
                          (friendship?.senderId === profile?.id && friend === false) ?
-                            <button className="text-blue-500 pl-1" onClick={HandleAccepteFriendRequest}>
+                            <button className="text-blue-500 pl-1 w-[100px] h-[40px]" onClick={HandleAccepteFriendRequest}>
                                 <UserCheck /> Accept
                             </button> 
                                 : 
-                            <button className="text-blue-500 pl-1">
+                            <button className="text-blue-500 pl-1 w-[100px] h-[]">
                                 <LoaderIcon />
                             </button>
                     )}
