@@ -89,7 +89,7 @@ const Recent: React.FC<RecentProps> = ({ rooms }) => {
         </div>
       </div>
 
-      <div className="flex items-center justify-center flex-col  mx-auto w-[92%] md:scroll-y-auto text-white rounded-md overflow-auto">
+      <div className="border flex items-center justify-center flex-col mx-auto w-[92%] h-[20%] text-white rounded-md overflow-auto">
         {recents.map((recent) => (
           isNumber(recent.chatRoomId) &&
           <div

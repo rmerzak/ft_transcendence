@@ -35,8 +35,8 @@ const Popup: React.FC<PopupProps> = ({ setChannel }) => {
   }
 
   const validateChannelName = (name: string) => {
-    if (name.length < 2 || name.length > 12) {
-      setValidationError("Channel name must be between 2 and 12 characters.");
+    if (name.length < 3 || name.length > 12) {
+      setValidationError("Channel name must be between 3 and 12 characters.");
     } else {
       setValidationError(null);
     }
@@ -52,8 +52,8 @@ const Popup: React.FC<PopupProps> = ({ setChannel }) => {
   const handleCreateChannel = (e:any) => {
     e.preventDefault();
     const { channelName } = formData;
-    if (channelName.length < 2 || channelName.length > 12) {
-      setValidationError("Channel name must be between 2 and 12 characters");
+    if (channelName.length < 3 || channelName.length > 12) {
+      setValidationError("Channel name must be between 3 and 12 characters");
       return;
     }
     const channelData = {

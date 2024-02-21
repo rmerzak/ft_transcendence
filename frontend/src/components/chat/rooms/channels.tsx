@@ -121,7 +121,6 @@ const Channels = () => {
             setChatRoomsJoined(res.data);
           }
         }).catch((err) => {
-         
         });
       });
 
@@ -194,7 +193,7 @@ const Channels = () => {
 
   return (
     <>
-      <div className="relative flex flex-col items-center justify-center my-3 mx-auto w-[90%]">
+      <div className="relative flex flex-col items-center justify-center my-3 mx-auto w-[90%] ">
         <div className="flex justify-center w-full">
           <input
             id="channelName"
@@ -219,7 +218,7 @@ const Channels = () => {
         </div>)}
       </div>
 
-      <div className="flex flex-col rounded-md w-[90%] mx-auto h-[50%]">
+      <div className="flex flex-col rounded-md w-[90%] mx-auto">
         <h1 className=" text-white text-xl text-center">
           Joined Channels
         </h1>
@@ -227,15 +226,15 @@ const Channels = () => {
           <div className="mb-3 border-b border-white w-10"></div>
         </div>
 
-        <div className="h-[350px] overflow-auto">
+        <div className="h-auto overflow-auto">
           {chatRoomsJoined.length > 0 ? (
             chatRoomsJoined.map((channel, index) => (
-              <div key={index} className="flex w-full  bg-[#811B77]/50  hover:bg-[#811B77]/100 rounded-xl h-[15%] mb-[9px]">
+              <div key={index} className="flex w-full  bg-[#811B77]/50  hover:bg-[#811B77]/100 rounded-xl  mb-[9px]">
 
                 <div onClick={() => {
                   router.push(`/dashboard/chat/room/${channel.id}`);
                 }}
-                  className=" flex items-center w-full text-xs md:text-base p-3 my-[6px] md:my-[10px] text-white hover:bg-[#811B77]/100"
+                  className=" flex items-center w-full text-xs md:text-base p-3  text-white hover:bg-[#811B77]/100"
                 >
                   <p>#{channel.name}</p>
                 </div>
