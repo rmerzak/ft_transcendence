@@ -13,7 +13,6 @@ const Friends = () => {
     getFriendList().then((res) => {
       if (res?.data)
         setFriends(res.data);
-
     }).catch((err) => {  });
   }
   useEffect(() => {
