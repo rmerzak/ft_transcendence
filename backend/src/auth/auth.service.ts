@@ -35,6 +35,7 @@ export class AuthService {
                     username: dto.username,
                     twoFactorSecret: "null",
                     coaltion: "1337",
+                    status: UserStatus.ONLINE,
                 },
             })
             return user;
