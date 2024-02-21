@@ -77,6 +77,8 @@ const PreAuthForm = ({ exit }: { exit: boolean }) => {
   async function handleSubmit(event: any) {
     event.preventDefault();
     try {
+      if (!selectedCoalition)
+        return toast.error("Please select a coalition");
       if (fil != undefined) {
         const formData = new FormData();
         formData.append("file", fil!);

@@ -24,12 +24,8 @@ services:
   db-postgres:
     image: postgres
     container_name: db-postgres
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=123
-      - POSTGRES_DB=nest
-    # env_file:
-    #   - ./backend/.env
+    env_file:
+      - ./backend/.env
     ports:
       - 5432:5432
     networks:

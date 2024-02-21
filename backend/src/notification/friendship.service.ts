@@ -15,6 +15,7 @@ export class FriendshipService {
             let payload = socket['payload'];
             let user = await this.prisma.user.findUnique({ where: { email: payload['email'] } });
             const userId = user?.id;
+            if (!userId) throw new Error('user not found');
             await this.prisma.user.update({where:{id:userId},data:{status:UserStatus.ONLINE}});
             if (!this.connectedClients.has(userId)) {
                 this.connectedClients.set(userId, []);
@@ -23,7 +24,7 @@ export class FriendshipService {
             this.connectedClients.get(userId).push(socket);
             // print socket id
         } catch(error) {
-            throw new Error(error.message);
+            // throw new Error(error.message);
         }
     }
 
@@ -41,7 +42,7 @@ export class FriendshipService {
                 await this.prisma.user.update({where:{id:userId},data:{status:UserStatus.OFFLINE}});
             }
         }} catch(error) {
-            throw new Error(error.message);
+            // throw new Error(error.message);
         }
     }
     getSocketsByUser(userId: number): any {
