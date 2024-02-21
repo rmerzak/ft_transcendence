@@ -45,7 +45,8 @@ export class GatewayGateway
       if (!this.roomService.connectedClients.has(user.id)) {
         this.roomService.connectedClients.set(user.id, []);
       }
-      this.roomService.connectedClients.get(user.id).push(_client);
+      if (user)
+        this.roomService.connectedClients.get(user.id).push(_client);
     } catch (error) {
       throw new Error(error.message);
     }
